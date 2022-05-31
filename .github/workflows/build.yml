@@ -43,7 +43,7 @@ jobs:
       with:
         node-version: '16'
     - uses: borales/actions-yarn@v2.3.0
-    - name: Build ManagementConsole
+      name: Build ManagementConsole
       run: yarn build-web
   savepr:
     runs-on: ubuntu-latest
