@@ -3,37 +3,17 @@ name: Build
 on:
   pull_request:
     branches:
-      - master
+      - main
     paths:
-      - 'powertools-cloudformation/**'
-      - 'powertools-core/**'
-      - 'powertools-serialization/**'
-      - 'powertools-logging/**'
-      - 'powertools-sqs/**'
-      - 'powertools-tracing/**'
-      - 'powertools-validation/**'
-      - 'powertools-idempotency/**'
-      - 'powertools-parameters/**'
-      - 'powertools-metrics/**'
-      - 'powertools-test-suite/**'
-      - 'pom.xml'
+      - 'ManagementConsole/**'
+      - 'SampleGame/**'
       - '.github/workflows/**'
   push:
     branches:
-      - master
+      - main
     paths:
-      - 'powertools-cloudformation/**'
-      - 'powertools-core/**'
-      - 'powertools-serialization/**'
-      - 'powertools-logging/**'
-      - 'powertools-sqs/**'
-      - 'powertools-tracing/**'
-      - 'powertools-validation/**'
-      - 'powertools-idempotency/**'
-      - 'powertools-parameters/**'
-      - 'powertools-metrics/**'
-      - 'powertools-test-suite/**'
-      - 'pom.xml'
+      - 'ManagementConsole/**'
+      - 'SampleGame/**'
       - '.github/workflows/**'
 jobs:
   build:
@@ -41,22 +21,21 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        # test against latest update of each major Java version, as well as specific updates of LTS versions:
-        java: [8, 8.0.192, 11.0.x, 11.0.3, 12, 13, 15, 16, 17 ]
-    name: Java ${{ matrix.java }}
+        # test against latest update of each major .Net version, as well as specific updates of LTS versions:
+        net: [3.1]
+    name: .Net ${{ matrix.net }}
     env:
+      DOTNET: ${{ matrix.net-version }}
       OS: ${{ matrix.os }}
-      JAVA: ${{ matrix.java-version }}
       AWS_REGION: eu-west-1
     steps:
       - uses: actions/checkout@v2
-      - name: Setup java
-        uses: actions/setup-java@v2
+      - name: Setup .NET Core
+        uses: actions/setup-dotnet@v1
         with:
-          distribution: 'zulu'
-          java-version: ${{ matrix.java }}
-      - name: Build with Maven
-        run: mvn -Pbuild-without-spotbugs -B package --file pom.xml
+          dotnet-version: ${{ matrix.net }}
+      - name: Build with dotnet
+        run: dotnet build --configuration Release
   savepr:
     runs-on: ubuntu-latest
     name: Save PR number if running on PR by dependabot
