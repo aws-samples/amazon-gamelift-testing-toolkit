@@ -16,7 +16,7 @@ on:
       - 'SampleGame/**'
       - '.github/workflows/**'
 jobs:
-  build-net:
+  build:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
@@ -36,15 +36,6 @@ jobs:
           dotnet-version: ${{ matrix.net }}
       - name: Build with dotnet
         run: dotnet build --configuration Release
-  build-web:
-    runs-on: ubuntu-latest
-    - name: Use NodeJS 16
-      uses: actions/setup-node@v3
-      with:
-        node-version: '16'
-    - uses: borales/actions-yarn@v2.3.0
-      name: Build ManagementConsole
-      run: yarn build-web
   savepr:
     runs-on: ubuntu-latest
     name: Save PR number if running on PR by dependabot
