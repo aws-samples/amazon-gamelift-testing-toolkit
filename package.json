@@ -1,0 +1,26 @@
+{
+    "name": "amazon-gamelift-testing-toolkit",
+    "version": "1.0.0",
+    "description": "A tool for deploying, testing and visualising Amazon GameLift",
+    "main": "index.js",
+    "author": "aws-solution-builders",
+    "license": "Apache-2.0",
+    "scripts": {
+      "build-toolkit" : "yarn pack-management-console && yarn build-web",
+      "build-sample-game" : "yarn pack-sample-game",
+      "build-docs-website": "mkdir -p dist && docker run --rm -t -v ${PWD}/docs:/docs squidfunk/mkdocs-material build && cp -R docs/site/* dist/",
+      "deploy-toolkit": "cd ManagementConsole/Infra && npx cdk@1.148.0 synth && npx cdk@1.148.0 -a cdk.out/assembly-AGTT-ManagementConsoleStack deploy --all",
+      "deploy-sample-game": "yarn pack-sample-game && cd SampleGame/Infra && npx cdk@1.148.0 synth && npx cdk@1.148.0 -a cdk.out/assembly-AGTT-SampleGameStack deploy --all",
+      "delete-toolkit": "cd ManagementConsole/Infra && npx cdk@1.148.0 -a cdk.out/assembly-AGTT-ManagementConsoleStack destroy --all",
+      "delete-sample-game": "cd SampleGame/Infra && npx cdk@1.148.0 -a cdk.out/assembly-AGTT-SampleGameStack destroy --all",
+      "pack-management-console": "cd ManagementConsole/Backend && dotnet pack --configuration Release",
+      "pack-sample-game": "cd SampleGame/Backend && dotnet pack --configuration Release",
+      "build-web": "yarn install-web && yarn install-static && cd ManagementConsole/UI && yarn build",
+      "install-web": "cd ManagementConsole/UI && yarn install",
+      "install-static": "cd ManagementConsole/UI/static && yarn install",
+      "host-docs-website-local": "docker run --rm -it -p 8000:8000 -v ${PWD}/docs:/docs squidfunk/mkdocs-material"
+    },
+    "devDependencies": {
+      "aws-cdk": "^1.148.0"
+    }
+}

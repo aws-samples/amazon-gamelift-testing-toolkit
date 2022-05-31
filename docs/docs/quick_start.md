@@ -1,8 +1,4 @@
-# Amazon GameLift Testing Toolkit
-
-![aws provider](https://img.shields.io/badge/provider-AWS-orange?logo=amazon-aws&color=ff9900) ![Build status](https://github.com/awslabs/amazon-gamelift-testing-toolkit/actions/workflows/build.yml/badge.svg)
-
-A test harness, visualisation and load-testing tool for Amazon GameLift.
+# Quick Start
 
 Whether you're starting development of a multiplayer game with dedicated servers, or have already written a game using Amazon GameLift, you can quickly get the Amazon GameLift Testing Toolkit deployed and running.
 
@@ -22,6 +18,8 @@ Additionally, if you intend to deploy the sample game or create virtual players 
 
 ## Build
 
+Once you have met the prequisites, building the toolkit takes a few minutes. You can build the toolkit by opening a terminal window, navigating to the toolkit's `source` directory, and running the following commands:
+
 ```bash
 dotnet tool install -g Amazon.Lambda.Tools
 sudo npm install --global yarn
@@ -29,13 +27,15 @@ yarn
 yarn build-toolkit
 ```
 
-Optionally, if you want to deploy the sample game you should run: 
+Optionally, if you also want to deploy the sample game you should run the following command: 
 
 ```bash
 yarn build-sample-game
 ```
 
 ## Deployment
+
+Once you've built the toolkit you're ready to deploy to your AWS account, although be aware that deploying the toolkit to AWS will incure [costs](additional_resources.md#costs) based on your usage. Deploying the toolkit should take roughly 15 minutes, but prior to deploying the toolkit you should familiarize yourself with the [AWS services](aws_services.md) deployed by the toolkit. 
 
 If you have configured the AWS CLI with multiple profiles you can pass in a name to choose which profile to target. 
 
@@ -61,17 +61,3 @@ The toolkit uses [Amazon Cognito](https://docs.aws.amazon.com/cognito) to authen
 3. In *Users and groups* select *Create user* and then enter your user details.
 
 Once you've created a user, you can login by navigating to the URL previously noted in the `AmazonGameLiftTestingToolkit.CloudfrontDomainName ` variable.
-
-## Other Useful commands
-
-* `yarn delete-toolkit` Remove the toolkit from your AWS account
-* `yarn delete-sample-game` Remove the sample game from your AWS account
-
-## Credits
-
-* [MkDocs](https://www.mkdocs.org/)
-* [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)
-
-## License
-
-This library is licensed under the Apache License, Version 2.0. See the LICENSE file.

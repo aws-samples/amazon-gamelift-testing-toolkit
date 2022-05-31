@@ -1,0 +1,10 @@
+{
+  "name": "dist",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "jsoneditor": "^9.5.0",
+    "mdbootstrap": "^4.19.2"
+  }
+}

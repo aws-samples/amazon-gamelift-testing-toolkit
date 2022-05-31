@@ -1,0 +1,649 @@
+// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// SPDX-License-Identifier: Apache-2.0
+
+using System.Collections.Generic;
+using Amazon.CDK;
+using Amazon.CDK.AWS.APIGatewayv2;
+using Amazon.CDK.AWS.APIGatewayv2.Integrations;
+using Amazon.CDK.AWS.DynamoDB;
+using Amazon.CDK.AWS.EC2;
+using Amazon.CDK.AWS.ECS;
+using Amazon.CDK.AWS.Events;
+using Amazon.CDK.AWS.Events.Targets;
+using Amazon.CDK.AWS.GameLift;
+using Amazon.CDK.AWS.IAM;
+using Amazon.CDK.AWS.KMS;
+using Amazon.CDK.AWS.Lambda;
+using Amazon.CDK.AWS.Logs;
+using Amazon.CDK.AWS.StepFunctions;
+using Amazon.CDK.AWS.StepFunctions.Tasks;
+using Newtonsoft.Json;
+using CfnRoute = Amazon.CDK.AWS.APIGatewayv2.CfnRoute;
+using CfnRouteProps = Amazon.CDK.AWS.APIGatewayv2.CfnRouteProps;
+
+namespace ManagementConsoleInfra.Lib
+{
+    public class BackendProps : StackProps
+    {
+        public Table ManagementConfigTable;
+        public Table ManagementConnectionsTable;
+        public Table EventLogTable;
+        public Table GameSessionTable;
+        public Table StateLogTable;
+        public Table TicketLogTable;
+        public Table PlayerProfileTable;
+        public Table MatchmakingSimulationTable;
+        public Table SimulationResultsTable;
+        public Key EncryptionKey;
+    }
+    public class BackendStack : Stack
+    {
+        public Role MgmtLambdaRole;
+        public Role StatePollerRole;
+        public StateMachine StatePollerStateMachine;
+        public Function SfnPollerFunction;
+        public Function SfnRestartFunction;
+        public Function ManagementServiceFunction;
+        public Function StateEventHandlerFunction;
+        public Function FlexMatchEventFunction;
+        public Function QueuePlacementEventFunction;
+        public Function ConfigPopulatorFunction;
+        public Amazon.CDK.AWS.Events.EventBus GameEventBus;
+        public WebSocketStage ProdStage;
+        public CfnMatchmakingConfiguration FlexMatchSimulator;
+        public Vpc VirtualPlayersRunnerVpc;
+        public Cluster VirtualPlayersRunnerCluster;
+        public SecurityGroup VirtualPlayersRunnerSecurityGroup;
+        
+        public static string ProjectRoot = "../Backend";
+        
+        internal BackendStack(Construct scope, string id, BackendProps props = null) : base(scope, id, props)
+        {
+            CreateRoles(this);
+            CreateFlexMatchSimulator(this);
+            CreateStatePoller(this, props);
+            CreateVirtualPlayersRunner(this);
+            CreateLambdas(this, props);
+            CreateWebSocketApi(this, props);
+            CreateEventBus(this, props);
+
+            var customResource = new CfnCustomResource(this, "ConfigPopulatorCustomResource", new CfnCustomResourceProps
+            {
+                ServiceToken = ConfigPopulatorFunction.FunctionArn,
+            });
+        }
+
+        internal void CreateRoles(Construct scope)
+        {
+            MgmtLambdaRole = new Role(scope, "ManagementLambdaRole", new RoleProps
+            {
+                AssumedBy = new ServicePrincipal("lambda.amazonaws.com"), // required
+            });
+
+            MgmtLambdaRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
+            MgmtLambdaRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonAPIGatewayInvokeFullAccess"));
+            MgmtLambdaRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("CloudWatchLogsReadOnlyAccess"));
+            MgmtLambdaRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonECS_FullAccess"));
+            MgmtLambdaRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonDynamoDBFullAccess"));
+            MgmtLambdaRole.AddToPolicy(new PolicyStatement(new PolicyStatementProps
+            {
+                Effect = Effect.ALLOW,
+                Resources = new[] {"*"},
+                Actions = new[]
+                {
+                    "gamelift:ListAliases",
+                    "gamelift:ListBuilds",
+                    "gamelift:ListFleets",
+                    "gamelift:ListGameServerGroups",
+                    "gamelift:ListGameServers",
+                    "gamelift:ListScripts",
+                    "gamelift:DescribeAlias",
+                    "gamelift:DescribeBuild",
+                    "gamelift:DescribeEC2InstanceLimits",
+                    "gamelift:DescribeFleetAttributes",
+                    "gamelift:DescribeFleetCapacity",
+                    "gamelift:DescribeFleetEvents",
+                    "gamelift:DescribeFleetLocationAttributes",
+                    "gamelift:DescribeFleetLocationCapacity",
+                    "gamelift:DescribeFleetLocationUtilization",
+                    "gamelift:DescribeFleetPortSettings",
+                    "gamelift:DescribeFleetUtilization",
+                    "gamelift:DescribeGameServerGroup",
+                    "gamelift:DescribeGameServerInstances",
+                    "gamelift:DescribeGameSessionDetails",
+                    "gamelift:DescribeGameSessionPlacement",
+                    "gamelift:DescribeGameSessionQueues",
+                    "gamelift:DescribeGameSessions",
+                    "gamelift:DescribeInstances",
+                    "gamelift:DescribeMatchmaking",
+                    "gamelift:DescribeMatchmakingConfigurations",
+                    "gamelift:DescribeMatchmakingRuleSets",
+                    "gamelift:DescribePlayerSessions",
+                    "gamelift:DescribeRuntimeConfiguration",
+                    "gamelift:DescribeScalingPolicies",
+                    "gamelift:GetGameSessionLogUrl",
+                    "gamelift:SearchGameSessions",
+                    "gamelift:CreateFleet",
+                    "gamelift:CreateFleetLocations",
+                    "gamelift:CreateGameSession",
+                    "gamelift:CreateGameSessionQueue",
+                    "gamelift:CreateMatchmakingConfiguration",
+                    "gamelift:CreateMatchmakingRuleSet",
+                    "gamelift:CreatePlayerSession",
+                    "gamelift:CreatePlayerSessions",
+                    "gamelift:DeleteFleetLocations",
+                    "gamelift:DeleteMatchmakingConfiguration",
+                    "gamelift:DeleteMatchmakingRuleSet",
+                    "gamelift:DeleteScalingPolicy",
+                    "gamelift:StartFleetActions",
+                    "gamelift:StartMatchBackfill",
+                    "gamelift:StartMatchmaking",
+                    "gamelift:StartGameSessionPlacement",
+                    "gamelift:StopFleetActions",
+                    "gamelift:StopMatchmaking",
+                    "gamelift:StopGameSessionPlacement",
+                    "gamelift:PutScalingPolicy",
+                    "gamelift:UpdateAlias",
+                    "gamelift:UpdateBuild",
+                    "gamelift:UpdateFleetAttributes",
+                    "gamelift:UpdateFleetCapacity",
+                    "gamelift:UpdateFleetPortSettings",
+                    "gamelift:UpdateGameServer",
+                    "gamelift:UpdateGameServerGroup",
+                    "gamelift:UpdateGameSession",
+                    "gamelift:UpdateGameSessionQueue",
+                    "gamelift:UpdateMatchmakingConfiguration",
+                    "gamelift:UpdateRuntimeConfiguration",
+                    "gamelift:ValidateMatchmakingRuleSet",
+                }
+            }));
+            MgmtLambdaRole.AddToPolicy(new PolicyStatement(new PolicyStatementProps
+            {
+                Effect = Effect.ALLOW,
+                Resources = new[] {"*"},
+                Actions = new[]
+                {
+                    "cloudwatch:GetMetricWidgetImage",
+                }
+            }));
+
+            StatePollerRole = new Role(this, "StatePollerLambdaRole", new RoleProps
+            {
+                AssumedBy = new ServicePrincipal("lambda.amazonaws.com"), // required
+            });
+
+            StatePollerRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
+            StatePollerRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AWSStepFunctionsFullAccess"));
+            StatePollerRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonDynamoDBFullAccess"));
+            StatePollerRole.AddToPolicy(new PolicyStatement(new PolicyStatementProps
+            {
+                Effect = Effect.ALLOW,
+                Resources = new[] {"*"},
+                Actions = new[]
+                {
+                    "gamelift:ListAliases",
+                    "gamelift:ListBuilds",
+                    "gamelift:ListFleets",
+                    "gamelift:ListGameServerGroups",
+                    "gamelift:ListGameServers",
+                    "gamelift:ListScripts",
+                    "gamelift:DescribeAlias",
+                    "gamelift:DescribeBuild",
+                    "gamelift:DescribeEC2InstanceLimits",
+                    "gamelift:DescribeFleetAttributes",
+                    "gamelift:DescribeFleetCapacity",
+                    "gamelift:DescribeFleetEvents",
+                    "gamelift:DescribeFleetLocationAttributes",
+                    "gamelift:DescribeFleetLocationCapacity",
+                    "gamelift:DescribeFleetLocationUtilization",
+                    "gamelift:DescribeFleetPortSettings",
+                    "gamelift:DescribeFleetUtilization",
+                    "gamelift:DescribeGameServerGroup",
+                    "gamelift:DescribeGameServerInstances",
+                    "gamelift:DescribeGameSessionDetails",
+                    "gamelift:DescribeGameSessionPlacement",
+                    "gamelift:DescribeGameSessionQueues",
+                    "gamelift:DescribeGameSessions",
+                    "gamelift:DescribeInstances",
+                    "gamelift:DescribeMatchmaking",
+                    "gamelift:DescribeMatchmakingConfigurations",
+                    "gamelift:DescribeMatchmakingRuleSets",
+                    "gamelift:DescribePlayerSessions",
+                    "gamelift:DescribeRuntimeConfiguration",
+                    "gamelift:DescribeScalingPolicies",
+                    "gamelift:GetGameSessionLogUrl",
+                    "gamelift:SearchGameSessions"
+                }
+            }));
+        }
+        
+        internal void CreateWebSocketApi(Construct scope, BackendProps props)
+        {
+            var webSocketApi = new WebSocketApi(this, "APIGW", new WebSocketApiProps
+            {
+                ApiName = "ManagementServiceApi",
+                DefaultRouteOptions = new WebSocketRouteOptions
+                {
+                    Integration = new WebSocketLambdaIntegration("ManagementServiceIntegration", ManagementServiceFunction)
+                },
+                RouteSelectionExpression = "$request.body.Type"
+            });
+
+            var region = Fn.Ref("AWS::Region");
+            
+            var mgmtServiceFunctionArn = ManagementServiceFunction.FunctionArn;
+            var mgmtServiceApi = $"2015-03-31/functions/{mgmtServiceFunctionArn}/invocations";
+            var integrationUri = $"arn:aws:apigateway:{region}:lambda:path/{mgmtServiceApi}";
+
+            var connectIntegration = new CfnIntegration(this, "WebSocketConnectIntegration", new CfnIntegrationProps
+            {
+                ApiId = webSocketApi.ApiId,
+                IntegrationType = "AWS_PROXY",
+                IntegrationUri = integrationUri,
+            });
+
+            var connectRoute = new CfnRoute(this, "WebSocketConnectRoute", new CfnRouteProps
+            {
+                ApiId = webSocketApi.ApiId,
+                AuthorizationType = "AWS_IAM",
+                RouteKey = "$connect",
+                Target = "integrations/" + connectIntegration.Ref
+            });
+
+            ProdStage = new WebSocketStage(this, "APIGW-Stage", new WebSocketStageProps
+            {
+                StageName = "prod",
+                WebSocketApi = webSocketApi,
+                AutoDeploy = true,
+            });
+
+            var apiLogGroup = new LogGroup(this, "ManagementAPIGWLogGroup", new Amazon.CDK.AWS.Logs.LogGroupProps
+            {
+               EncryptionKey = props.EncryptionKey
+            });
+            var logGroupTarget = new CloudWatchLogGroup(apiLogGroup);
+
+            var cfnStage = ProdStage.Node.DefaultChild as CfnStage;
+            cfnStage.AccessLogSettings = new CfnStage.AccessLogSettingsProperty
+            {
+                DestinationArn = apiLogGroup.LogGroupArn,
+                Format = "{\"requestId\":\"$context.requestId\", \"ip\": \"$context.identity.sourceIp\", \"caller\":\"$context.identity.caller\", \"user\":\"$context.identity.user\",\"requestTime\":\"$context.requestTime\", \"eventType\":\"$context.eventType\",\"routeKey\":\"$context.routeKey\", \"status\":\"$context.status\",\"connectionId\":\"$context.connectionId\"}"
+            };
+
+            var serviceUrl = ProdStage.Url.Replace("wss://", "https://");
+            
+            ManagementServiceFunction.AddEnvironment("StageServiceUrl", serviceUrl);
+            StateEventHandlerFunction.AddEnvironment("StageServiceUrl", serviceUrl);
+            QueuePlacementEventFunction.AddEnvironment("StageServiceUrl", serviceUrl);
+            FlexMatchEventFunction.AddEnvironment("StageServiceUrl", serviceUrl);
+
+            new CfnOutput(this, "mgmtApiUrl",  new CfnOutputProps {
+                Value = ProdStage.Url
+            });
+        }
+        
+        internal void CreateEventBus(Construct scope, BackendProps props)
+        {
+            GameEventBus = new Amazon.CDK.AWS.Events.EventBus(this, "MgmtEventBus", new Amazon.CDK.AWS.Events.EventBusProps
+            {
+                EventBusName = "ManagementEventBus"
+            });
+
+            
+            var statePollEventRule = new Rule(this, "StatePollEventRule", new RuleProps
+            {
+                EventBus = GameEventBus,
+                EventPattern = new EventPattern
+                {
+                    Source = new[] {"CustomGameLift"}
+                }
+            });
+            var logGroup = new LogGroup(this, "CustomEventsLogGroup", new Amazon.CDK.AWS.Logs.LogGroupProps
+            {
+                EncryptionKey = props.EncryptionKey
+            });
+            var logGroupTarget = new CloudWatchLogGroup(logGroup);
+
+            statePollEventRule.AddTarget(logGroupTarget);
+            statePollEventRule.AddTarget(new LambdaFunction(StateEventHandlerFunction, new LambdaFunctionProps
+            {
+                MaxEventAge = Duration.Minutes(1),
+                RetryAttempts = 0
+            }));
+            
+            var flexMatchEventRule = new Rule(this, "FlexMatchEventRule", new RuleProps
+            {
+                EventPattern = new EventPattern
+                {
+                    Source = new[] {"aws.gamelift"},
+                    DetailType = new[] {"GameLift Matchmaking Event"}
+                }
+            });
+            
+            flexMatchEventRule.AddTarget(new LambdaFunction(FlexMatchEventFunction,  new LambdaFunctionProps
+            {
+                MaxEventAge = Duration.Hours(1),
+                RetryAttempts = 2
+            }));
+
+            var queuePlacementEventRule = new Rule(this, "QueuePlacementEventRule", new RuleProps
+            {
+                EventPattern = new EventPattern
+                {
+                    Source = new[] {"aws.gamelift"},
+                    DetailType = new[] {"GameLift Queue Placement Event"}
+                }
+            });
+            
+            queuePlacementEventRule.AddTarget(new LambdaFunction(QueuePlacementEventFunction, new LambdaFunctionProps
+            {
+                MaxEventAge = Duration.Hours(1),
+                RetryAttempts = 2
+            }));
+            
+            GameEventBus.GrantPutEventsTo(SfnPollerFunction);
+            SfnPollerFunction.AddEnvironment("EventBusName", GameEventBus.EventBusName);
+        }
+
+        private void CreateVirtualPlayersRunner(Construct scope)
+        {
+            VirtualPlayersRunnerVpc = new Vpc(this, "VirtualPlayersVpc", new VpcProps
+            {
+                MaxAzs = 2,
+            });
+            
+            VirtualPlayersRunnerCluster = new Cluster(this, "VirtualPlayersCluster", new ClusterProps
+            {
+                Vpc = VirtualPlayersRunnerVpc,
+            });
+
+            VirtualPlayersRunnerSecurityGroup = new SecurityGroup(this, "VirtualPlayersSg", new SecurityGroupProps
+            {
+                AllowAllOutbound = true,
+                Vpc = VirtualPlayersRunnerVpc,
+            });
+        }
+
+        private void CreateStatePoller(Construct scope, BackendProps props)
+        {
+            SfnPollerFunction = new Function(this, "SfnPollerLambdaFunction", new FunctionProps
+            {
+                Runtime = Runtime.DOTNET_CORE_3_1,
+                Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.StepFunctions::StatePollHandler",
+                Environment = new Dictionary<string, string>
+                {
+                    ["ConfigTableName"] = props.ManagementConfigTable.TableName,
+                    ["StateLogTableName"] = props.StateLogTable.TableName,
+                    ["GameSessionTableName"] = props.GameSessionTable.TableName,
+                },
+                Timeout = Duration.Seconds(30),
+                MemorySize = 1024,
+                Role = StatePollerRole
+            });
+
+            props.ManagementConfigTable.GrantReadData(SfnPollerFunction);
+            props.StateLogTable.GrantReadWriteData(SfnPollerFunction);
+            props.GameSessionTable.GrantReadWriteData(SfnPollerFunction);
+            
+            var sfnIteratorHandlerFunction = new Function(this, "SfnIteratorHandlerLambdaFunction", new FunctionProps
+            {
+                Runtime = Runtime.DOTNET_CORE_3_1,
+                Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.StepFunctions::StepFunctionIteratorHandler",
+                Timeout = Duration.Seconds(30),
+                MemorySize = 128
+            });
+
+            SfnRestartFunction = new Function(this, "SfnRestartHandlerLambdaFunction", new FunctionProps
+            {
+                Runtime = Runtime.DOTNET_CORE_3_1,
+                Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.StepFunctions::StepFunctionRestartHandler",
+                Timeout = Duration.Seconds(30),
+                MemorySize = 128,
+                Role = StatePollerRole
+            });
+            
+            var iteratorData = new Dictionary<string,object>
+            {
+                {"Count", 500},
+                {"Step", 1},
+                {"Index", -1}
+            };
+            var configureCount = new Pass(this, "ConfigureCount", new PassProps
+            {
+                Result = Result.FromObject(iteratorData),
+                ResultPath = "$.Iterator"
+            });
+
+            var iteratorTask = new LambdaInvoke(this, "Iterator", new LambdaInvokeProps
+            {
+                LambdaFunction = sfnIteratorHandlerFunction,
+                ResultPath = "$.Iterator",
+                PayloadResponseOnly = true
+            });
+            
+
+            var pollTask = new LambdaInvoke(this, "PollState", new LambdaInvokeProps
+            {
+                LambdaFunction = SfnPollerFunction,
+                PayloadResponseOnly = true,
+                ResultPath = "$.PollAgainData"
+            });
+            
+            var restartTask = new LambdaInvoke(this, "RestartExecution", new LambdaInvokeProps
+            {
+                LambdaFunction = SfnRestartFunction,
+                Payload = TaskInput.FromJsonPathAt("$$")
+            });
+            
+
+            var shouldRestart = new Choice(this, "ShouldRestart");
+            shouldRestart.When(Condition.BooleanEquals("$.Iterator.Continue", true), pollTask);
+
+            var successState = new Succeed(this, "SuccessState");
+            shouldRestart.Otherwise(restartTask);
+            restartTask.Next(successState);
+            
+            var waitTask = new Wait(this, "WaitTask", new WaitProps
+            {
+                Time = WaitTime.SecondsPath("$.PollAgainData.PollFrequency")
+            });
+            
+            var shouldPollAgain = new Choice(this, "ShouldPollAgain");
+            shouldPollAgain.When(Condition.BooleanEquals("$.PollAgainData.PollAgain", false), successState);
+            shouldPollAgain.When(Condition.BooleanEquals("$.PollAgainData.PollAgain", true), waitTask);
+
+            configureCount.Next(iteratorTask);
+            iteratorTask.Next(shouldRestart);
+            
+            waitTask.Next(iteratorTask);
+
+            pollTask.Next(shouldPollAgain);
+
+            StatePollerStateMachine = new StateMachine(this, "PollerStateMachine", new StateMachineProps
+            {
+                Definition = configureCount,
+            });
+            
+            StatePollerStateMachine.GrantStartExecution(MgmtLambdaRole);
+            StatePollerStateMachine.GrantRead(MgmtLambdaRole);
+
+            new CfnOutput(this, "statePollerStateMachineArn",  new CfnOutputProps {
+                Value = StatePollerStateMachine.StateMachineArn
+            });
+        }
+        
+        private void CreateLambdas(Construct scope, BackendProps props) 
+        {
+            var subnetIds = new List<string>();
+            foreach (var subnet in VirtualPlayersRunnerVpc.PrivateSubnets)
+            {
+                subnetIds.Add(subnet.SubnetId);
+            }
+
+            ManagementServiceFunction = new Function(this, "MgmtServiceLambdaFunction", new FunctionProps
+            {
+                Runtime = Runtime.DOTNET_CORE_3_1,
+                Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.ManagementService::ManagementServiceHandler",
+                Environment = new Dictionary<string, string>
+                {
+                    ["ConfigTableName"] = props.ManagementConfigTable.TableName,
+                    ["ConnectionsTableName"] = props.ManagementConnectionsTable.TableName,
+                    ["EventLogTableName"] = props.EventLogTable.TableName,
+                    ["GameSessionTableName"] = props.GameSessionTable.TableName,
+                    ["StateLogTableName"] = props.StateLogTable.TableName,
+                    ["TicketLogTableName"] = props.TicketLogTable.TableName,
+                    ["PlayerProfileTableName"] = props.PlayerProfileTable.TableName,
+                    ["MatchmakingSimulationTableName"] = props.MatchmakingSimulationTable.TableName,
+                    ["FlexMatchSimulatorArn"] = FlexMatchSimulator.AttrArn,
+                    ["SimulationResultsTableName"] = props.SimulationResultsTable.TableName,
+                    ["VirtualPlayersClusterArn"] = VirtualPlayersRunnerCluster.ClusterArn,
+                    ["VirtualPlayersSecurityGroupId"] = VirtualPlayersRunnerSecurityGroup.SecurityGroupId,
+                    ["VirtualPlayersSubnetIds"] = JsonConvert.SerializeObject(subnetIds),
+                },
+                Timeout = Duration.Minutes(15),
+                MemorySize = 1024,
+                Role = MgmtLambdaRole
+            });
+
+            props.ManagementConfigTable.GrantReadWriteData(ManagementServiceFunction);
+            props.SimulationResultsTable.GrantReadWriteData(ManagementServiceFunction);
+            props.ManagementConnectionsTable.GrantReadWriteData(ManagementServiceFunction);
+            props.EventLogTable.GrantReadWriteData(ManagementServiceFunction);
+            props.GameSessionTable.GrantReadWriteData(ManagementServiceFunction);
+            props.TicketLogTable.GrantReadWriteData(ManagementServiceFunction);
+            props.StateLogTable.GrantReadWriteData(ManagementServiceFunction);
+
+            ManagementServiceFunction.AddPermission("ManagementServiceInvokePermission", new Permission
+            {
+                Action = "lambda:InvokeFunction",
+                Principal = new ServicePrincipal("apigateway.amazonaws.com")
+            });
+            ManagementServiceFunction.AddEnvironment("StateMachineArn", StatePollerStateMachine.StateMachineArn);
+
+            StateEventHandlerFunction = new Function(this, "StateEventHandlerLambdaFunction", new FunctionProps
+            {
+                Runtime = Runtime.DOTNET_CORE_3_1,
+                Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.EventHandlers::StateEventHandler",
+                Environment = new Dictionary<string, string>
+                {
+                    ["ConfigTableName"] = props.ManagementConfigTable.TableName,
+                    ["ConnectionsTableName"] = props.ManagementConnectionsTable.TableName,
+                    ["EventLogTableName"] = props.EventLogTable.TableName,
+                    ["GameSessionTableName"] = props.GameSessionTable.TableName,
+                    ["TicketLogTableName"] = props.TicketLogTable.TableName,
+                },
+                Timeout = Duration.Seconds(30),
+                MemorySize = 1024,
+                Role = MgmtLambdaRole
+            });
+            
+            props.ManagementConfigTable.GrantReadWriteData(StateEventHandlerFunction);
+            props.ManagementConnectionsTable.GrantReadWriteData(StateEventHandlerFunction);
+            props.GameSessionTable.GrantReadWriteData(StateEventHandlerFunction);
+            props.EventLogTable.GrantReadWriteData(StateEventHandlerFunction);
+            props.TicketLogTable.GrantReadWriteData(StateEventHandlerFunction);
+
+            ConfigPopulatorFunction = new Function(this, "MgmtConfigPopulatorLambdaFunction", new FunctionProps
+            {
+                Runtime = Runtime.DOTNET_CORE_3_1,
+                Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.ManagementService::PopulateConfigData",
+                Environment = new Dictionary<string, string>
+                {
+                    ["ConfigTableName"] = props.ManagementConfigTable.TableName,
+                    ["FlexMatchSimulatorArn"] = FlexMatchSimulator.AttrArn,
+                },
+                Timeout = Duration.Seconds(30),
+                MemorySize = 1024,
+                Role = MgmtLambdaRole
+            });
+
+            props.ManagementConfigTable.GrantReadWriteData(ConfigPopulatorFunction);
+            
+            FlexMatchEventFunction = new Function(this, "FlexMatchEventLambdaFunction", new FunctionProps
+            {
+                Runtime = Runtime.DOTNET_CORE_3_1,
+                Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.EventHandlers::FlexMatchEventHandler",
+                Environment = new Dictionary<string, string>
+                {
+                    ["ConfigTableName"] = props.ManagementConfigTable.TableName,
+                    ["EventLogTableName"] = props.EventLogTable.TableName,
+                    ["GameSessionTableName"] = props.GameSessionTable.TableName,
+                    ["TicketLogTableName"] = props.TicketLogTable.TableName,
+                    ["ConnectionsTableName"] = props.ManagementConnectionsTable.TableName,
+                    ["MatchmakingSimulationTableName"] = props.MatchmakingSimulationTable.TableName,
+                    ["SimulationResultsTableName"] = props.SimulationResultsTable.TableName,
+                },
+                Timeout = Duration.Seconds(30),
+                MemorySize = 1024,
+                Role = MgmtLambdaRole
+            });
+            
+            props.TicketLogTable.GrantReadWriteData(FlexMatchEventFunction);
+            props.EventLogTable.GrantReadWriteData(FlexMatchEventFunction);
+            props.GameSessionTable.GrantReadWriteData(FlexMatchEventFunction);
+            props.ManagementConnectionsTable.GrantReadWriteData(FlexMatchEventFunction);
+            props.SimulationResultsTable.GrantReadWriteData(FlexMatchEventFunction);
+            props.ManagementConfigTable.GrantReadWriteData(FlexMatchEventFunction);
+
+            QueuePlacementEventFunction = new Function(this, "QueuePlacementEventLambdaFunction", new FunctionProps
+            {
+                Runtime = Runtime.DOTNET_CORE_3_1,
+                Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.EventHandlers::QueuePlacementEventHandler",
+                Environment = new Dictionary<string, string>
+                {
+                    ["ConfigTableName"] = props.ManagementConfigTable.TableName,
+                    ["EventLogTableName"] = props.EventLogTable.TableName,
+                    ["GameSessionTableName"] = props.GameSessionTable.TableName,
+                    ["TicketLogTableName"] = props.TicketLogTable.TableName,
+                    ["ConnectionsTableName"] = props.ManagementConnectionsTable.TableName,
+                },
+                Timeout = Duration.Seconds(30),
+                MemorySize = 1024,
+                Role = MgmtLambdaRole
+            });
+            
+            props.TicketLogTable.GrantReadWriteData(QueuePlacementEventFunction);
+            props.EventLogTable.GrantReadWriteData(QueuePlacementEventFunction);
+            props.GameSessionTable.GrantReadWriteData(QueuePlacementEventFunction);
+            props.ManagementConfigTable.GrantReadWriteData(QueuePlacementEventFunction);
+            props.ManagementConnectionsTable.GrantReadWriteData(QueuePlacementEventFunction);
+        }
+        
+        private void CreateFlexMatchSimulator(Construct scope)
+        {
+            var gameProperties = new List<CfnMatchmakingConfiguration.GamePropertyProperty>();
+
+            dynamic team = new {name = "MyTeam", minPlayers = 2, maxPlayers = 2};
+            dynamic ruleSetBody = new {name="SampleSimulatorRuleset", ruleLanguageVersion="1.0", teams=new dynamic[] {team}};
+            
+            var ruleSet = new CfnMatchmakingRuleSet(this, "SampleSimulatorRuleset", new CfnMatchmakingRuleSetProps
+            {
+                Name="SampleSimulatorRuleset",
+                RuleSetBody = JsonConvert.SerializeObject(ruleSetBody)
+            });
+
+            FlexMatchSimulator = new CfnMatchmakingConfiguration(this, "MMSimulatorConfig", new CfnMatchmakingConfigurationProps
+            {
+                AcceptanceRequired = false,
+                BackfillMode = "MANUAL",
+                Description = "Flexmatch simulator config",
+                FlexMatchMode = "STANDALONE",
+                GameProperties = gameProperties.ToArray(),
+                GameSessionData = "Somedata",
+                RequestTimeoutSeconds = 60,
+                RuleSetName = ruleSet.Name,
+                Name = "MMSimulatorConfig"
+            });
+            
+            FlexMatchSimulator.AddDependsOn(ruleSet);
+        }
+    }
+}

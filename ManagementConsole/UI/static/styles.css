@@ -1,0 +1,534 @@
+body {
+    margin:0
+}
+
+p { margin : 0 }
+
+.settings {
+    background: #eceeee;
+    border: 1px solid #42464b;
+    border-radius: 0px 6px 6px 0px;
+    height: 710px;
+    margin: 0;
+    width: 298px;
+}
+
+.testMenu {
+    display: none;
+}
+
+.center {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+label { font-size:1.3em; margin-right: 5px;}
+
+.align-center {
+    text-align: center;
+}
+
+.red { color: #ff0000; }
+.green { color: #00cc00; }
+
+h6 { margin-top: 10px;}
+
+.launchPlayersForm, .matchmakingConfigForm {
+    margin-left: 10px;
+    margin-top: 40px;
+}
+
+.closeButton {
+    float: right;
+    margin-right: 5px;
+    margin-top: 5px;
+    background-image: url(assets/closebutton.png);
+    background-size: 30px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+.refreshButton {
+    float: left;
+    margin-right: 5px;
+    margin-top: 5px;
+    background-image: url(assets/refresh.png);
+    background-size: 30px;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+.backButton {
+    float: right;
+    margin-right: 5px;
+    margin-top: 5px;
+    background-image: url(assets/backbutton.png);
+    background-size: 30px;
+    opacity: 0.75;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+
+.simplePopup {
+    background: #eceeee;
+    border: 1px solid #42464b;
+    border-radius: 6px;
+    height: 650px;
+    margin: 20px auto 0;
+    width: 600px;
+}
+
+.simpleJsonContent {
+    background: #eceeee;
+    border: 1px solid #42464b;
+    border-radius: 6px;
+    /*
+    height: 650px;
+    margin: 20px auto 0;
+    width: 600px;*/
+}
+
+.simpleGraphContent {
+    background: #eceeee;
+    border: 1px solid #42464b;
+    border-radius: 6px;
+    padding: 10px;
+    /*
+    height: 650px;
+    margin: 20px auto 0;
+    width: 600px;*/
+}
+.flexMatchSimulatorContainer
+{
+    margin-top: 40px;
+}
+
+.flexMatchSimulatorContent {
+    /*width: 900px;*/
+}
+
+.fleetEventsPopup {
+    background: #eceeee;
+    border: 1px solid #42464b;
+    border-radius: 6px;
+    height: 600px;
+    margin: 20px auto 0;
+    width: 1100px;
+    padding: 10px
+}
+
+.gameSessionsTablePopup {
+    background: #eceeee;
+    border: 1px solid #42464b;
+    border-radius: 6px;
+    height: 645px;
+    margin: 20px auto 0;
+    width: 1100px;
+    padding: 10px
+}
+
+.flexMatchSimulatorPopup {
+    background: #eceeee;
+    border: 1px solid #42464b;
+    border-radius: 6px;
+    height: 715px;
+    margin: 3px auto 0;
+    /*width: 1260px;*/
+    padding: 10px
+}
+
+.virtualPlayersTablePopup {
+    background: #eceeee;
+    border: 1px solid #42464b;
+    border-radius: 6px;
+    height: 645px;
+    margin: 20px auto 0;
+    width: 1100px;
+    padding: 10px
+}
+
+.launchVirtualPlayersPopup {
+    background: #eceeee;
+    border: 1px solid #42464b;
+    border-radius: 6px;
+    height: 645px;
+    margin: 20px auto 0;
+    width: 800px;
+    padding: 10px
+}
+
+.matchmakingConfigPopup {
+    background: #eceeee;
+    border: 1px solid #42464b;
+    border-radius: 6px;
+    height: 400px;
+    margin: 20px auto 0;
+    width: 600px;
+    padding: 10px
+}
+
+.matchmakingTicketHeadersTablePopup {
+    background: #eceeee;
+    border: 1px solid #42464b;
+    border-radius: 6px;
+    height: 645px;
+    margin: 20px auto 0;
+    width: 1100px;
+    padding: 10px
+}
+
+.fleetPopup {
+    background: #eceeee;
+    border: 1px solid #42464b;
+    border-radius: 6px;
+    height: 350px;
+    margin: 20px auto 0;
+    width: 600px;
+}
+
+.fleetScalingPopup {
+    background: #eceeee;
+    border: 1px solid #42464b;
+    border-radius: 6px;
+    height: 600px;
+    margin: 20px auto 0;
+    width: 600px;
+}
+
+body {
+    font: normal medium/1.4 sans-serif;
+    font-size:11px;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+th, td {
+    padding: 0.25rem;
+    text-align: left;
+    border: 1px solid #ccc;
+}
+
+th, td {
+    padding: 0.25rem;
+    text-align: left;
+    border: 1px solid #ccc;
+}
+
+td.jsoneditor-tree, td.jsoneditor-separator
+{
+    border:0;
+}
+
+table.jsoneditor-tree tbody tr td {
+    border:0;
+}
+
+.jsoneditor-tree div { line-height:20px}
+
+tbody tr:nth-child(odd) {
+    background: #eee;
+}
+
+.login {
+    background: #eceeee;
+    border: 1px solid #42464b;
+    border-radius: 6px;
+    height: 200px;
+    margin: 20px auto 0;
+    width: 298px;
+}
+
+button, p, input, td {font-family: "Noto Sans"}
+
+span.medium {font-family: "Noto Sans"; font-size:1.3em}
+
+select { font-size:1.3em; height: 25px;}
+
+#playerProfileAttributes div {margin-right:5px;}
+#simulationPlayerProfiles div {margin-right:5px;}
+.addStringDoubleMapValue { font-size:30px; color:#00cc00}
+.addStringDoubleMapValueContainer {     height: 10px; float: right; margin-top: -10px; margin-left: 10px; }
+.removeStringDoubleMapValueContainer {     height: 10px; float: right; margin-top: -10px; margin-left: 10px; }
+.removeStringDoubleMapValue { font-size:30px; color:#cc0000}
+
+.errorBorder { border: 1px solid #ff0000 }
+
+span.matchmakingStatus { padding:10px; display:inline-block }
+span.inProgressBg { background-color: #ffcc00 }
+span.completeBg { background-color: #00cc00 }
+
+.login p {
+/*    font-family:Arial, "Helvetica", sans-serif;*/
+    font-size:16px;
+    font-weight:bold;
+    text-align:center;
+}
+.errorText {
+    color:#ff0000;
+}
+.hide {
+    display: none;
+}
+.show {
+    display: block;
+}
+.login h1 {
+    background-image: linear-gradient(top, #f1f3f3, #d4dae0);
+    border-bottom: 1px solid #a6abaf;
+    border-radius: 6px 6px 0 0;
+    box-sizing: border-box;
+    color: #727678;
+    display: block;
+    height: 43px;
+    font: 600 14px/1 'Noto Sans', sans-serif;
+    padding-top: 14px;
+    margin: 0;
+    text-align: center;
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.2), 0 1px 0 #fff;
+}
+/*
+input[type="password"], input[type="text"] {
+    background: linear-gradient(top, #d6d7d7, #dee0e0);
+    border: 1px solid #a1a3a3;
+    border-radius: 4px;
+    box-shadow: 0 1px #fff;
+    box-sizing: border-box;
+    color: #696969;
+    height: 39px;
+    margin: 31px 0 0 29px;
+    padding-left: 37px;
+    transition: box-shadow 0.3s;
+    width: 240px;
+}
+input[type="password"]:focus, input[type="text"]:focus {
+    box-shadow: 0 0 4px 1px rgba(55, 166, 155, 0.3);
+    outline: 0;
+}*/
+.show-password {
+    display: block;
+    height: 16px;
+    margin: 26px 0 0 28px;
+    width: 87px;
+}
+input[type="checkbox"] {
+    cursor: pointer;
+    position: relative;
+    margin:0;
+}
+.toggle {
+    display: block;
+    height: 16px;
+    margin-top: -20px;
+    width: 87px;
+    z-index: -1;
+}
+
+.forgot {
+    color: #7f7f7f;
+    display: inline-block;
+    float: right;
+    font: 12px/1 sans-serif;
+    left: -19px;
+    position: relative;
+    text-decoration: none;
+    top: 5px;
+    transition: color .4s;
+}
+.forgot:hover { color: #3b3b3b }
+
+#loginForm div { margin-top:10px}
+
+.shadow {
+    background: #000;
+    border-radius: 12px 12px 4px 4px;
+    box-shadow: 0 0 20px 10px #000;
+    height: 12px;
+    margin: 30px auto;
+    opacity: 0.2;
+    width: 270px;
+}
+
+input[type="submit"]:active {
+    top:3px;
+    box-shadow: inset 0px 1px 0px #ff9900, 0px 2px 0px 0px #ff9910, 0px 5px 3px #999;
+}
+
+.fleetMenu {
+    width: 225px;
+    padding-top:1px;
+    padding-bottom:1px;
+    background-color: #eceeee;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius:3px;
+    border:1px solid #000000;
+}
+
+.queueMenu {
+    width: 150px;
+    padding-top:1px;
+    padding-bottom:1px;
+    background-color: #eceeee;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius:3px;
+    border:1px solid #000000;
+}
+
+.mmConfigMenu {
+    width: 150px;
+    padding-top:1px;
+    padding-bottom:1px;
+    background-color: #eceeee;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius:3px;
+    border:1px solid #000000;
+}
+
+p.medium {
+    font-size:1.3em;
+}
+
+p.title {
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.4em;
+    margin-top: 5px;
+}
+
+.locationPopover {
+    padding:5px;
+    background-color: #eceeee;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+    border-bottom-left-radius:3px;
+    border:1px solid #000000;
+    width:150px;
+}
+
+.fleetMenu a, .settingsMenu a, .queueMenu a, .mmConfigMenu a, .flexMatchSimulatorMenu a {
+    background-color: #eceeee;
+    color: black;
+    display: block;
+    padding: 4px;
+    text-decoration: none;
+    font-size: 1.2em;
+    font-family: "Noto Sans";
+}
+.settingsMenu { margin-top: 40px;}
+
+.settingsMenu a {
+    background-color: #eceeee;
+    color: black;
+    display: block;
+    padding: 5px;
+    padding-left: 15px;
+    text-decoration: none;
+    font-size: 1.5em;
+}
+.flexMatchSimulatorMenu{
+    float:left;
+}
+
+.flexMatchSimulatorMenu a {
+    background-color: #eceeee;
+    color: black;
+    display: block;
+    padding: 5px;
+    padding-left: 15px;
+    text-decoration: none;
+    font-size: 1.5em;
+}
+
+.fleetMenu a:hover, .settingsMenu a:hover, .queueMenu a:hover, .mmConfigMenu a:hover, .flexMatchSimulatorMenu a:hover {
+    background-color: #ff9900;
+    cursor:pointer;
+    color: #000000;
+}
+
+.flexMatchSimulatorMenu a.active, .flexMatchSimulatorMenu a:active {
+    background-color: #ff9900;
+    color: #000000;
+}
+
+
+.fixed_header{
+    width: 400px;
+    table-layout: fixed;
+    border-collapse: collapse;
+    display:block
+}
+
+.fixed_header tbody{
+    display:block;
+    width: 100%;
+    overflow: auto;
+    height: 550px;
+}
+
+.fixed_header thead tr {
+    display: block;
+}
+
+.fixed_header thead {
+    background: black;
+    color:#fff;
+}
+
+input { font-size: 1.3em }
+
+.fixed_header th, .fixed_header td {
+    padding: 5px;
+    text-align: left;
+    width: 200px;
+}
+
+.my-custom-scrollbar {
+    position: relative;
+    width: 990px;
+    height: 550px;
+    overflow: auto;
+}
+.table-wrapper-scroll-y {
+    display: block;
+}
+
+table#fleetEventsTable.table td {
+    font-size: 0.8em;
+    padding: 10px;
+}
+
+.falken { font-family: "Noto Sans"}
+
+table td { font-size: 1em !important;}
+
+.btn-primary, .pagination .page-item.active .page-link  { background-color: #ff9900 !important; }
+
+table.fleetTable td, table.fleetTable th {
+    padding: 5px;
+}
+
+table#gameSessionLogsTable td, table#gameSessionLogsTable th {
+    padding: 10px;
+}
+
+table#gameSessionsTable td, table#gameSessionsTable th {
+    padding: 10px;
+}
+
+table#virtualPlayersTable td, table#virtualPlayersTable th {
+    padding: 10px;
+}
+
+table#playerSessionsTable td, table#playerSessionsTable th {
+    padding: 10px;
+}

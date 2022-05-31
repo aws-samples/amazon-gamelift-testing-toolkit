@@ -1,0 +1,27 @@
+{
+  "MinPlayers": 2,
+  "MaxPlayers": 10,
+  "Schedule": [
+    {
+      "Type": "WAITING_FOR_PLAYERS"
+    },
+    {
+      "Type": "WAITING_TO_START",
+      "Time": 5000
+    },
+    {
+      "Type": "ASK_QUESTION"
+    },
+    {
+      "Type": "WAITING_FOR_ANSWERS",
+      "Time": 60000
+    },
+    {
+      "Type": "SHOW_RESULTS"
+    },
+    {
+      "Type": "WAITING_FOR_NEXT_GAME",
+      "Time": 10000
+    }
+  ]
+}

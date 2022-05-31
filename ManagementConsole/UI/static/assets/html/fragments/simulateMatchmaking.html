@@ -1,0 +1,168 @@
+<div>
+    <div class="alert hide" id="statusText"></div>
+    <div class="simulateMatchmakingContent">
+        <div class="simulateMatchmakingTableContainer">
+            <btn id="simulateMatchmakingButton" class="btn btn-primary btn-sm">Simulate Matchmaking</btn>
+            <table id="matchmakingSimulationsTable" class="table table-bordered table-striped mb-0">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>RuleSet</th>
+                    <th>Players Matched</th>
+                    <th>Game Sessions Matched</th>
+                    <th>Total Events</th>
+                    <th>View</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div class="simulateMatchmakingForm hide">
+            <btn id="backToMatchmakingSimulations" class="btn btn-primary btn-sm">Back</btn>
+            <div style="margin-top:10px">
+                <p class="medium">Step 1 - Select the ruleset to simulate:</p>
+                <select id="simulationRuleSet"></select>
+            </div>
+            <div style="margin-top:10px">
+                <p class="medium">Step 2 - Select the number of players for each player profiles to simulate:</p>
+                <div id="simulationPlayerProfiles">
+                </div>
+            </div>
+            <button style="margin-left:0" id="addPlayerProfile" class="btn btn-primary btn-sm">Add Player Profile</button>
+            <button style="margin-left:0" id="runSimulation" class="btn btn-primary btn-sm">Run Simulation</button>
+        </div>
+        <div class="simulateMatchmakingOutput hide">
+            <btn id="backToMatchmakingSimulations" class="btn btn-primary btn-sm">Back</btn><br/><br/>
+            <p class="medium">Simulation Date: <span class="simulationDate">-</span></p><br/>
+            <p class="medium">Total Players: <span class="totalPlayers">-</span></p>
+            <p class="medium">Total Events: <span class="totalEvents">-</span></p>
+            <p class="medium">Players Matched Successfully: <span class="playersMatched">-</span></p>
+            <p class="medium">Players Failed To Match: <span class="playersMatchFailed">-</span></p><br/>
+            <p class="medium">Game sessions attempted: <span class="totalMatchAttempts">-</span></p>
+            <p class="medium">Game sessions matched: <span class="matchesMade">-</span></p><br/>
+            <p class="medium">MatchmakingSearching Events: <span class="matchmakingSearchingEvents">-</span></p>
+            <p class="medium">PotentialMatchCreated Events: <span class="potentialMatchCreatedEvents">-</span></p>
+            <p class="medium">MatchmakingSucceeded Events: <span class="matchmakingSucceededEvents">-</span></p>
+            <p class="medium">MatchmakingTimedOut Events: <span class="matchmakingTimedOutEvents">-</span></p>
+            <p class="medium">MatchmakingFailed Events: <span class="matchmakingFailedEvents">-</span></p>
+            <p class="medium">MatchmakingCancelled Events: <span class="matchmakingCancelledEvents">-</span></p><br/><br/>
+            <p class="medium">Status: <span class="matchmakingStatus">-</span></p><br/><br/>
+            <btn id="showSimulationMatches" class="btn btn-primary btn-sm hide">Show Successful Matches</btn>
+            <btn id="showSimulationTickets" class="btn btn-primary btn-sm hide">Show Matchmaking Tickets</btn>
+        </div>
+
+        <div class="successfulMatchesContent hide">
+            <btn id="backToSimulationOutput" class="btn btn-primary btn-sm">Back</btn>
+            <p class="title mb-3"></p>
+            <table id="successfulMatchesTable" class="table table-bordered table-striped mb-0">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Match ID</th>
+                    <th>Number of Players</th>
+                    <th>View Rule Metrics</th>
+                    <th>View Tickets</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="successfulMatchTicketHeadersContent hide">
+            <btn id="backToSuccessfulMatches" class="btn btn-primary btn-sm">Back</btn>
+            <p class="title mb-3"></p>
+            <table id="successfulMatchTicketHeadersTable" class="table table-bordered table-striped mb-0">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Ticket ID</th>
+                    <th>Final Status</th>
+                    <th>Events</th>
+                    <th>View</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="successfulMatchTicketEventsContent hide">
+            <btn id="backToSuccessfulMatchTickets" class="btn btn-primary btn-sm">Back</btn>
+            <table id="successfulMatchmakingTicketEventsTable" class="table table-bordered table-striped mb-0">
+                <thead>
+                <tr>
+                    <th>Event Date</th>
+                    <th>Type</th>
+                    <th>View Detail</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="successfulMatchTicketEventDetailContent hide">
+            <btn id="successfulMatchTicketEventDetailBackButton" class="btn btn-primary btn-sm">Back</btn>
+            <div id="successfulMatchmakingTicketEventJson" style="width: 1000px; height: 575px;">
+
+            </div>
+        </div>
+
+        <div class="ruleEvaluationMetricsContent hide">
+            <btn id="backToSuccessfulMatches" class="btn btn-primary btn-sm">Back</btn>
+            <p class="title mb-3"></p>
+            <table id="ruleEvaluationMetricsTable" class="table table-bordered table-striped mb-0">
+                <thead>
+                <tr>
+                    <th>Rule Name</th>
+                    <th># Passed</th>
+                    <th># Failed</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="matchmakingTicketHeadersContent hide">
+            <btn id="backToSimulationOutput" class="btn btn-primary btn-sm">Back</btn>
+            <p class="title mb-3"></p>
+            <table id="matchmakingTicketHeadersTable" class="table table-bordered table-striped mb-0">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Ticket ID</th>
+                    <th>Final Status</th>
+                    <th>Events</th>
+                    <th>View</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div class="matchmakingTicketEventsContent hide">
+            <btn id="backButton" class="btn btn-primary btn-sm">Back</btn>
+            <table id="matchmakingTicketEventsTable" class="table table-bordered table-striped mb-0">
+                <thead>
+                <tr>
+                    <th>Event Date</th>
+                    <th>Type</th>
+                    <th>View Detail</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="matchmakingTicketEventDetailContent hide">
+            <btn id="eventDetailBackButton" class="btn btn-primary btn-sm">Back</btn>
+            <div id="matchmakingTicketEventJson" style="width: 1000px; height: 575px;">
+
+            </div>
+        </div>
+    </div>
+</div>

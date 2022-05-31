@@ -1,0 +1,27 @@
+copyright: Copyright (c) 2022 by Amazon.com, Inc. or its affiliates.
+
+site_author: Amazon Web Services
+
+site_name: Amazon GameLift Testing Toolkit
+
+site_description: Documentation for the Amazon GameLift Testing Toolkit
+
+site_url: https://github.com/example/repository/
+
+repo_name: GitHub
+
+repo_url: https://github.com/example/repository/
+
+theme:
+    name: material
+
+nav:
+    - 'index.md'
+    - "Quick start" : 'quick_start.md'
+    - "Using the toolkit" : 'using_the_toolkit.md'
+    - "Testing your game" : 'testing_your_game.md'
+    - "AWS services" : 'aws_services.md'
+    - "Toolkit design" : 'toolkit_design.md'
+    - "Security" : 'security.md'
+    - "Removing the toolkit" : 'removing_the_toolkit.md'
+    - "Additional resources" : 'additional_resources.md'

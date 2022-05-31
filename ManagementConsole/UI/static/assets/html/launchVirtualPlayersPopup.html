@@ -1,0 +1,42 @@
+<div class="launchVirtualPlayersPopup">
+    <div class="alert hide" id="statusText"></div>
+    <div class="closeButton"></div>
+    <p class="title">Launch Virtual Players</p>
+    <div class="launchPlayersForm">
+        <h6>Please select a Fargate Task definition for your virtual players:</h6>
+        <select id="taskDefinition" style="font-size:1.3em; margin-bottom:0.5rem">
+        </select>
+        <!--
+        <h6>Do you want to launch players continuously?</h6>
+        <input type="radio" name="continuousLaunch" value="0" id="singleLaunchRadio" checked="checked">
+
+        <label id="singleLaunchRadioLabel" for="singleLaunchRadio">No</label>
+        <input type="radio" name="continuousLaunch" value="1" id="continuousLaunchRadio">
+        <label id="continuousLaunchRadioLabel" for="continuousLaunchRadio">Yes</label>
+        -->
+        <h6>How many virtual players do you want to launch?</h6>
+        <p id="errorText" class="errorText hide">You must enter between 1-1000 players!</p>
+        <input min="1" max="1000" type="number" value="1" id="numPlayers" name="numPlayers"><br/>
+        <div id="continuousLaunchOptions" class="hide">
+            <h6>How often do you want them to launch?</h6>
+            <select id="continuousLaunchTimeframe" style="font-size:1.3em; margin-bottom:0.5rem">
+                <option value="15">Every 15 seconds</option>
+                <option value="60">Every minute</option>
+                <option value="300">Every 5 minutes</option>
+                <option value="600">Every 10 minutes</option>
+            </select>
+
+            <h6>Exponentially increase launch rate each period?</h6>
+            <select id="continuousLaunchIncrease" style="font-size:1.3em; margin-bottom:0.5rem">
+                <option value="0">Don't increase</option>
+                <option value="1">1%</option>
+                <option value="2">2%</option>
+                <option value="3">3%</option>
+                <option value="4">4%</option>
+                <option value="5">5%</option>
+            </select>
+        </div>
+        <button style="margin-left:0" id="launchPlayers" class="btn btn-primary btn-sm">Launch Players</button>
+    </div>
+
+</div>

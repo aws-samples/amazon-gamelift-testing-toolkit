@@ -1,0 +1,133 @@
+    <div style="clear:both" class="playerAttribute">
+        <div class="float-left">
+            <p>Remove</p>
+            <a href="#"><img class="deleteAttribute" src="assets/closebutton.png" style="width:22px; height:22px; margin-left:5px"></a>
+        </div>
+        <div class="float-left">
+            <p>Attribute Name</p>
+            <input class="playerAttributeForm-name" type="text" />
+        </div>
+        <div class="float-left">
+            <p>Attribute Type</p>
+            <select class="attributeType float-left" name="attributeType">
+                <option value="S">String</option>
+                <option value="N">Number</option>
+                <option value="SL">String List</option>
+                <option value="SDM">String Double Map</option>
+            </select>
+        </div>
+        <div class="playerAttributeForm-S float-left">
+            <div class="float-left">
+                <p>Value Type</p>
+                <select class="valueType" name="valueType">
+                    <option value="value">Value</option>
+                </select>
+            </div>
+            <div class="valueTypes float-left">
+                <div class="playerAttributeForm-S-value playerValue float-left">
+                    <p>Value</p>
+                    <input class="playerAttributeForm-S-value-value" type="text" value="" />
+                </div>
+            </div>
+
+        </div>
+        <div class="playerAttributeForm-N float-left">
+            <div class="float-left">
+                <p>Value Type</p>
+                <select class="valueType" name="valueType">
+                    <option value="value">Value</option>
+                    <option value="randomInteger">Random Integer</option>
+                    <option value="randomDouble">Random Double</option>
+                </select>
+            </div>
+            <div class="valueTypes float-left">
+                <div class="playerAttributeForm-N-value playerValue float-left">
+                    <p>Value</p>
+                    <input class="playerAttributeForm-N-value-value" type="number" />
+                </div>
+                <div class="playerAttributeForm-N-randomInteger playerValue float-left hide">
+                    <div class="float-left">
+                        <p>Min</p>
+                        <input class="playerAttributeForm-N-value-min" type="number" />
+                    </div>
+                    <div class="float-left">
+                        <p>Max</p>
+                        <input class="playerAttributeForm-N-value-max" type="number" />
+                    </div>
+                </div>
+                <div class="playerAttributeForm-N-randomDouble playerValue float-left hide">
+                    <div class="float-left">
+                        <p>Min</p>
+                        <input class="playerAttributeForm-N-value-min" type="number" />
+                    </div>
+                    <div class="float-left">
+                        <p>Max</p>
+                        <input class="playerAttributeForm-N-value-max" type="number" />
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="playerAttributeForm-SL float-left">
+            <div class="float-left">
+                <p>Value Type</p>
+                <select class="valueType" name="valueType">
+                    <option value="value">Values</option>
+                    <option value="randomStringList">Random List</option>
+                </select>
+            </div>
+            <div class="valueTypes float-left">
+                <div class="playerAttributeForm-SL-value playerValue float-left">
+                    <p>Values (1 string per line, max 100 strings, max 100 chars per string)</p>
+                    <div class="float-left" style="clear:both;">
+                        <textarea class="playerAttributeForm-SL-value-value" style="width:350px"></textarea>
+                    </div>
+                </div>
+
+                <div class="playerAttributeForm-SL-randomStringList playerValue float-left hide">
+                    <div class="float-left">
+                        <p>Min Strings</p>
+                        <input class="playerAttributeForm-SL-randomStringList-min" type="number" min="1" max="100" />
+                    </div>
+                    <div class="float-left">
+                        <p>Max Strings</p>
+                        <input class="playerAttributeForm-SL-randomStringList-max" type="number" min="1" max="100" />
+                    </div>
+                    <div class="float-left">
+                        <p>Values to choose from (1 string per line, max 100 chars per string)</p>
+                        <div class="float-left" style="clear:both;">
+                        <textarea class="playerAttributeForm-SL-randomStringList-value" style="width:350px"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="playerAttributeForm-SDM float-left">
+            <div class="float-left">
+                <p>Value Type</p>
+                <select class="valueType" name="valueType">
+                    <option value="value">Values</option>
+                </select>
+            </div>
+            <div class="valueTypes float-left">
+                <div class="playerAttributeForm-SDM-value playerValue float-left">
+                    <div class="stringDoubleMapValue">
+                        <div class="float-left">
+                            <p>Key</p>
+                            <input class="playerAttributeForm-SDM-value-key" type="text" />
+                        </div>
+                        <div class="float-left">
+                            <p>Double Value</p>
+                            <input class="playerAttributeForm-SDM-value-value" type="number" />
+                            <div class="addStringDoubleMapValueContainer">
+                                <a href="#" class="addStringDoubleMapValue">+</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
