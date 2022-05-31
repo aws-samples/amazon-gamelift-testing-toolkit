@@ -1,6 +1,6 @@
 # Amazon GameLift Testing Toolkit
 
-![aws provider](https://img.shields.io/badge/provider-AWS-orange?logo=amazon-aws&color=ff9900) ![Build status](https://github.com/awslabs/amazon-gamelift-testing-toolkit/actions/workflows/build.yml/badge.svg)
+![aws provider](https://img.shields.io/badge/provider-AWS-orange?logo=amazon-aws&color=ff9900) ![Build status](https://github.com/aws-samples/amazon-gamelift-testing-toolkit/actions/workflows/build.yml/badge.svg)
 
 A test harness, visualisation and load-testing tool for Amazon GameLift.
 
