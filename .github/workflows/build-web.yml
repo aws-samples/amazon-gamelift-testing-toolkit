@@ -1,11 +1,11 @@
-name: Build
+name: Build Web
 
 on:
   pull_request:
     branches:
       - main
     paths:
-      - 'ManagementConsole/UI/**
+      - 'ManagementConsole/UI/**'
       - '.github/workflows/**'
   push:
     branches:
