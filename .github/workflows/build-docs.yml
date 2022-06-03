@@ -18,16 +18,9 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - name: Use NodeJS 16
-        uses: actions/setup-node@v3
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
         with:
-          node-version: '16'
-      - uses: borales/actions-yarn@v2.3.0
-      - name: Capture branch and tag
-        id: branch_name
-        run: |
-          echo "SOURCE_BRANCH=${GITHUB_REF#refs/heads/}" >> $GITHUB_ENV
-          echo "SOURCE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
-      - name: Build docs website
-        run: yarn build-docs-website
+          python-version: 3.x
+      - run: pip install mkdocs-material 
+      - run: mkdocs build
