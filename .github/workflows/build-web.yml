@@ -1,0 +1,38 @@
+name: Build
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'ManagementConsole/UI/**
+      - '.github/workflows/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'ManagementConsole/UI/**'
+      - '.github/workflows/**'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: borales/actions-yarn@v2.3.0
+        with:
+          cmd: build-web
+  savepr:
+    runs-on: ubuntu-latest
+    name: Save PR number if running on PR by dependabot
+    if: github.actor == 'dependabot[bot]'
+    steps:
+      - name: Create Directory and save issue
+        run: |
+          mkdir -p ./pr
+          echo ${{ github.event.number }}
+          echo ${{ github.event.number }} > ./pr/NR
+      - uses: actions/upload-artifact@v2
+        name: Updload artifact
+        with:
+          name: pr
+          path: pr/
