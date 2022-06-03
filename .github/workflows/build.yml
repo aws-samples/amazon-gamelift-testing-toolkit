@@ -34,6 +34,10 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ matrix.net }}
+      - name: Setup GameLift dependencies for game
+        run: |
+          cd SampleGame/Game
+          ./install.sh
       - name: Build with dotnet
         run: dotnet build --configuration Release
   savepr:
