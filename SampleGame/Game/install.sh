@@ -24,5 +24,5 @@ cd ../../..
 sudo rm -rf aws-gamelift-sdk-temp
 
 sudo dotnet publish -c SampleGameBuild.csproj -r linux-x64 --self-contained true
-sudo cp /local/game/log4net.config /local/game/bin/SampleGameBuild.csproj/net5.0/linux-x64/
-sudo cp /local/game/QuizConfig.json /local/game/bin/SampleGameBuild.csproj/net5.0/linux-x64/
+sudo cp ./log4net.config ./bin/SampleGameBuild.csproj/net5.0/linux-x64/
+sudo cp ./QuizConfig.json ./bin/SampleGameBuild.csproj/net5.0/linux-x64/
