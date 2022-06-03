@@ -6,11 +6,13 @@ on:
       - main
     paths:
       - 'docs/**'
+      - '.github/workflows/build-docs.yml'
   push:
     branches:
       - main
     paths:
       - 'docs/**'
+      - '.github/workflows/build-docs.yml'
 
 jobs:
   docs:
