@@ -4,6 +4,8 @@
 
 A test harness, visualisation and load-testing tool for Amazon GameLift.
 
+**[📜Documentation](https://awslabs.github.io/amazon-gamelift-testing-toolkit/)**
+
 Whether you're starting development of a multiplayer game with dedicated servers, or have already written a game using Amazon GameLift, you can quickly get the Amazon GameLift Testing Toolkit deployed and running.
 
 The quickest way to get started is to build and deploy the toolkit and the sample game, and you can then delete the sample game when you no longer need it.

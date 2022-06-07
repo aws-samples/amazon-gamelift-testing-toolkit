@@ -6,11 +6,11 @@ site_name: Amazon GameLift Testing Toolkit
 
 site_description: Documentation for the Amazon GameLift Testing Toolkit
 
-site_url: https://github.com/example/repository/
+site_url: https://awslabs.github.io/amazon-gamelift-testing-toolkit/
 
 repo_name: GitHub
 
-repo_url: https://github.com/example/repository/
+repo_url: https://github.com/aws-samples/amazon-gamelift-testing-toolkit
 
 theme:
     name: material
