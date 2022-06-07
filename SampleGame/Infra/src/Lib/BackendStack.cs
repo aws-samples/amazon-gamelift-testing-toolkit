@@ -156,7 +156,7 @@ namespace SampleGameInfra.Lib
             // The code that defines your stack goes here
             GameClientServiceFunction = new Lambda.Function(this, "GCSServiceLambdaFunction", new Lambda.FunctionProps
             {
-                Runtime = Lambda.Runtime.DOTNET_CORE_3_1,
+                Runtime = Program.DotNetRuntime,
                 Code = Lambda.Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
                 Handler = "SampleGameBackend::SampleGameBackend.GameClientService.GameClientService::GameClientServiceHandler",
                 //foo
@@ -172,7 +172,7 @@ namespace SampleGameInfra.Lib
             
             FlexMatchEventFunction = new Lambda.Function(this, "GCSFlexMatchEventLambdaFunction", new Lambda.FunctionProps
             {
-                Runtime = Lambda.Runtime.DOTNET_CORE_3_1,
+                Runtime = Program.DotNetRuntime,
                 Code = Lambda.Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
                 Handler = "SampleGameBackend::SampleGameBackend.GameClientService.GameClientService::FlexMatchEventHandler",
                 Environment = new Dictionary<string, string>

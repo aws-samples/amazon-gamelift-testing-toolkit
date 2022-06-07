@@ -41,6 +41,7 @@ namespace ManagementConsoleInfra.Lib
                 WebsiteErrorDocument = "error.html",
                 RemovalPolicy = RemovalPolicy.DESTROY,
                 AutoDeleteObjects = true,
+                Encryption = BucketEncryption.S3_MANAGED,
                 EnforceSSL = true,
             });
             WebsiteBucket.GrantRead(Oai);
@@ -53,7 +54,7 @@ namespace ManagementConsoleInfra.Lib
                     {
                         S3OriginSource = new S3OriginConfig {
                             S3BucketSource = WebsiteBucket,
-                            OriginAccessIdentity = Oai
+                            OriginAccessIdentity = Oai,
                         },
                         Behaviors = new [] 
                         { 
@@ -63,7 +64,7 @@ namespace ManagementConsoleInfra.Lib
                                 DefaultTtl = Duration.Seconds(300),
                             } 
                         }
-                    } 
+                    }
                 },
                 PriceClass = PriceClass.PRICE_CLASS_100,
                 ViewerProtocolPolicy = ViewerProtocolPolicy.REDIRECT_TO_HTTPS
@@ -74,12 +75,12 @@ namespace ManagementConsoleInfra.Lib
                 Sources = new [] { Source.Asset("../UI/dist")},
                 DestinationBucket = WebsiteBucket,
                 MemoryLimit = 3000,
-                Prune = false
+                Prune = false,
             });
             
             WebUserPool = new UserPool(this, "UserPool", new UserPoolProps
             {
-                RemovalPolicy = RemovalPolicy.DESTROY
+                RemovalPolicy = RemovalPolicy.DESTROY, 
             });
 
             WebUserPoolClient = new UserPoolClient(this, "UserPoolClient", new UserPoolClientProps
@@ -139,7 +140,7 @@ namespace ManagementConsoleInfra.Lib
 
             var configJsonFunction = new Amazon.CDK.AWS.Lambda.Function(this, "ConfigJsonLambdaFunction", new Amazon.CDK.AWS.Lambda.FunctionProps
             {
-                Runtime = Runtime.DOTNET_CORE_3_1,
+                Runtime = Program.DotNetRuntime,
                 Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.ManagementService::ConfigJsonGenerator",
                 Environment = new Dictionary<string, string>

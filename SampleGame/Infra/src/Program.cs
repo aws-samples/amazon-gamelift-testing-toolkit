@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 using Amazon.CDK;
+using Amazon.CDK.AWS.Lambda;
 using Cdklabs.CdkNag;
 using SampleGameInfra.Lib;
 
@@ -10,6 +11,8 @@ namespace SampleGameInfra
     sealed class Program
     {
         private const string StackName = "AGTT-SampleGameStack";
+
+        internal static readonly Runtime DotNetRuntime = Runtime.DOTNET_6;
 
         public static void Main(string[] args)
         {
@@ -23,9 +26,27 @@ namespace SampleGameInfra
         private static void CheckCdkNag(IConstruct scope)
         {
             // Check against standard cdk nag rules
-            var nagProps = new NagPackProps() { Verbose = true };
+            var nagProps = new NagPackProps() { Verbose = false };
             var check = new AwsSolutionsChecks(nagProps);
+            NagSuppressions.AddResourceSuppressions(scope, BuildSuppressions(), true);
             Aspects_.Of(scope).Add(check);
+        }
+
+        private static NagPackSuppression[] BuildSuppressions()
+        {
+            return new NagPackSuppression[]
+            {
+                    BuildSuppressions("AwsSolutions-ECS7", "Container logging not required for sample game virtual players."),
+            };
+        }
+
+        private static NagPackSuppression BuildSuppressions(string id, string reason)
+        {
+            return new NagPackSuppression()
+            {
+                Id = id,
+                Reason = reason
+            };
         }
     }
 }
