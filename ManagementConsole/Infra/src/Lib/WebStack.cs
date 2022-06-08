@@ -73,7 +73,7 @@ namespace ManagementConsoleInfra.Lib
             var deployment = new BucketDeployment(this, "DeployTest", new BucketDeploymentProps
             {
                 Sources = new [] { Source.Asset("../UI/dist")},
-                DestinationBucket = WebsiteBucket,
+                DestinationBucket = WebsiteBucket, 
                 MemoryLimit = 3000,
                 Prune = false,
             });
