@@ -55,4 +55,3 @@ jobs:
               pull_number: issue_number,
               merge_method: 'squash'
             })
-          github-token: ${{ secrets.AUTOMERGE }}
