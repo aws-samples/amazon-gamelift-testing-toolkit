@@ -7,6 +7,7 @@ using Amazon.CDK.AWS.Ecr.Assets;
 using Amazon.CDK.AWS.ECS;
 using Amazon.CDK.AWS.Events.Targets;
 using Amazon.CDK.AWS.Logs;
+using Cdklabs.CdkNag;
 
 namespace SampleGameInfra.Lib
 {
@@ -32,8 +33,20 @@ namespace SampleGameInfra.Lib
             {
                 AssumedBy = new ServicePrincipal("ecs-tasks.amazonaws.com")
             });
-            
-            executionRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("service-role/AmazonECSTaskExecutionRolePolicy"));
+            executionRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
+            {
+                Effect = Effect.ALLOW,
+                Resources = new[] {"*"},
+                Actions = new[]
+                {
+                    "ecr:GetAuthorizationToken",
+                    "ecr:BatchCheckLayerAvailability",
+                    "ecr:GetDownloadUrlForLayer",
+                    "ecr:BatchGetImage",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                }
+            }));
             
             var taskRole = new Role(this, "FargateTaskRole", new RoleProps
             {
@@ -71,6 +84,16 @@ namespace SampleGameInfra.Lib
                 }),
                 Command = gameClientCommand
             });
+            
+            // Adding CDK-Nag Suppressions
+            NagSuppressions.AddResourceSuppressions(executionRole, new INagPackSuppression[]
+            {
+                new NagPackSuppression
+                {
+                    Id = "AwsSolutions-IAM5",
+                    Reason = "Default ECS Task execution role"
+                }
+            }, true);
         }
     }
 }
