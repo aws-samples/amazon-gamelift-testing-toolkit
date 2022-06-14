@@ -4,6 +4,7 @@
 using Amazon.CDK;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.S3.Assets;
+using Cdklabs.CdkNag;
 
 namespace TestGame.CDK.Constructs
 {
@@ -31,6 +32,15 @@ namespace TestGame.CDK.Constructs
             
             Asset.Bucket.GrantRead(Role, "assets/*");
             
+            // Adding specific CDK-Nag Suppressions
+            NagSuppressions.AddResourceSuppressions(Role, new INagPackSuppression[]
+            {
+                new NagPackSuppression
+                {
+                    Id = "AwsSolutions-IAM5",
+                    Reason = "Suppress wildcard finding to give permission to access S3 asset folder"
+                }
+            }, true);
         }
     }
 }

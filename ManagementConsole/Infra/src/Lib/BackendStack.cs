@@ -17,6 +17,8 @@ using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.Logs;
 using Amazon.CDK.AWS.StepFunctions;
 using Amazon.CDK.AWS.StepFunctions.Tasks;
+using Amazon.CDK.RegionInfo;
+using Cdklabs.CdkNag;
 using Newtonsoft.Json;
 using CfnRoute = Amazon.CDK.AWS.APIGatewayv2.CfnRoute;
 using CfnRouteProps = Amazon.CDK.AWS.APIGatewayv2.CfnRouteProps;
@@ -38,8 +40,7 @@ namespace ManagementConsoleInfra.Lib
     }
     public class BackendStack : Stack
     {
-        public Role MgmtLambdaRole;
-        public Role StatePollerRole;
+        public PolicyStatement DefaultLambdaPolicy;
         public StateMachine StatePollerStateMachine;
         public Function SfnPollerFunction;
         public Function SfnRestartFunction;
@@ -59,7 +60,19 @@ namespace ManagementConsoleInfra.Lib
         
         internal BackendStack(Construct scope, string id, BackendProps props = null) : base(scope, id, props)
         {
-            CreateRoles(this);
+            // Create default Lambda policy
+            DefaultLambdaPolicy = new PolicyStatement(new PolicyStatementProps
+            {
+                Effect = Effect.ALLOW,
+                Resources = new[] {"*"},
+                Actions = new[]
+                {
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                }
+            });
+            
             CreateFlexMatchSimulator(this);
             CreateStatePoller(this, props);
             CreateVirtualPlayersRunner(this);
@@ -71,152 +84,23 @@ namespace ManagementConsoleInfra.Lib
             {
                 ServiceToken = ConfigPopulatorFunction.FunctionArn,
             });
+            
+            
+            NagSuppressions.AddResourceSuppressions(this, new INagPackSuppression[]
+            {
+                new NagPackSuppression
+                {
+                    Id = "AwsSolutions-IAM5",
+                    Reason = "Suppress findings for default CDK Role and managed policy used to create this stack"
+                },
+                new NagPackSuppression
+                {
+                    Id = "AwsSolutions-IAM4",
+                    Reason = "Suppress finding for default CDK Role wildcard used to create this stack"
+                }
+            }, true);
         }
 
-        internal void CreateRoles(Construct scope)
-        {
-            MgmtLambdaRole = new Role(scope, "ManagementLambdaRole", new RoleProps
-            {
-                AssumedBy = new ServicePrincipal("lambda.amazonaws.com"), // required
-            });
-
-            MgmtLambdaRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
-            MgmtLambdaRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonAPIGatewayInvokeFullAccess"));
-            MgmtLambdaRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("CloudWatchLogsReadOnlyAccess"));
-            MgmtLambdaRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonECS_FullAccess"));
-            MgmtLambdaRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonDynamoDBFullAccess"));
-            MgmtLambdaRole.AddToPolicy(new PolicyStatement(new PolicyStatementProps
-            {
-                Effect = Effect.ALLOW,
-                Resources = new[] {"*"},
-                Actions = new[]
-                {
-                    "gamelift:ListAliases",
-                    "gamelift:ListBuilds",
-                    "gamelift:ListFleets",
-                    "gamelift:ListGameServerGroups",
-                    "gamelift:ListGameServers",
-                    "gamelift:ListScripts",
-                    "gamelift:DescribeAlias",
-                    "gamelift:DescribeBuild",
-                    "gamelift:DescribeEC2InstanceLimits",
-                    "gamelift:DescribeFleetAttributes",
-                    "gamelift:DescribeFleetCapacity",
-                    "gamelift:DescribeFleetEvents",
-                    "gamelift:DescribeFleetLocationAttributes",
-                    "gamelift:DescribeFleetLocationCapacity",
-                    "gamelift:DescribeFleetLocationUtilization",
-                    "gamelift:DescribeFleetPortSettings",
-                    "gamelift:DescribeFleetUtilization",
-                    "gamelift:DescribeGameServerGroup",
-                    "gamelift:DescribeGameServerInstances",
-                    "gamelift:DescribeGameSessionDetails",
-                    "gamelift:DescribeGameSessionPlacement",
-                    "gamelift:DescribeGameSessionQueues",
-                    "gamelift:DescribeGameSessions",
-                    "gamelift:DescribeInstances",
-                    "gamelift:DescribeMatchmaking",
-                    "gamelift:DescribeMatchmakingConfigurations",
-                    "gamelift:DescribeMatchmakingRuleSets",
-                    "gamelift:DescribePlayerSessions",
-                    "gamelift:DescribeRuntimeConfiguration",
-                    "gamelift:DescribeScalingPolicies",
-                    "gamelift:GetGameSessionLogUrl",
-                    "gamelift:SearchGameSessions",
-                    "gamelift:CreateFleet",
-                    "gamelift:CreateFleetLocations",
-                    "gamelift:CreateGameSession",
-                    "gamelift:CreateGameSessionQueue",
-                    "gamelift:CreateMatchmakingConfiguration",
-                    "gamelift:CreateMatchmakingRuleSet",
-                    "gamelift:CreatePlayerSession",
-                    "gamelift:CreatePlayerSessions",
-                    "gamelift:DeleteFleetLocations",
-                    "gamelift:DeleteMatchmakingConfiguration",
-                    "gamelift:DeleteMatchmakingRuleSet",
-                    "gamelift:DeleteScalingPolicy",
-                    "gamelift:StartFleetActions",
-                    "gamelift:StartMatchBackfill",
-                    "gamelift:StartMatchmaking",
-                    "gamelift:StartGameSessionPlacement",
-                    "gamelift:StopFleetActions",
-                    "gamelift:StopMatchmaking",
-                    "gamelift:StopGameSessionPlacement",
-                    "gamelift:PutScalingPolicy",
-                    "gamelift:UpdateAlias",
-                    "gamelift:UpdateBuild",
-                    "gamelift:UpdateFleetAttributes",
-                    "gamelift:UpdateFleetCapacity",
-                    "gamelift:UpdateFleetPortSettings",
-                    "gamelift:UpdateGameServer",
-                    "gamelift:UpdateGameServerGroup",
-                    "gamelift:UpdateGameSession",
-                    "gamelift:UpdateGameSessionQueue",
-                    "gamelift:UpdateMatchmakingConfiguration",
-                    "gamelift:UpdateRuntimeConfiguration",
-                    "gamelift:ValidateMatchmakingRuleSet",
-                }
-            }));
-            MgmtLambdaRole.AddToPolicy(new PolicyStatement(new PolicyStatementProps
-            {
-                Effect = Effect.ALLOW,
-                Resources = new[] {"*"},
-                Actions = new[]
-                {
-                    "cloudwatch:GetMetricWidgetImage",
-                }
-            }));
-
-            StatePollerRole = new Role(this, "StatePollerLambdaRole", new RoleProps
-            {
-                AssumedBy = new ServicePrincipal("lambda.amazonaws.com"), // required
-            });
-
-            StatePollerRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
-            StatePollerRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AWSStepFunctionsFullAccess"));
-            StatePollerRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonDynamoDBFullAccess"));
-            StatePollerRole.AddToPolicy(new PolicyStatement(new PolicyStatementProps
-            {
-                Effect = Effect.ALLOW,
-                Resources = new[] {"*"},
-                Actions = new[]
-                {
-                    "gamelift:ListAliases",
-                    "gamelift:ListBuilds",
-                    "gamelift:ListFleets",
-                    "gamelift:ListGameServerGroups",
-                    "gamelift:ListGameServers",
-                    "gamelift:ListScripts",
-                    "gamelift:DescribeAlias",
-                    "gamelift:DescribeBuild",
-                    "gamelift:DescribeEC2InstanceLimits",
-                    "gamelift:DescribeFleetAttributes",
-                    "gamelift:DescribeFleetCapacity",
-                    "gamelift:DescribeFleetEvents",
-                    "gamelift:DescribeFleetLocationAttributes",
-                    "gamelift:DescribeFleetLocationCapacity",
-                    "gamelift:DescribeFleetLocationUtilization",
-                    "gamelift:DescribeFleetPortSettings",
-                    "gamelift:DescribeFleetUtilization",
-                    "gamelift:DescribeGameServerGroup",
-                    "gamelift:DescribeGameServerInstances",
-                    "gamelift:DescribeGameSessionDetails",
-                    "gamelift:DescribeGameSessionPlacement",
-                    "gamelift:DescribeGameSessionQueues",
-                    "gamelift:DescribeGameSessions",
-                    "gamelift:DescribeInstances",
-                    "gamelift:DescribeMatchmaking",
-                    "gamelift:DescribeMatchmakingConfigurations",
-                    "gamelift:DescribeMatchmakingRuleSets",
-                    "gamelift:DescribePlayerSessions",
-                    "gamelift:DescribeRuntimeConfiguration",
-                    "gamelift:DescribeScalingPolicies",
-                    "gamelift:GetGameSessionLogUrl",
-                    "gamelift:SearchGameSessions"
-                }
-            }));
-        }
-        
         internal void CreateWebSocketApi(Construct scope, BackendProps props)
         {
             var webSocketApi = new WebSocketApi(this, "APIGW", new WebSocketApiProps
@@ -276,6 +160,12 @@ namespace ManagementConsoleInfra.Lib
             StateEventHandlerFunction.AddEnvironment("StageServiceUrl", serviceUrl);
             QueuePlacementEventFunction.AddEnvironment("StageServiceUrl", serviceUrl);
             FlexMatchEventFunction.AddEnvironment("StageServiceUrl", serviceUrl);
+            
+            // Then add Function permission to access ApiGW
+            ProdStage.GrantManagementApiAccess(ManagementServiceFunction);
+            ProdStage.GrantManagementApiAccess(StateEventHandlerFunction);
+            ProdStage.GrantManagementApiAccess(QueuePlacementEventFunction);
+            ProdStage.GrantManagementApiAccess(FlexMatchEventFunction);
 
             new CfnOutput(this, "mgmtApiUrl",  new CfnOutputProps {
                 Value = ProdStage.Url
@@ -367,6 +257,12 @@ namespace ManagementConsoleInfra.Lib
 
         private void CreateStatePoller(Construct scope, BackendProps props)
         {
+            var sfnPollerFunctionRole = new Role(this, "SfnPollerFunctionRole", new RoleProps
+            {
+                AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
+            });
+            sfnPollerFunctionRole.AddToPrincipalPolicy(DefaultLambdaPolicy);
+            
             SfnPollerFunction = new Function(this, "SfnPollerLambdaFunction", new FunctionProps
             {
                 Runtime = Program.DotNetRuntime,
@@ -380,22 +276,74 @@ namespace ManagementConsoleInfra.Lib
                 },
                 Timeout = Duration.Seconds(30),
                 MemorySize = 1024,
-                Role = StatePollerRole
+                Role = sfnPollerFunctionRole
             });
-
-            props.ManagementConfigTable.GrantReadData(SfnPollerFunction);
-            props.StateLogTable.GrantReadWriteData(SfnPollerFunction);
-            props.GameSessionTable.GrantReadWriteData(SfnPollerFunction);
             
+            sfnPollerFunctionRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
+                {
+                    Effect = Effect.ALLOW,
+                    Resources = new[] {"*"},
+                    Actions = new[]
+                    {
+                        "gamelift:DescribeGameSessionQueues",
+                        "gamelift:ListAliases",
+                        "gamelift:DescribeMatchmakingConfigurations",
+                        "gamelift:ListFleets",
+                        "gamelift:DescribeFleetCapacity",
+                        "gamelift:DescribeGameSessions",
+                        "gamelift:DescribeFleetLocationAttributes",
+                        "gamelift:DescribeFleetLocationCapacity",
+                        "gamelift:DescribeInstances",
+                        "gamelift:DescribeRuntimeConfiguration",
+                        "gamelift:DescribeScalingPolicies",
+                        "gamelift:DescribeFleetAttributes",
+                        "gamelift:DescribeFleetEvents",
+                        "gamelift:DescribeFleetUtilization"
+                    }
+                }));
+            // Adding specific CDK-Nag Suppressions
+            NagSuppressions.AddResourceSuppressions(sfnPollerFunctionRole, new INagPackSuppression[]
+            {
+                new NagPackSuppression
+                {
+                    Id = "AwsSolutions-IAM5",
+                    Reason = "Suppress wildcard finding to give permission to access specific actions to whole GameLift components"
+                }
+            }, true);
+            
+            props.ManagementConfigTable.GrantReadData(SfnPollerFunction);
+            props.StateLogTable.GrantReadData(SfnPollerFunction);
+            props.GameSessionTable.GrantWriteData(SfnPollerFunction);
+
+            var sfnIteratorFunctionRole = new Role(this, "SfnIteratorFunctionRole", new RoleProps
+            {
+                AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
+            });
+            sfnIteratorFunctionRole.AddToPrincipalPolicy(DefaultLambdaPolicy);
             var sfnIteratorHandlerFunction = new Function(this, "SfnIteratorHandlerLambdaFunction", new FunctionProps
             {
                 Runtime = Program.DotNetRuntime,
                 Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.StepFunctions::StepFunctionIteratorHandler",
                 Timeout = Duration.Seconds(30),
-                MemorySize = 128
+                MemorySize = 128,
+                Role = sfnIteratorFunctionRole
             });
+            // Adding specific CDK-Nag Suppressions
+            NagSuppressions.AddResourceSuppressions(sfnIteratorFunctionRole, new INagPackSuppression[]
+            {
+                new NagPackSuppression
+                {
+                    Id = "AwsSolutions-IAM5",
+                    Reason = "Suppress wildcard finding to give permission to access CloudWatch components"
+                }
+            }, true);
 
+            var sfnRestartFunctionRole = new Role(this, "SfnRestartFunctionRole", new RoleProps
+            {
+                AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
+            });
+            sfnRestartFunctionRole.AddToPrincipalPolicy(DefaultLambdaPolicy);
             SfnRestartFunction = new Function(this, "SfnRestartHandlerLambdaFunction", new FunctionProps
             {
                 Runtime = Program.DotNetRuntime,
@@ -403,9 +351,18 @@ namespace ManagementConsoleInfra.Lib
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.StepFunctions::StepFunctionRestartHandler",
                 Timeout = Duration.Seconds(30),
                 MemorySize = 128,
-                Role = StatePollerRole
+                Role = sfnRestartFunctionRole
             });
-            
+            // Adding specific CDK-Nag Suppressions
+            NagSuppressions.AddResourceSuppressions(sfnRestartFunctionRole, new INagPackSuppression[]
+            {
+                new NagPackSuppression
+                {
+                    Id = "AwsSolutions-IAM5",
+                    Reason = "Suppress wildcard finding to give permission to access CloudWatch components"
+                }
+            }, true);
+
             var iteratorData = new Dictionary<string,object>
             {
                 {"Count", 500},
@@ -467,10 +424,18 @@ namespace ManagementConsoleInfra.Lib
             {
                 Definition = configureCount,
             });
+            // Adding specific CDK-Nag Suppressions
+            NagSuppressions.AddResourceSuppressions(StatePollerStateMachine, new INagPackSuppression[]
+            {
+                new NagPackSuppression
+                {
+                    Id = "AwsSolutions-IAM5",
+                    Reason = "Suppress wildcard finding to give permission to access CloudWatch components"
+                }
+            }, true);
+            StatePollerStateMachine.GrantStartExecution(SfnRestartFunction);
             
-            StatePollerStateMachine.GrantStartExecution(MgmtLambdaRole);
-            StatePollerStateMachine.GrantRead(MgmtLambdaRole);
-
+            
             new CfnOutput(this, "statePollerStateMachineArn",  new CfnOutputProps {
                 Value = StatePollerStateMachine.StateMachineArn
             });
@@ -484,6 +449,11 @@ namespace ManagementConsoleInfra.Lib
                 subnetIds.Add(subnet.SubnetId);
             }
 
+            var managementServiceFunctionRole = new Role(this, "ManagementServiceFunctionRole", new RoleProps
+            {
+                AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
+            });
+            managementServiceFunctionRole.AddToPrincipalPolicy(DefaultLambdaPolicy);
             ManagementServiceFunction = new Function(this, "MgmtServiceLambdaFunction", new FunctionProps
             {
                 Runtime = Program.DotNetRuntime,
@@ -491,40 +461,109 @@ namespace ManagementConsoleInfra.Lib
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.ManagementService::ManagementServiceHandler",
                 Environment = new Dictionary<string, string>
                 {
-                    ["ConfigTableName"] = props.ManagementConfigTable.TableName,
                     ["ConnectionsTableName"] = props.ManagementConnectionsTable.TableName,
                     ["EventLogTableName"] = props.EventLogTable.TableName,
+                    ["MatchmakingSimulationTableName"] = props.MatchmakingSimulationTable.TableName,
+                    ["PlayerProfileTableName"] = props.PlayerProfileTable.TableName,
+                    ["TicketLogTableName"] = props.TicketLogTable.TableName,
+                    ["SimulationResultsTableName"] = props.SimulationResultsTable.TableName,
                     ["GameSessionTableName"] = props.GameSessionTable.TableName,
                     ["StateLogTableName"] = props.StateLogTable.TableName,
-                    ["TicketLogTableName"] = props.TicketLogTable.TableName,
-                    ["PlayerProfileTableName"] = props.PlayerProfileTable.TableName,
-                    ["MatchmakingSimulationTableName"] = props.MatchmakingSimulationTable.TableName,
+                    ["ConfigTableName"] = props.ManagementConfigTable.TableName,
                     ["FlexMatchSimulatorArn"] = FlexMatchSimulator.AttrArn,
-                    ["SimulationResultsTableName"] = props.SimulationResultsTable.TableName,
                     ["VirtualPlayersClusterArn"] = VirtualPlayersRunnerCluster.ClusterArn,
                     ["VirtualPlayersSecurityGroupId"] = VirtualPlayersRunnerSecurityGroup.SecurityGroupId,
                     ["VirtualPlayersSubnetIds"] = JsonConvert.SerializeObject(subnetIds),
+                    ["StateMachineArn"] = StatePollerStateMachine.StateMachineArn
                 },
                 Timeout = Duration.Minutes(15),
                 MemorySize = 1024,
-                Role = MgmtLambdaRole
+                Role = managementServiceFunctionRole
             });
+            
+            managementServiceFunctionRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
+                {
+                    Effect = Effect.ALLOW,
+                    Resources = new[] {"*"},
+                    Actions = new[]
+                    {
+                        "ecs:ListTaskDefinitions",
+                        "ecs:DescribeTaskDefinition",
+                        "cloudwatch:GetMetricWidgetImage",
+                        "cloudwatch:GetLogEvents",
+                        "gamelift:DescribeFleetCapacity",
+                        "gamelift:DescribePlayerSessions",
+                        "gamelift:UpdateMatchmakingConfiguration",
+                        "gamelift:StartMatchmaking",
+                        "gamelift:DescribeMatchmakingRuleSets",
+                        "gamelift:ValidateMatchmakingRuleSet",
+                        "gamelift:CreateMatchmakingRuleSet",
+                        "gamelift:DeleteMatchmakingRuleSet",
+                        "gamelift:UpdateFleetCapacity",
+                        "gamelift:CreateFleetLocations",
+                        "gamelift:DeleteFleetLocations",
+                        "gamelift:PutScalingPolicy",
+                        "gamelift:DeleteScalingPolicy",
+                        "gamelift:ListAliases",
+                        "gamelift:DescribeGameSessionQueues",
+                        "gamelift:ListFleets",
+                        "gamelift:DescribeGameSessions",
+                        "gamelift:DescribeFleetLocationAttributes",
+                        "gamelift:DescribeFleetLocationCapacity",
+                        "gamelift:DescribeInstances",
+                        "gamelift:DescribeRuntimeConfiguration",
+                        "gamelift:DescribeFleetAttributes",
+                        "gamelift:DescribeFleetEvents",
+                        "gamelift:DescribeFleetUtilization",
+                    }
+                }));
 
-            props.ManagementConfigTable.GrantReadWriteData(ManagementServiceFunction);
-            props.SimulationResultsTable.GrantReadWriteData(ManagementServiceFunction);
+            managementServiceFunctionRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
+                {
+                    Actions = new[]
+                    {
+                        "ecs:DescribeTasks",
+                        "ecs:ListTasks",
+                        "ecs:StopTask",
+                        "ecs:RunTask",
+                    },
+                    Effect = Effect.ALLOW,
+                    Resources = new[] {"*"},
+                    Conditions = new Dictionary<string, object> { {"ecs:cluster", VirtualPlayersRunnerCluster.ClusterArn }}
+                }));
+
             props.ManagementConnectionsTable.GrantReadWriteData(ManagementServiceFunction);
-            props.EventLogTable.GrantReadWriteData(ManagementServiceFunction);
+            props.EventLogTable.GrantReadData(ManagementServiceFunction);
+            props.MatchmakingSimulationTable.GrantReadWriteData(ManagementServiceFunction);
+            props.PlayerProfileTable.GrantReadWriteData(ManagementServiceFunction);
+            props.TicketLogTable.GrantReadData(ManagementServiceFunction);
+            props.SimulationResultsTable.GrantReadData(ManagementServiceFunction);
             props.GameSessionTable.GrantReadWriteData(ManagementServiceFunction);
-            props.TicketLogTable.GrantReadWriteData(ManagementServiceFunction);
-            props.StateLogTable.GrantReadWriteData(ManagementServiceFunction);
+            props.StateLogTable.GrantReadData(ManagementServiceFunction);
+            props.ManagementConfigTable.GrantReadData(ManagementServiceFunction);
+            
+            // Adding specific CDK-Nag Suppressions
+            NagSuppressions.AddResourceSuppressions(managementServiceFunctionRole, new INagPackSuppression[]
+            {
+                new NagPackSuppression
+                {
+                    Id = "AwsSolutions-IAM5",
+                    Reason = "Suppress wildcard finding to give permission to access CloudWatch and GameLift generic components"
+                }
+            }, true);
 
+            // Adding permission for ApiGW to invoke Lambda functions
             ManagementServiceFunction.AddPermission("ManagementServiceInvokePermission", new Permission
             {
                 Action = "lambda:InvokeFunction",
                 Principal = new ServicePrincipal("apigateway.amazonaws.com")
             });
-            ManagementServiceFunction.AddEnvironment("StateMachineArn", StatePollerStateMachine.StateMachineArn);
 
+            var stateEventFunctionRole = new Role(this, "stateEventFunctionRole", new RoleProps
+            {
+                AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
+            });
+            stateEventFunctionRole.AddToPrincipalPolicy(DefaultLambdaPolicy);
             StateEventHandlerFunction = new Function(this, "StateEventHandlerLambdaFunction", new FunctionProps
             {
                 Runtime = Program.DotNetRuntime,
@@ -532,23 +571,29 @@ namespace ManagementConsoleInfra.Lib
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.EventHandlers::StateEventHandler",
                 Environment = new Dictionary<string, string>
                 {
-                    ["ConfigTableName"] = props.ManagementConfigTable.TableName,
                     ["ConnectionsTableName"] = props.ManagementConnectionsTable.TableName,
-                    ["EventLogTableName"] = props.EventLogTable.TableName,
-                    ["GameSessionTableName"] = props.GameSessionTable.TableName,
-                    ["TicketLogTableName"] = props.TicketLogTable.TableName,
                 },
                 Timeout = Duration.Seconds(30),
                 MemorySize = 1024,
-                Role = MgmtLambdaRole
+                Role = stateEventFunctionRole
             });
+            // Adding specific CDK-Nag Suppressions
+            NagSuppressions.AddResourceSuppressions(stateEventFunctionRole, new INagPackSuppression[]
+            {
+                new NagPackSuppression
+                {
+                    Id = "AwsSolutions-IAM5",
+                    Reason = "Suppress wildcard finding to give permission to access CloudWatch components"
+                }
+            }, true);
             
-            props.ManagementConfigTable.GrantReadWriteData(StateEventHandlerFunction);
             props.ManagementConnectionsTable.GrantReadWriteData(StateEventHandlerFunction);
-            props.GameSessionTable.GrantReadWriteData(StateEventHandlerFunction);
-            props.EventLogTable.GrantReadWriteData(StateEventHandlerFunction);
-            props.TicketLogTable.GrantReadWriteData(StateEventHandlerFunction);
 
+            var configPopulatorFunctionRole = new Role(this, "ConfigPopulatorFunctionRole", new RoleProps
+            {
+                AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
+            });
+            configPopulatorFunctionRole.AddToPrincipalPolicy(DefaultLambdaPolicy);
             ConfigPopulatorFunction = new Function(this, "MgmtConfigPopulatorLambdaFunction", new FunctionProps
             {
                 Runtime = Program.DotNetRuntime,
@@ -561,11 +606,25 @@ namespace ManagementConsoleInfra.Lib
                 },
                 Timeout = Duration.Seconds(30),
                 MemorySize = 1024,
-                Role = MgmtLambdaRole
+                Role = configPopulatorFunctionRole
             });
-
+            // Adding specific CDK-Nag Suppressions
+            NagSuppressions.AddResourceSuppressions(configPopulatorFunctionRole, new INagPackSuppression[]
+            {
+                new NagPackSuppression
+                {
+                    Id = "AwsSolutions-IAM5",
+                    Reason = "Suppress wildcard finding to give permission to access CloudWatch components"
+                }
+            }, true);
+            
             props.ManagementConfigTable.GrantReadWriteData(ConfigPopulatorFunction);
             
+            var flexMatchEventFunctionRole = new Role(this, "FlexMatchEventFunctionRole", new RoleProps
+            {
+                AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
+            });
+            flexMatchEventFunctionRole.AddToPrincipalPolicy(DefaultLambdaPolicy);
             FlexMatchEventFunction = new Function(this, "FlexMatchEventLambdaFunction", new FunctionProps
             {
                 Runtime = Program.DotNetRuntime,
@@ -574,25 +633,34 @@ namespace ManagementConsoleInfra.Lib
                 Environment = new Dictionary<string, string>
                 {
                     ["ConfigTableName"] = props.ManagementConfigTable.TableName,
-                    ["EventLogTableName"] = props.EventLogTable.TableName,
-                    ["GameSessionTableName"] = props.GameSessionTable.TableName,
                     ["TicketLogTableName"] = props.TicketLogTable.TableName,
-                    ["ConnectionsTableName"] = props.ManagementConnectionsTable.TableName,
                     ["MatchmakingSimulationTableName"] = props.MatchmakingSimulationTable.TableName,
-                    ["SimulationResultsTableName"] = props.SimulationResultsTable.TableName,
+                    ["ConnectionsTableName"] = props.ManagementConnectionsTable.TableName,
                 },
                 Timeout = Duration.Seconds(30),
                 MemorySize = 1024,
-                Role = MgmtLambdaRole
+                Role = flexMatchEventFunctionRole
             });
+            // Adding specific CDK-Nag Suppressions
+            NagSuppressions.AddResourceSuppressions(flexMatchEventFunctionRole, new INagPackSuppression[]
+            {
+                new NagPackSuppression
+                {
+                    Id = "AwsSolutions-IAM5",
+                    Reason = "Suppress wildcard finding to give permission to access CloudWatch components"
+                }
+            }, true);
             
+            props.ManagementConfigTable.GrantReadData(FlexMatchEventFunction);
             props.TicketLogTable.GrantReadWriteData(FlexMatchEventFunction);
-            props.EventLogTable.GrantReadWriteData(FlexMatchEventFunction);
-            props.GameSessionTable.GrantReadWriteData(FlexMatchEventFunction);
             props.ManagementConnectionsTable.GrantReadWriteData(FlexMatchEventFunction);
-            props.SimulationResultsTable.GrantReadWriteData(FlexMatchEventFunction);
-            props.ManagementConfigTable.GrantReadWriteData(FlexMatchEventFunction);
+            props.MatchmakingSimulationTable.GrantReadWriteData(FlexMatchEventFunction);
 
+            var queuePlacementEventFunctionRole = new Role(this, "QueuePlacementEventFunctionRole", new RoleProps
+            {
+                AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
+            });
+            queuePlacementEventFunctionRole.AddToPrincipalPolicy(DefaultLambdaPolicy);
             QueuePlacementEventFunction = new Function(this, "QueuePlacementEventLambdaFunction", new FunctionProps
             {
                 Runtime = Program.DotNetRuntime,
@@ -600,21 +668,24 @@ namespace ManagementConsoleInfra.Lib
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.EventHandlers::QueuePlacementEventHandler",
                 Environment = new Dictionary<string, string>
                 {
-                    ["ConfigTableName"] = props.ManagementConfigTable.TableName,
                     ["EventLogTableName"] = props.EventLogTable.TableName,
-                    ["GameSessionTableName"] = props.GameSessionTable.TableName,
-                    ["TicketLogTableName"] = props.TicketLogTable.TableName,
                     ["ConnectionsTableName"] = props.ManagementConnectionsTable.TableName,
                 },
                 Timeout = Duration.Seconds(30),
                 MemorySize = 1024,
-                Role = MgmtLambdaRole
+                Role = queuePlacementEventFunctionRole
             });
+            // Adding specific CDK-Nag Suppressions
+            NagSuppressions.AddResourceSuppressions(queuePlacementEventFunctionRole, new INagPackSuppression[]
+            {
+                new NagPackSuppression
+                {
+                    Id = "AwsSolutions-IAM5",
+                    Reason = "Suppress wildcard finding to give permission to access CloudWatch components"
+                }
+            }, true);
             
-            props.TicketLogTable.GrantReadWriteData(QueuePlacementEventFunction);
             props.EventLogTable.GrantReadWriteData(QueuePlacementEventFunction);
-            props.GameSessionTable.GrantReadWriteData(QueuePlacementEventFunction);
-            props.ManagementConfigTable.GrantReadWriteData(QueuePlacementEventFunction);
             props.ManagementConnectionsTable.GrantReadWriteData(QueuePlacementEventFunction);
         }
         

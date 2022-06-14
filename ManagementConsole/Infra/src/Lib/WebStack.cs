@@ -12,6 +12,7 @@ using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.S3;
 using Amazon.CDK.AWS.S3.Deployment;
+using Cdklabs.CdkNag;
 
 namespace ManagementConsoleInfra.Lib
 {
@@ -115,17 +116,8 @@ namespace ManagementConsoleInfra.Lib
                     }) }
                 },
             });
+            props.ApiProdStage.GrantManagementApiAccess(WebIdentityPool.AuthenticatedRole);
 
-            WebIdentityPool.AuthenticatedRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
-            {
-                Effect = Effect.ALLOW,
-                Resources = new[] {"*"},
-                Actions = new[]
-                {
-                    "execute-api:Invoke",
-                }
-            }));
-            
             var cognitoDomainPrefix = "falken-" + WebUserPoolClient.UserPoolClientId;
             var cognitoDomain = cognitoDomainPrefix + ".auth." + Fn.Ref("AWS::Region") + ".amazoncognito.com";
             var cognitoUrl = "https://" + cognitoDomain;
@@ -203,6 +195,21 @@ namespace ManagementConsoleInfra.Lib
             {
                 Value = cognitoDomain
             });
+
+            // Adding specific CDK-Nag Suppressions
+            NagSuppressions.AddResourceSuppressions(this, new INagPackSuppression[]
+            {
+                new NagPackSuppression
+                {
+                    Id = "AwsSolutions-IAM5",
+                    Reason = "Default role used by CDK construct to deploy content to S3"
+                },
+                new NagPackSuppression
+                {
+                    Id = "AwsSolutions-IAM4",
+                    Reason = "Default role used by CDK construct to deploy content to S3"
+                }
+            }, true);
         }
     }
 }

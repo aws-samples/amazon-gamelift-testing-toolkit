@@ -12,6 +12,7 @@ using Amazon.CDK.AWS.IAM;
 using Lambda = Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.Events.Targets;
 using Amazon.CDK.AWS.Logs;
+using Cdklabs.CdkNag;
 using Newtonsoft.Json;
 using GameLift = Amazon.CDK.AWS.GameLift;
 using TestGame.CDK.Constructs;
@@ -27,7 +28,7 @@ namespace SampleGameInfra.Lib
     public class BackendStack : Stack
     {   
         public Table TicketsTable;
-        public Role Role;
+        public PolicyStatement DefaultCloudwatchPolicy;
         public GameLift.CfnMatchmakingConfiguration MatchConfig;
         public WebSocketApi WebSocketApi;
         public WebSocketStage WebSocketStage;
@@ -38,8 +39,27 @@ namespace SampleGameInfra.Lib
         
         internal BackendStack(Construct scope, string id, BackendStackProps props) : base(scope, id)
         {    
+            // Create default Lambda policy
+            DefaultCloudwatchPolicy = new PolicyStatement(new PolicyStatementProps
+            {
+                Effect = Effect.ALLOW,
+                Resources = new[] {"*"},
+                Actions = new[]
+                {
+                    "logs:CreateLogGroup",
+                    "logs:CreateLogStream",
+                    "logs:PutLogEvents"
+                }
+            });
             var build = new GameLiftBuild(this, "GameLiftBuild", props.GameLiftBuildProps);
-            var instanceRole = CreateInstanceRole();
+            var instanceRole = new Role(this, "GameLiftInstanceRole", new RoleProps
+            {
+                AssumedBy = new CompositePrincipal(new PrincipalBase[ ] { 
+                    new ServicePrincipal("gamelift.amazonaws.com"),   // required
+                    new AccountPrincipal(this.Account),   // allow account to assume role for testing
+                })
+            });
+            instanceRole.AddToPrincipalPolicy(DefaultCloudwatchPolicy);
             var fleet = CreateFleet(build, "OnDemand", new GameLift.CfnFleetProps
             {
                 Name = "OnDemandFleet",
@@ -72,54 +92,21 @@ namespace SampleGameInfra.Lib
             MatchConfig = CreateMatchmakingConfiguration( "MatchmakingConfig", queue);
 
             CreateTables();
-            CreateRole();
             CreateLambdas(); 
             CreateWebSocketApi();
             CreateFlexMatchRule();
             
             var serviceUrl = WebSocketStage.Url.Replace("wss://", "https://");
-            
+
+            WebSocketStage.GrantManagementApiAccess(GameClientServiceFunction);
+            WebSocketStage.GrantManagementApiAccess(FlexMatchEventFunction);
+
             GameClientServiceFunction.AddEnvironment("StageServiceUrl", serviceUrl);
             FlexMatchEventFunction.AddEnvironment("StageServiceUrl", serviceUrl);
             
             new CfnOutput(this, "gcsApiUrl", new CfnOutputProps { Value = WebSocketStage.Url });
         }
-        
-        private void CreateRole()
-        {
-            Role = new Role(this, "GCSLambdaRole", new RoleProps
-            {
-                AssumedBy = new ServicePrincipal("lambda.amazonaws.com"),   // required
-            });
-            
-            Role.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
-            Role.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonAPIGatewayInvokeFullAccess"));
-            Role.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("AmazonDynamoDBFullAccess"));
-            Role.AddToPolicy(new PolicyStatement(new PolicyStatementProps
-            {
-                Effect = Effect.ALLOW,
-                Resources = new[] {"*"},
-                Actions = new[]
-                {
-                    "gamelift:List*",
-                    "gamelift:Describe*",
-                    "gamelift:Get*",
-                    "gamelift:Request*",
-                    "gamelift:Resolve*",
-                    "gamelift:Create*",
-                    "gamelift:Update*",
-                    "gamelift:Delete*",
-                    "gamelift:Start*",
-                    "gamelift:Stop*",
-                    "gamelift:Accept*",
-                    "gamelift:Search*",
-                    "gamelift:Suspend*",
-                    "gamelift:Validate*"
 
-                }
-            }));
-        }
-        
         private void CreateTables()
         {
             TicketsTable = new Table(this, "MMTicketsTable", new TableProps
@@ -148,12 +135,16 @@ namespace SampleGameInfra.Lib
             
             new CfnOutput(this, "mmTicketsTableName", new CfnOutputProps { Value = TicketsTable.TableName });
             new CfnOutput(this, "mmTicketsTableArn", new CfnOutputProps { Value = TicketsTable.TableArn });
-            
         }
         
         private void CreateLambdas()
         {
             // The code that defines your stack goes here
+            var gameClientServiceFunctionRole = new Role(this, "GameClientServiceFunctionRole", new RoleProps
+            {
+                AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
+            });
+            gameClientServiceFunctionRole.AddToPrincipalPolicy(DefaultCloudwatchPolicy);
             GameClientServiceFunction = new Lambda.Function(this, "GCSServiceLambdaFunction", new Lambda.FunctionProps
             {
                 Runtime = Program.DotNetRuntime,
@@ -167,9 +158,33 @@ namespace SampleGameInfra.Lib
                 },
                 Timeout = Duration.Seconds(30),
                 MemorySize = 1024,
-                Role = Role
+                Role = gameClientServiceFunctionRole
             });
+            gameClientServiceFunctionRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
+            {
+                Effect = Effect.ALLOW,
+                Resources = new[] {"*"},
+                Actions = new[]
+                {
+                    "gamelift:StartMatchmaking",
+                }
+            }));
+            TicketsTable.GrantReadWriteData(GameClientServiceFunction);
+            // Adding specific CDK-Nag Suppressions
+            NagSuppressions.AddResourceSuppressions(gameClientServiceFunctionRole, new INagPackSuppression[]
+            {
+                new NagPackSuppression
+                {
+                    Id = "AwsSolutions-IAM5",
+                    Reason = "Suppress wildcard finding to give permission to access CloudWatch and GameLift generic components"
+                }
+            }, true);
             
+            var flexMatchEventFunctionRole = new Role(this, "FlexMatchEventFunctionRole", new RoleProps
+            {
+                AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
+            });
+            flexMatchEventFunctionRole.AddToPrincipalPolicy(DefaultCloudwatchPolicy);
             FlexMatchEventFunction = new Lambda.Function(this, "GCSFlexMatchEventLambdaFunction", new Lambda.FunctionProps
             {
                 Runtime = Program.DotNetRuntime,
@@ -182,8 +197,19 @@ namespace SampleGameInfra.Lib
                 },
                 Timeout = Duration.Seconds(30),
                 MemorySize = 1024,
-                Role = Role
+                Role = flexMatchEventFunctionRole
             });
+            TicketsTable.GrantReadWriteData(FlexMatchEventFunction);
+            
+            // Adding specific CDK-Nag Suppression
+            NagSuppressions.AddResourceSuppressions(flexMatchEventFunctionRole, new INagPackSuppression[]
+            {
+                new NagPackSuppression
+                {
+                    Id = "AwsSolutions-IAM5",
+                    Reason = "Suppress wildcard finding to give permission to access CloudWatch generic components"
+                }
+            }, true);
         }
         
         private void CreateWebSocketApi()
@@ -233,19 +259,6 @@ namespace SampleGameInfra.Lib
                 MaxEventAge = Duration.Hours(1),
                 RetryAttempts = 2
             }));
-        }
-
-        internal Role CreateInstanceRole()
-        {
-            var instanceRole = new Role(this, "GameLiftInstanceRole", new RoleProps
-            {
-                AssumedBy = new CompositePrincipal(new PrincipalBase[ ] { 
-                    new ServicePrincipal("gamelift.amazonaws.com"),   // required
-                    new AccountPrincipal(this.Account),   // allow account to assume role for testing
-                })
-            });
-            instanceRole.AddManagedPolicy(ManagedPolicy.FromAwsManagedPolicyName("service-role/AWSLambdaBasicExecutionRole"));
-            return instanceRole;
         }
 
         internal GameLift.CfnFleet CreateFleet(GameLiftBuild build, string fleetName, GameLift.CfnFleetProps fleetProps, int numProcesses=1 )
