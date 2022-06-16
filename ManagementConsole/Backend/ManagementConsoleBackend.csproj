@@ -23,7 +23,7 @@
     <PackageReference Include="AWSSDK.GameLift" Version="3.7.0.16" />
     <PackageReference Include="AWSSDK.S3" Version="3.7.9.17" />
     <PackageReference Include="AWSSDK.StepFunctions" Version="3.7.0.168" />
-    <PackageReference Include="CompareNETObjects" Version="4.73.0" />
+    <PackageReference Include="CompareNETObjects" Version="4.77.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 </Project>
