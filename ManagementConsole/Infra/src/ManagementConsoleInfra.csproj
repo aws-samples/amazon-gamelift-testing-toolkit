@@ -20,7 +20,7 @@
     <PackageReference Include="Amazon.CDK.AWS.Events" Version="1.160.0" />
     <PackageReference Include="Amazon.CDK.AWS.Events.Targets" Version="1.159.0" />
     <PackageReference Include="Amazon.CDK.AWS.GameLift" Version="1.160.0" />
-    <PackageReference Include="Amazon.CDK.AWS.ImageBuilder" Version="1.159.0" />
+    <PackageReference Include="Amazon.CDK.AWS.ImageBuilder" Version="1.160.0" />
     <PackageReference Include="Amazon.CDK.AWS.KMS" Version="1.160.0" />
     <PackageReference Include="Amazon.CDK.AWS.Lambda" Version="1.159.0" />
     <PackageReference Include="Amazon.CDK.AWS.S3.Deployment" Version="1.160.0" />
