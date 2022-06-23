@@ -15,7 +15,7 @@
     <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.3.0" />
     <PackageReference Include="AWSSDK.ApiGatewayManagementApi" Version="3.7.0.175" />
     <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.10.11" />
-    <PackageReference Include="AWSSDK.CloudWatchLogs" Version="3.7.0.21" />
+    <PackageReference Include="AWSSDK.CloudWatchLogs" Version="3.7.2.69" />
     <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.3.47" />
     <PackageReference Include="AWSSDK.ECS" Version="3.7.0.14" />
     <PackageReference Include="AWSSDK.EventBridge" Version="3.7.5.29" />
