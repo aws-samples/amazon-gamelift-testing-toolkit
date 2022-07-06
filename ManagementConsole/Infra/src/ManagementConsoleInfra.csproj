@@ -30,7 +30,7 @@
     <PackageReference Include="Amazon.CDK.AWS.Cognito.IdentityPool" Version="1.163.0" />
     <PackageReference Include="Amazon.CDK.ECR.Assets" Version="1.159.0" />
     <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
-    <PackageReference Include="Amazon.Lambda.Serialization.Json" Version="2.0.0" />
+    <PackageReference Include="Amazon.Lambda.Serialization.Json" Version="2.1.0" />
 
     <!-- jsii Roslyn analyzers (un-comment to obtain compile-time checks for missing required props
     <PackageReference Include="Amazon.Jsii.Analyzers" Version="*" PrivateAssets="all" />
