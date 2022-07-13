@@ -15,7 +15,7 @@
     <PackageReference Include="Amazon.CDK.AWS.APIGatewayv2.Integrations" Version="1.161.0" />
     <PackageReference Include="Amazon.CDK.AWS.CloudFront.Origins" Version="1.161.0" />
     <PackageReference Include="Amazon.CDK.AWS.DynamoDB" Version="1.163.1" />
-    <PackageReference Include="Amazon.CDK.AWS.EC2" Version="1.163.0" />
+    <PackageReference Include="Amazon.CDK.AWS.EC2" Version="1.163.1" />
     <PackageReference Include="Amazon.CDK.AWS.ECS" Version="1.163.1" />
     <PackageReference Include="Amazon.CDK.AWS.Events" Version="1.162.0" />
     <PackageReference Include="Amazon.CDK.AWS.Events.Targets" Version="1.163.0" />
