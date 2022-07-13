@@ -35,7 +35,7 @@
     <!-- jsii Roslyn analyzers (un-comment to obtain compile-time checks for missing required props
     <PackageReference Include="Amazon.Jsii.Analyzers" Version="*" PrivateAssets="all" />
     -->
-    <PackageReference Include="Cdklabs.CdkNag" Version="2.15.9" />
+    <PackageReference Include="Cdklabs.CdkNag" Version="2.15.11" />
   </ItemGroup>
 
   <ItemGroup>
