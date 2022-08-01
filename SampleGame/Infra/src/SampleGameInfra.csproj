@@ -30,7 +30,7 @@
     <PackageReference Include="Amazon.CDK.AWS.SSM" Version="1.165.0" />
     <PackageReference Include="Amazon.CDK.AWS.StepFunctions" Version="1.165.0" />
     <PackageReference Include="Amazon.CDK.AWS.StepFunctions.Tasks" Version="1.165.0" />
-    <PackageReference Include="Amazon.CDK.ECR.Assets" Version="1.165.0" />
+    <PackageReference Include="Amazon.CDK.ECR.Assets" Version="1.166.1" />
     <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
     <PackageReference Include="Amazon.Lambda.Serialization.Json" Version="2.1.0" />
     <PackageReference Include="Cdklabs.CdkNag" Version="1.14.19" />
