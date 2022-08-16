@@ -33,7 +33,7 @@
     <PackageReference Include="Amazon.CDK.ECR.Assets" Version="1.168.0" />
     <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
     <PackageReference Include="Amazon.Lambda.Serialization.Json" Version="2.1.0" />
-    <PackageReference Include="Cdklabs.CdkNag" Version="2.15.39" />
+    <PackageReference Include="Cdklabs.CdkNag" Version="2.15.45" />
 
     <!-- jsii Roslyn analyzers (un-comment to obtain compile-time checks for missing required props
     <PackageReference Include="Amazon.Jsii.Analyzers" Version="*" PrivateAssets="all" />
