@@ -33,10 +33,14 @@ namespace TestGame.CDK.Constructs
             Role.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
             {
                 Effect = Effect.ALLOW,
-                Resources = new[] {"*"},
+                Resources = new[]
+                {
+                    Asset.Bucket.BucketArn,
+                    Asset.Bucket.BucketArn + "/*"
+                },
                 Actions = new[]
                 {
-                    "*",
+                    "s3:*",
                 }
             }));
             
