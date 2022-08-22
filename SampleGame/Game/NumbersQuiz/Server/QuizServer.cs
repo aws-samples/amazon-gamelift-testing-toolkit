@@ -7,8 +7,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
+using Amazon.GameLift.Model;
 using Aws.GameLift;
-using Aws.GameLift.Server.Model;
 using Newtonsoft.Json;
 using SampleGameBuild.GameLiftIntegration.Server;
 using SampleGameBuild.Network;
@@ -297,6 +297,21 @@ namespace SampleGameBuild.NumbersQuiz.Server
                 await GameLogger.EnableCloudWatch(AwsHandler.Credentials, "/gameserver-logs/", metadata.FleetId + "/unknown-session");
                 GameLogger.Log("CloudWatch enabled");
             }
+        }
+
+        public void OnGameLiftGameSessionRequested(Aws.GameLift.Server.Model.GameSession gameSession)
+        {
+            Console.WriteLine(GetCurrentMethod());
+        }
+
+        public void OnGameLiftGameSessionActivationSuccess(Aws.GameLift.Server.Model.GameSession gameSession, GenericOutcome outcome)
+        {
+            Console.WriteLine(GetCurrentMethod() + ":" + JsonConvert.SerializeObject(outcome));
+        }
+
+        public void OnGameLiftGameSessionActivationFailure(Aws.GameLift.Server.Model.GameSession gameSession, GenericOutcome outcome)
+        {
+            Console.WriteLine(GetCurrentMethod() + ":" + JsonConvert.SerializeObject(outcome));
         }
 
         public void OnGameLiftSDKActivationSuccess(GenericOutcome outcome)

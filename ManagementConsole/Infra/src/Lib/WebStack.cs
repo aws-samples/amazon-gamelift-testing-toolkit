@@ -3,16 +3,17 @@
 
 using System.Collections.Generic;
 using Amazon.CDK;
-using Amazon.CDK.AWS.APIGatewayv2;
+using Amazon.CDK.AWS.Apigatewayv2.Alpha;
 using Amazon.CDK.AWS.CloudFront;
 using Amazon.CDK.AWS.CloudFront.Origins;
 using Amazon.CDK.AWS.Cognito;
-using Amazon.CDK.AWS.Cognito.IdentityPool;
+using Amazon.CDK.AWS.Cognito.IdentityPool.Alpha;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.S3;
 using Amazon.CDK.AWS.S3.Deployment;
 using Cdklabs.CdkNag;
+using Constructs;
 
 namespace ManagementConsoleInfra.Lib
 {

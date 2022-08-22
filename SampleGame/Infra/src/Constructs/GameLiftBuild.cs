@@ -3,6 +3,7 @@
 
 using Amazon.CDK;
 using Amazon.CDK.AWS.GameLift;
+using Constructs;
 
 namespace TestGame.CDK.Constructs
 {
@@ -26,11 +27,10 @@ namespace TestGame.CDK.Constructs
         public readonly GameLiftBuildAsset BuildAsset;
         public readonly string BuildId;
         public readonly CfnBuild CfnBuild;
-        public CfnOutput BuildIdOutput;
 
         internal GameLiftBuild(Construct scope, string id, GameLiftBuildProps props) : base(scope, id)
         {
-            BuildAsset = new GameLiftBuildAsset(this, "GameLiftBuildAsset", new GameLiftAssetProps
+            BuildAsset = new GameLiftBuildAsset(scope, "GameLiftBuildAsset", new GameLiftAssetProps
             {
                 AssetPath = props.AssetPath,
             });

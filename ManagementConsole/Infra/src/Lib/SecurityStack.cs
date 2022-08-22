@@ -4,6 +4,7 @@
 using Amazon.CDK;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.KMS;
+using Constructs;
 
 namespace ManagementConsoleInfra.Lib
 {

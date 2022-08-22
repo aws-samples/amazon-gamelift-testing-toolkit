@@ -1,10 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-using Amazon.CDK;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.S3.Assets;
 using Cdklabs.CdkNag;
+using Constructs;
 
 namespace TestGame.CDK.Constructs
 {
@@ -30,7 +30,19 @@ namespace TestGame.CDK.Constructs
                 Path = props.AssetPath,
             });
             
-            Asset.Bucket.GrantRead(Role, "assets/*");
+            Role.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
+            {
+                Effect = Effect.ALLOW,
+                Resources = new[]
+                {
+                    Asset.Bucket.BucketArn,
+                    Asset.Bucket.BucketArn + "/*"
+                },
+                Actions = new[]
+                {
+                    "s3:*",
+                }
+            }));
             
             // Adding specific CDK-Nag Suppressions
             NagSuppressions.AddResourceSuppressions(Role, new INagPackSuppression[]

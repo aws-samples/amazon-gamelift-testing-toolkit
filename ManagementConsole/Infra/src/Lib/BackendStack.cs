@@ -3,8 +3,10 @@
 
 using System.Collections.Generic;
 using Amazon.CDK;
-using Amazon.CDK.AWS.APIGatewayv2;
-using Amazon.CDK.AWS.APIGatewayv2.Integrations;
+using Amazon.CDK.AWS.APIGateway;
+using Amazon.CDK.AWS.Apigatewayv2;
+using Amazon.CDK.AWS.Apigatewayv2.Alpha;
+using Amazon.CDK.AWS.Apigatewayv2.Integrations.Alpha;
 using Amazon.CDK.AWS.DynamoDB;
 using Amazon.CDK.AWS.EC2;
 using Amazon.CDK.AWS.ECS;
@@ -17,11 +19,12 @@ using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.Logs;
 using Amazon.CDK.AWS.StepFunctions;
 using Amazon.CDK.AWS.StepFunctions.Tasks;
-using Amazon.CDK.RegionInfo;
 using Cdklabs.CdkNag;
+using Constructs;
 using Newtonsoft.Json;
-using CfnRoute = Amazon.CDK.AWS.APIGatewayv2.CfnRoute;
-using CfnRouteProps = Amazon.CDK.AWS.APIGatewayv2.CfnRouteProps;
+using CfnRoute = Amazon.CDK.AWS.Apigatewayv2.CfnRoute;
+using CfnRouteProps = Amazon.CDK.AWS.Apigatewayv2.CfnRouteProps;
+using CfnStage = Amazon.CDK.AWS.Apigatewayv2.CfnStage;
 
 namespace ManagementConsoleInfra.Lib
 {
@@ -72,7 +75,7 @@ namespace ManagementConsoleInfra.Lib
                     "logs:PutLogEvents"
                 }
             });
-            
+
             CreateFlexMatchSimulator(this);
             CreateStatePoller(this, props);
             CreateVirtualPlayersRunner(this);
@@ -103,6 +106,18 @@ namespace ManagementConsoleInfra.Lib
 
         internal void CreateWebSocketApi(Construct scope, BackendProps props)
         {
+            // Configure Log role for ApiGateway
+            var apigwLogRole = new Role(this, "apigwLogRole", new RoleProps
+            {
+                AssumedBy = new ServicePrincipal("apigateway.amazonaws.com")
+            });
+            apigwLogRole.AddManagedPolicy(ManagedPolicy.FromManagedPolicyArn(this, "ApiGwLogPolicy", "arn:aws:iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"));
+            
+            var cfnAccount = new CfnAccount(this, "APIGWAccount", new CfnAccountProps
+            {
+                CloudWatchRoleArn = apigwLogRole.RoleArn
+            });
+            
             var webSocketApi = new WebSocketApi(this, "APIGW", new WebSocketApiProps
             {
                 ApiName = "ManagementServiceApi",
@@ -112,12 +127,11 @@ namespace ManagementConsoleInfra.Lib
                 },
                 RouteSelectionExpression = "$request.body.Type"
             });
+            webSocketApi.Node.AddDependency(cfnAccount);
 
-            var region = Fn.Ref("AWS::Region");
-            
             var mgmtServiceFunctionArn = ManagementServiceFunction.FunctionArn;
             var mgmtServiceApi = $"2015-03-31/functions/{mgmtServiceFunctionArn}/invocations";
-            var integrationUri = $"arn:aws:apigateway:{region}:lambda:path/{mgmtServiceApi}";
+            var integrationUri = $"arn:aws:apigateway:{this.Region}:lambda:path/{mgmtServiceApi}";
 
             var connectIntegration = new CfnIntegration(this, "WebSocketConnectIntegration", new CfnIntegrationProps
             {
@@ -353,6 +367,15 @@ namespace ManagementConsoleInfra.Lib
                 MemorySize = 128,
                 Role = sfnRestartFunctionRole
             });
+            sfnRestartFunctionRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
+            {
+                Effect = Effect.ALLOW,
+                Resources = new[] {"*"},
+                Actions = new[]
+                {
+                    "states:StartExecution"
+                }
+            }));
             // Adding specific CDK-Nag Suppressions
             NagSuppressions.AddResourceSuppressions(sfnRestartFunctionRole, new INagPackSuppression[]
             {
@@ -433,9 +456,8 @@ namespace ManagementConsoleInfra.Lib
                     Reason = "Suppress wildcard finding to give permission to access CloudWatch components"
                 }
             }, true);
-            StatePollerStateMachine.GrantStartExecution(SfnRestartFunction);
-            
-            
+
+
             new CfnOutput(this, "statePollerStateMachineArn",  new CfnOutputProps {
                 Value = StatePollerStateMachine.StateMachineArn
             });
@@ -480,6 +502,7 @@ namespace ManagementConsoleInfra.Lib
                 MemorySize = 1024,
                 Role = managementServiceFunctionRole
             });
+            StatePollerStateMachine.GrantStartExecution(ManagementServiceFunction);
             
             managementServiceFunctionRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
                 {
@@ -529,7 +552,7 @@ namespace ManagementConsoleInfra.Lib
                     },
                     Effect = Effect.ALLOW,
                     Resources = new[] {"*"},
-                    Conditions = new Dictionary<string, object> { {"ecs:cluster", VirtualPlayersRunnerCluster.ClusterArn }}
+                    Conditions = new Dictionary<string, object> { { "ArnEquals", new Dictionary<string, string> { { "ecs:Cluster", VirtualPlayersRunnerCluster.ClusterArn } } } }
                 }));
 
             props.ManagementConnectionsTable.GrantReadWriteData(ManagementServiceFunction);

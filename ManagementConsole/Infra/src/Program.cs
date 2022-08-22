@@ -4,13 +4,14 @@
 using Amazon.CDK;
 using Amazon.CDK.AWS.Lambda;
 using Cdklabs.CdkNag;
+using Constructs;
 using ManagementConsoleInfra.Lib;
 
 namespace ManagementConsoleInfra
 {
     sealed class Program
     {
-        internal static readonly Runtime DotNetRuntime = Runtime.DOTNET_6;
+        internal static readonly Runtime DotNetRuntime = Runtime.DOTNET_CORE_3_1;
 
         public static void Main(string[] args)
         {
@@ -29,7 +30,7 @@ namespace ManagementConsoleInfra
             NagSuppressions.AddResourceSuppressions(scope, BuildSuppressions(), true);
 
             var check = new AwsSolutionsChecks(nagProps);
-            Aspects_.Of(scope).Add(check);
+            Aspects.Of(scope).Add(check);
         }
 
         private static NagPackSuppression[] BuildSuppressions()
