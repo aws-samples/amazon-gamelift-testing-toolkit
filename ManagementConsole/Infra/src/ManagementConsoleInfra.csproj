@@ -17,7 +17,7 @@
     <PackageReference Include="Constructs" VersioAn="[10.0.0,11.0.0)" Version="10.1.80" />
     <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
     <PackageReference Include="Amazon.Lambda.Serialization.Json" Version="2.1.0" />
-    <PackageReference Include="Cdklabs.CdkNag" Version="2.15.48" />
+    <PackageReference Include="Cdklabs.CdkNag" Version="2.15.51" />
   </ItemGroup>
 
   <ItemGroup>
