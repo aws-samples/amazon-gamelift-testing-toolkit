@@ -1,11 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-using System;
 using System.Collections.Generic;
 using Amazon.CDK;
-using Amazon.CDK.AWS.APIGatewayv2;
-using Amazon.CDK.AWS.APIGatewayv2.Integrations;
+using Amazon.CDK.AWS.Apigatewayv2;
+using Amazon.CDK.AWS.Apigatewayv2.Alpha;
+using Amazon.CDK.AWS.Apigatewayv2.Integrations.Alpha;
 using Amazon.CDK.AWS.DynamoDB;
 using Amazon.CDK.AWS.Events;
 using Amazon.CDK.AWS.IAM;
@@ -13,6 +13,7 @@ using Lambda = Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.Events.Targets;
 using Amazon.CDK.AWS.Logs;
 using Cdklabs.CdkNag;
+using Constructs;
 using Newtonsoft.Json;
 using GameLift = Amazon.CDK.AWS.GameLift;
 using TestGame.CDK.Constructs;
@@ -60,6 +61,15 @@ namespace SampleGameInfra.Lib
                 })
             });
             instanceRole.AddToPrincipalPolicy(DefaultCloudwatchPolicy);
+            // Adding specific CDK-Nag Suppressions
+            NagSuppressions.AddResourceSuppressions(instanceRole, new INagPackSuppression[]
+            {
+                new NagPackSuppression
+                {
+                    Id = "AwsSolutions-IAM5",
+                    Reason = "Suppress wildcard finding to give permission to access CloudWatch components"
+                }
+            }, true);
             var fleet = CreateFleet(build, "OnDemand", new GameLift.CfnFleetProps
             {
                 Name = "OnDemandFleet",

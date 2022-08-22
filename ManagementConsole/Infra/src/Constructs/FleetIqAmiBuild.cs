@@ -6,6 +6,7 @@ using Amazon.CDK;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.ImageBuilder;
 using Amazon.CDK.AWS.SSM;
+using Constructs;
 
 namespace CDK.Constructs
 {

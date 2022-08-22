@@ -3,6 +3,7 @@
 
 using Amazon.CDK;
 using Amazon.CDK.AWS.DynamoDB;
+using Constructs;
 
 namespace ManagementConsoleInfra.Lib
 {

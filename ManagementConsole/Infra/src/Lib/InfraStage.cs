@@ -3,6 +3,7 @@
 
 using Amazon.CDK;
 using Cdklabs.CdkNag;
+using Constructs;
 
 namespace ManagementConsoleInfra.Lib
 {

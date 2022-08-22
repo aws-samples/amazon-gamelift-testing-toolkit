@@ -3,6 +3,7 @@
 
 using Amazon.CDK;
 using Amazon.CDK.AWS.StepFunctions;
+using Constructs;
 using TestGame.CDK.Constructs;
 
 namespace SampleGameInfra.Lib

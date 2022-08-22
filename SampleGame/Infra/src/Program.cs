@@ -4,6 +4,7 @@
 using Amazon.CDK;
 using Amazon.CDK.AWS.Lambda;
 using Cdklabs.CdkNag;
+using Constructs;
 using SampleGameInfra.Lib;
 
 namespace SampleGameInfra
@@ -12,7 +13,7 @@ namespace SampleGameInfra
     {
         private const string StackName = "AGTT-SampleGameStack";
 
-        internal static readonly Runtime DotNetRuntime = Runtime.DOTNET_6;
+        internal static readonly Runtime DotNetRuntime = Runtime.DOTNET_CORE_3_1;
 
         public static void Main(string[] args)
         {
@@ -29,7 +30,7 @@ namespace SampleGameInfra
             var nagProps = new NagPackProps() { Verbose = false };
             var check = new AwsSolutionsChecks(nagProps);
             NagSuppressions.AddResourceSuppressions(scope, BuildSuppressions(), true);
-            Aspects_.Of(scope).Add(check);
+            Aspects.Of(scope).Add(check);
         }
 
         private static NagPackSuppression[] BuildSuppressions()

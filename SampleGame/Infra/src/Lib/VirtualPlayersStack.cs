@@ -8,6 +8,7 @@ using Amazon.CDK.AWS.ECS;
 using Amazon.CDK.AWS.Events.Targets;
 using Amazon.CDK.AWS.Logs;
 using Cdklabs.CdkNag;
+using Constructs;
 
 namespace SampleGameInfra.Lib
 {
