@@ -15,9 +15,6 @@ namespace ManagementConsoleInfra.Lib
     public class SecurityStack : Stack
     {
         public Key EncryptionKey;
-        public Role MgmtLambdaRole;
-        public Role AuthRole;
-        public Role StatePollerRole; 
         internal SecurityStack(Construct scope, string id, SecurityProps props = null) : base(scope, id, props)
         {
             EncryptionKey = new Key(this, "AGTTCMK", new KeyProps

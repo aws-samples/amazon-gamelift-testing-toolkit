@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using Amazon.CDK;
 using Amazon.CDK.AWS.Apigatewayv2.Alpha;
 using Amazon.CDK.AWS.CloudFront;
-using Amazon.CDK.AWS.CloudFront.Origins;
 using Amazon.CDK.AWS.Cognito;
 using Amazon.CDK.AWS.Cognito.IdentityPool.Alpha;
 using Amazon.CDK.AWS.IAM;
@@ -117,7 +116,19 @@ namespace ManagementConsoleInfra.Lib
                     }) }
                 },
             });
-            props.ApiProdStage.GrantManagementApiAccess(WebIdentityPool.AuthenticatedRole);
+
+            WebIdentityPool.AuthenticatedRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
+            {
+                Effect = Effect.ALLOW,
+                Resources = new[]
+                {
+                    $"arn:aws:execute-api:{this.Region}:*:{props.ApiProdStage.Api.ApiId}/{props.ApiProdStage.StageName}/*"
+                },
+                Actions = new[]
+                {
+                    "execute-api:Invoke"
+                }
+            }));
 
             var cognitoDomainPrefix = "falken-" + WebUserPoolClient.UserPoolClientId;
             var cognitoDomain = cognitoDomainPrefix + ".auth." + Fn.Ref("AWS::Region") + ".amazoncognito.com";

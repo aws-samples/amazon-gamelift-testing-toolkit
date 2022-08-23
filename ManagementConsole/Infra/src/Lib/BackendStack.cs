@@ -180,6 +180,26 @@ namespace ManagementConsoleInfra.Lib
             ProdStage.GrantManagementApiAccess(StateEventHandlerFunction);
             ProdStage.GrantManagementApiAccess(QueuePlacementEventFunction);
             ProdStage.GrantManagementApiAccess(FlexMatchEventFunction);
+            
+            var apiGwInvokePolicy = new PolicyStatement(new PolicyStatementProps
+            {
+                Effect = Effect.ALLOW,
+                Resources = new[]
+                {
+                    $"arn:aws:execute-api:{this.Region}:*:{ProdStage.Api.ApiId}/{ProdStage.StageName}/*"
+                },
+                Actions = new[]
+                {
+                    "execute-api:Invoke"
+                }
+            });
+            ManagementServiceFunction.Role.AddToPrincipalPolicy(apiGwInvokePolicy);
+            StateEventHandlerFunction.Role.AddToPrincipalPolicy(apiGwInvokePolicy);
+            QueuePlacementEventFunction.Role.AddToPrincipalPolicy(apiGwInvokePolicy);
+            FlexMatchEventFunction.Role.AddToPrincipalPolicy(apiGwInvokePolicy);
+
+            // Adding permission for ApiGW to invoke Lambda functions
+            ManagementServiceFunction.GrantInvoke(new ServicePrincipal("apigateway.amazonaws.com"));
 
             new CfnOutput(this, "mgmtApiUrl",  new CfnOutputProps {
                 Value = ProdStage.Url
@@ -514,6 +534,7 @@ namespace ManagementConsoleInfra.Lib
                         "ecs:DescribeTaskDefinition",
                         "cloudwatch:GetMetricWidgetImage",
                         "cloudwatch:GetLogEvents",
+                        "states:ListExecutions",
                         "gamelift:DescribeFleetCapacity",
                         "gamelift:DescribePlayerSessions",
                         "gamelift:UpdateMatchmakingConfiguration",
@@ -538,6 +559,7 @@ namespace ManagementConsoleInfra.Lib
                         "gamelift:DescribeFleetAttributes",
                         "gamelift:DescribeFleetEvents",
                         "gamelift:DescribeFleetUtilization",
+                        "gamelift:DescribeMatchmakingConfigurations"
                     }
                 }));
 
@@ -574,13 +596,6 @@ namespace ManagementConsoleInfra.Lib
                     Reason = "Suppress wildcard finding to give permission to access CloudWatch and GameLift generic components"
                 }
             }, true);
-
-            // Adding permission for ApiGW to invoke Lambda functions
-            ManagementServiceFunction.AddPermission("ManagementServiceInvokePermission", new Permission
-            {
-                Action = "lambda:InvokeFunction",
-                Principal = new ServicePrincipal("apigateway.amazonaws.com")
-            });
 
             var stateEventFunctionRole = new Role(this, "stateEventFunctionRole", new RoleProps
             {
