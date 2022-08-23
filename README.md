@@ -22,6 +22,13 @@ Additionally, if you intend to deploy the sample game or create virtual players 
 
 * [Docker](https://www.docker.com/) installed and you should be logged in to Docker Hub.
 
+## Bootstrap
+
+```bash
+yarn bootstrap
+```
+
+
 ## Build
 
 ```bash

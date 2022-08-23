@@ -8,6 +8,7 @@
     "scripts": {
       "build-toolkit" : "yarn pack-management-console && yarn build-web",
       "build-sample-game" : "yarn pack-sample-game",
+      "bootstrap": "cd ManagementConsole/Infra && npx cdk bootstrap",
       "deploy-toolkit": "cd ManagementConsole/Infra && npx cdk synth && npx cdk -a cdk.out/assembly-AGTT-ManagementConsoleStack deploy --all",
       "deploy-sample-game": "yarn pack-sample-game && cd SampleGame/Infra && npx cdk synth && npx cdk -a cdk.out/assembly-AGTT-SampleGameStack deploy --all",
       "delete-toolkit": "cd ManagementConsole/Infra && npx cdk -a cdk.out/assembly-AGTT-ManagementConsoleStack destroy --all",
@@ -20,6 +21,6 @@
       "host-docs-website-local": "docker run --rm -it -p 8000:8000 -v ${PWD}/docs:/docs squidfunk/mkdocs-material"
     },
     "devDependencies": {
-      "aws-cdk": "^2.28.1"
+      "aws-cdk": "^2.38.1"
     }
 }
