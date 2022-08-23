@@ -535,6 +535,7 @@ namespace ManagementConsoleInfra.Lib
                         "cloudwatch:GetMetricWidgetImage",
                         "cloudwatch:GetLogEvents",
                         "states:ListExecutions",
+                        "iam:PassRole",
                         "gamelift:DescribeFleetCapacity",
                         "gamelift:DescribePlayerSessions",
                         "gamelift:UpdateMatchmakingConfiguration",
@@ -559,7 +560,8 @@ namespace ManagementConsoleInfra.Lib
                         "gamelift:DescribeFleetAttributes",
                         "gamelift:DescribeFleetEvents",
                         "gamelift:DescribeFleetUtilization",
-                        "gamelift:DescribeMatchmakingConfigurations"
+                        "gamelift:DescribeMatchmakingConfigurations",
+                        "gamelift:DescribeScalingPolicies"
                     }
                 }));
 
