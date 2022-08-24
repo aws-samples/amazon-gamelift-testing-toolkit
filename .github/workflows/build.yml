@@ -34,12 +34,14 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ matrix.net }}
-      - name: Setup GameLift dependencies for game
+      - name: Install Lambda dependencies
         run: |
-          cd SampleGame/Game
-          ./install.sh
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+          dotnet tool install -g Amazon.Lambda.Tools
+          yarn
+      - name: Build Management console
+        run: yarn build-toolkit
+      - name: Build Sample Game
+        run: yarn build-sample-game
   savepr:
     runs-on: ubuntu-latest
     name: Save PR number if running on PR by dependabot

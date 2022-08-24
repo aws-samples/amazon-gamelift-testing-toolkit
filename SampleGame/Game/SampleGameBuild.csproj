@@ -29,7 +29,4 @@
     <ItemGroup>
       <None Remove="DLL\" />
     </ItemGroup>
-    <ItemGroup>
-      <Folder Include="DLL\" />
-    </ItemGroup>
 </Project>
