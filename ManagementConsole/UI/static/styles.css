@@ -225,6 +225,7 @@ td.jsoneditor-tree, td.jsoneditor-separator
 
 table.jsoneditor-tree tbody tr td {
     border:0;
+    background-color:#eee;
 }
 
 .jsoneditor-tree div { line-height:20px}
