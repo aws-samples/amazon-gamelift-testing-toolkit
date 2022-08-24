@@ -346,7 +346,7 @@ namespace ManagementConsoleInfra.Lib
             }, true);
             
             props.ManagementConfigTable.GrantReadData(SfnPollerFunction);
-            props.StateLogTable.GrantReadData(SfnPollerFunction);
+            props.StateLogTable.GrantReadWriteData(SfnPollerFunction);
             props.GameSessionTable.GrantWriteData(SfnPollerFunction);
 
             var sfnIteratorFunctionRole = new Role(this, "SfnIteratorFunctionRole", new RoleProps
