@@ -5,7 +5,7 @@
     "main": "src/Game.ts",
     "scripts": {
         "build": "webpack --config webpack/prod.js --output-path ./dist/",
-        "watch": "webpack serve --watch-content-base --config webpack/base.js --output-path ./dist/ --open",
+        "watch": "webpack serve --config webpack/base.js --output-path ./dist/ --open",
         "test-prod": "webpack serve --config webpack/prod.js --output-path ./dist/ --open"
     },
     "author": "aws-solution-builders",

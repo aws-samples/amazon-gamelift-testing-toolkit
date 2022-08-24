@@ -12,8 +12,10 @@ module.exports = {
     filename: 'bundle.js'
   },
   devServer: {
-    contentBase: path.join(__dirname, '../dist/'),
-    writeToDisk: true
+    static: path.join(__dirname, '../dist/'),
+    devMiddleware: {
+      writeToDisk: true,
+    },
   },
   entry: path.resolve(__dirname, '../src') + '/Game.ts',
   module: {
