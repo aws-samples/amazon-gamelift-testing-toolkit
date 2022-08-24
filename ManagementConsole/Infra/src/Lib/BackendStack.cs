@@ -676,6 +676,7 @@ namespace ManagementConsoleInfra.Lib
                     ["TicketLogTableName"] = props.TicketLogTable.TableName,
                     ["MatchmakingSimulationTableName"] = props.MatchmakingSimulationTable.TableName,
                     ["ConnectionsTableName"] = props.ManagementConnectionsTable.TableName,
+                    ["EventLogTableName"] = props.EventLogTable.TableName,
                 },
                 Timeout = Duration.Seconds(30),
                 MemorySize = 1024,
@@ -691,6 +692,7 @@ namespace ManagementConsoleInfra.Lib
                 }
             }, true);
             
+            props.EventLogTable.GrantReadWriteData(FlexMatchEventFunction);
             props.ManagementConfigTable.GrantReadData(FlexMatchEventFunction);
             props.TicketLogTable.GrantReadWriteData(FlexMatchEventFunction);
             props.ManagementConnectionsTable.GrantReadWriteData(FlexMatchEventFunction);
