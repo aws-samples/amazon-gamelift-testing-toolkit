@@ -7,10 +7,10 @@
   resolved "https://registry.yarnpkg.com/@sphinxxxx/color-conversion/-/color-conversion-2.2.2.tgz#03ecc29279e3c0c832f6185a5bfa3497858ac8ca"
   integrity sha512-XExJS3cLqgrmNBIP3bBw6+1oQ1ksGjFh0+oClDKFYpCCqx/hlqwWO5KO/S63fzUo67SxI9dMrF0y5T/Ey7h8Zw==
 
-ace-builds@^1.5.3:
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/ace-builds/-/ace-builds-1.6.0.tgz#4e1652a0e33c4ae262dc841b1254dd2ad0beb5da"
-  integrity sha512-qdkx965G/TA12IK7Zk+iCVDtA9wvhxIGivGc2rsID4UYbY2Bpatwep3ZrBZwj1IB2miU6FodDMqM9Kc1lqDlLg==
+ace-builds@^1.6.0:
+  version "1.9.6"
+  resolved "https://registry.yarnpkg.com/ace-builds/-/ace-builds-1.9.6.tgz#2d3721f90f0664b79be9288f6319dd57576ff1e7"
+  integrity sha512-M/Li4hPruMSbkkg35LgdbsIBq0WuwrV4ztP2pKaww47rC/MvDc1bOrYxwJrfgxdlzyLKrja5bn+9KwwuzqB2xQ==
 
 ajv@^6.12.6:
   version "6.12.6"
@@ -35,7 +35,7 @@ fast-json-stable-stringify@^2.0.0:
 javascript-natural-sort@^0.7.1:
   version "0.7.1"
   resolved "https://registry.yarnpkg.com/javascript-natural-sort/-/javascript-natural-sort-0.7.1.tgz#f9e2303d4507f6d74355a73664d1440fb5a0ef59"
-  integrity sha1-+eIwPUUH9tdDVac2ZNFED7Wg71k=
+  integrity sha512-nO6jcEfZWQXDhOiBtG2KvKyEptz7RVbpGP4vTD2hLBdmNQSsCiicO2Ioinv6UI4y9ukqnBpy+XZ9H6uLNgJTlw==
 
 jmespath@^0.16.0:
   version "0.16.0"
@@ -52,12 +52,12 @@ json-source-map@^0.6.1:
   resolved "https://registry.yarnpkg.com/json-source-map/-/json-source-map-0.6.1.tgz#e0b1f6f4ce13a9ad57e2ae165a24d06e62c79a0f"
   integrity sha512-1QoztHPsMQqhDq0hlXY5ZqcEdUzxQEIxgFkKl4WUp2pgShObl+9ovi4kRh2TfvAfxAoHOJ9vIMEqk3k4iex7tg==
 
-jsoneditor@^9.5.6:
-  version "9.8.0"
-  resolved "https://registry.yarnpkg.com/jsoneditor/-/jsoneditor-9.8.0.tgz#08db81ccf6f6e9fdff8691e42c4fb62d3efdd6ad"
-  integrity sha512-q1ekwYizbSAny0/UAEOzLviVCyBS5XFGwM/EUNf9KnfB1MRSDmJDWjt4lAqMVz1TUV5O/l3J4/WzUSLQh2tZjw==
+jsoneditor@^9.9.0:
+  version "9.9.0"
+  resolved "https://registry.yarnpkg.com/jsoneditor/-/jsoneditor-9.9.0.tgz#671e1231e23c43ebc6e1eb43fe97b2f97b156faf"
+  integrity sha512-NHJhyaqcc5U33ah6dEcd0S9b14Auocpe9nydvC9ui7Uq/vjEFnsd7ot6O9Jqwv53B7DmHFUWq5cT4qeWh4MEoA==
   dependencies:
-    ace-builds "^1.5.3"
+    ace-builds "^1.6.0"
     ajv "^6.12.6"
     javascript-natural-sort "^0.7.1"
     jmespath "^0.16.0"
@@ -73,9 +73,9 @@ jsonrepair@^2.2.1:
   integrity sha512-o9Je8TceILo872uQC9fIBJm957j1Io7z8Ca1iWIqY6S5S65HGE9XN7XEEw7+tUviB9Vq4sygV89MVTxl+rhZyg==
 
 mdbootstrap@^4.19.2:
-  version "4.19.2"
-  resolved "https://registry.yarnpkg.com/mdbootstrap/-/mdbootstrap-4.19.2.tgz#21007a6b7d89cf5420d803a27db344edfa00be31"
-  integrity sha512-a+LwPflYRYwlmYKTvftW0X7SfOMrRZ02qZjrssNko1lPU/HR5JRFc1uwa3Dmmw+6TwsYH760waqdghBFrucpOw==
+  version "4.20.0"
+  resolved "https://registry.yarnpkg.com/mdbootstrap/-/mdbootstrap-4.20.0.tgz#3f37f4747888cb8da32ab2bb3166c69448630f59"
+  integrity sha512-eIxaYsvHct2BKqkJWphh6j7nFQXHh9NjbbN7a+dctfrVsKaydNW5XpKIxmq2tDSb9+XYGm9hK7hMTlHgeV6wdw==
 
 mobius1-selectr@^2.4.13:
   version "2.4.13"
@@ -85,7 +85,7 @@ mobius1-selectr@^2.4.13:
 picomodal@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/picomodal/-/picomodal-3.0.0.tgz#facd30f4fbf34a809c1e04ea525f004f399c0b82"
-  integrity sha1-+s0w9PvzSoCcHgTqUl8ATzmcC4I=
+  integrity sha512-FoR3TDfuLlqUvcEeK5ifpKSVVns6B4BQvc8SDF6THVMuadya6LLtji0QgUDSStw0ZR2J7I6UGi5V2V23rnPWTw==
 
 punycode@^2.1.0:
   version "2.1.1"
