@@ -43,6 +43,9 @@ namespace SampleGameInfra.Lib
                 VirtualPlayersConfiguration = virtualPlayersConfig,
                 WebSocketApiUrl = backendStack.WebSocketStage.Url
             });
+
+            // add VirtualPlayers tag to VirtualPlayersStack resources to allow toolkit to launch task definitions
+            Tags.Of(virtualPlayersStack).Add("VirtualPlayers", "true");
         }
     }
 }
