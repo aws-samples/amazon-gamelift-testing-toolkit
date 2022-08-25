@@ -40,6 +40,14 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                     }
 
                     remainingPlayersToLaunch -= playersToLaunch;
+
+                    // Launch players with the VirtualPlayers tag set to true
+                    var tags = new List<Tag>();
+                    tags.Add(new Tag
+                    {
+                        Key = "VirtualPlayers",
+                        Value = "true",
+                    });
                     
                     var request = new RunTaskRequest
                     {
@@ -57,6 +65,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                                 SecurityGroups = new [] { Environment.GetEnvironmentVariable("VirtualPlayersSecurityGroupId") }.ToList()
                             }
                         },
+                        Tags = tags, 
                     };
 
                     LambdaLogger.Log(JsonConvert.SerializeObject(request));
@@ -77,7 +86,6 @@ namespace ManagementConsoleBackend.ManagementService.Lib
 
         public async Task<List<Amazon.ECS.Model.TaskDefinition>> GetTaskDefinitions()
         {
-            var taskDefinitionArns = new List<string>();
             var taskDefinitions = new List<TaskDefinition>();
             
             try
@@ -86,7 +94,18 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                 
                 await foreach (var taskDefinitionArn in listTaskDefinitionsPaginator.TaskDefinitionArns)
                 {
-                    taskDefinitionArns.Add(taskDefinitionArn);    
+                    var listTagsForResourceResponse = await _client.ListTagsForResourceAsync(new ListTagsForResourceRequest
+                    {
+                        ResourceArn = taskDefinitionArn
+                    });
+
+                    if (!listTagsForResourceResponse.Tags.Exists(t => t.Key == "VirtualPlayers" && t.Value == "true"))
+                    {
+                        // Skip task definitions missing a VirtualPlayers=true tag
+                        LambdaLogger.Log("Skipping " + taskDefinitionArn + " as Virtual Players tag doesn't exist");
+                        continue;
+                    }
+                    
                     var describeTaskDefinitionsResponse = await _client.DescribeTaskDefinitionAsync(
                         new DescribeTaskDefinitionRequest
                         {
@@ -165,7 +184,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                 {
                     try
                     {
-                        await TerminateVirtualPlayer(taskArn);
+                        errors.AddRange(await TerminateVirtualPlayer(taskArn));
                     }
                     catch (Exception e)
                     {
