@@ -48,6 +48,7 @@ export class ManageVirtualPlayersPopup extends Popup
 
     refresh()
     {
+        this.hideStatusAlert();
         Network.sendObject({Type:"GetVirtualPlayers"});
     }
 
@@ -61,6 +62,23 @@ export class ManageVirtualPlayersPopup extends Popup
     {
         this._emitter.off(Events.GET_VIRTUAL_PLAYERS_RESPONSE, this.onGetVirtualPlayersResponse);
         this._emitter.off(Events.TERMINATE_VIRTUAL_PLAYER_RESPONSE, this.onTerminateVirtualPlayerResponse);
+    }
+
+    showSuccessAlert = (text) =>
+    {
+        this._popup.node.querySelector("#statusText").className = "alert alert-success";
+        this._popup.node.querySelector("#statusText").innerHTML = text;
+    }
+
+    showFailureAlert = (text) =>
+    {
+        this._popup.node.querySelector("#statusText").className = "alert alert-danger";
+        this._popup.node.querySelector("#statusText").innerHTML = text;
+    }
+
+    hideStatusAlert = () =>
+    {
+        this._popup.node.querySelector("#statusText").className = "alert hide";
     }
 
     showSessionDetail = (gameSession) =>
@@ -80,9 +98,17 @@ export class ManageVirtualPlayersPopup extends Popup
         this._popup.node.querySelector(".gameSessionDetailContent").className="gameSessionDetailContent";
     }
 
-    onTerminateVirtualPlayerResponse = (data:SimpleResult) =>
+    onTerminateVirtualPlayerResponse = (data) =>
     {
-        this.refresh();
+        console.log("TERMINATE RESPONSE", data);
+        if (data.Errors && data.Errors.length)
+        {
+            this.showFailureAlert(data.Errors[0]);
+        }
+        else
+        {
+            this.refresh();
+        }
     };
 
     resetVirtualPlayersTable()
