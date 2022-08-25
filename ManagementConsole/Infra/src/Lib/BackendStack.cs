@@ -531,6 +531,7 @@ namespace ManagementConsoleInfra.Lib
                     Actions = new[]
                     {
                         "ecs:ListTaskDefinitions",
+                        "ecs:ListTagsForResource",
                         "ecs:DescribeTaskDefinition",
                         "cloudwatch:GetMetricWidgetImage",
                         "cloudwatch:GetLogEvents",
@@ -571,13 +572,32 @@ namespace ManagementConsoleInfra.Lib
                     {
                         "ecs:DescribeTasks",
                         "ecs:ListTasks",
-                        "ecs:StopTask",
-                        "ecs:RunTask",
                     },
                     Effect = Effect.ALLOW,
                     Resources = new[] {"*"},
-                    Conditions = new Dictionary<string, object> { { "ArnEquals", new Dictionary<string, string> { { "ecs:Cluster", VirtualPlayersRunnerCluster.ClusterArn } } } }
+                    Conditions = new Dictionary<string, object>
+                    {
+                        { "ArnEquals", new Dictionary<string, string> { { "ecs:Cluster", VirtualPlayersRunnerCluster.ClusterArn } } }
+                    },
+                    
                 }));
+            
+            managementServiceFunctionRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
+            {
+                Actions = new[]
+                {
+                    "ecs:StopTask",
+                    "ecs:RunTask",
+                },
+                Effect = Effect.ALLOW,
+                Resources = new[] {"*"},
+                Conditions = new Dictionary<string, object>
+                {
+                    { "ArnEquals", new Dictionary<string, string> { { "ecs:Cluster", VirtualPlayersRunnerCluster.ClusterArn } } },
+                    { "StringEquals", new Dictionary<string, string> { { "ecs:ResourceTag/VirtualPlayers", "true" } } },
+                },
+                    
+            }));
 
             props.ManagementConnectionsTable.GrantReadWriteData(ManagementServiceFunction);
             props.EventLogTable.GrantReadData(ManagementServiceFunction);
