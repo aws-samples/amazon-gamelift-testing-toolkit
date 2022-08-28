@@ -19,25 +19,40 @@ export class MatchmakingConfigs extends BaseContainer
     protected _layoutRows=1;
     protected _titleText:BitmapText;
     protected _groupOffsetY=30;
+    protected _dottedLineImg:Image;
 
-    constructor (scene:Phaser.Scene, x:number, y:number, width:number, height:number)
+    constructor (scene:Phaser.Scene, x:number, y:number, width:number)
     {
         super(scene, x, y);
         this._matchmakingConfigs = {};
 
         let dottedLineTexture = this.getDottedLineTexture("configsLine");
-        let img = new Image(scene, 0, 0, dottedLineTexture).setOrigin(0);
+        this._dottedLineImg = new Image(scene, 0, 0, dottedLineTexture).setOrigin(0);
 //        img.setOrigin(0,0);
-        this.add(img);
+        this.add(this._dottedLineImg);
 
         this._titleText = this.scene.add.bitmapText(5, 3, "Noto Sans", "Matchmaking Configurations", 16);
         this._titleText.setOrigin(0,0);
         this.add(this._titleText);
 
-        this._bg = new RoundedRectangle(scene, 0, this._groupOffsetY, width, height-this._groupOffsetY, 0x00cc00).setOrigin(0);
+        this._bg = new RoundedRectangle(scene, 0, this._groupOffsetY, width, MatchmakingConfig.configHeight, 0x00cc00).setOrigin(0);
         this.add(this._bg);
         this._bg.alpha=0;
+        this.setSize(width, MatchmakingConfig.configHeight);
+    }
+
+    public resize(width:number, height:number)
+    {
+        let dottedLineTexture = this.getDottedLineTexture("configsLine");
+        this._dottedLineImg.texture = dottedLineTexture;
+        this._dottedLineImg.destroy();
+        this._dottedLineImg = new Image(this.scene, 0, 0, dottedLineTexture).setOrigin(0);
+        this.add(this._dottedLineImg);
+
+        this._bg.drawRectangle(width, height);
         this.setSize(width, height);
+
+        this.updateConfigDimensions();
     }
 
     public handleClick(localX, localY)
@@ -68,7 +83,7 @@ export class MatchmakingConfigs extends BaseContainer
     {
         if (this._matchmakingConfigs[mmConfig.Name]==undefined)
         {
-            this._matchmakingConfigs[mmConfig.Name] = new MatchmakingConfig(this.scene, 0, 0, 20, this.displayHeight);
+            this._matchmakingConfigs[mmConfig.Name] = new MatchmakingConfig(this.scene, 0, 0, 20);
             this.addConfig(mmConfig.Name);
         }
 
@@ -79,7 +94,7 @@ export class MatchmakingConfigs extends BaseContainer
 
     public addConfig(id:string, fake:boolean=false)
     {
-        this._matchmakingConfigs[id] = new MatchmakingConfig(this.scene, this._bg.x + this._bg.width/2, this._bg.y + this._bg.height/2, 20, this._bg.height);
+        this._matchmakingConfigs[id] = new MatchmakingConfig(this.scene, this._bg.x + this._bg.width/2, this._bg.y + this._bg.height/2, 20);
         this.add(this._matchmakingConfigs[id]);
 
         if (fake)

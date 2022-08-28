@@ -31,6 +31,11 @@ import SimpleResult = DataTypes.SimpleResult;
 import {ToggleAnimationButton} from "../Elements/Buttons/ToggleAnimationButton";
 import {PlayerMatch} from "../Elements/PlayerMatch";
 import {PlayerMatches} from "../Elements/PlayerMatches";
+import {Game} from "../Game";
+import Image = Phaser.GameObjects.Image;
+import Sprite = Phaser.GameObjects.Sprite;
+import {Fleet} from "../Elements/Fleet";
+import {ScreenResolution} from "../Data/ScreenResolution";
 
 export class ConsoleScene extends Phaser.Scene
 {
@@ -43,17 +48,19 @@ export class ConsoleScene extends Phaser.Scene
     protected _emitter: EventDispatcher;
     protected _lines: Phaser.GameObjects.GameObject[];
     protected _aliases: Alias[];
+    protected _gtLogo: Sprite;
     public static animationsEnabled=true;
     public static disableUpdates=false;
     protected _stateLoaded:boolean = false;
     public static moveSpeed:number = 3;
+    protected _currentState: State;
 
     constructor ()
     {
         super("Console");
         this._emitter = EventDispatcher.getInstance();
         PopupHandler.registerScene(this);
-
+        console.log(this);
     }
 
     preload ()
@@ -75,58 +82,34 @@ export class ConsoleScene extends Phaser.Scene
 
     init(state:State)
     {
+        console.log("INIT CALLED", state);
+        ScreenResolution.updateUserResolution(this.scale.width, this.scale.height);
+
         this._settingsPanel = new SettingsPanel(this, 0, 0);
         this.add.existing(this._settingsPanel);
 
-        //this._popup = new Popup(this, 0, 0);
+        this._matchmakingConfigurations = new MatchmakingConfigs(this, 0, 0, ScreenResolution.width);
+        this._queues = new GameSessionQueues(this, 0, 0, ScreenResolution.width);
+        this._fleets = new Fleets(this, 0, 0, ScreenResolution.width);
 
-        this._matchmakingConfigurations = new MatchmakingConfigs(this, 0, 0, config.width, 150);
-        //this._matchmakingConfigurations.x=config.width/2;
-
-        this._queues = new GameSessionQueues(this, 0, 0, config.width, 150);
-
-        this._fleets = new Fleets(this, 0, 0, config.width, 460);
-
-        //this._fleets.y=0;
         this.add.existing(this._fleets);
         this.add.existing(this._queues);
         this.add.existing(this._matchmakingConfigurations);
 
-        //this._queues.x=Math.round(config.width/2);
-        this._queues.x=0;
-
-        //this._fleets.x=Math.round(config.width/2);
-        //this._fleets.y=Math.round(config.height-this._fleets.displayHeight/2 - 10);
-        this._fleets.x=0;
-        this._fleets.y=config.height - this._fleets.displayHeight - 10;
-        //this._fleets.y=Math.round(this._fleets.displayHeight/2);
-
-        this._queues.y=this._fleets.y - this._queues.displayHeight - 50;
-        //this._queues.y=0;
-        this._matchmakingConfigurations.y=this._queues.y - this._matchmakingConfigurations.displayHeight - 50;
-        //this._matchmakingConfigurations.y=0;
-
-        /*let testConfig = new MatchmakingConfig(this, 0, 0, 300, 300);
-        this.add.existing(testConfig);
-        testConfig.x = config.width/2;
-        testConfig.y = testConfig.height/2;
-*/
-        /*let testQueue = new GameSessionQueue(this, 0, 0, 300, 300);
-        this.add.existing(testQueue);
-        testQueue.x = config.width/2;
-        testQueue.y = testQueue.height/2;
-*/
-        /*
-        let testFleet = new Fleet(this, 0, 0, 300, 300);
-        this.add.existing(testFleet);
-        testFleet.x = config.width/2;
-        testFleet.y = testFleet.height/2;
-*/
-
-        //this._popup.show();
+        this.layoutScene();
 
         this.processState(state);
         this._lines = [];
+    }
+
+    layoutScene()
+    {
+        this._queues.x=0;
+        this._fleets.x=0;
+        this._fleets.y=ScreenResolution.height - this._fleets.displayHeight - 10;
+        console.log("FLEETS DISPLAY HEIGHT", this._fleets.displayHeight);
+        this._queues.y=this._fleets.y - this._queues.displayHeight - 50;
+        this._matchmakingConfigurations.y=this._queues.y - this._matchmakingConfigurations.displayHeight - 50;
     }
 
     addPlayer(playerId:string=null)
@@ -370,6 +353,7 @@ export class ConsoleScene extends Phaser.Scene
 
     processState(state:State)
     {
+        this._currentState = state;
         /*
         let playerSessions=[];
         for (let playerSession of state.PlayerSessions)
@@ -463,6 +447,7 @@ export class ConsoleScene extends Phaser.Scene
 
     create ()
     {
+        this.scale.on('resize', this.doResize, this);
         this.cameras.main.setBackgroundColor("#161925");
 
         this._settingsButton = new SettingsButton(this, 0, 0);
@@ -478,78 +463,15 @@ export class ConsoleScene extends Phaser.Scene
         this.add.existing(this._animationButton);
         //this.input.enableDebug(this._settingsButton);
 
-        //var gtlogo = this.add.image(0, 0, "gtlogo");
-        var gtlogo = this.add.sprite(0,0,"toolkit", "gtlogo.png");
-        gtlogo.scale = 0.5;
-        gtlogo.setOrigin(0);
-        gtlogo.x = this.cameras.main.width - gtlogo.displayWidth - 3;
-        gtlogo.y = 0; //this.cameras.main.height - gtlogo.displayHeight;
+        this._gtLogo = this.add.sprite(0,0,"toolkit", "gtlogo.png");
+        this._gtLogo.scale = 0.5;
+        this._gtLogo.setOrigin(0);
+        this._gtLogo.x = ScreenResolution.width - this._gtLogo.displayWidth - 3;
+        this._gtLogo.y = 0;
 
         this.setupEventListeners();
 
         this.input.on("pointerdown", this.onSceneClick);
-
-        /*
-        var container = new ContainerLite(this, 0, 0, 300, 300);
-        this.add.existing(container);
-        let rect = new Rectangle(this, 0, 0, 300,300,0xffffff);
-        this.add.existing(rect);
-        container.add(rect);
-
-        container.x=container.y = 300;
-        container.setVisible(true);
-
-         */
-//        let instance = new Instance(this, 0, 0);
-//        this.add.existing(instance);
-
-
-        //let sprite = this.add.sprite(50, 50, 'brawler');
-        //sprite.setFrame(1);
-
-        /*
-        let sprite = this.add.sprite(50, 50, 'charss', this.spriteNum);
-        sprite.scaleX=2;
-        sprite.scaleY=2;
-
-        sprite.x=10;
-        var timeline = this.tweens.createTimeline();
-
-        timeline.add({
-            targets: sprite,
-            x: 90,
-            ease: 'Power1',
-            duration: 1500
-        });
-
-        timeline.add({
-            targets: sprite,
-            x: 10,
-            ease: 'Power1',
-            duration: 1500
-        });
-
-        timeline.play();
-        timeline.loop=-1;
-        */
-
-        /*
-        let tweenA = this.tweens.add({
-            targets: sprite,
-            x:90,
-            yoyo:true,
-//            loop:-1,
-            delay:Math.random()*1000
-        });
-        let tweenB = this.tweens.add({
-            targets: sprite,
-            x:90,
-            yoyo:true,
-//            loop:-1,
-//            delay:Math.random()*1000
-        });
-        tweenA.(tweenB);
-*/
     }
 
     setupEventListeners = () =>
@@ -573,7 +495,6 @@ export class ConsoleScene extends Phaser.Scene
         this._emitter.on(Events.HIDE_MATCHMAKING_CONFIG_QUEUES, this.onHideLines);
         this._emitter.on(Events.SHOW_QUEUE_FLEETS, this.onShowQueueFleets);
         this._emitter.on(Events.HIDE_QUEUE_FLEETS, this.onHideLines);
-
         this._emitter.on(Events.SOCKET_MESSAGE, this.onSocketMessage);
         this._emitter.on(Events.PLAYER_ADDED_TO_GAME_SESSION, this.onPlayerAddedToGameSession);
     };
@@ -939,7 +860,14 @@ export class ConsoleScene extends Phaser.Scene
 
             let match = PlayerMatches.createMatch(this, matchId, matchmakingConfig.Data.ConfigurationArn);
             match.x = matchmakingConfig.x + Math.floor(Math.random() * matchmakingConfig.displayWidth);
-            match.y = 375;
+            if (ScreenResolution.displayResolution==ScreenResolution.RES_1080P)
+            {
+                match.y = this._queues.y - 15;
+            }
+            else
+            {
+                match.y = this._queues.y - 15;
+            }
             this.add.existing(match);
 
             let numFleets = this._fleets.ChildElements.length;
@@ -1070,4 +998,17 @@ export class ConsoleScene extends Phaser.Scene
         this._emitter.emit(Events.CLOSE_MENUS);
         //this._popup?.hide();
     };
+
+    doResize = (gameSize, baseSize, displaySize, resolution) =>
+    {
+        ScreenResolution.updateUserResolution(this.scale.width, this.scale.height);
+
+        this._gtLogo.x = ScreenResolution.width - this._gtLogo.displayWidth - 3;
+        this._gtLogo.y = 0;
+
+        this._matchmakingConfigurations.resize(ScreenResolution.width, MatchmakingConfig.configHeight);
+        this._queues.resize(ScreenResolution.width, GameSessionQueue.queueHeight);
+        this._fleets.resize(ScreenResolution.width, Fleet.fleetHeight);
+        this.layoutScene();
+    }
 }

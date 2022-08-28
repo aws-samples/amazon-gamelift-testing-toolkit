@@ -12,6 +12,8 @@ import Rectangle = Phaser.GameObjects.Rectangle;
 import config from "../../Config/Config"
 import {PopupClickEvent} from "../../Events/PopupClickEvent";
 import {SubPopup} from "./SubPopup";
+import {Game} from "../../Game";
+import {ScreenResolution} from "../../Data/ScreenResolution";
 
 export abstract class Popup extends Phaser.GameObjects.Container
 {
@@ -73,8 +75,8 @@ export abstract class Popup extends Phaser.GameObjects.Container
         this.drawPopup();
 
         this.setPopupData(event);
-        this._popup.x = config.width/2;
-        this._popup.y = config.height/2;
+        this._popup.x = ScreenResolution.width/2;
+        this._popup.y = ScreenResolution.height/2;
 
         this.setVisible(true);
         this.drawComplete();

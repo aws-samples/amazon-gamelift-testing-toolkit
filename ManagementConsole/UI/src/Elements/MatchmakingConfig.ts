@@ -16,6 +16,7 @@ import BitmapText = Phaser.GameObjects.BitmapText;
 import {RoundedRectangle} from "./RoundedRectangle";
 import {QueueMenu} from "./Menus/QueueMenu";
 import {MatchmakingConfigMenu} from "./Menus/MatchmakingConfigMenu";
+import {ScreenResolution} from "../Data/ScreenResolution";
 
 export class MatchmakingConfig extends Container
 {
@@ -26,13 +27,25 @@ export class MatchmakingConfig extends Container
     protected _over:boolean;
     protected _mmConfigMenu: MatchmakingConfigMenu;
 
-    constructor (scene:Phaser.Scene, x:number, y:number, width:number, height:number)
+    constructor (scene:Phaser.Scene, x:number, y:number, width:number)
     {
         super(scene, x, y);
         this._emitter = EventDispatcher.getInstance();
-        this.draw(300,height);
-        this.setSize(300, height);
+        this.draw(300, MatchmakingConfig.configHeight);
+        this.setSize(300, MatchmakingConfig.configHeight);
         this._over=false;
+    }
+
+    public static get configHeight():number
+    {
+        if (ScreenResolution.displayResolution==ScreenResolution.RES_720P)
+        {
+            return 100;
+        }
+        else
+        {
+            return 150;
+        }
     }
 
     public get Data():DataTypes.MatchmakingConfiguration

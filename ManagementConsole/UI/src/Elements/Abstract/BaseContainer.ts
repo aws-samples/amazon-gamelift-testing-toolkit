@@ -10,6 +10,9 @@ import {EventDispatcher} from "../../Events/EventDispatcher";
 import Container = Phaser.GameObjects.Container;
 import {RoundedRectangle} from "../RoundedRectangle";
 import Tween = Phaser.Tweens.Tween;
+import {Game} from "../../Game";
+import TextureManager = Phaser.Textures.TextureManager;
+import {ScreenResolution} from "../../Data/ScreenResolution";
 
 export abstract class BaseContainer extends Container
 {
@@ -85,6 +88,8 @@ export abstract class BaseContainer extends Container
 
         let groupChildren = this._elementGroup.getChildren();
 
+        console.log("LAYING OUT CONTAINER", this.constructor.name, this._bg.displayWidth, firstElement.displayWidth);
+
         let columns = Math.floor(this._bg.displayWidth/(firstElement.displayWidth+padding));
 
         let groupWidth:number = columns  * (firstElement.displayWidth+padding);
@@ -105,19 +110,22 @@ export abstract class BaseContainer extends Container
             y: this._groupOffsetY,
         };
 
+        console.log(this.constructor.name, layoutOptions);
+
         Phaser.Actions.GridAlign(groupChildren, layoutOptions);
 
     }
 
     getDottedLineTexture(textureName:string)
     {
-        let texture = this.scene.textures.createCanvas(textureName, config.width, 4);
+        this.scene.textures.removeKey(textureName);
+        let texture = this.scene.textures.createCanvas(textureName, ScreenResolution.width, 4);
         texture.getContext().beginPath();
         texture.getContext().lineWidth = 4;
         texture.getContext().strokeStyle = 'white';
         texture.getContext().setLineDash([2,3]);
         texture.getContext().moveTo(0, 0);
-        texture.getContext().lineTo(config.width , 0);
+        texture.getContext().lineTo(ScreenResolution.width , 0);
         texture.getContext().stroke();
         texture.getContext().closePath();
         texture.refresh();

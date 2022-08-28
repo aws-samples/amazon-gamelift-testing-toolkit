@@ -22,28 +22,44 @@ export class Fleets extends BaseContainer
     protected _maxDisplayFleets:number = 20;
     protected _groupOffsetY = 30;
     protected _addedFleets:number=0;
+    protected _dottedLineImg;
 
-    constructor (scene:Phaser.Scene, x:number, y:number, width:number, height:number)
+    constructor (scene:Phaser.Scene, x:number, y:number, width:number)
     {
         super(scene, x, y);
         this._fleets = {};
 
         let dottedLineTexture = this.getDottedLineTexture("fleetsLine");
-        let img = new Image(scene, 0, 0, dottedLineTexture).setOrigin(0);
-//        img.setOrigin(0,0);
-        this.add(img);
+        this._dottedLineImg = new Image(scene, 0, 0, dottedLineTexture).setOrigin(0);
+        this.add(this._dottedLineImg);
 
         this._titleText = this.scene.add.bitmapText(5, 3, "Noto Sans", "Fleets", 16);
         this._titleText.setOrigin(0,0);
         this.add(this._titleText);
 
-//        this._titleText.x = this._bg.getTopLeft().x;
-//        this._titleText.y = img.y;
-        this._bg = new RoundedRectangle(scene, 0, this._groupOffsetY, width, height-this._groupOffsetY, 0x66ffff).setOrigin(0);
+        this._bg = new RoundedRectangle(scene, 0, this._groupOffsetY, width, Fleet.fleetHeight, 0x66ffff).setOrigin(0);
         this.add(this._bg);
         this._bg.alpha=0;
 
+        this.setSize(width, Fleet.fleetHeight);
+    }
+
+    public resize(width:number, height:number)
+    {
+        console.log("RESIZING FLEET TO ", width, height);
+        let dottedLineTexture = this.getDottedLineTexture("fleetsLine");
+
+        this._dottedLineImg.destroy();
+        this._dottedLineImg = new Image(this.scene, 0, 0, dottedLineTexture).setOrigin(0);
+        this.add(this._dottedLineImg);
+
+        this._bg.drawRectangle(width, height);
         this.setSize(width, height);
+        Object.values(this._fleets).map((fleet)=>
+        {
+           fleet.resize(width, height);
+        });
+        this.updateFleetDimensions();
     }
 
     public getInstanceByIp(ip):Instance
@@ -96,7 +112,7 @@ export class Fleets extends BaseContainer
 
     public addFleet(id:string, fake:boolean=false)
     {
-        this._fleets[id] = new Fleet(this.scene, this._bg.x + this._bg.width/2, this._bg.y + this._bg.height/2, 20, this._bg.height);
+        this._fleets[id] = new Fleet(this.scene, this._bg.x + this._bg.width/2, this._bg.y + this._bg.height/2, 20);
 
         if (this._addedFleets < this._maxDisplayFleets)
         {
@@ -181,6 +197,8 @@ export class Fleets extends BaseContainer
         {
             fleetWidth=500;
         }
+
+        console.log("FLEET WIDTH", fleetWidth);
 
         Object.keys(this._fleets).map((fleetId)=>
         {

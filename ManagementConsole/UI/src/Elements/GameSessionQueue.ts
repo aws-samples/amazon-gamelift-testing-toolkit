@@ -17,6 +17,7 @@ import {RoundedRectangle} from "./RoundedRectangle";
 import {FleetMenu} from "./Menus/FleetMenu";
 import {QueueMenu} from "./Menus/QueueMenu";
 import {PopupClickEvent} from "../Events/PopupClickEvent";
+import {ScreenResolution} from "../Data/ScreenResolution";
 
 export class GameSessionQueue extends Container
 {
@@ -27,18 +28,30 @@ export class GameSessionQueue extends Container
     protected _over:Boolean;
     protected _queueMenu: QueueMenu;
 
-    constructor (scene:Phaser.Scene, x:number, y:number, width:number, height:number)
+    constructor (scene:Phaser.Scene, x:number, y:number, width:number)
     {
         super(scene, x, y);
         this._emitter = EventDispatcher.getInstance();
-        this.draw(300,height);
-        this.setSize(300, height);
+        this.draw(300, GameSessionQueue.queueHeight);
+        this.setSize(300, GameSessionQueue.queueHeight);
         this._over=false;
     }
 
     public get Data():DataTypes.GameSessionQueue
     {
         return this._gameSessionQueue;
+    }
+
+    public static get queueHeight():number
+    {
+        if (ScreenResolution.displayResolution==ScreenResolution.RES_720P)
+        {
+            return 100;
+        }
+        else
+        {
+            return 150;
+        }
     }
 
     updateQueueDimensions(width:number, height:number)

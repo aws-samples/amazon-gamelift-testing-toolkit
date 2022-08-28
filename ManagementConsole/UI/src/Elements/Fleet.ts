@@ -14,6 +14,8 @@ import {RoundedRectangle} from "./RoundedRectangle";
 import Group = Phaser.GameObjects.Group;
 import {LocationPopover} from "./Menus/LocationPopover";
 import {ConsoleScene} from "../Scenes/ConsoleScene";
+import {Game} from "../Game";
+import {ScreenResolution} from "../Data/ScreenResolution";
 
 export class Fleet extends BaseContainer
 {
@@ -32,7 +34,7 @@ export class Fleet extends BaseContainer
     protected _fleetLocationPopover: LocationPopover;
     public showInstances:boolean = true;
 
-    constructor (scene:Phaser.Scene, x:number, y:number, width:number, height:number)
+    constructor (scene:Phaser.Scene, x:number, y:number, width:number)
     {
         super(scene, x, y);
         this._instances = {};
@@ -41,8 +43,8 @@ export class Fleet extends BaseContainer
         this._gameSessionGroup = new Group(scene);
         this._elementGroup = this._instanceGroup;
 
-        this.drawFleet(width, height);
-        this.setSize(width, height);
+        this.drawFleet(width, Fleet.fleetHeight);
+        this.setSize(width, Fleet.fleetHeight);
         /*
         this._bg.on('pointerdown', (pointer, localX, localY, event) =>
         {
@@ -78,6 +80,24 @@ export class Fleet extends BaseContainer
             return matchingInstances[0];
         }
         return null;
+    }
+
+    public static get fleetHeight():number
+    {
+        if (ScreenResolution.displayResolution==ScreenResolution.RES_720P)
+        {
+            return 300;
+        }
+        else
+        {
+            return 460;
+        }
+    }
+
+    resize(width:number, height:number)
+    {
+        console.log("RESIZING FLEET TO", width, height);
+        this._bg.drawRectangle(width, height);
     }
 
     drawFleet(width:number, height:number)
