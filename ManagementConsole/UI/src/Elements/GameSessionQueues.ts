@@ -29,7 +29,6 @@ export class GameSessionQueues extends BaseContainer
 
         let dottedLineTexture = this.getDottedLineTexture("queuesLine");
         this._dottedLineImg = new Image(scene, 0, 0, dottedLineTexture).setOrigin(0);
-//        img.setOrigin(0,0);
         this.add(this._dottedLineImg);
 
         this._titleText = this.scene.add.bitmapText(5, 3, "Noto Sans", "Queues", 16);

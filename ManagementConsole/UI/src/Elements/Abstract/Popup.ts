@@ -2,17 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import 'phaser';
-import {DataTypes} from "../../Data/DataTypes";
-import {Fleet} from "../Fleet";
 import DOMElement = Phaser.GameObjects.DOMElement;
-import {Network} from "../../Network/Network";
 import {EventDispatcher} from "../../Events/EventDispatcher";
 import {Events} from "../../Events/Events";
 import Rectangle = Phaser.GameObjects.Rectangle;
-import config from "../../Config/Config"
 import {PopupClickEvent} from "../../Events/PopupClickEvent";
 import {SubPopup} from "./SubPopup";
-import {Game} from "../../Game";
 import {ScreenResolution} from "../../Data/ScreenResolution";
 
 export abstract class Popup extends Phaser.GameObjects.Container

@@ -3,19 +3,9 @@
 
 import 'phaser';
 import {DataTypes} from "../../Data/DataTypes";
-import {Fleet} from "../Fleet";
-import DOMElement = Phaser.GameObjects.DOMElement;
 import {Network} from "../../Network/Network";
-import {EventDispatcher} from "../../Events/EventDispatcher";
 import {Events} from "../../Events/Events";
-import Rectangle = Phaser.GameObjects.Rectangle;
-import config from "../../Config/Config"
 import {Popup} from "../Abstract/Popup";
-import Instance = DataTypes.Instance;
-import GameSession = DataTypes.GameSession;
-import JSONEditor, {JSONEditorOptions} from "jsoneditor";
-import {MatchmakingConfig} from "../MatchmakingConfig";
-import MatchmakingConfiguration = DataTypes.MatchmakingConfiguration;
 import GameSessionQueue = DataTypes.GameSessionQueue;
 
 export class QueueGraphPopup extends Popup
@@ -47,22 +37,10 @@ export class QueueGraphPopup extends Popup
         {
             this._popup.node.querySelector("#metric").innerHTML += '<option value="' + option + '">' + option + '</option>';
         })
-        //var options = '<option value="AvailableGameSessions">AvailableGameSessions</option>';
-        //this._popup.node.querySelector("#metric").innerHTML = options;
+
         this._popup.node.querySelector("#metric").addEventListener("change", this.refresh, false);
 
         this.refresh();
-
-        /*
-        this._popup.getChildByID("gameSessionId").innerHTML=gameSessionData.GameSessionId;
-        this._popup.getChildByID("ipAddress").innerHTML=gameSessionData.IpAddress;
-        this._popup.getChildByID("dnsName").innerHTML=gameSessionData.DnsName;
-        this._popup.getChildByID("region").innerHTML=gameSessionData.Location;
-        this._popup.getChildByID("currentPlayerSessions").innerHTML=gameSessionData.CurrentPlayerSessionCount + "/" + gameSessionData.MaximumPlayerSessionCount;
-        this._popup.getChildByID("instanceStatus").innerHTML=gameSessionData.Status.Value;
-        this._popup.getChildByID("creationDate").innerHTML=new Date(gameSessionData.CreationTime).toISOString();
-
-         */
     }
 
 
@@ -73,8 +51,6 @@ export class QueueGraphPopup extends Popup
         var html='<img style="display:block; margin-left:auto; margin-right:auto" src="data:image/png;base64, ' + data.Image + '"/>';
         this._popup.node.querySelector("div#graphImg").innerHTML = html;
         this._popup.node.querySelector("#timeperiod").addEventListener("change", this.refresh, false);
-        //var img = atob(data.Image);
-        //console.log(img);
     }
 
     onPopupClick = async (event) => {

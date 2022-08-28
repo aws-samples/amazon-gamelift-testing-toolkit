@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import 'phaser';
-import WebFontFile from "../Elements/WebFontFile";
 import {ScreenResolution} from "../Data/ScreenResolution";
 
 export  class PreloaderScene extends Phaser.Scene {

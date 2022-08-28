@@ -19,7 +19,6 @@ export class MultipartMessageHandler
 
     public addMessage(msg:MultipartMessage)
     {
-        //console.log(this.messages);
         if (this.messages[msg.MessageId]==null)
         {
             this.messages[msg.MessageId] = [];
@@ -37,7 +36,6 @@ export class MultipartMessageHandler
             })
 
             let obj = JSON.parse(fullJson);
-            console.log("MultipartMessageHandler", obj);
             this.emitter.emit(Events.SOCKET_MESSAGE, obj);
         }
     }

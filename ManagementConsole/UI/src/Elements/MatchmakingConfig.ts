@@ -3,18 +3,11 @@
 
 import 'phaser';
 import {DataTypes} from "../Data/DataTypes";
-import {Instance} from "./Instance";
-import Text = Phaser.GameObjects.Text;
-import Group = Phaser.GameObjects.Group;
-import {BaseContainer} from "./Abstract/BaseContainer";
-import Rectangle = Phaser.GameObjects.Rectangle;
-import GameSession = DataTypes.GameSession;
 import {EventDispatcher} from "../Events/EventDispatcher";
 import {Events} from "../Events/Events";
 import Container = Phaser.GameObjects.Container;
 import BitmapText = Phaser.GameObjects.BitmapText;
 import {RoundedRectangle} from "./RoundedRectangle";
-import {QueueMenu} from "./Menus/QueueMenu";
 import {MatchmakingConfigMenu} from "./Menus/MatchmakingConfigMenu";
 import {ScreenResolution} from "../Data/ScreenResolution";
 

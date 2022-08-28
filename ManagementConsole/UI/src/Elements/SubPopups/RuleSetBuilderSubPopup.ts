@@ -51,7 +51,6 @@ export class RuleSetBuilderSubPopup extends SubPopup
 
     onGetMatchmakingSimulationsResponse = (data) =>
     {
-        console.log("GOT MATCHMAKING SIMULATIONS RESPONSE!");
         let html="";
         data.map(simulation =>
         {

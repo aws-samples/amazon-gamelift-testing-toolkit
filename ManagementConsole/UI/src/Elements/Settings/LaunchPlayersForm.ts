@@ -2,11 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import 'phaser';
-import {DataTypes} from "../../Data/DataTypes";
-import {Fleet} from "../Fleet";
-import DOMElement = Phaser.GameObjects.DOMElement;
-import {Network} from "../../Network/Network";
-import {EventDispatcher} from "../../Events/EventDispatcher";
 import {Events} from "../../Events/Events";
 import {SettingsForm} from "./SettingsForm";
 
@@ -15,13 +10,7 @@ export class LaunchPlayersForm extends SettingsForm
     constructor (scene:Phaser.Scene, x:number, y:number)
     {
         super(scene, x, y, "launchPlayers");
-
-        //this._element.setInteractive();
-        //this._element.addListener("click");
-
-        //this._element.on('click', this.onClick);
     }
-
 
     protected onClick = (event) =>
     {

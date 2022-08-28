@@ -6,8 +6,6 @@ import {DataTypes} from '../Data/DataTypes';
 import {Events} from "../Events/Events";
 import {EventDispatcher} from "../Events/EventDispatcher";
 import Tween = Phaser.Tweens.Tween;
-import TweenManager = Phaser.Tweens.TweenManager;
-import {BaseContainer} from "./Abstract/BaseContainer";
 import Container = Phaser.GameObjects.Container;
 import {ConsoleScene} from "../Scenes/ConsoleScene";
 
@@ -21,9 +19,6 @@ export class Instance extends Container
     constructor (scene:Phaser.Scene, x:number, y:number)
     {
         super(scene, x, y);
-
-        //var r1 = new Phaser.GameObjects.Rectangle(scene, 0, 0, 200, 200, 0x6666ff);
-        //this.add(r1);
 
         this._image = this.scene.add.sprite(0,0, "toolkit", "instance.png");
         this._image.setOrigin(0);

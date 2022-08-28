@@ -27,8 +27,6 @@ export class Network
 
     public static connect (credentials, url:string) : Promise<boolean>
     {
-        //let foo:DescribeFleetCapacityCommandOutput = {};
-
         Network._url = url;
 
         return new Promise((resolve, reject)=>

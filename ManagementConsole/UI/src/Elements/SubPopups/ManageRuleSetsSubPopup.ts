@@ -53,14 +53,6 @@ export class ManageRuleSetsSubPopup extends SubPopup
     resetTable()
     {
         this.resetElement(".ruleSetsContent");
-        /*
-        console.log(this._html);
-        let parser = new DOMParser();
-        let el = $(this._html);
-        $('#'+this._parentDomId).find(".ruleSetsContent").html(el.find(".ruleSetsContent").html());
-        console.log(el.find(".ruleSetsContent").html());
-
-         */
     }
 
     setupEventListeners()

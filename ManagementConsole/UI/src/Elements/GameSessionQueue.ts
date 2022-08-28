@@ -3,20 +3,12 @@
 
 import 'phaser';
 import {DataTypes} from "../Data/DataTypes";
-import {Instance} from "./Instance";
-import Text = Phaser.GameObjects.Text;
-import Group = Phaser.GameObjects.Group;
-import {BaseContainer} from "./Abstract/BaseContainer";
-import Rectangle = Phaser.GameObjects.Rectangle;
-import GameSession = DataTypes.GameSession;
 import {EventDispatcher} from "../Events/EventDispatcher";
 import {Events} from "../Events/Events";
 import Container = Phaser.GameObjects.Container;
 import BitmapText = Phaser.GameObjects.BitmapText;
 import {RoundedRectangle} from "./RoundedRectangle";
-import {FleetMenu} from "./Menus/FleetMenu";
 import {QueueMenu} from "./Menus/QueueMenu";
-import {PopupClickEvent} from "../Events/PopupClickEvent";
 import {ScreenResolution} from "../Data/ScreenResolution";
 
 export class GameSessionQueue extends Container

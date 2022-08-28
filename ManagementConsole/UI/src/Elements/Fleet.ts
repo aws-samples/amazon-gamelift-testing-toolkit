@@ -14,7 +14,6 @@ import {RoundedRectangle} from "./RoundedRectangle";
 import Group = Phaser.GameObjects.Group;
 import {LocationPopover} from "./Menus/LocationPopover";
 import {ConsoleScene} from "../Scenes/ConsoleScene";
-import {Game} from "../Game";
 import {ScreenResolution} from "../Data/ScreenResolution";
 
 export class Fleet extends BaseContainer
@@ -45,14 +44,6 @@ export class Fleet extends BaseContainer
 
         this.drawFleet(width, Fleet.fleetHeight);
         this.setSize(width, Fleet.fleetHeight);
-        /*
-        this._bg.on('pointerdown', (pointer, localX, localY, event) =>
-        {
-            event.stopPropagation();
-            //this.addInstance(Phaser.Utils.String.UUID(), true);
-            this._emitter.emit(Events.SHOW_FLEET_POPUP, new PopupClickEvent(this, localX, localY));
-        });*/
-
     }
 
     public get ChildElements()

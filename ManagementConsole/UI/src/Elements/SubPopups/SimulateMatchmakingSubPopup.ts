@@ -3,25 +3,12 @@
 
 import 'phaser';
 import {DataTypes} from "../../Data/DataTypes";
-import {Fleet} from "../Fleet";
-import DOMElement = Phaser.GameObjects.DOMElement;
 import {Network} from "../../Network/Network";
-import {EventDispatcher} from "../../Events/EventDispatcher";
 import {Events} from "../../Events/Events";
-import Rectangle = Phaser.GameObjects.Rectangle;
-import config from "../../Config/Config"
-import {Popup} from "../Abstract/Popup";
-import Instance = DataTypes.Instance;
-import GameSession = DataTypes.GameSession;
-import GameSessionQueue = DataTypes.GameSessionQueue;
-import QueuePlacementEventDetail = DataTypes.QueuePlacementEventDetail;
-import {Utils} from "../../Utils/Utils";
 import JSONEditor, {JSONEditorOptions} from 'jsoneditor';
 import MatchmakingRuleSet = DataTypes.MatchmakingRuleSet;
-import PlayerProfileAttribute = DataTypes.PlayerProfileAttribute;
 import {SubPopup} from "../Abstract/SubPopup";
 import PlayerProfile = DataTypes.PlayerProfile;
-import {match} from "assert";
 
 export class SimulateMatchmakingSubPopup extends SubPopup
 {
@@ -32,7 +19,6 @@ export class SimulateMatchmakingSubPopup extends SubPopup
     protected _intervalId;
     protected _currentSimulation;
     protected _state="";
-
 
     public constructor (url:string, parentDomId:string)
     {
@@ -375,8 +361,6 @@ export class SimulateMatchmakingSubPopup extends SubPopup
         let html="";
 
         this._ticketEvents = ticket.Ticket.Events;
-
-
 
         if (this._state=="viewTicket")
         {

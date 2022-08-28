@@ -13,11 +13,6 @@ export default {
         width: '100%',
         height: '100%'
     },
-    userScreen: {
-        width: 1920,
-        height: 1080
-    },
-    //parent: 'phaser-example',
     antialias: true,
     dom: {
         createContainer: true,

@@ -4,7 +4,6 @@
 import 'phaser';
 import {DataTypes} from "../Data/DataTypes";
 import {Fleet} from "./Fleet";
-import Rectangle = Phaser.GameObjects.Rectangle;
 import {Instance} from "./Instance";
 import {BaseContainer} from "./Abstract/BaseContainer";
 import {Events} from "../Events/Events";
@@ -12,7 +11,6 @@ import {PopupClickEvent} from "../Events/PopupClickEvent";
 import BitmapText = Phaser.GameObjects.BitmapText;
 import Image = Phaser.GameObjects.Image;
 import {RoundedRectangle} from "./RoundedRectangle";
-import {GameSessionQueue} from "./GameSessionQueue";
 
 export class Fleets extends BaseContainer
 {
@@ -197,8 +195,6 @@ export class Fleets extends BaseContainer
         {
             fleetWidth=500;
         }
-
-        console.log("FLEET WIDTH", fleetWidth);
 
         Object.keys(this._fleets).map((fleetId)=>
         {

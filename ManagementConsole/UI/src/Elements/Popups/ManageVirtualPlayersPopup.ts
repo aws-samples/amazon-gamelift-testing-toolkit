@@ -3,20 +3,10 @@
 
 import 'phaser';
 import {DataTypes} from "../../Data/DataTypes";
-import {Fleet} from "../Fleet";
-import DOMElement = Phaser.GameObjects.DOMElement;
 import {Network} from "../../Network/Network";
-import {EventDispatcher} from "../../Events/EventDispatcher";
 import {Events} from "../../Events/Events";
-import Rectangle = Phaser.GameObjects.Rectangle;
-import config from "../../Config/Config"
 import {Popup} from "../Abstract/Popup";
-import Instance = DataTypes.Instance;
 import GameSession = DataTypes.GameSession;
-import FleetData = DataTypes.FleetData;
-import {Utils} from "../../Utils/Utils";
-import {Locations} from "../../Data/Locations";
-import SimpleResult = DataTypes.SimpleResult;
 
 export class ManageVirtualPlayersPopup extends Popup
 {
@@ -33,17 +23,6 @@ export class ManageVirtualPlayersPopup extends Popup
     setPopupData(data:any)
     {
         this.refresh();
-
-/*
-        this._popup.getChildByID("gameSessionId").innerHTML=gameSessionData.GameSessionId;
-        this._popup.getChildByID("ipAddress").innerHTML=gameSessionData.IpAddress;
-        this._popup.getChildByID("dnsName").innerHTML=gameSessionData.DnsName;
-        this._popup.getChildByID("region").innerHTML=gameSessionData.Location;
-        this._popup.getChildByID("currentPlayerSessions").innerHTML=gameSessionData.CurrentPlayerSessionCount + "/" + gameSessionData.MaximumPlayerSessionCount;
-        this._popup.getChildByID("instanceStatus").innerHTML=gameSessionData.Status.Value;
-        this._popup.getChildByID("creationDate").innerHTML=new Date(gameSessionData.CreationTime).toISOString();
-
- */
     }
 
     refresh()

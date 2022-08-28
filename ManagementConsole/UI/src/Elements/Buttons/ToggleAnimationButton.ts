@@ -2,9 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import "phaser";
-import {EventDispatcher} from "../../Events/EventDispatcher";
 import {Events} from "../../Events/Events";
-import Image = Phaser.GameObjects.Image;
 import {ToggleButton} from "../Abstract/ToggleButton";
 
 export class ToggleAnimationButton extends ToggleButton

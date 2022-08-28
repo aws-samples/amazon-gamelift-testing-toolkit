@@ -5,7 +5,6 @@ import 'phaser';
 import {Utils} from "../Utils/Utils";
 import { Auth } from '@aws-amplify/auth';
 import Amplify from '@aws-amplify/core';
-import {ScreenResolution} from "../Data/ScreenResolution";
 
 export class BootScene extends Phaser.Scene {
     constructor () {
@@ -50,10 +49,7 @@ export class BootScene extends Phaser.Scene {
             }
         });
 
-        console.log(Auth.configure());
-
         const code = Utils.getParameterByName("code");
-        console.log(code);
         if (code==null)
         {
             Auth.federatedSignIn();
@@ -61,7 +57,7 @@ export class BootScene extends Phaser.Scene {
         }
         else
         {
-            console.log(await Auth.currentAuthenticatedUser());
+            await Auth.currentAuthenticatedUser();
             this.scene.start('Preloader');
         }
     }

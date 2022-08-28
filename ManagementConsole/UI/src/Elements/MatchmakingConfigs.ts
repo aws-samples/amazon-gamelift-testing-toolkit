@@ -4,10 +4,6 @@
 import 'phaser';
 import {DataTypes} from "../Data/DataTypes";
 import {MatchmakingConfig} from "./MatchmakingConfig";
-import config from "../Config/Config";
-import Rectangle = Phaser.GameObjects.Rectangle;
-import {Instance} from "./Instance";
-import Group = Phaser.GameObjects.Group;
 import {BaseContainer} from "./Abstract/BaseContainer";
 import Image = Phaser.GameObjects.Image;
 import BitmapText = Phaser.GameObjects.BitmapText;
@@ -28,7 +24,6 @@ export class MatchmakingConfigs extends BaseContainer
 
         let dottedLineTexture = this.getDottedLineTexture("configsLine");
         this._dottedLineImg = new Image(scene, 0, 0, dottedLineTexture).setOrigin(0);
-//        img.setOrigin(0,0);
         this.add(this._dottedLineImg);
 
         this._titleText = this.scene.add.bitmapText(5, 3, "Noto Sans", "Matchmaking Configurations", 16);

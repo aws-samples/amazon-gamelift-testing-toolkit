@@ -9,7 +9,6 @@ import Container = Phaser.GameObjects.Container;
 import Timeline = Phaser.Tweens.Timeline;
 import {ConsoleScene} from "../Scenes/ConsoleScene";
 import {PlayerSprite} from "./PlayerSprite";
-import PlayAnimationConfig = Phaser.Types.Animations.PlayAnimationConfig;
 
 export class SceneDestination
 {

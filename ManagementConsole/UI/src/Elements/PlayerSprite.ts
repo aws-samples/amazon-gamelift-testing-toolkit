@@ -5,8 +5,6 @@ import 'phaser';
 import {EventDispatcher} from "../Events/EventDispatcher";
 import {Events} from "../Events/Events";
 import {PopupClickEvent} from "./../Events/PopupClickEvent";
-import Container = Phaser.GameObjects.Container;
-import Timeline = Phaser.Tweens.Timeline;
 import {ConsoleScene} from "../Scenes/ConsoleScene";
 
 export class PlayerSprite extends Phaser.GameObjects.Sprite
@@ -63,12 +61,6 @@ export class PlayerSprite extends Phaser.GameObjects.Sprite
         super.addedToScene();
         this.added=true;
     }
-
-    /*public removedFromScene() {
-        super.removedFromScene();
-        console.log("PLAYER SPRITE REMOVED FROM SCENE");
-        this.added=false;
-    }*/
 
     public onMouseDown = (pointer, localX, localY, event)=>
     {

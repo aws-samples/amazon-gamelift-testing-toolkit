@@ -19,7 +19,6 @@ import {LaunchVirtualPlayersPopup} from "./LaunchVirtualPlayersPopup";
 import {SimpleJsonPopup} from "./SimpleJsonPopup";
 import {MatchmakingRuleSetsPopup} from "./MatchmakingRuleSetsPopup";
 import {MatchmakingConfigPopup} from "./MatchmakingConfigPopup";
-import {SimpleGraphPopup} from "./SimpleGraphPopup";
 import {MatchmakingGraphPopup} from "./MatchmakingGraphPopup";
 import {QueueGraphPopup} from "./QueueGraphPopup";
 import {FleetGraphPopup} from "./FleetGraphPopup";
@@ -323,7 +322,6 @@ export class PopupHandler
         }
         else
         {
-            //PopupHandler.popup = new FleetPopup(PopupHandler.scene, 0, 0);
             PopupHandler.popup = new SimpleJsonPopup(PopupHandler.scene, 0, 0, "Fleet: " + event.gameObject.Data.FleetAttributes.Name);
             PopupHandler.scene.add.existing(PopupHandler.popup);
             PopupHandler.popup.show(event.gameObject.Data);

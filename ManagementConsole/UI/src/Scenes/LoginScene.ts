@@ -1,7 +1,6 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {Game} from '../Game'
 import {Network} from '../Network/Network'
 import DOMElement = Phaser.GameObjects.DOMElement;
 import {DataTypes} from "../Data/DataTypes";

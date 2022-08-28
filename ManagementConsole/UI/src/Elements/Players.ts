@@ -2,11 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import 'phaser';
-import {DataTypes} from "../Data/DataTypes";
 import {Player} from "./Player";
-import config from "../Config/Config";
-import Rectangle = Phaser.GameObjects.Rectangle;
-import {Instance} from "./Instance";
 
 export class Players
 {
@@ -73,11 +69,8 @@ export class Players
         let overlaps:boolean = false;
         Players.getAddedPlayers().map((currentPlayer)=>
         {
-            //console.log(player.getBounds());
-            //console.log(currentPlayer.getBounds());
             if (Phaser.Geom.Intersects.RectangleToRectangle(player.getBounds(), currentPlayer.getBounds()))
             {
-                //console.log("OVERLAPS!");
                 overlaps = true;
                 return true;
             }
@@ -85,7 +78,6 @@ export class Players
 
         if (!overlaps)
         {
-            //console.log("DOESN'T OVERLAP!");
         }
         return overlaps;
     }

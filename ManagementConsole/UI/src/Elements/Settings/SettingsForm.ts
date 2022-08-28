@@ -13,9 +13,8 @@ export abstract class SettingsForm extends Phaser.GameObjects.Container
     {
         super(scene, x, y);
         this._emitter = EventDispatcher.getInstance();
-        //this._settingsPanel.alpha=0;
+
         this._element = this.scene.add.dom(0, 0).createFromCache(htmlName);
-        //this._settingsPanel.active=false;
         this.add(this._element);
         this._element.setOrigin(0,0);
         this._element.y=5;

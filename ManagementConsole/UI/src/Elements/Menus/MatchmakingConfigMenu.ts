@@ -2,13 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {SimpleMenu} from "../Abstract/SimpleMenu";
-import {SettingsButton} from "../Buttons/SettingsButton";
-import {FleetMenuButton} from "../Buttons/FleetMenuButton";
 import {Events} from "../../Events/Events";
-import {Fleet} from "../Fleet";
 import {PopupClickEvent} from "../../Events/PopupClickEvent";
-import {GameSessionQueue} from "../GameSessionQueue";
-import {QueueMenuButton} from "../Buttons/QueueMenuButton";
 import {MatchmakingConfig} from "../MatchmakingConfig";
 import {MatchmakingConfigMenuButton} from "../Buttons/MatchmakingConfigMenuButton";
 
@@ -27,7 +22,6 @@ export class MatchmakingConfigMenu extends SimpleMenu {
         this.setSize(button.displayWidth, button.displayHeight);
 
         this.onMenuButtonClick = this.onMenuButtonClick.bind(this);
-        //this._globalEmitter.on(Events.OPEN_FLEET_MENU, this.onMenuButtonClick);
         this._button.buttonEmitter.on(Events.CLICK, this.onMenuButtonClick);
         this.hideMenu = this.hideMenu.bind(this);
 

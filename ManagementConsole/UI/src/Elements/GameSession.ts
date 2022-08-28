@@ -6,12 +6,9 @@ import {DataTypes} from '../Data/DataTypes';
 import {Events} from "../Events/Events";
 import {EventDispatcher} from "../Events/EventDispatcher";
 import Tween = Phaser.Tweens.Tween;
-import TweenManager = Phaser.Tweens.TweenManager;
-import {BaseContainer} from "./Abstract/BaseContainer";
 import Container = Phaser.GameObjects.Container;
 import {RoundedRectangle} from "./RoundedRectangle";
 import BitmapText = Phaser.GameObjects.BitmapText;
-import Text = Phaser.GameObjects.Text;
 
 export class GameSession extends Container
 {
@@ -33,9 +30,6 @@ export class GameSession extends Container
         this.add(this._bg);
 
         this.setSize(width, height);
-
-        //this._rectangle = new Phaser.GameObjects.Rectangle(scene, 0, 0, width, height, 0x000000).setOrigin(0);
-        //this.add(this._rectangle);
 
         this._emitter = EventDispatcher.getInstance();
 
@@ -61,7 +55,6 @@ export class GameSession extends Container
 
     updateGameSession(gameSession:DataTypes.GameSession)
     {
-        //console.log("UPDATING GS", gameSession);
         this._gameSession = gameSession;
         const numAvailablePlayerSessions = (gameSession.MaximumPlayerSessionCount - gameSession.CurrentPlayerSessionCount);
 
@@ -75,40 +68,6 @@ export class GameSession extends Container
         }
         this._text.x = this.width/2;
         this._text.y = this.height/2;
-
-        /*
-        if (this._gameSession.Status?.Value=="ACTIVATING")
-        {
-            //this._bg.tint = 0x00cc00;
-            this._bg.updateColor(0x00cc00);
-            //this._bg.alpha=0.5;
-            //this.startFlashing();
-        }
-        else
-        if (this._gameSession.Status?.Value=="TERMINATING")
-        {
-//            this._bg.tint = 0xcc0000;
-            this._bg.updateColor(0xcc0000);
-            //this._bg.alpha=0.5;
-            //this.startFlashing();
-        }
-        else
-        {
-            //this._flashingAnim.stop();
-            //this._bg.clearTint();
-            //this._bg.clearAlpha();
-            if (this._gameSession.Status?.Value=="TERMINATED")
-            {
-                this._bg.updateColor(0xcc0000);
-                //this.alpha = 0.5
-            }
-            if (this._gameSession.Status?.Value=="ACTIVE")
-            {
-                this._bg.updateColor(0x00cc00);
-            }
-        }
-*/
-
 
         if (this._gameSession.Status?.Value=="ACTIVE")
         {
@@ -129,7 +88,6 @@ export class GameSession extends Container
         {
             this._bg.alpha=0.75;
             this._flashingAnim.play();
-
         }
     }
 

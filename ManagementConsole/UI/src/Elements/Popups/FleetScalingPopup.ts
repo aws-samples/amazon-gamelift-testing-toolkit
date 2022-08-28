@@ -3,13 +3,8 @@
 
 import 'phaser';
 import {DataTypes} from "../../Data/DataTypes";
-import {Fleet} from "../Fleet";
-import DOMElement = Phaser.GameObjects.DOMElement;
 import {Network} from "../../Network/Network";
-import {EventDispatcher} from "../../Events/EventDispatcher";
 import {Events} from "../../Events/Events";
-import Rectangle = Phaser.GameObjects.Rectangle;
-import config from "../../Config/Config"
 import {Popup} from "../Abstract/Popup";
 import {PopupClickEvent} from "../../Events/PopupClickEvent";
 import FleetData = DataTypes.FleetData;
@@ -71,43 +66,6 @@ export class FleetScalingPopup extends Popup
         scalingPolicyHtml += '</td><td>Maintain a buffer of <input style="max-width:50px" id="scalingTarget" type="number" value="'+scalingTargetValue.toString()+'"/> percent game session availability</td></tr>';
 
         this._popup.node.querySelector("#scalingPoliciesTable").insertAdjacentHTML("beforeend", scalingPolicyHtml);
-
-
-        /*
-        fleetData..map(locationAttribute=>
-        {
-           locationAttribute.LocationState.
-        });
-        const homeRegionCode = fleetData.FleetUtilization.Location;
-        let tr = document.createElement('tr');
-        let td1 = document.createElement('td');
-        td1.textContent="Home region " + homeRegionCode;
-        tr.append(td1);
-        tr.append(document.createElement("td"))
-        document.querySelector("#fleetLocationsTable").append(tr);
-
-
-
-        let activeInstances:number = 0;
-        fleetData.Instances.map((instance)=>
-        {
-            if (instance.Status.Value=="ACTIVE")
-            {
-                activeInstances++;
-            }
-        });
-
-        this._popup.getChildByID("fleetName").innerHTML=fleetData.FleetAttributes.Name;
-        this._popup.getChildByID("fleetId").innerHTML=fleetData.FleetId;
-        this._popup.getChildByID("fleetArn").innerHTML=fleetData.FleetAttributes.FleetArn;
-        this._popup.getChildByID("fleetRegion").innerHTML=fleetData.FleetUtilization.Location;
-        this._popup.getChildByID("fleetInstanceType").innerHTML=fleetData.FleetAttributes.InstanceType.Value;
-        this._popup.getChildByID("fleetOs").innerHTML=fleetData.FleetAttributes.OperatingSystem.Value;
-        this._popup.getChildByID("fleetActiveInstances").innerHTML=activeInstances.toString();
-        this._popup.getChildByID("fleetActiveGameSessions").innerHTML=fleetData.FleetUtilization.ActiveGameSessionCount.toString();
-        this._popup.getChildByID("fleetCurrentPlayerSessions").innerHTML=fleetData.FleetUtilization.CurrentPlayerSessionCount+"/"+fleetData.FleetUtilization.MaximumPlayerSessionCount;
-
-         */
     }
 
     onFleetScalingResponse = async (response:SimpleResult) =>
@@ -218,7 +176,6 @@ export class FleetScalingPopup extends Popup
                 {
                     changes.push({Min: min, Max: max, Desired: desired, Location: locationCapacity.Location, FleetId:this._fleetData.FleetId});
                 }
-//                console.log(locationCapacity.Location, min, desired, max);
             });
 
             if (changes.length==0)

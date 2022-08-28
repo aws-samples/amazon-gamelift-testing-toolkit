@@ -2,16 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import 'phaser';
-import {DataTypes} from "../../Data/DataTypes";
-import {Fleet} from "../Fleet";
 import DOMElement = Phaser.GameObjects.DOMElement;
 import {Network} from "../../Network/Network";
 import {EventDispatcher} from "../../Events/EventDispatcher";
 import {Events} from "../../Events/Events";
-import {LaunchPlayersForm} from "./LaunchPlayersForm";
-import Container = Phaser.GameObjects.Container;
 import {SettingsForm} from "./SettingsForm";
-import Amplify from '@aws-amplify/core';
 import { Auth } from '@aws-amplify/auth';
 import {Game} from "../../Game";
 

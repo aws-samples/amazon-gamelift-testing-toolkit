@@ -3,20 +3,10 @@
 
 import 'phaser';
 import {DataTypes} from "../../Data/DataTypes";
-import {Fleet} from "../Fleet";
-import DOMElement = Phaser.GameObjects.DOMElement;
 import {Network} from "../../Network/Network";
-import {EventDispatcher} from "../../Events/EventDispatcher";
 import {Events} from "../../Events/Events";
-import Rectangle = Phaser.GameObjects.Rectangle;
-import config from "../../Config/Config"
 import {Popup} from "../Abstract/Popup";
-import Instance = DataTypes.Instance;
 import GameSession = DataTypes.GameSession;
-import FleetData = DataTypes.FleetData;
-import {Utils} from "../../Utils/Utils";
-import {Locations} from "../../Data/Locations";
-import SimpleResult = DataTypes.SimpleResult;
 
 export class LaunchVirtualPlayersPopup extends Popup
 {
@@ -33,17 +23,6 @@ export class LaunchVirtualPlayersPopup extends Popup
     setPopupData(data:any)
     {
         this.refresh();
-
-/*
-        this._popup.getChildByID("gameSessionId").innerHTML=gameSessionData.GameSessionId;
-        this._popup.getChildByID("ipAddress").innerHTML=gameSessionData.IpAddress;
-        this._popup.getChildByID("dnsName").innerHTML=gameSessionData.DnsName;
-        this._popup.getChildByID("region").innerHTML=gameSessionData.Location;
-        this._popup.getChildByID("currentPlayerSessions").innerHTML=gameSessionData.CurrentPlayerSessionCount + "/" + gameSessionData.MaximumPlayerSessionCount;
-        this._popup.getChildByID("instanceStatus").innerHTML=gameSessionData.Status.Value;
-        this._popup.getChildByID("creationDate").innerHTML=new Date(gameSessionData.CreationTime).toISOString();
-
- */
     }
 
     refresh()
@@ -61,8 +40,6 @@ export class LaunchVirtualPlayersPopup extends Popup
     {
         this._emitter.off(Events.GET_TASK_DEFINITIONS_RESPONSE, this.onGetTaskDefinitionsResponse);
         this._emitter.off(Events.LAUNCH_VIRTUAL_PLAYERS_RESPONSE, this.onLaunchVirtualPlayersResponse);
-//        this._emitter.off(Events.GET_VIRTUAL_PLAYERS_RESPONSE, this.onGetVirtualPlayersResponse);
-//        this._emitter.off(Events.TERMINATE_VIRTUAL_PLAYER_RESPONSE, this.onTerminateVirtualPlayerResponse);
     }
 
     showSessionDetail = (gameSession) =>
@@ -131,33 +108,6 @@ export class LaunchVirtualPlayersPopup extends Popup
         });
 
         this._popup.getChildByID("taskDefinition").innerHTML=optionHtml;
-        /*
-        this._gameSessions = data;
-
-        console.log(data);
-        let html="";
-
-        data.Tasks?.map(task =>
-        {
-            console.log(task);
-            let playerTerminateTd='<td><a class="terminatePlayer btn btn-primary btn-sm" id="' + task.TaskArn +'" href="' + "#" + '">Terminate Player</a></td>';
-
-            html += '<tr>' +
-                '<td>' + task.CreatedAt + '</td>'+
-                '<td>' + task.TaskArn + '</td>'+
-                '<td>' + task.LastStatus + '</td>'+
-                '<td>' + task.Cpu + '</td>'+
-                '<td>' + task.Memory + '</td>'+
-                playerTerminateTd +
-                '</tr>';
-        });
-
-        this.resetVirtualPlayersTable();
-
-        this._popup.node.querySelector("table#virtualPlayersTable tbody").insertAdjacentHTML("beforeend", html);
-        this.activateDataTable("virtualPlayersTable");
-
-         */
     };
 
 
@@ -193,9 +143,6 @@ export class LaunchVirtualPlayersPopup extends Popup
                 this._popup.getChildByID("errorText").className="errorText hide";
                 this._emitter.emit(Events.LAUNCH_PLAYERS, {numPlayers:numPlayers, taskDefinitionArn: taskDefinitionArn});
             }
-
-            //this._emitter.emit(Events.CLOSE_POPUP);
-            //this.setVisible(false);
         }
         if (event.target.className == "refreshButton")
         {

@@ -1,17 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import config from '../../Config/Config';
 import Group = Phaser.GameObjects.Group;
-import Rectangle = Phaser.GameObjects.Rectangle;
-import {Events} from "../../Events/Events";
-import {PopupClickEvent} from "../../Events/PopupClickEvent";
 import {EventDispatcher} from "../../Events/EventDispatcher";
 import Container = Phaser.GameObjects.Container;
 import {RoundedRectangle} from "../RoundedRectangle";
-import Tween = Phaser.Tweens.Tween;
-import {Game} from "../../Game";
-import TextureManager = Phaser.Textures.TextureManager;
 import {ScreenResolution} from "../../Data/ScreenResolution";
 
 export abstract class BaseContainer extends Container
@@ -87,11 +80,7 @@ export abstract class BaseContainer extends Container
         let firstElement = this.ChildElements[0];
 
         let groupChildren = this._elementGroup.getChildren();
-
-        console.log("LAYING OUT CONTAINER", this.constructor.name, this._bg.displayWidth, firstElement.displayWidth);
-
         let columns = Math.floor(this._bg.displayWidth/(firstElement.displayWidth+padding));
-
         let groupWidth:number = columns  * (firstElement.displayWidth+padding);
         if (groupChildren.length<columns)
         {

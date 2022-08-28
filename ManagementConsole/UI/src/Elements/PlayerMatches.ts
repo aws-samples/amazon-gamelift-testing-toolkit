@@ -2,11 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import 'phaser';
-import {DataTypes} from "../Data/DataTypes";
-import {Player} from "./Player";
-import config from "../Config/Config";
-import Rectangle = Phaser.GameObjects.Rectangle;
-import {Instance} from "./Instance";
 import {PlayerMatch} from "./PlayerMatch";
 import {ConsoleScene} from "../Scenes/ConsoleScene";
 

@@ -4,10 +4,7 @@
 import "phaser";
 import {EventDispatcher} from "../../Events/EventDispatcher";
 import {Events} from "../../Events/Events";
-import Image = Phaser.GameObjects.Image;
 import {SimpleButton} from "./SimpleButton";
-import Container = Phaser.GameObjects.Container;
-import BitmapText = Phaser.GameObjects.BitmapText;
 import DOMElement = Phaser.GameObjects.DOMElement;
 
 export abstract class SimpleMenu extends Phaser.GameObjects.Container
@@ -66,7 +63,6 @@ export abstract class SimpleMenu extends Phaser.GameObjects.Container
         else
         {
             this._element.setOrigin(1,0);
-            //this._element.x -= Math.round(this._button.displayWidth/2) - this._element.displayWidth;
             this._element.x = 0;
         }
 

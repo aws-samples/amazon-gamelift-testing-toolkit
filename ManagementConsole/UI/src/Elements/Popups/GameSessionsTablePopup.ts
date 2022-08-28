@@ -3,19 +3,11 @@
 
 import 'phaser';
 import {DataTypes} from "../../Data/DataTypes";
-import {Fleet} from "../Fleet";
-import DOMElement = Phaser.GameObjects.DOMElement;
 import {Network} from "../../Network/Network";
-import {EventDispatcher} from "../../Events/EventDispatcher";
 import {Events} from "../../Events/Events";
-import Rectangle = Phaser.GameObjects.Rectangle;
-import config from "../../Config/Config"
 import {Popup} from "../Abstract/Popup";
-import Instance = DataTypes.Instance;
 import GameSession = DataTypes.GameSession;
-import FleetData = DataTypes.FleetData;
 import {Utils} from "../../Utils/Utils";
-import {Locations} from "../../Data/Locations";
 
 export class GameSessionsTablePopup extends Popup
 {
@@ -38,16 +30,6 @@ export class GameSessionsTablePopup extends Popup
         }
 
         Network.sendObject({Type:"GetGameSessions", FleetId:fleetId});
-/*
-        this._popup.getChildByID("gameSessionId").innerHTML=gameSessionData.GameSessionId;
-        this._popup.getChildByID("ipAddress").innerHTML=gameSessionData.IpAddress;
-        this._popup.getChildByID("dnsName").innerHTML=gameSessionData.DnsName;
-        this._popup.getChildByID("region").innerHTML=gameSessionData.Location;
-        this._popup.getChildByID("currentPlayerSessions").innerHTML=gameSessionData.CurrentPlayerSessionCount + "/" + gameSessionData.MaximumPlayerSessionCount;
-        this._popup.getChildByID("instanceStatus").innerHTML=gameSessionData.Status.Value;
-        this._popup.getChildByID("creationDate").innerHTML=new Date(gameSessionData.CreationTime).toISOString();
-
- */
     }
 
     setupEventListeners()
@@ -132,8 +114,6 @@ export class GameSessionsTablePopup extends Popup
     resetLogsTable()
     {
         this.hideStatusAlert();
-        console.log(this._html);
-        //const original = new DOMElement(this.scene, 0, 0).createFromCache(this._htmlName);
         console.log(this._popup.node.querySelector("table#gameSessionLogsTable").outerHTML);
         let parser = new DOMParser();
         let element = parser.parseFromString(this._html, "text/html");
@@ -261,8 +241,6 @@ export class GameSessionsTablePopup extends Popup
             console.log(logStream);
 
             Network.sendObject({Type:"GetGameSessionLogs", LogStream:logStream});
-
-            //this._emitter.emit(Events.SHOW_GAME_SESSION_POPUP, {data:session, showBack:true});
         }
         else
         if (event.target.className.indexOf("playerSessions")!==-1)
@@ -270,8 +248,6 @@ export class GameSessionsTablePopup extends Popup
             let session = this._gameSessions.filter(gameSession=>gameSession.GameSessionId==event.target.id)[0];
 
             Network.sendObject({Type:"GetPlayerSessions", GameSessionId:session.GameSessionId});
-
-            //this._emitter.emit(Events.SHOW_GAME_SESSION_POPUP, {data:session, showBack:true});
         }
     };
 

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {Player, SceneDestination} from "../Elements/Player";
-import {Instance} from "../Elements/Instance";
 import {Fleets} from "../Elements/Fleets";
 import {Network} from "../Network/Network"
 import {DataTypes} from "../Data/DataTypes";
@@ -12,27 +11,19 @@ import {SettingsPanel} from "../Elements/Settings/SettingsPanel";
 import {EventDispatcher} from "../Events/EventDispatcher";
 import {Events} from "../Events/Events";
 import {SettingsButton} from "../Elements/Buttons/SettingsButton";
-import config from '../Config/Config';
 import UUID = Phaser.Utils.String.UUID;
-import {Popup} from "../Elements/Abstract/Popup";
-import {PopupClickEvent} from "../Events/PopupClickEvent";
 import {MatchmakingConfigs} from "../Elements/MatchmakingConfigs";
 import {GameSessionQueues} from "../Elements/GameSessionQueues";
 import FlexMatchEventDetail = DataTypes.FlexMatchEventDetail;
 import QueuePlacementEventDetail = DataTypes.QueuePlacementEventDetail;
 import {Players} from "../Elements/Players";
-import {GameSessionPopup} from "../Elements/Popups/GameSessionPopup";
-import {FleetScalingPopup} from "../Elements/Popups/FleetScalingPopup";
 import {PopupHandler} from "../Elements/Popups/PopupHandler";
 import {MatchmakingConfig} from "../Elements/MatchmakingConfig";
 import {GameSessionQueue} from "../Elements/GameSessionQueue";
 import Alias = DataTypes.Alias;
 import SimpleResult = DataTypes.SimpleResult;
 import {ToggleAnimationButton} from "../Elements/Buttons/ToggleAnimationButton";
-import {PlayerMatch} from "../Elements/PlayerMatch";
 import {PlayerMatches} from "../Elements/PlayerMatches";
-import {Game} from "../Game";
-import Image = Phaser.GameObjects.Image;
 import Sprite = Phaser.GameObjects.Sprite;
 import {Fleet} from "../Elements/Fleet";
 import {ScreenResolution} from "../Data/ScreenResolution";
@@ -61,23 +52,6 @@ export class ConsoleScene extends Phaser.Scene
         this._emitter = EventDispatcher.getInstance();
         PopupHandler.registerScene(this);
         console.log(this);
-    }
-
-    preload ()
-    {
-
-        /*
-        this.load
-            .setBaseURL()
-            .setPath()
-            .setPrefix()
-            .scenePlugin(
-                'PhaserDebugDrawPlugin',
-                'https://cdn.jsdelivr.net/npm/phaser-plugin-debug-draw@6.0.1',
-                'debugDraw',
-                'debugDraw'
-            );
-*/
     }
 
     init(state:State)
@@ -124,7 +98,6 @@ export class ConsoleScene extends Phaser.Scene
         console.log("FOUND PLAYER", player);
         if (player==undefined)
         {
-            //player = Player.Random(this, playerId);
             player = new Player(this, 0, 0, playerId);
         }
 

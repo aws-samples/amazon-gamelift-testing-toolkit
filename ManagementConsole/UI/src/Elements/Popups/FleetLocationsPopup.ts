@@ -3,13 +3,8 @@
 
 import 'phaser';
 import {DataTypes} from "../../Data/DataTypes";
-import {Fleet} from "../Fleet";
-import DOMElement = Phaser.GameObjects.DOMElement;
 import {Network} from "../../Network/Network";
-import {EventDispatcher} from "../../Events/EventDispatcher";
 import {Events} from "../../Events/Events";
-import Rectangle = Phaser.GameObjects.Rectangle;
-import config from "../../Config/Config"
 import {Popup} from "../Abstract/Popup";
 import FleetData = DataTypes.FleetData;
 import {PopupClickEvent} from "../../Events/PopupClickEvent";
@@ -53,7 +48,6 @@ export class FleetLocationsPopup extends Popup
     setPopupData(data:PopupClickEvent)
     {
         this._fleetData = data.gameObject.Data as FleetData;
-
 
         this._popup.node.querySelector("p.title").insertAdjacentHTML("beforeend", "Update Locations for Fleet \"" + this._fleetData.FleetAttributes.Name + "\"");
 

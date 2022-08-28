@@ -2,17 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import 'phaser';
-import {DataTypes} from "../../Data/DataTypes";
-import {Fleet} from "../Fleet";
-import DOMElement = Phaser.GameObjects.DOMElement;
 import {Network} from "../../Network/Network";
-import {EventDispatcher} from "../../Events/EventDispatcher";
 import {Events} from "../../Events/Events";
-import Rectangle = Phaser.GameObjects.Rectangle;
-import config from "../../Config/Config"
 import {Popup} from "../Abstract/Popup";
-import Instance = DataTypes.Instance;
-import GameSession = DataTypes.GameSession;
 import JSONEditor, {JSONEditorOptions} from "jsoneditor";
 
 export class MatchmakingTicketsPopup extends Popup

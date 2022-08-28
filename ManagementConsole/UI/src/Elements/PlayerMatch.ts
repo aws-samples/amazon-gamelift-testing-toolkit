@@ -2,19 +2,13 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import 'phaser';
-import {DataTypes} from "../Data/DataTypes";
-import Container = Phaser.GameObjects.Container;
 import {Player, SceneDestination} from "./Player";
 import {Players} from "./Players";
 import {BaseContainer} from "./Abstract/BaseContainer";
-import {MatchmakingConfig} from "./MatchmakingConfig";
 import {RoundedRectangle} from "./RoundedRectangle";
-import {MatchmakingConfigMenu} from "./Menus/MatchmakingConfigMenu";
 import {Events} from "../Events/Events";
-import {PopupClickEvent} from "../Events/PopupClickEvent";
 import Timeline = Phaser.Tweens.Timeline;
 import {PlayerMatches} from "./PlayerMatches";
-import BitmapText = Phaser.GameObjects.BitmapText;
 import {ConsoleScene} from "../Scenes/ConsoleScene";
 
 export class PlayerMatch extends BaseContainer
@@ -38,8 +32,6 @@ export class PlayerMatch extends BaseContainer
         this.setSize(16, 16);
         this.draw(16,16);
         this._bg.setVisible(false);
-        //this._groupOffsetY=10;
-
     }
 
     handleOver = () =>
@@ -55,12 +47,11 @@ export class PlayerMatch extends BaseContainer
     {
         console.log(Players.getPlayers());
         console.log("looking for "+playerId)
+
         let player = Players.getPlayer(playerId);
-
         player.scale=0.75;
-//        player.x = player.y = 0;
-
         this.add(player);
+
         this._elementGroup.add(player);
         player.resetDestinations();
 
@@ -93,12 +84,10 @@ export class PlayerMatch extends BaseContainer
         if (this._players[playerId])
         {
             this._players[playerId].storeEvent("REMOVING PLAYER FROM MATCH " + this._matchId);
-            //this.remove(Players.getPlayer(playerId));
             Players.getPlayer(playerId).scale=1;
             Players.getPlayer(playerId).unparentInPlace();
             delete this._players[playerId];
         }
-        //this.scene.add.existing(Players.getPlayer(playerId));
     }
 
     public removePlayersFromMatch(playerIds)

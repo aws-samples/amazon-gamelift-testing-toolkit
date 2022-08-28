@@ -2,11 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import {SimpleMenu} from "../Abstract/SimpleMenu";
-import {SettingsButton} from "../Buttons/SettingsButton";
 import {FleetLocationButton} from "../Buttons/FleetLocationButton";
 import {Events} from "../../Events/Events";
 import {Fleet} from "../Fleet";
-import {PopupClickEvent} from "../../Events/PopupClickEvent";
 
 export class LocationPopover extends SimpleMenu {
 
@@ -23,7 +21,6 @@ export class LocationPopover extends SimpleMenu {
         this.setSize(button.displayWidth, button.displayHeight);
 
         this.onMenuButtonClick = this.onMenuButtonClick.bind(this);
-        //this._globalEmitter.on(Events.OPEN_FLEET_MENU, this.onMenuButtonClick);
         this.showPopover = this.showPopover.bind(this);
         this.hideMenu = this.hideMenu.bind(this);
         this._button.buttonEmitter.on(Events.OVER, this.showPopover);
@@ -33,10 +30,6 @@ export class LocationPopover extends SimpleMenu {
         this._globalEmitter.on(Events.CLOSE_MENUS, this.hideMenu);
 
         this.handleClick = this.handleClick.bind(this);
-
-        console.log("CREATING FLEET MENU");
-
-        console.log(this._menuOptions);
     }
 
     showPopover()
