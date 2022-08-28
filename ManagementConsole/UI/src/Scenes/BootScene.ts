@@ -5,11 +5,11 @@ import 'phaser';
 import {Utils} from "../Utils/Utils";
 import { Auth } from '@aws-amplify/auth';
 import Amplify from '@aws-amplify/core';
+import {ScreenResolution} from "../Data/ScreenResolution";
 
 export class BootScene extends Phaser.Scene {
     constructor () {
         super('Boot');
-
     }
 
     preload () {

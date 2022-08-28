@@ -3,6 +3,7 @@
 
 import 'phaser';
 import WebFontFile from "../Elements/WebFontFile";
+import {ScreenResolution} from "../Data/ScreenResolution";
 
 export  class PreloaderScene extends Phaser.Scene {
     constructor () {
@@ -48,8 +49,10 @@ export  class PreloaderScene extends Phaser.Scene {
 
     preload ()
     {
-        var width = this.cameras.main.width;
-        var height = this.cameras.main.height;
+        ScreenResolution.updateUserResolution(this.scale.width, this.scale.height);
+
+        var width = ScreenResolution.width;
+        var height = ScreenResolution.height;
         var loadingText = this.make.text({
             x: width / 2,
             y: height / 2 - 50,
@@ -82,5 +85,6 @@ export  class PreloaderScene extends Phaser.Scene {
         });
 
         this.loadElements();
+
     }
 };

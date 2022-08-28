@@ -9,6 +9,7 @@ import {EventDispatcher} from '../Events/EventDispatcher';
 import {Events} from '../Events/Events';
 import StateMessage = DataTypes.StateMessage;
 import { Auth } from '@aws-amplify/auth';
+import {ScreenResolution} from "../Data/ScreenResolution";
 
 export class LoginScene extends Phaser.Scene
 {
@@ -23,7 +24,7 @@ export class LoginScene extends Phaser.Scene
     create ()
     {
         this.cameras.main.setBackgroundColor("#ffffff");
-        this._loginElement = this.add.dom(640, 360).createFromCache('tokenForm');
+        this._loginElement = this.add.dom(ScreenResolution.width/2, ScreenResolution.height/2).createFromCache('tokenForm');
         this._loginElement.setPerspective(800);
 
         this._loginElement.addListener("click");
