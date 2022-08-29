@@ -15,6 +15,8 @@ namespace SampleGameInfra.Lib
     public struct VirtualPlayersStackProps
     {
         public string WebSocketApiUrl;
+        public string IdentityPoolId;
+        public string IdentityPoolRegion;
         public VirtualPlayersConfiguration VirtualPlayersConfiguration;
     }
 
@@ -28,7 +30,14 @@ namespace SampleGameInfra.Lib
     {   
         internal VirtualPlayersStack(Construct scope, string id, VirtualPlayersStackProps props) : base(scope, id)
         {
-            var gameClientCommand = new string[] {"/local/game/bin/SampleGameBuild.csproj/net5.0/linux-x64/SampleGameBuild","--type","client","-u",props.WebSocketApiUrl};
+            var gameClientCommand = new string[]
+            {
+                "/local/game/bin/SampleGameBuild.csproj/net5.0/linux-x64/SampleGameBuild",
+                "--type", "client",
+                "--url", props.WebSocketApiUrl,
+                "--identity-pool-id", props.IdentityPoolId,
+                "--region", props.IdentityPoolRegion,
+            };
 
             var executionRole = new Role(this, "FargateExecutionRole", new RoleProps
             {

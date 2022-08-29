@@ -6,6 +6,8 @@ using Amazon.CDK;
 using Amazon.CDK.AWS.Apigatewayv2;
 using Amazon.CDK.AWS.Apigatewayv2.Alpha;
 using Amazon.CDK.AWS.Apigatewayv2.Integrations.Alpha;
+using Amazon.CDK.AWS.Cognito;
+using Amazon.CDK.AWS.Cognito.IdentityPool.Alpha;
 using Amazon.CDK.AWS.DynamoDB;
 using Amazon.CDK.AWS.Events;
 using Amazon.CDK.AWS.IAM;
@@ -35,6 +37,7 @@ namespace SampleGameInfra.Lib
         public WebSocketStage WebSocketStage;
         public Lambda.Function GameClientServiceFunction;
         public Lambda.Function FlexMatchEventFunction;
+        public IdentityPool GameIdentityPool;
 
         public static string ProjectRoot = "../Backend";
         
@@ -52,7 +55,7 @@ namespace SampleGameInfra.Lib
                     "logs:PutLogEvents"
                 }
             });
-            var build = new GameLiftBuild(this, "GameLiftBuild", props.GameLiftBuildProps);
+            var build = new GameLiftBuild(this, "SampleGameGameLiftBuild", props.GameLiftBuildProps);
             var instanceRole = new Role(this, "GameLiftInstanceRole", new RoleProps
             {
                 AssumedBy = new CompositePrincipal(new PrincipalBase[ ] { 
@@ -72,37 +75,37 @@ namespace SampleGameInfra.Lib
             }, true);
             var fleet = CreateFleet(build, "OnDemand", new GameLift.CfnFleetProps
             {
-                Name = "OnDemandFleet",
+                Name = "Sample Game OnDemand Fleet",
                 BuildId = build.BuildId,
                 Ec2InstanceType = "c4.large",
                 FleetType = "ON_DEMAND", 
-                MaxSize = 1, // these values can only be changed after deployment
-                DesiredEc2Instances = 1,
-                MinSize = 1,
+                MaxSize = 0, // these values can only be changed after deployment
+                DesiredEc2Instances = 0,
+                MinSize = 0,
                 InstanceRoleArn = instanceRole.RoleArn,
             }, 5);
             
-            var alias = CreateAlias( "OnDemandAlias", fleet);
+            var alias = CreateAlias( "SampleGameOnDemandAlias", fleet);
             
             var spotFleet = CreateFleet(build, "Spot", new GameLift.CfnFleetProps
             {
-                Name = "SpotFleet",
+                Name = "Sample Game Spot Fleet",
                 BuildId = build.BuildId,
                 Ec2InstanceType = "c4.large",
                 FleetType = "SPOT", 
-                MaxSize = 1, // these values can only be changed after deployment
-                DesiredEc2Instances = 1,
-                MinSize = 1,
+                MaxSize = 0, // these values can only be changed after deployment
+                DesiredEc2Instances = 0,
+                MinSize = 0,
                 InstanceRoleArn = instanceRole.RoleArn,
             }, 5);
             
-            var spotAlias = CreateAlias( "SpotAlias", spotFleet);
+            var spotAlias = CreateAlias( "SampleGameSpotAlias", spotFleet);
             var aliases = new[] {spotAlias, alias};
             var queue = CreateGameSessionQueue(aliases);
-            MatchConfig = CreateMatchmakingConfiguration( "MatchmakingConfig", queue);
+            MatchConfig = CreateMatchmakingConfiguration( "SampleGameMatchmakingConfig", queue);
 
             CreateTables();
-            CreateLambdas(); 
+            CreateLambdas();
             CreateWebSocketApi();
             CreateFlexMatchRule();
             
@@ -221,20 +224,39 @@ namespace SampleGameInfra.Lib
                 }
             }, true);
         }
-        
+
         private void CreateWebSocketApi()
         {
             var gameApiLogGroup = new LogGroup(this, "TestGameAPIGWLogGroup", new Amazon.CDK.AWS.Logs.LogGroupProps());
             var logGroupTarget = new CloudWatchLogGroup(gameApiLogGroup);
+            
+            var gameClientServiceFunctionArn = GameClientServiceFunction.FunctionArn;
+            var gameClientServiceApi = $"2015-03-31/functions/{gameClientServiceFunctionArn}/invocations";
+            var integrationUri = $"arn:aws:apigateway:{this.Region}:lambda:path/{gameClientServiceApi}";
             
             WebSocketApi = new WebSocketApi(this, "GCSAPIGW", new WebSocketApiProps
             {
                 ApiName = "GameClientServiceApi",
                 DefaultRouteOptions = new WebSocketRouteOptions
                 {
-                    Integration = new WebSocketLambdaIntegration("GameClientServiceIntegration", GameClientServiceFunction)
+                    Integration = new WebSocketLambdaIntegration("GameClientServiceIntegration", GameClientServiceFunction),
                 },
                 RouteSelectionExpression = "$request.body.Type"
+            });
+
+            var connectIntegration = new CfnIntegration(this, "WebSocketConnectIntegration", new CfnIntegrationProps
+            {
+                ApiId = WebSocketApi.ApiId,
+                IntegrationType = "AWS_PROXY",
+                IntegrationUri = integrationUri,
+            });
+
+            var connectRoute = new CfnRoute(this, "WebSocketConnectRoute", new CfnRouteProps
+            {
+                ApiId = WebSocketApi.ApiId,
+                AuthorizationType = "AWS_IAM",
+                RouteKey = "$connect",
+                Target = "integrations/" + connectIntegration.Ref
             });
 
             WebSocketStage = new WebSocketStage(this, "GCSAPIGW-Stage", new WebSocketStageProps
@@ -244,13 +266,78 @@ namespace SampleGameInfra.Lib
                 AutoDeploy = true
             });
             
+            GameIdentityPool = new IdentityPool(this, "SampleGameIdentityPool", new IdentityPoolProps
+            {
+                AllowUnauthenticatedIdentities = true,
+            });
+            
+            GameIdentityPool.UnauthenticatedRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
+            {
+                Effect = Effect.ALLOW,
+                Resources = new[]
+                {
+                    $"arn:aws:execute-api:{this.Region}:*:{WebSocketStage.Api.ApiId}/{WebSocketStage.StageName}/*"
+                },
+                Actions = new[]
+                {
+                    "execute-api:Invoke"
+                }
+            }));
+            
+            // Adding specific CDK-Nag Suppressions
+            NagSuppressions.AddResourceSuppressions(GameIdentityPool.UnauthenticatedRole, new INagPackSuppression[]
+            {
+                new NagPackSuppression
+                {
+                    Id = "AwsSolutions-IAM5",
+                    Reason = "Suppress wildcard finding to give permission to invoke API"
+                }
+            }, true);
+            
+            GameIdentityPool.AuthenticatedRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
+            {
+                Effect = Effect.ALLOW,
+                Resources = new[]
+                {
+                    $"arn:aws:execute-api:{this.Region}:*:{WebSocketStage.Api.ApiId}/{WebSocketStage.StageName}/*"
+                },
+                Actions = new[]
+                {
+                    "execute-api:Invoke"
+                }
+            }));
+            
+            // Adding specific CDK-Nag Suppressions
+            NagSuppressions.AddResourceSuppressions(GameIdentityPool.AuthenticatedRole, new INagPackSuppression[]
+            {
+                new NagPackSuppression
+                {
+                    Id = "AwsSolutions-IAM5",
+                    Reason = "Suppress wildcard finding to give permission to invoke API"
+                }
+            }, true);
+            
             var cfnStage = WebSocketStage.Node.DefaultChild as CfnStage;
             cfnStage.AccessLogSettings = new CfnStage.AccessLogSettingsProperty
             {
                 DestinationArn = gameApiLogGroup.LogGroupArn,
                 Format = "{\"requestId\":\"$context.requestId\", \"ip\": \"$context.identity.sourceIp\", \"caller\":\"$context.identity.caller\", \"user\":\"$context.identity.user\",\"requestTime\":\"$context.requestTime\", \"eventType\":\"$context.eventType\",\"routeKey\":\"$context.routeKey\", \"status\":\"$context.status\",\"connectionId\":\"$context.connectionId\"}"
             };
-
+            
+            var apiGwInvokePolicy = new PolicyStatement(new PolicyStatementProps
+            {
+                Effect = Effect.ALLOW,
+                Resources = new[]
+                {
+                    $"arn:aws:execute-api:{this.Region}:*:{WebSocketStage.Api.ApiId}/{WebSocketStage.StageName}/*"
+                },
+                Actions = new[]
+                {
+                    "execute-api:Invoke"
+                }
+            });
+            GameClientServiceFunction.Role.AddToPrincipalPolicy(apiGwInvokePolicy);
+            GameClientServiceFunction.GrantInvoke(new ServicePrincipal("apigateway.amazonaws.com"));
         }
 
         private void CreateFlexMatchRule()
@@ -351,7 +438,7 @@ namespace SampleGameInfra.Lib
 
             var queue = new GameLift.CfnGameSessionQueue(this, "Queue", new GameLift.CfnGameSessionQueueProps
             {
-                Name = "NumbersQuiz-Queue",
+                Name = "SampleGame-Queue",
                 Destinations = destinations.ToArray(),
                 TimeoutInSeconds = 60,
             });
@@ -389,7 +476,7 @@ namespace SampleGameInfra.Lib
             var ruleSetName = Fn.Ref(ruleSet.LogicalId);
             new CfnOutput(this, "ruleSetName", new CfnOutputProps { Value = ruleSetName });
 
-            var matchConfig = new GameLift.CfnMatchmakingConfiguration(this, "MMConfig", new GameLift.CfnMatchmakingConfigurationProps
+            var matchConfig = new GameLift.CfnMatchmakingConfiguration(this, "SampleGameMMConfig", new GameLift.CfnMatchmakingConfigurationProps
             {
                 AcceptanceRequired = false,
                 BackfillMode = "AUTOMATIC",

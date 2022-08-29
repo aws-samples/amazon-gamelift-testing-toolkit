@@ -39,6 +39,7 @@ namespace SampleGameInfra
             {
                 BuildSuppressions("AwsSolutions-APIG4", "API Gateway WebSocket $default route does not support authorization."),
                 BuildSuppressions("AwsSolutions-ECS7", "Container logging not required for sample game virtual players."),
+                BuildSuppressions("AwsSolutions-COG7", "Sample game doesn't require players to have a user account."),
             };
         }
 

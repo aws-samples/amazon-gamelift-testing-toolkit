@@ -28,7 +28,7 @@ namespace SampleGameInfra.Lib
             var gameLiftBuildProps = new GameLiftBuildProps
             {
                 AssetPath = "../Game/", 
-                Name = "Numbers Quiz Build", 
+                Name = "Sample Game Build", 
                 OperatingSystem = GameLiftBuildOs.AmazonLinux2, 
                 Version = "0.01",
             };
@@ -41,7 +41,9 @@ namespace SampleGameInfra.Lib
             var virtualPlayersStack = new VirtualPlayersStack(this, "VirtualPlayerStack", new VirtualPlayersStackProps
             {
                 VirtualPlayersConfiguration = virtualPlayersConfig,
-                WebSocketApiUrl = backendStack.WebSocketStage.Url
+                WebSocketApiUrl = backendStack.WebSocketStage.Url,
+                IdentityPoolId = backendStack.GameIdentityPool.IdentityPoolId,
+                IdentityPoolRegion = backendStack.Region,
             });
 
             // add VirtualPlayers tag to VirtualPlayersStack resources to allow toolkit to launch task definitions
