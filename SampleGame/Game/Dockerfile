@@ -2,7 +2,6 @@ FROM amazonlinux:latest
 RUN yum update -y
 RUN mkdir /local/game
 WORKDIR /local/game/
-COPY . /local/game/
 RUN rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm
 RUN yum -y install dotnet-sdk-5.0 openssl-libs unzip yum-utils
 RUN mkdir -p mono_dependencies ;\
@@ -23,6 +22,7 @@ msbuild GameLiftServerSDKNet45.sln -property:Configuration=Release ;\
 cp Net45/bin/Release/* ../../../DLL/ ;\
 cd ../../.. ;\
 rm -rf aws-gamelift-sdk-temp
+COPY . /local/game/
 RUN /bin/dotnet publish -c SampleGameBuild.csproj -r linux-x64 --self-contained true ;\
 cp /local/game/log4net.config /local/game/bin/SampleGameBuild.csproj/net5.0/linux-x64/ ;\
 cp /local/game/QuizConfig.json /local/game/bin/SampleGameBuild.csproj/net5.0/linux-x64/
