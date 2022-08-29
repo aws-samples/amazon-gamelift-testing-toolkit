@@ -81,7 +81,7 @@ namespace SampleGameBuild.NumbersQuiz.Server
             _cloudWatchEnabled = true;
         }
         
-        public async static void Log(string logStr)
+        public static void Log(string logStr)
         {
             Log4NetLogger.Info(logStr);
 

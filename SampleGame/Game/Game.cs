@@ -3,6 +3,8 @@
 
 using System;
 using System.Threading.Tasks;
+using Amazon;
+using Amazon.CognitoIdentity;
 using SampleGameBuild.GameLiftIntegration.Client;
 using SampleGameBuild.Network.Client;
 using SampleGameBuild.Network.Server;
@@ -14,9 +16,7 @@ namespace SampleGameBuild
     class Game
     {
         private const int loopDelay = 200;
-
-        private int _port;
-        private string _serverHost;
+        
         private bool _isServer = true;
         private string _wsUrl;
         private string _playerId;
@@ -27,8 +27,6 @@ namespace SampleGameBuild
             Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(options));
             
             _options = options;
-            _port = options.Port;
-            _serverHost = options.ServerHost;
             _wsUrl = options.WSUrl;
             _isServer = (options.Type == "server");
         }
@@ -49,26 +47,37 @@ namespace SampleGameBuild
             Console.WriteLine("loop broken");
         }
 
-        public void RunClient()
+        public async void RunClient()
         {
+            // Initialize the Amazon Cognito credentials provider
+            CognitoAWSCredentials credentials = new CognitoAWSCredentials(
+                _options.IdentityPoolId, // Identity pool ID
+                RegionEndpoint.GetBySystemName(_options.IdentityPoolRegion) // Region
+            );
+            
+            var creds = credentials.GetCredentials();
+            var identityId = await credentials.GetIdentityIdAsync();
+            var apiGatewayRequestSigner = new APIGatewayRequestSigner(_options.IdentityPoolRegion);
+            
             _playerId = Guid.NewGuid().ToString();
 
             if (_wsUrl != null)
             {
-                var client = new WSClient(_wsUrl, _playerId);
+                var signedWebSocketUrl = apiGatewayRequestSigner.GenerateSignedUrl(_options.WSUrl, creds);
+                var client = new WSClient(signedWebSocketUrl, _playerId);
                 RunClient(client);
             }
             else
             {
                 using var quizClient = new QuizClient(_playerId, Guid.NewGuid().ToString());
-                using var client = new Client(_serverHost, _port, quizClient);
+                using var client = new Client(_options.ServerHost, _options.Port, quizClient);
                 RunClient(client);
             }
         }
 
         public void RunServer()
         {
-            using var server = new Server(_port, new QuizServer(_port));
+            using var server = new Server(_options.Port, new QuizServer(_options.Port));
             while (server.Running)
             {
                 server.OnLoop();

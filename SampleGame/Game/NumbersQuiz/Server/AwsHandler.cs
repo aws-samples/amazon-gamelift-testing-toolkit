@@ -17,7 +17,6 @@ namespace SampleGameBuild.NumbersQuiz.Server
     public class AwsHandler
     {
         public static Credentials Credentials;
-        private static AmazonCloudWatchLogsClient _logsClient;
 
         public static bool AssumeInstanceRole(string roleArn)
         {

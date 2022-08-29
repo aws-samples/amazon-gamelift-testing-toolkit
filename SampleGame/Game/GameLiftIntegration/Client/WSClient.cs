@@ -38,6 +38,7 @@ namespace SampleGameBuild.GameLiftIntegration.Client
                 return client;
             });
             
+            Console.WriteLine("Trying to connect to " + webSocketUrl);
             _webSocket = new WebsocketClient(new Uri(webSocketUrl), factory);
 
             _webSocket.IsReconnectionEnabled = false;
@@ -78,12 +79,12 @@ namespace SampleGameBuild.GameLiftIntegration.Client
         {
             while (true)
             {
-                await Task.Delay(1000);
+                await Task.Delay(30000);
 
                 if(!_webSocket.IsRunning)
                     continue;
 
-                _webSocket.Send("ping");
+                _webSocket.Send("/ping");
             }
         }
 

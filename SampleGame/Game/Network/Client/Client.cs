@@ -34,6 +34,7 @@ namespace SampleGameBuild.Network.Client
             }
             catch (SocketException sex)
             {
+                Console.WriteLine(sex.Message);
                 _client = null; 
                 return false;
             }

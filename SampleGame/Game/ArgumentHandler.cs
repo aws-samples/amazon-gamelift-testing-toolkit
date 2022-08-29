@@ -22,7 +22,15 @@ namespace SampleGameBuild
         [Option('u', "url", Required = false, Default = null,
             HelpText = "WebSockets URL for client to connect into")]
         public string WSUrl { get; set; }
-    
+
+        [Option('i', "identity-pool-id", Required = false, Default = null,
+            HelpText = "Identity Pool Id for client to connect into")]
+        public string IdentityPoolId { get; set; }
+
+        [Option('r', "identity-pool-region", Required = false, Default = null,
+            HelpText = "Identity Pool Id for client to connect into")]
+        public string IdentityPoolRegion { get; set; }
+        
         [Option('t', "type", Required = false, Default = "server",
             HelpText = "server | client, defaults to server")]
         public string Type { get; set; }
