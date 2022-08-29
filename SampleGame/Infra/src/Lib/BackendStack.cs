@@ -102,7 +102,7 @@ namespace SampleGameInfra.Lib
             var spotAlias = CreateAlias( "SampleGameSpotAlias", spotFleet);
             var aliases = new[] {spotAlias, alias};
             var queue = CreateGameSessionQueue(aliases);
-            MatchConfig = CreateMatchmakingConfiguration( "SampleGameMatchmakingConfig", queue);
+            MatchConfig = CreateMatchmakingConfiguration( "SampleGame-MatchmakingConfig", queue);
 
             CreateTables();
             CreateLambdas();
