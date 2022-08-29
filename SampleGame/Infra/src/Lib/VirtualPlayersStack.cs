@@ -36,7 +36,7 @@ namespace SampleGameInfra.Lib
                 "--type", "client",
                 "--url", props.WebSocketApiUrl,
                 "--identity-pool-id", props.IdentityPoolId,
-                "--region", props.IdentityPoolRegion,
+                "--identity-pool-region", props.IdentityPoolRegion,
             };
 
             var executionRole = new Role(this, "FargateExecutionRole", new RoleProps
