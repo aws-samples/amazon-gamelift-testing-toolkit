@@ -45,6 +45,15 @@ namespace SampleGameBackend.GameClientService
                 
                 if (eventType == "MESSAGE")
                 {
+                    if (request.Body == "/ping")
+                    {
+                        LambdaLogger.Log("Ping received!");
+                        return new APIGatewayProxyResponse
+                        {
+                            StatusCode = 200,
+                            Body = $"Connected with ID {_connectionId}"
+                        };
+                    }
                     try
                     {
                         _body = JsonConvert.DeserializeObject<ClientMessage>(request.Body);
