@@ -28,7 +28,7 @@ namespace SampleGameBuild
         public string IdentityPoolId { get; set; }
 
         [Option('r', "identity-pool-region", Required = false, Default = null,
-            HelpText = "Identity Pool Id for client to connect into")]
+            HelpText = "Identity Pool Region for client to connect into")]
         public string IdentityPoolRegion { get; set; }
         
         [Option('t', "type", Required = false, Default = "server",
