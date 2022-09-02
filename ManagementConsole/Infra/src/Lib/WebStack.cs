@@ -130,7 +130,7 @@ namespace ManagementConsoleInfra.Lib
                 }
             }));
 
-            var cognitoDomainPrefix = "falken-" + WebUserPoolClient.UserPoolClientId;
+            var cognitoDomainPrefix = "gamelift-testing-toolkit-" + WebUserPoolClient.UserPoolClientId;
             var cognitoDomain = cognitoDomainPrefix + ".auth." + Fn.Ref("AWS::Region") + ".amazoncognito.com";
             var cognitoUrl = "https://" + cognitoDomain;
 
