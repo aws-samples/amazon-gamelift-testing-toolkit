@@ -45,7 +45,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                     var tags = new List<Tag>();
                     tags.Add(new Tag
                     {
-                        Key = "VirtualPlayers",
+                        Key = "AmazonGameLiftTestingToolkit-VirtualPlayers",
                         Value = "true",
                     });
                     
@@ -99,7 +99,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                         ResourceArn = taskDefinitionArn
                     });
 
-                    if (!listTagsForResourceResponse.Tags.Exists(t => t.Key == "VirtualPlayers" && t.Value == "true"))
+                    if (!listTagsForResourceResponse.Tags.Exists(t => t.Key == "AmazonGameLiftTestingToolkit-VirtualPlayers" && t.Value == "true"))
                     {
                         // Skip task definitions missing a VirtualPlayers=true tag
                         LambdaLogger.Log("Skipping " + taskDefinitionArn + " as Virtual Players tag doesn't exist");

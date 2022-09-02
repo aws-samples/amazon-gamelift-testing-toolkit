@@ -47,7 +47,7 @@ namespace SampleGameInfra.Lib
             });
 
             // add VirtualPlayers tag to VirtualPlayersStack resources to allow toolkit to launch task definitions
-            Tags.Of(virtualPlayersStack).Add("VirtualPlayers", "true");
+            Tags.Of(virtualPlayersStack).Add("AmazonGameLiftTestingToolkit-VirtualPlayers", "true");
         }
     }
 }

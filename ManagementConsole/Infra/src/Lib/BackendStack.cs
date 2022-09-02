@@ -594,7 +594,7 @@ namespace ManagementConsoleInfra.Lib
                 Conditions = new Dictionary<string, object>
                 {
                     { "ArnEquals", new Dictionary<string, string> { { "ecs:Cluster", VirtualPlayersRunnerCluster.ClusterArn } } },
-                    { "StringEquals", new Dictionary<string, string> { { "ecs:ResourceTag/VirtualPlayers", "true" } } },
+                    { "StringEquals", new Dictionary<string, string> { { "ecs:ResourceTag/AmazonGameLiftTestingToolkit-VirtualPlayers", "true" } } },
                 },
                     
             }));
