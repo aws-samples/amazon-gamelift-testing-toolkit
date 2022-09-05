@@ -17,7 +17,7 @@
     <PackageReference Include="Constructs" Version="[10.0.5,11.0.0)" />
     <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
     <PackageReference Include="Amazon.Lambda.Serialization.Json" Version="2.1.0" />
-    <PackageReference Include="Cdklabs.CdkNag" Version="2.15.52" />
+    <PackageReference Include="Cdklabs.CdkNag" Version="2.18.1" />
 
     <!-- jsii Roslyn analyzers (un-comment to obtain compile-time checks for missing required props
     <PackageReference Include="Amazon.Jsii.Analyzers" Version="*" PrivateAssets="all" />
