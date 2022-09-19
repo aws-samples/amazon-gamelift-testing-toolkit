@@ -14,7 +14,7 @@
     <PackageReference Include="Amazon.CDK.AWS.APIGatewayv2.Alpha" Version="2.38.1-alpha.0" />
     <PackageReference Include="Amazon.CDK.AWS.APIGatewayv2.Authorizers.Alpha" Version="2.38.1-alpha.0" />
     <PackageReference Include="Amazon.CDK.AWS.Cognito.IdentityPool.Alpha" Version="2.38.1-alpha.0" />
-    <PackageReference Include="Constructs" Version="10.1.80" />
+    <PackageReference Include="Constructs" Version="10.1.106" />
     <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
     <PackageReference Include="Amazon.Lambda.Serialization.Json" Version="2.1.0" />
     <PackageReference Include="Cdklabs.CdkNag" Version="2.15.52" />
