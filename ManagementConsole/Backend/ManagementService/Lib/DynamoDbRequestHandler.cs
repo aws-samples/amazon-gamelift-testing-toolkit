@@ -95,7 +95,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                 
                 queueEvents.Sort((x, y) => String.Compare(x.StartTime, y.StartTime));
                 queueEvents.Reverse();
-                queueEvents = queueEvents.Take(50).ToList();
+                //queueEvents = queueEvents.Take(50).ToList();
                 return queueEvents;
             }
             catch (Exception e)
