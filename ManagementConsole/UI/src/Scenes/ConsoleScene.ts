@@ -27,6 +27,7 @@ import {PlayerMatches} from "../Elements/PlayerMatches";
 import Sprite = Phaser.GameObjects.Sprite;
 import {Fleet} from "../Elements/Fleet";
 import {ScreenResolution} from "../Data/ScreenResolution";
+import {PlayerMatch} from "../Elements/PlayerMatch";
 
 export class ConsoleScene extends Phaser.Scene
 {
@@ -135,6 +136,37 @@ export class ConsoleScene extends Phaser.Scene
         return player;
     }
 
+    initializeMatch = (matchId:string, configArn:string=null):PlayerMatch =>
+    {
+        let match = PlayerMatches.getMatch(matchId);
+
+        // if match doesn't exist yet, then create it
+        if (match==undefined)
+        {
+            console.log("CREATING MATCH", matchId);
+            match = PlayerMatches.createMatch(this, matchId);
+            this.add.existing(match);
+        }
+
+        // if matchmaking config Arn is set, then update match
+        if (configArn!=null)
+        {
+            let matchmakingConfig = this._matchmakingConfigurations.getConfigByArn(configArn);
+            match.x = matchmakingConfig.x + Math.floor(Math.random() * matchmakingConfig.displayWidth);
+            if (ScreenResolution.displayResolution==ScreenResolution.RES_720P)
+            {
+                match.y = 220;
+            }
+            else
+            {
+                match.y = 375;
+            }
+            match.configArn = configArn;
+        }
+
+        return match;
+    }
+
     processFlexMatchEvent(flexMatchEvent:FlexMatchEventDetail, resources:string[])
     {
         let eventPlayerIds:string[] = [];
@@ -143,6 +175,7 @@ export class ConsoleScene extends Phaser.Scene
         // TODO HANDLE BACKFILL CORRECTLY FOR ADDED PLAYERS
         flexMatchEvent.tickets.map((ticket)=>
         {
+            // ADD PLAYERS
             if (!ticket.ticketId.startsWith("auto-backfill"))
             {
                 ticket.players.map((player)=>
@@ -165,10 +198,13 @@ export class ConsoleScene extends Phaser.Scene
         {
             console.log("RECEIVED " + flexMatchEvent.type + " SO MOVING PLAYERS TO MATCH");
             // construct match
-            let match = PlayerMatches.createMatch(this, flexMatchEvent.matchId, resources[0]);
+            /*let match = PlayerMatches.createMatch(this, flexMatchEvent.matchId, resources[0]);
+            console.log("CREATING MATCH", flexMatchEvent.matchId);
             match.x = matchmakingConfig.x + Math.floor(Math.random() * matchmakingConfig.displayWidth);
-            match.y = 375;
-            this.add.existing(match);
+            match.y = 375;*/
+
+            let match = this.initializeMatch(flexMatchEvent.matchId, resources[0]);
+
             eventPlayerIds.map((playerId)=> // make players move to match destination and then get added to the match
             {
                 let matchDestination:SceneDestination = {
@@ -230,7 +266,7 @@ export class ConsoleScene extends Phaser.Scene
                     delay:0,
                 };
                 Players.getPlayer(playerId).addDestination(destination);
-                console.log("RECEIVED " + flexMatchEvent.type + " SO SENDING PLAYER TO MATCHMAKING CONFIG");
+                console.log("RECEIVED " + flexMatchEvent.type + " SO SENDING PLAYER " + playerId + " TO MATCHMAKING CONFIG");
             });
 
             return;
@@ -251,15 +287,16 @@ export class ConsoleScene extends Phaser.Scene
             return;
         }
 
-        console.log("RECEIVED " + flexMatchEvent.type + " SO DOING NOTHING");
+        console.log("RECEIVED " + flexMatchEvent.type + " SO DOING NOTHING", flexMatchEvent);
     }
 
     processQueuePlacementEvent(queuePlacementEvent:QueuePlacementEventDetail, resources:string[])
     {
         let playerIds:string[] = [];
-        console.log(queuePlacementEvent);
+        console.log(queuePlacementEvent.type, queuePlacementEvent);
         if (queuePlacementEvent.placedPlayerSessions==null) // the queue placement has failed for some reason
         {
+            console.log("QUEUE PLACEMENT FAILED!", queuePlacementEvent);
             if (queuePlacementEvent.placementId)
             {
                 let match = PlayerMatches.getMatch(queuePlacementEvent.placementId); // look up the corresponding match and break it up
@@ -277,13 +314,12 @@ export class ConsoleScene extends Phaser.Scene
                     };
                     playerIds.map((playerId)=> // make players go back to the matchmaking config
                     {
-                       Players.getPlayer(playerId).addDestination(destination);
+                        Players.getPlayer(playerId).addDestination(destination);
                     });
                 }
             }
             return;
         }
-
 
         queuePlacementEvent.placedPlayerSessions.map(playerSession => {
             playerIds.push(playerSession.playerId);
@@ -292,31 +328,35 @@ export class ConsoleScene extends Phaser.Scene
         if (queuePlacementEvent.placementId)
         {
             let match = PlayerMatches.getMatch(queuePlacementEvent.placementId);
-            if (match)
+
+            switch (queuePlacementEvent.type)
             {
-                switch (queuePlacementEvent.type)
-                {
-                    case "PlacementFulfilled":
-                        let queue = this._queues.getQueueByArn(resources[0]);
-                        let queueDestination:SceneDestination = {
-                            container: queue,
-                            type: "queue",
-                            delay:1000,
-                            disappearAfter:false,
-                        };
-                        match.addDestination(queueDestination, (match.playerIds.length != playerIds.length));
+                case "PlacementFulfilled":
+                    if (match==undefined)
+                    {
+                        console.log("UNDEFINED MATCH PLACEMENT FULFILLED!", queuePlacementEvent.placementId);
+                        match = this.initializeMatch(queuePlacementEvent.placementId);
+                    }
 
-                        let instance = this._fleets.getInstanceByIp(queuePlacementEvent.ipAddress);
-                        let instanceDestination:SceneDestination = {
-                            container: instance,
-                            type: "instance",
-                            disappearAfter: true,
-                            delay:1000,
-                        };
-                        match.addDestination(instanceDestination, (match.playerIds.length != playerIds.length));
+                    let queue = this._queues.getQueueByArn(resources[0]);
+                    let queueDestination:SceneDestination = {
+                        container: queue,
+                        type: "queue",
+                        delay:1000,
+                        disappearAfter:false,
+                    };
+                    match.addDestination(queueDestination, (match.playerIds.length != playerIds.length));
 
-                        break;
-                }
+                    let instance = this._fleets.getInstanceByIp(queuePlacementEvent.ipAddress);
+                    let instanceDestination:SceneDestination = {
+                        container: instance,
+                        type: "instance",
+                        disappearAfter: true,
+                        delay:1000,
+                    };
+                    match.addDestination(instanceDestination, (match.playerIds.length != playerIds.length));
+
+                    break;
             }
         }
 
@@ -606,7 +646,7 @@ export class ConsoleScene extends Phaser.Scene
     {
         this._lines?.map((line)=>
         {
-           line.destroy();
+            line.destroy();
         });
 
         this._lines=[];

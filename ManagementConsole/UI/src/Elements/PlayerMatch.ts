@@ -10,6 +10,8 @@ import {Events} from "../Events/Events";
 import Timeline = Phaser.Tweens.Timeline;
 import {PlayerMatches} from "./PlayerMatches";
 import {ConsoleScene} from "../Scenes/ConsoleScene";
+import {DataTypes} from "../Data/DataTypes";
+import QueuePlacementEventDetail = DataTypes.QueuePlacementEventDetail;
 
 export class PlayerMatch extends BaseContainer
 {
@@ -21,8 +23,10 @@ export class PlayerMatch extends BaseContainer
     protected _timeline:Timeline;
     protected _destinations: SceneDestination[];
     protected _destinationIndex = 0;
+    protected _placementEvent: QueuePlacementEventDetail;
+    protected _placementResources: string[];
 
-    constructor (scene:Phaser.Scene, x:number, y:number, matchId:string, configArn:string)
+    constructor (scene:Phaser.Scene, x:number, y:number, matchId:string, configArn:string=null)
     {
         super(scene, x, y);
         this._destinations = [];
@@ -63,6 +67,7 @@ export class PlayerMatch extends BaseContainer
 
     public breakUpMatch()
     {
+        console.log("BREAKING UP MATCH", this.matchId);
         Object.keys(this._players).map(playerId=>
         {
             this.removePlayerFromMatch(playerId);
@@ -103,10 +108,37 @@ export class PlayerMatch extends BaseContainer
         return this._matchId;
     }
 
+    public set placementEvent(eventDetail)
+    {
+        this._placementEvent=eventDetail;
+    }
+
+    public set placementResources(resources)
+    {
+        this._placementResources = resources;
+    }
+
+    public get placementEvent():QueuePlacementEventDetail
+    {
+        return this._placementEvent;
+    }
+
+    public get placementResources():string[]
+    {
+        return this._placementResources;
+    }
+
+
     public get configArn():string
     {
         return this._configArn;
     }
+
+    public set configArn(configArn)
+    {
+        this._configArn=configArn;
+    }
+
 
     public get playerIds():string[]
     {

@@ -61,8 +61,6 @@ export class LoginScene extends Phaser.Scene
                 //await Network.connect(inputToken["value"], configObj["ApiUrl"]);
                 try {
                     const credentials = await Auth.currentCredentials();
-                    console.log(credentials);
-                    console.log("PAH");
                     await Network.connect(credentials, configObj["ApiUrl"]);
                     this._emitter.once(Events.SOCKET_MESSAGE, (data: any) => {
                         console.log(data);

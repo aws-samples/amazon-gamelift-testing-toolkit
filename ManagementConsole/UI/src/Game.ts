@@ -27,14 +27,18 @@ export class Game extends Phaser.Game {
         this.scene.add('Console', ConsoleScene);
         this.scene.start('Boot');
     }
+
 }
 
 (function(){
     var realConsoleLog = console.log;
-    console.log = function() {
-        if (Game.debugMode)
-        {
-            realConsoleLog.apply(console, arguments);
+    if (!Game.debugMode)
+    {
+        console.log = function() {
+            if (Game.debugMode)
+            {
+                realConsoleLog.apply(console, arguments);
+            }
         }
     }
 })();

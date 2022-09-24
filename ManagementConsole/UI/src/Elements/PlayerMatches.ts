@@ -18,7 +18,7 @@ export class PlayerMatches
         return PlayerMatches._matches[matchId];
     }
 
-    public static createMatch(scene:Phaser.Scene, matchId:string, configArn:string):PlayerMatch
+    public static createMatch(scene:Phaser.Scene, matchId:string, configArn:string=null):PlayerMatch
     {
         if (PlayerMatches._matches==null)
         {

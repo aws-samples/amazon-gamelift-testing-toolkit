@@ -99,7 +99,7 @@ export abstract class BaseContainer extends Container
             y: this._groupOffsetY,
         };
 
-        console.log(this.constructor.name, layoutOptions);
+        //console.log(this.constructor.name, layoutOptions);
 
         Phaser.Actions.GridAlign(groupChildren, layoutOptions);
 

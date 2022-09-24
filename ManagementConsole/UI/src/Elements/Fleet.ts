@@ -240,7 +240,6 @@ export class Fleet extends BaseContainer
         this._nameText.setOrigin(0.5);
         this._statsText.setOrigin(0.5);
 
-        console.log("TEXT VS FLEET", this._nameText.width, this._bg.width);
         if (this._nameText.width>this._bg.width-40)
         {
             this._nameText.setVisible(false);
