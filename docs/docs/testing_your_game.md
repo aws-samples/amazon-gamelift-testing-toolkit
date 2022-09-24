@@ -28,7 +28,7 @@ To integrate your game with the toolkit&#39;s virtual player management system, 
 2. Package your headless game client in a Linux docker image. Since the process for creating and packaging your game client in docker is dependent on your choice of game engine or programming language, we won&#39;t cover it here.
 3. Deploy your game server and any backend services.
 4. Deploy the Amazon GameLift Testing Toolkit, with or without the test game.
-5. Create an Amazon ECS cluster and task definitions to launch the headless game client.
+5. Create an Amazon ECS cluster and task definitions to launch the headless game client, ensuring the task defintion has a tag called *AmazonGameLiftTestingToolkit-VirtualPlayers* with a value of	*true*.
 
 Once you&#39;ve packaged your game client in a docker image, you can create an Amazon ECS cluster and task definition to run the virtual players. There are various approaches for creating an ECS cluster, including a [detailed tutorial](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/ecs-cli-tutorial-fargate.html) in the AWS Fargate documentation.
 

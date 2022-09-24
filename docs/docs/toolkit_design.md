@@ -50,6 +50,8 @@ Virtual players are created by the management services to test the game. Virtual
 
 The virtual player client is installed in a docker image, which is uploaded to a private repository in [Amazon Elastic Container Registry](https://aws.amazon.com/ecr/) (Amazon ECR). An Amazon ECS Fargate cluster is also created, along with a [task definition](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definitions.html) referencing the docker image.
 
+The management service can only run task definitions that have a tag called *AmazonGameLiftTestingToolkit-VirtualPlayers* with a value of	*true*, restricting its access to ECS task defintions in your account.
+
 When the management service creates new virtual players, it sends requests to ECS to create new tasks, with each task running a container with the game client for a single virtual player. The tasks all run within an [Amazon Virtual Private Cloud](https://aws.amazon.com/vpc/) (Amazon VPC).
 
 ### Game client services
