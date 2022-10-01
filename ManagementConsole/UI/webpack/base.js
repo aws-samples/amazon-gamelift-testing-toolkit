@@ -3,6 +3,7 @@ const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const ProgressPlugin = require('progress-webpack-plugin');
 
 module.exports = {
   mode: "development",
@@ -61,6 +62,19 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: "./index.html"
+    }),
+    new ProgressPlugin({
+      activeModules: false,
+      entries: true,
+      handler(percentage, message, ...args) {
+        // custom logic
+      },
+      modules: true,
+      modulesCount: 5000,
+      profile: false,
+      dependencies: true,
+      dependenciesCount: 10000,
+      percentBy: null,
     })
   ]
 };

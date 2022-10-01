@@ -7,13 +7,20 @@ module.exports = merge(base, {
   output: {
     filename: "bundle.min.js"
   },
+  performance: {
+    hints: false,
+    maxEntrypointSize: 3512000,
+    maxAssetSize: 512000
+  },
   devtool: false,
   optimization: {
+    minimize: true,
     minimizer: [
       new TerserPlugin({
+        exclude: /node_modules/,
         terserOptions: {
           output: {
-            comments: false
+            comments:false,
           }
         }
       })
