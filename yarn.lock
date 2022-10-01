@@ -3,9 +3,9 @@
 
 
 aws-cdk@^2.42.1:
-  version "2.43.1"
-  resolved "https://registry.yarnpkg.com/aws-cdk/-/aws-cdk-2.43.1.tgz#7bf148865c9921b6250646a48729443a25ba4320"
-  integrity sha512-Y+Pomc+LdQ14h+CvFZg+FeqcLpV8MJcoFhqcoOtGi0xC8CkdGAWH+MfIWcqePk7OVOMIzDJP2eBdd9te2CrjcQ==
+  version "2.44.0"
+  resolved "https://registry.yarnpkg.com/aws-cdk/-/aws-cdk-2.44.0.tgz#eb1a6d2f5c3a3c46f80d69d6fb523d823c16b7b2"
+  integrity sha512-9hbK4Yc1GQ28zSjZE2ajidt7sRrTLYpijkI7HT7JcDhXLe2ZGP9EOZrqKy5EEsOv0wDQ7cdXB3/oMiMGSmSQ5A==
   optionalDependencies:
     fsevents "2.3.2"
 
