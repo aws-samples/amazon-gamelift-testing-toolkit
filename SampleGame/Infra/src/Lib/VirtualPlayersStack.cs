@@ -12,7 +12,7 @@ using Constructs;
 
 namespace SampleGameInfra.Lib
 {
-    public struct VirtualPlayersStackProps
+    public class VirtualPlayersStackProps : StackProps
     {
         public string WebSocketApiUrl;
         public string IdentityPoolId;
@@ -28,7 +28,7 @@ namespace SampleGameInfra.Lib
     
     public class VirtualPlayersStack : Stack
     {   
-        internal VirtualPlayersStack(Construct scope, string id, VirtualPlayersStackProps props) : base(scope, id)
+        internal VirtualPlayersStack(Construct scope, string id, VirtualPlayersStackProps props) : base(scope, id, props)
         {
             var gameClientCommand = new string[]
             {

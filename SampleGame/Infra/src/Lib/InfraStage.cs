@@ -36,6 +36,7 @@ namespace SampleGameInfra.Lib
             var backendStack = new BackendStack(this, "BackendStack", new BackendStackProps
             {
                 GameLiftBuildProps = gameLiftBuildProps,
+                Description = "GameLift Testing Toolkit - Sample Game Backend infrastructure"
             });
 
             var virtualPlayersStack = new VirtualPlayersStack(this, "VirtualPlayerStack", new VirtualPlayersStackProps
@@ -44,6 +45,7 @@ namespace SampleGameInfra.Lib
                 WebSocketApiUrl = backendStack.WebSocketStage.Url,
                 IdentityPoolId = backendStack.GameIdentityPool.IdentityPoolId,
                 IdentityPoolRegion = backendStack.Region,
+                Description = "GameLift Testing Toolkit - Sample Game Virtual player infrastructure"
             });
 
             // add VirtualPlayers tag to VirtualPlayersStack resources to allow toolkit to launch task definitions

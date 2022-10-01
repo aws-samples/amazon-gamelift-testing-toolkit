@@ -41,7 +41,7 @@ namespace SampleGameInfra.Lib
 
         public static string ProjectRoot = "../Backend";
         
-        internal BackendStack(Construct scope, string id, BackendStackProps props) : base(scope, id)
+        internal BackendStack(Construct scope, string id, BackendStackProps props) : base(scope, id, props)
         {    
             // Create default Lambda policy
             DefaultCloudwatchPolicy = new PolicyStatement(new PolicyStatementProps
@@ -163,7 +163,6 @@ namespace SampleGameInfra.Lib
                 Runtime = Program.DotNetRuntime,
                 Code = Lambda.Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
                 Handler = "SampleGameBackend::SampleGameBackend.GameClientService.GameClientService::GameClientServiceHandler",
-                //foo
                 Environment = new Dictionary<string, string>
                 {
                     ["MatchmakingTicketsTableName"] = TicketsTable.TableName,
@@ -354,7 +353,7 @@ namespace SampleGameInfra.Lib
             flexMatchEventRule.AddTarget(new LambdaFunction(FlexMatchEventFunction, new LambdaFunctionProps
             {
                 MaxEventAge = Duration.Hours(1),
-                RetryAttempts = 2
+                RetryAttempts = 3
             }));
         }
 
@@ -464,16 +463,47 @@ namespace SampleGameInfra.Lib
                 Value = "somevalue"
             });
 
-            dynamic team = new {name = "MyTeam", minPlayers = 2, maxPlayers = 2};
-            dynamic ruleSetBody = new {name="SimpleRuleSet", ruleLanguageVersion="1.0", teams=new dynamic[] {team}};
-            
-            var ruleSet = new GameLift.CfnMatchmakingRuleSet(this, mmConfigName + "-RuleSet", new GameLift.CfnMatchmakingRuleSetProps
+            // ruleset body for 2 player game
+            dynamic ruleSetBody2 = new
             {
-                Name = "SimpleRuleSet",
-                RuleSetBody = JsonConvert.SerializeObject(ruleSetBody)
+                name="SimpleRuleSet-2Player", 
+                ruleLanguageVersion="1.0", 
+                teams=new dynamic[]
+                {
+                    new
+                    {
+                        name = "MyTeam", minPlayers = 2, maxPlayers = 2
+                    }
+                }
+            };
+            
+            // ruleset body for 4 player game
+            dynamic ruleSetBody4 = new
+            {
+                name="SimpleRuleSet-4Player", 
+                ruleLanguageVersion="1.0", 
+                teams=new dynamic[]
+                {
+                    new
+                    {
+                        name = "MyTeam", minPlayers = 4, maxPlayers = 4
+                    }
+                }
+            };
+            
+            var ruleSet2Player = new GameLift.CfnMatchmakingRuleSet(this, mmConfigName + "-RuleSet2", new GameLift.CfnMatchmakingRuleSetProps
+            {
+                Name = "SimpleRuleSet-2Player",
+                RuleSetBody = JsonConvert.SerializeObject(ruleSetBody2)
             });
             
-            var ruleSetName = Fn.Ref(ruleSet.LogicalId);
+            var ruleSet4Player = new GameLift.CfnMatchmakingRuleSet(this, mmConfigName + "-RuleSet4", new GameLift.CfnMatchmakingRuleSetProps
+            {
+                Name = "SimpleRuleSet-4Player",
+                RuleSetBody = JsonConvert.SerializeObject(ruleSetBody4)
+            });
+            
+            var ruleSetName = Fn.Ref(ruleSet2Player.LogicalId);
             new CfnOutput(this, "ruleSetName", new CfnOutputProps { Value = ruleSetName });
 
             var matchConfig = new GameLift.CfnMatchmakingConfiguration(this, "SampleGameMMConfig", new GameLift.CfnMatchmakingConfigurationProps
@@ -490,7 +520,7 @@ namespace SampleGameInfra.Lib
                 RuleSetName = ruleSetName
             });
 
-            matchConfig.AddDependsOn(ruleSet);
+            matchConfig.AddDependsOn(ruleSet2Player);
 
             return matchConfig;
         }
