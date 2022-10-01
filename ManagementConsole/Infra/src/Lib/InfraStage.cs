@@ -20,9 +20,15 @@ namespace ManagementConsoleInfra.Lib
         
         internal InfraStage(Construct scope, string id, InfraStageProps props = null) : base(scope, id, props)
         {
-            SecurityStack = new SecurityStack(this, "SecurityStack", new SecurityProps() { });
-            DataStack = new DataStack(this, "DataStack", new DataProps() {});
-            BackendStack = new BackendStack(this, "BackendStack", new BackendProps()
+            SecurityStack = new SecurityStack(this, "SecurityStack", new SecurityProps
+            {
+                Description = "GameLift Testing Toolkit - Security infrastructure"
+            });
+            DataStack = new DataStack(this, "DataStack", new DataProps
+            {
+                Description = "GameLift Testing Toolkit - Database infrastructure"
+            });
+            BackendStack = new BackendStack(this, "BackendStack", new BackendProps
             {
                 ManagementConfigTable = DataStack.ManagementConfigTable,
                 ManagementConnectionsTable = DataStack.ManagementConnectionsTable,
@@ -34,10 +40,12 @@ namespace ManagementConsoleInfra.Lib
                 MatchmakingSimulationTable  = DataStack.MatchmakingSimulationTable,
                 SimulationResultsTable  = DataStack.SimulationResultsTable,
                 EncryptionKey = SecurityStack.EncryptionKey,
+                Description = "(SO9068) GameLift Testing Toolkit - Backend infrastructure"
             });
-            WebStack = new WebStack(this, "WebStack", new WebProps()
+            WebStack = new WebStack(this, "WebStack", new WebProps
             {
                 ApiProdStage = BackendStack.ProdStage,
+                Description = "GameLift Testing Toolkit - Web console infrastructure"
             });
         }
     }

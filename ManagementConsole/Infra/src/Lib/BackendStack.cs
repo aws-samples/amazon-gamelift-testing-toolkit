@@ -247,7 +247,7 @@ namespace ManagementConsoleInfra.Lib
             flexMatchEventRule.AddTarget(new LambdaFunction(FlexMatchEventFunction,  new LambdaFunctionProps
             {
                 MaxEventAge = Duration.Hours(1),
-                RetryAttempts = 2
+                RetryAttempts = 3
             }));
 
             var queuePlacementEventRule = new Rule(this, "QueuePlacementEventRule", new RuleProps
@@ -262,7 +262,7 @@ namespace ManagementConsoleInfra.Lib
             queuePlacementEventRule.AddTarget(new LambdaFunction(QueuePlacementEventFunction, new LambdaFunctionProps
             {
                 MaxEventAge = Duration.Hours(1),
-                RetryAttempts = 2
+                RetryAttempts = 3
             }));
             
             GameEventBus.GrantPutEventsTo(SfnPollerFunction);
