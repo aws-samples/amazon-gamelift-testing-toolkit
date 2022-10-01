@@ -49,9 +49,6 @@ export class PlayerMatch extends BaseContainer
 
     public addPlayerToMatch(playerId)
     {
-        console.log(Players.getPlayers());
-        console.log("looking for "+playerId)
-
         let player = Players.getPlayer(playerId);
         player.scale=0.75;
         this.add(player);
@@ -67,7 +64,6 @@ export class PlayerMatch extends BaseContainer
 
     public breakUpMatch()
     {
-        console.log("BREAKING UP MATCH", this.matchId);
         Object.keys(this._players).map(playerId=>
         {
             this.removePlayerFromMatch(playerId);
@@ -236,7 +232,7 @@ export class PlayerMatch extends BaseContainer
             var d = tempMatrix.decomposeMatrix();
 
             destinationX = d["translateX"] + this.displayWidth/2 + Phaser.Math.Between(0, destination.container.displayWidth - this.displayWidth);
-            destinationY = d["translateY"] + destination.container.displayHeight/2;
+            destinationY = d["translateY"] + destination.container.displayHeight/2 - this.displayHeight;
         }
         else
         {
@@ -268,7 +264,6 @@ export class PlayerMatch extends BaseContainer
         {
             return;
         }
-        console.log(this);
         this._timeline = this.scene.tweens.createTimeline();
         this._timeline.add({
             targets: this,
@@ -339,7 +334,6 @@ export class PlayerMatch extends BaseContainer
                     playerIds.map((playerId)=>
                     {
                         Players.getPlayer(playerId).alpha=0;
-                        console.log("DISPATCHING REMOVE FOR PLAYER", playerId);
                         this._emitter.emit(Events.PLAYER_ADDED_TO_GAME_SESSION, playerId);
                     });
                 }
