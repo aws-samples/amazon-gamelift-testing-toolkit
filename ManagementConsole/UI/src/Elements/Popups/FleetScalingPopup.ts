@@ -9,10 +9,12 @@ import {Popup} from "../Abstract/Popup";
 import {PopupClickEvent} from "../../Events/PopupClickEvent";
 import FleetData = DataTypes.FleetData;
 import SimpleResult = DataTypes.SimpleResult;
+import {Utils} from "../../Utils/Utils";
 
 export class FleetScalingPopup extends Popup
 {
     protected _fleetData:FleetData;
+    protected _scalingData;
 
     constructor (scene:Phaser.Scene, x:number, y:number)
     {
@@ -23,6 +25,7 @@ export class FleetScalingPopup extends Popup
 
     setupEventListeners()
     {
+        this._emitter.on(Events.GET_FLEET_SCALING_RESPONSE, this.onGetFleetScalingResponse);
         this._emitter.on(Events.ADJUST_FLEET_SCALING_RESPONSE, this.onFleetScalingResponse);
         this._emitter.on(Events.DELETE_SCALING_POLICY_RESPONSE, this.onDeleteScalingPolicyResponse);
         this._emitter.on(Events.SET_SCALING_POLICY_RESPONSE, this.onSetScalingPolicyResponse);
@@ -31,6 +34,7 @@ export class FleetScalingPopup extends Popup
     removeEventListeners()
     {
         console.log("REMOVING EVENT LISTENERS!");
+        this._emitter.off(Events.GET_FLEET_SCALING_RESPONSE, this.onGetFleetScalingResponse);
         this._emitter.off(Events.ADJUST_FLEET_SCALING_RESPONSE, this.onFleetScalingResponse);
         this._emitter.off(Events.DELETE_SCALING_POLICY_RESPONSE, this.onDeleteScalingPolicyResponse);
         this._emitter.off(Events.SET_SCALING_POLICY_RESPONSE, this.onSetScalingPolicyResponse);
@@ -38,34 +42,11 @@ export class FleetScalingPopup extends Popup
 
     setPopupData(data:PopupClickEvent)
     {
+
         this._fleetData = data.gameObject.Data as FleetData;
-        const activeScalingPolicies = this._fleetData.ScalingPolicies.filter(scalingPolicy=>scalingPolicy.Status.Value=="ACTIVE")
 
-        console.log(this._fleetData.ScalingPolicies);
+        Network.sendObject({Type:"GetFleetScaling", FleetId:this._fleetData.FleetId});
 
-        this._popup.node.querySelector("p.title").insertAdjacentHTML("beforeend", "Adjust Scaling for Fleet \"" + this._fleetData.FleetAttributes.Name + "\"");
-
-        this._fleetData.LocationCapacities.map(locationCapacity=>{
-            const tr = '<tr><td>' + locationCapacity.Location + '</td>' +
-                '<td>Min: <input style="max-width:50px" id="' + locationCapacity.Location + '-min" type="number" value="' + locationCapacity.InstanceCounts.MINIMUM + '"/> </td>' +
-                '<td>Desired: <input style="max-width:50px" id="' + locationCapacity.Location + '-desired" type="number" value="' + locationCapacity.InstanceCounts.DESIRED + '"/> </td>' +
-                '<td>Max: <input style="max-width:50px" id="' + locationCapacity.Location + '-max" type="number" value="' + locationCapacity.InstanceCounts.MAXIMUM + '"/> </td></tr>';
-            this._popup.node.querySelector("#fleetScalingTable").insertAdjacentHTML("beforeend", tr);
-        });
-
-        let scalingTargetValue=15;
-        let scalingPolicyHtml = '<tr><td>Scaling Enabled? ';
-        if (activeScalingPolicies.length) {
-            scalingPolicyHtml += '<input id="scalingEnabled" type="checkbox" checked="checked"/>';
-            scalingTargetValue = activeScalingPolicies[0].TargetConfiguration.TargetValue;
-        }
-        else {
-            scalingPolicyHtml += '<input id="scalingEnabled" type="checkbox" />';
-        }
-
-        scalingPolicyHtml += '</td><td>Maintain a buffer of <input style="max-width:50px" id="scalingTarget" type="number" value="'+scalingTargetValue.toString()+'"/> percent game session availability</td></tr>';
-
-        this._popup.node.querySelector("#scalingPoliciesTable").insertAdjacentHTML("beforeend", scalingPolicyHtml);
     }
 
     onFleetScalingResponse = async (response:SimpleResult) =>
@@ -113,6 +94,41 @@ export class FleetScalingPopup extends Popup
         }
     };
 
+    onGetFleetScalingResponse = (data) =>
+    {
+        console.log(data);
+        this._scalingData = data;
+
+        const activeScalingPolicies = data.ScalingPolicies.filter(scalingPolicy=>scalingPolicy.Status.Value=="ACTIVE" && scalingPolicy.PolicyType.Value=="TargetBased")
+
+        console.log(this._fleetData.ScalingPolicies);
+
+        this._popup.node.querySelector("p.title").insertAdjacentHTML("beforeend", "Adjust Scaling for Fleet \"" + this._fleetData.FleetAttributes.Name + "\"");
+
+        data.FleetCapacities.map(locationCapacity=>{
+            const tr = '<tr><td>' + locationCapacity.Location + '</td>' +
+                '<td>Min: <input style="max-width:50px" id="' + locationCapacity.Location + '-min" type="number" value="' + locationCapacity.InstanceCounts.MINIMUM + '"/> </td>' +
+                '<td>Desired: <input style="max-width:50px" id="' + locationCapacity.Location + '-desired" type="number" value="' + locationCapacity.InstanceCounts.DESIRED + '"/> </td>' +
+                '<td>Max: <input style="max-width:50px" id="' + locationCapacity.Location + '-max" type="number" value="' + locationCapacity.InstanceCounts.MAXIMUM + '"/> </td></tr>';
+            this._popup.node.querySelector("#fleetScalingTable").insertAdjacentHTML("beforeend", tr);
+        });
+
+        let scalingTargetValue=15;
+        let scalingPolicyHtml = '<tr><td>Scaling Enabled? ';
+        if (activeScalingPolicies.length) {
+            scalingPolicyHtml += '<input id="scalingEnabled" type="checkbox" checked="checked"/>';
+            scalingTargetValue = activeScalingPolicies[0].TargetConfiguration.TargetValue;
+        }
+        else {
+            scalingPolicyHtml += '<input id="scalingEnabled" type="checkbox" />';
+        }
+
+        scalingPolicyHtml += '</td><td>Maintain a buffer of <input style="max-width:50px" id="scalingTarget" type="number" value="'+scalingTargetValue.toString()+'"/> percent game session availability</td></tr>';
+
+        this._popup.node.querySelector("#scalingPoliciesTable").insertAdjacentHTML("beforeend", scalingPolicyHtml);
+
+    };
+
     onPopupClick = async (event) => {
 
         event.stopPropagation();
@@ -124,7 +140,7 @@ export class FleetScalingPopup extends Popup
             this.setVisible(false);
         }
 
-        const activeScalingPolicies = this._fleetData.ScalingPolicies.filter(scalingPolicy=>scalingPolicy.Status.Value=="ACTIVE")
+        const activeScalingPolicies = this._scalingData.ScalingPolicies.filter(scalingPolicy=>scalingPolicy.Status.Value=="ACTIVE" && scalingPolicy.PolicyType.Value=="TargetBased")
 
         console.log("ACTIVE POLICIES", activeScalingPolicies);
 
@@ -135,14 +151,12 @@ export class FleetScalingPopup extends Popup
 
             let enabled = (this._popup.node.querySelector("#scalingEnabled") as HTMLInputElement).checked;
             let scalingTarget = parseInt((this._popup.node.querySelector("#scalingTarget") as HTMLInputElement).value, 10);
-            if (!enabled && activeScalingPolicies.length > 0) // need to delete scaling policy
+            if (!enabled /*&& activeScalingPolicies.length > 0*/) // need to delete scaling policy
             {
-                console.log("SHOULD DELETE POLICY", activeScalingPolicies[0].Name);
                 Network.sendObject({Type:"DeleteScalingPolicy", FleetId:this._fleetData.FleetId, Name:activeScalingPolicies[0].Name})
-
             }
             else
-            if ((enabled && activeScalingPolicies.length==0) || (activeScalingPolicies.length>0 && activeScalingPolicies[0].TargetConfiguration.TargetValue!=scalingTarget)) // need to put scaling policy
+            if ((enabled /*&& activeScalingPolicies.length==0*/) || (activeScalingPolicies.length>0 && activeScalingPolicies[0].TargetConfiguration.TargetValue!=scalingTarget)) // need to put scaling policy
             {
                 console.log("SHOULD UPDATE/SET POLICY!");
                 Network.sendObject({
@@ -166,7 +180,7 @@ export class FleetScalingPopup extends Popup
         if (event.target.id=="adjustCapacityButton")
         {
             let changes=[];
-            this._fleetData.LocationCapacities.map(locationCapacity=>
+            this._scalingData.FleetCapacities.map(locationCapacity=>
             {
                 let min = parseInt((this._popup.node.querySelector("#" + locationCapacity.Location + "-min") as HTMLInputElement).value);
                 let desired = parseInt((this._popup.node.querySelector("#" + locationCapacity.Location + "-desired") as HTMLInputElement).value);

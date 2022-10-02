@@ -28,6 +28,7 @@ export class Events
     public static DELETE_MATCHMAKING_RULESET_RESPONSE:string = "DeleteMatchmakingRuleSetResponse";
     public static VALIDATE_MATCHMAKING_RULESET_RESPONSE:string = "ValidateMatchmakingRuleSetResponse";
     public static UPDATE_MATCHMAKING_CONFIGURATION_RESPONSE:string = "UpdateMatchmakingConfigurationResponse";
+    public static GET_FLEET_SCALING_RESPONSE:string = "GetFleetScalingResponse";
     public static GET_MATCHMAKING_RULESETS_RESPONSE:string = "GetMatchmakingRuleSetsResponse";
     public static GET_MATCHMAKING_SIMULATIONS_RESPONSE:string = "GetMatchmakingSimulationsResponse";
     public static GET_MATCHMAKING_SIMULATION_RESPONSE:string = "GetMatchmakingSimulationResponse";

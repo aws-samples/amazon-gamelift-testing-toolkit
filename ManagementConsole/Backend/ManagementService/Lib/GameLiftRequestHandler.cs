@@ -506,6 +506,22 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                 return null;
             }
         }
+
+        public async Task<List<FleetCapacity>> GetFleetLocationCapacities(string fleetId)
+        {
+            var locationAttributes = await GetFleetLocationAttributes(fleetId);
+
+            var instances = new List<Instance>();
+            var locationCapacities = new List<FleetCapacity>();
+            foreach (var locationAttribute in locationAttributes)
+            {
+                var locationCapacity =
+                    await GetFleetLocationCapacity(fleetId, locationAttribute.LocationState.Location);
+                locationCapacities.Add(locationCapacity);
+            }
+
+            return locationCapacities;
+        }
         
         public async Task<List<LocationAttributes>> GetFleetLocationAttributes(string fleetId)
         {

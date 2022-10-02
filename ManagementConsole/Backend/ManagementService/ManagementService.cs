@@ -228,6 +228,14 @@ namespace ManagementConsoleBackend.ManagementService
                             var fleetCapacities = await gameLiftRequestHandler.GetFleetCapacities();
                             await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetFleets { Fleets = fleetCapacities});
                             break;
+
+                        case "GetFleetScaling":
+                            var getFleetScalingRequest = JsonConvert.DeserializeObject<ClientMessageGetFleetScaling>(request.Body);
+                            var fleetLocationCapacities = await gameLiftRequestHandler.GetFleetLocationCapacities(getFleetScalingRequest.FleetId);
+                            var fleetScalingPolicies = await gameLiftRequestHandler.GetScalingPolicies(getFleetScalingRequest.FleetId);
+                            LambdaLogger.Log("FLEET LOCATION CAPACITIES:" + JsonConvert.SerializeObject(fleetLocationCapacities));
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetFleetScaling { FleetCapacities = fleetLocationCapacities, ScalingPolicies = fleetScalingPolicies});
+                            break;
                         
                         case "GetPlayerSessions":
                             var getPlayerSessionsRequest = JsonConvert.DeserializeObject<ClientMessageGetPlayerSessions>(request.Body);

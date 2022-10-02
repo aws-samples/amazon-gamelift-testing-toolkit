@@ -82,7 +82,6 @@ export class ConsoleScene extends Phaser.Scene
         this._queues.x=0;
         this._fleets.x=0;
         this._fleets.y=ScreenResolution.height - this._fleets.displayHeight - 10;
-        console.log("FLEETS DISPLAY HEIGHT", this._fleets.displayHeight);
         this._queues.y=this._fleets.y - this._queues.displayHeight - 50;
         this._matchmakingConfigurations.y=this._queues.y - this._matchmakingConfigurations.displayHeight - 50;
     }
@@ -514,7 +513,6 @@ export class ConsoleScene extends Phaser.Scene
 
     onPlayerAddedToGameSession = (playerId) =>
     {
-        console.log("REMOVING PLAYER!");
         Players.removePlayer(playerId);
     }
 
@@ -704,6 +702,10 @@ export class ConsoleScene extends Phaser.Scene
 
             case "GetGameSessions":
                 this._emitter.emit(Events.GET_GAME_SESSIONS_RESPONSE, data.GameSessions);
+                break;
+
+            case "GetFleetScaling":
+                this._emitter.emit(Events.GET_FLEET_SCALING_RESPONSE, data as SimpleResult);
                 break;
 
             case "GetGameSessionLogs":
@@ -897,11 +899,10 @@ export class ConsoleScene extends Phaser.Scene
                     container: match,
                     delay: Math.random()*3000,
                     callback: () => {
-                        console.log("ADDING PLAYER TO MATCH:", playerId, matchId);
                         match.addPlayerToMatch(playerId);
                         console.log(PlayerMatches.getMatch(matchId).playerIds);
 
-                        if (PlayerMatches.getMatch(matchId).playerIds.length == eventPlayerIds.length) // once all the players are added to match, move to queue
+                        if (PlayerMatches.getMatch(matchId).playerIds.length == eventPlayerIds.length) // once all the players are added to match, match is full, move to queue
                         {
                             Players.getPlayer(playerId).storeEvent("MATCH IS FULL");
                             PlayerMatches.getMatch(matchId).moveToNextDestination();
@@ -926,33 +927,9 @@ export class ConsoleScene extends Phaser.Scene
                         match.addDestination(instanceDestination, (match.playerIds.length != 2));
                     }
                 }
-                //Players.getPlayer(playerId).storeEvent(flexMatchEvent);
-                //Players.getPlayer(playerId).storeEvent(matchDestination);
                 Players.getPlayer(playerId).addDestination(matchDestination);
             });
-            /*
 
-            let queueDestination:SceneDestination = {
-                container: queue,
-                type: "queue",
-                delay:1000,
-                disappearAfter:false,
-            };
-            player.addDestination(queueDestination);
-
-            let numFleets = this._fleets.ChildElements.length;
-            let fleet = this._fleets.ChildElements[Math.floor(Math.random()*numFleets)];
-            let numInstances = fleet.ChildElements.length;
-            let instance = fleet.ChildElements[Math.floor(Math.random()*numInstances)];
-
-            let instanceDestination:SceneDestination = {
-                container: instance,
-                type: "instance",
-                disappearAfter: true,
-                delay:1000,
-            };
-            player.addDestination(instanceDestination);
-*/
             await new Promise(r => setTimeout(r, Math.ceil(Math.random()*500)+200));
         }
     };

@@ -181,6 +181,12 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public string GameSessionId;
     }
     
+    public class ClientMessageGetFleetScaling : ClientMessage
+    {
+        public new string Type = "GetFleetScaling";
+        public string FleetId;
+    }
+    
     public class ClientMessageGetGameSessionLogs : ClientMessage
     {
         public new string Type = "GetGameSessionLogs";

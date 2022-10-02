@@ -34,6 +34,13 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public List<FleetCapacity> Fleets;
     }
     
+    public class ServerMessageGetFleetScaling : ServerMessage
+    {
+        public new string Type = "GetFleetScaling";
+        public List<FleetCapacity> FleetCapacities;
+        public List<ScalingPolicy> ScalingPolicies;
+    }
+    
     public class ServerMessageGetGameSessions : ServerMessage
     {
         public new string Type = "GetGameSessions";
