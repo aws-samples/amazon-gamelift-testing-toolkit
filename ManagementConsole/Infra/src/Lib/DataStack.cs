@@ -22,6 +22,7 @@ namespace ManagementConsoleInfra.Lib
         public Table StateLogTable;
         public Table MatchmakingSimulationTable;
         public Table SimulationResultsTable;
+        public Table SimulationPlayersTable;
         public Table PlayerProfileTable;
         
         internal DataStack(Construct scope, string id, DataProps props = null) : base(scope, id, props)
@@ -273,6 +274,24 @@ namespace ManagementConsoleInfra.Lib
                 PointInTimeRecovery = true,
             });
             
+            SimulationPlayersTable = new Table(this, "SimulationPlayersTable", new TableProps
+            {
+                PartitionKey = new Attribute
+                {
+                    Name = "SimulationId",
+                    Type = AttributeType.STRING
+                },
+                SortKey = new Attribute
+                {
+                    Name = "PlayerId",
+                    Type = AttributeType.STRING
+                },
+                BillingMode = BillingMode.PAY_PER_REQUEST,
+                Encryption = TableEncryption.AWS_MANAGED,
+                RemovalPolicy = RemovalPolicy.DESTROY,
+                PointInTimeRecovery = true,
+            });
+
             new CfnOutput(this, "ticketLogTableName",  new CfnOutputProps {
                 Value = TicketLogTable.TableName
             });
@@ -283,6 +302,14 @@ namespace ManagementConsoleInfra.Lib
             
             new CfnOutput(this, "matchmakingSimulationTableName",  new CfnOutputProps {
                 Value = MatchmakingSimulationTable.TableName
+            });
+            
+            new CfnOutput(this, "simulationPlayersTableArn",  new CfnOutputProps {
+                Value = SimulationPlayersTable.TableArn
+            });
+            
+            new CfnOutput(this, "simulationPlayersTableName",  new CfnOutputProps {
+                Value = SimulationPlayersTable.TableName
             });
             
             new CfnOutput(this, "matchmakingSimulationTableArn",  new CfnOutputProps {

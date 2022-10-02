@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using Amazon.DynamoDBv2.DataModel;
+using Amazon.GameLift.Model;
 using ManagementConsoleBackend.Common;
 
 namespace ManagementConsoleBackend.ManagementService.Data
@@ -66,6 +67,13 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public string ProfileId;
         public int NumPlayers;
     }
+    
+    public class MatchmakingSimulationPlayer : Player
+    {
+        public string SimulationId;
+        public string ProfileId;
+        public string ProfileName;
+    }
 
     public class MatchResultData
     {
@@ -83,5 +91,8 @@ namespace ManagementConsoleBackend.ManagementService.Data
         
         [DynamoDBProperty("Date")]
         public string Date;
+        
+        [DynamoDBProperty("PlayersConfig")] 
+        public List<MatchmakingSimulationPlayerConfig> PlayersConfig;
     }
 }

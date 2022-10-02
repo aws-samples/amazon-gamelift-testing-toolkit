@@ -39,6 +39,7 @@ namespace ManagementConsoleInfra.Lib
         public Table PlayerProfileTable;
         public Table MatchmakingSimulationTable;
         public Table SimulationResultsTable;
+        public Table SimulationPlayersTable;
         public Key EncryptionKey;
     }
     public class BackendStack : Stack
@@ -509,6 +510,7 @@ namespace ManagementConsoleInfra.Lib
                     ["PlayerProfileTableName"] = props.PlayerProfileTable.TableName,
                     ["TicketLogTableName"] = props.TicketLogTable.TableName,
                     ["SimulationResultsTableName"] = props.SimulationResultsTable.TableName,
+                    ["SimulationPlayersTableName"] = props.SimulationPlayersTable.TableName,
                     ["GameSessionTableName"] = props.GameSessionTable.TableName,
                     ["StateLogTableName"] = props.StateLogTable.TableName,
                     ["ConfigTableName"] = props.ManagementConfigTable.TableName,
@@ -602,6 +604,7 @@ namespace ManagementConsoleInfra.Lib
             props.ManagementConnectionsTable.GrantReadWriteData(ManagementServiceFunction);
             props.EventLogTable.GrantReadData(ManagementServiceFunction);
             props.MatchmakingSimulationTable.GrantReadWriteData(ManagementServiceFunction);
+            props.SimulationPlayersTable.GrantReadWriteData(ManagementServiceFunction);
             props.PlayerProfileTable.GrantReadWriteData(ManagementServiceFunction);
             props.TicketLogTable.GrantReadData(ManagementServiceFunction);
             props.SimulationResultsTable.GrantReadData(ManagementServiceFunction);

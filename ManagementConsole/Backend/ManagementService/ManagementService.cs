@@ -536,7 +536,13 @@ namespace ManagementConsoleBackend.ManagementService
             }
 
             var dynamoDbClient = new AmazonDynamoDBClient();
+            
             var dynamoDbRequestHandler = new DynamoDbRequestHandler(dynamoDbClient);
+            var simulationPlayersTable =
+                Table.LoadTable(dynamoDbClient, Environment.GetEnvironmentVariable("SimulationPlayersTableName"));
+            var playerBatch = simulationPlayersTable.CreateBatchWrite();
+            
+            LambdaLogger.Log("GOT PLAYERS TABLE!");
             var playerProfiles = await dynamoDbRequestHandler.GetPlayerProfiles();
             var players = new List<Player>();
 
@@ -550,13 +556,18 @@ namespace ManagementConsoleBackend.ManagementService
                     for (var i = 0; i < playerProfileConfig.NumPlayers; i++)
                     {
                         playerNum++;
-                        var player = new Player();
-                        player.PlayerId = profile.Name.Replace(" ", "") + "-" + playerNum;
+                        var player = new Player
+                        {
+                            //PlayerId = profile.Name.Replace(" ", "").Replace("-", "") + "-" + playerNum,
+                            PlayerId = Guid.NewGuid().ToString(),
+                        };
+                        
                         if (!String.IsNullOrEmpty(profile.Team))
                         {
                             player.Team = profile.Team;
                         }
                         var playerAttributes = new Dictionary<string, Amazon.GameLift.Model.AttributeValue>();
+                        
                         foreach (var attribute in profile.Attributes)
                         {
                             playerAttributes[attribute.AttributeName] = new Amazon.GameLift.Model.AttributeValue();
@@ -622,8 +633,24 @@ namespace ManagementConsoleBackend.ManagementService
 
                         player.PlayerAttributes = playerAttributes;
                         players.Add(player);
+
+                        var matchmakingPlayer = Document.FromJson(JsonConvert.SerializeObject(player));
+                        matchmakingPlayer["SimulationId"] = simulation.SimulationId;
+                        matchmakingPlayer["ProfileId"] = profile.ProfileId;
+                        matchmakingPlayer["ProfileName"] = profile.Name;
+                        playerBatch.AddDocumentToPut(matchmakingPlayer);
                     }
                 }
+            }
+
+            // store generated player in SimulationPlayers table
+            try
+            {
+                await playerBatch.ExecuteAsync();
+            }
+            catch (Exception e)
+            {
+                LambdaLogger.Log(e.Message);
             }
 
             players.Shuffle();
@@ -633,7 +660,6 @@ namespace ManagementConsoleBackend.ManagementService
             {
                 foreach (var player in players)
                 {
-                    LambdaLogger.Log("TRYING " + flexMatchSimulatorArn + " WITH " + player.PlayerId);
                     errors = await gameLiftRequestHandler.StartMatchmaking(flexMatchSimulatorArn, player);
                     if (errors.Count > 0)
                     {

@@ -39,6 +39,7 @@ namespace ManagementConsoleInfra.Lib
                 PlayerProfileTable  = DataStack.PlayerProfileTable,
                 MatchmakingSimulationTable  = DataStack.MatchmakingSimulationTable,
                 SimulationResultsTable  = DataStack.SimulationResultsTable,
+                SimulationPlayersTable  = DataStack.SimulationPlayersTable,
                 EncryptionKey = SecurityStack.EncryptionKey,
                 Description = "(SO9068) GameLift Testing Toolkit - Backend infrastructure"
             });
