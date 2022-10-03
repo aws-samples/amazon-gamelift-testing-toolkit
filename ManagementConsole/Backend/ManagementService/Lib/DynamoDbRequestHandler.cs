@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,6 +15,7 @@ using Amazon.Lambda.Core;
 using ManagementConsoleBackend.Common;
 using ManagementConsoleBackend.ManagementService.Data;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Task = System.Threading.Tasks.Task;
 
 namespace ManagementConsoleBackend.ManagementService.Lib
@@ -245,11 +247,45 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                     foreach (var document in documentList)
                     {
                         //document.Remove("TimeToLive");
-                        matchResults.Add(context.FromDocument<MatchResultData>(document));
+                        //matchResults.Add(context.FromDocument<MatchResultData>(document));
+                        matchResults.Add(JsonConvert.DeserializeObject<MatchResultData>(document.ToJson()));
                     }
                 } while (!search.IsDone);
 
                 return matchResults;
+            }
+            catch (Exception e)
+            {
+                LambdaLogger.Log(e.ToString());
+            }
+            return null;
+        }
+        
+        public async Task<MatchmakingSimulationPlayer> GetDatabaseSimulationPlayer(string simulationId, string playerId)
+        {
+            var simulationPlayersTable =
+                Table.LoadTable(_client, Environment.GetEnvironmentVariable("SimulationPlayersTableName"));
+            try
+            {
+                QueryFilter filter = new QueryFilter("SimulationId", QueryOperator.Equal, simulationId);
+                filter.AddCondition("PlayerId", QueryOperator.Equal, playerId);
+
+                // Use Query overloads that takes the minimum required query parameters.
+                Search search = simulationPlayersTable.Query(filter);
+
+                LambdaLogger.Log("TRYING TO GET PLAYER " + playerId + " FOR simulation " + simulationId);
+                var context = new DynamoDBContext(_client);
+                var documentList = await search.GetNextSetAsync();
+                foreach (var document in documentList)
+                {
+                    //document.Remove("TimeToLive");
+                    LambdaLogger.Log(document.ToJson());
+                    var player = JsonConvert.DeserializeObject<MatchmakingSimulationPlayer>(document.ToJson());
+                    
+                    LambdaLogger.Log(JsonConvert.SerializeObject(player));
+                    return player;
+                }
+
             }
             catch (Exception e)
             {
@@ -315,7 +351,6 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                     documentList = await search.GetNextSetAsync();
                     foreach (var document in documentList)
                     {
-                        LambdaLogger.Log(document.ToJson());
                         playerProfiles.Add(JsonConvert.DeserializeObject<PlayerProfile>(document.ToJson()));
                         //document.Remove("TimeToLive");
                         //playerProfiles.Add(context.FromDocument<PlayerProfile>(document));

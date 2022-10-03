@@ -119,12 +119,35 @@ export class SimulateMatchmakingSubPopup extends SubPopup
 
         matchResults.map(matchResult => {
             this._matches[matchResult.MatchId] = matchResult;
-            let viewRuleEvaluationMetricsTd='<td><a class="viewRuleEvaluationMetrics btn btn-primary btn-sm" id="' + matchResult.MatchId +'" href="' + "#" + '">View RuleSet Metrics</a></td>';
-            let viewMatchTicketsTd='<td><a class="viewSuccessfulMatchTickets btn btn-primary btn-sm" id="' + matchResult.MatchId +'" href="' + "#" + '">View Match Tickets</a></td>';
+            let matchPlayerText="";
+            let matchPlayers={};
+            matchResult.Players.map(player =>
+            {
+                if (matchPlayers[player.MatchedTeam]==undefined)
+                {
+                    matchPlayers[player.MatchedTeam]={};
+                }
+                if (matchPlayers[player.MatchedTeam][player["ProfileName"]]==undefined)
+                {
+                    matchPlayers[player.MatchedTeam][player["ProfileName"]]=0;
+                }
+                matchPlayers[player.MatchedTeam][player["ProfileName"]]++;
+            });
+
+            Object.keys(matchPlayers).map(matchedTeam=>
+            {
+                Object.keys(matchPlayers[matchedTeam]).map(matchedProfile=>
+                {
+                    matchPlayerText+=matchedTeam + " - " + matchPlayers[matchedTeam][matchedProfile] + " " + matchedProfile + "<br/>";
+                });
+            });
+            console.log(matchPlayers);
+            let viewRuleEvaluationMetricsTd='<td><a class="viewRuleEvaluationMetrics btn btn-primary btn-sm" id="' + matchResult.MatchId +'" href="' + "#" + '">Rule Metrics</a></td>';
+            let viewMatchTicketsTd='<td><a class="viewSuccessfulMatchTickets btn btn-primary btn-sm" id="' + matchResult.MatchId +'" href="' + "#" + '">View Tickets</a></td>';
             html += '<tr>' +
                 '<td>' + matchResult.Date + '</td>'+
                 '<td>' + matchResult.MatchId + '</td>'+
-                '<td>' + matchResult.NumPlayers + '</td>'+
+                '<td>' + matchPlayerText + '</td>'+
                 viewRuleEvaluationMetricsTd +
                 viewMatchTicketsTd +
                 '</tr>'

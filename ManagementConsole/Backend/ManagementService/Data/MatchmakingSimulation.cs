@@ -68,11 +68,22 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public int NumPlayers;
     }
     
-    public class MatchmakingSimulationPlayer : Player
+    public class MatchmakingSimulationPlayer
     {
+        [DynamoDBHashKey]
         public string SimulationId;
+        
+        [DynamoDBRangeKey]
+        public string PlayerId;
         public string ProfileId;
         public string ProfileName;
+        public string MatchedTeam;
+        public Player PlayerData;
+    }
+
+    public class PlayerAttribute
+    {
+        
     }
 
     public class MatchResultData
@@ -91,8 +102,8 @@ namespace ManagementConsoleBackend.ManagementService.Data
         
         [DynamoDBProperty("Date")]
         public string Date;
-        
-        [DynamoDBProperty("PlayersConfig")] 
-        public List<MatchmakingSimulationPlayerConfig> PlayersConfig;
+
+        [DynamoDBProperty("Players")] 
+        public List<MatchmakingSimulationPlayer> Players;
     }
 }

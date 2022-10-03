@@ -450,6 +450,25 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             return await _client.DeleteFleetLocationsAsync(request);
         }
         
+        public async Task<GameSession> GetGameSession(string gameSessionId)
+        {
+            var request = new DescribeGameSessionsRequest
+            {
+                GameSessionId = gameSessionId
+            };
+            
+            try
+            {
+                var gameSessionsResponse = await _client.DescribeGameSessionsAsync(request);
+                return gameSessionsResponse.GameSessions[0];
+            }
+            catch (Exception e)
+            {
+                LambdaLogger.Log(e.ToString());
+                return null;
+            }
+        }
+        
         public async Task<List<GameSession>> GetGameSessions(string fleetId, string statusFilter=null)
         {
             var gameSessions = new List<GameSession>();

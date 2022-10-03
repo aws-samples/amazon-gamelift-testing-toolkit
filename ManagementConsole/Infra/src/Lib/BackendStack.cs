@@ -699,6 +699,7 @@ namespace ManagementConsoleInfra.Lib
                     ["TicketLogTableName"] = props.TicketLogTable.TableName,
                     ["MatchmakingSimulationTableName"] = props.MatchmakingSimulationTable.TableName,
                     ["SimulationResultsTableName"] = props.SimulationResultsTable.TableName,
+                    ["SimulationPlayersTableName"] = props.SimulationPlayersTable.TableName,
                     ["ConnectionsTableName"] = props.ManagementConnectionsTable.TableName,
                     ["EventLogTableName"] = props.EventLogTable.TableName,
                 },
@@ -721,6 +722,7 @@ namespace ManagementConsoleInfra.Lib
             props.TicketLogTable.GrantReadWriteData(FlexMatchEventFunction);
             props.ManagementConnectionsTable.GrantReadWriteData(FlexMatchEventFunction);
             props.MatchmakingSimulationTable.GrantReadWriteData(FlexMatchEventFunction);
+            props.SimulationPlayersTable.GrantReadData(FlexMatchEventFunction);
             props.SimulationResultsTable.GrantReadWriteData(FlexMatchEventFunction);
 
             var queuePlacementEventFunctionRole = new Role(this, "QueuePlacementEventFunctionRole", new RoleProps

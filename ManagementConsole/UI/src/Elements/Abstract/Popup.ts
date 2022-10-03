@@ -110,6 +110,7 @@ export abstract class Popup extends Phaser.GameObjects.Container
 
     public destroy() {
         console.log("DESTROYING POPUP!");
+        this._currentSubPopup?.removeEventListeners();
         this.removeEventListeners();
         super.destroy();
     }

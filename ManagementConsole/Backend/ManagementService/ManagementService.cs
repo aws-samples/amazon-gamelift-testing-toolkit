@@ -634,11 +634,25 @@ namespace ManagementConsoleBackend.ManagementService
                         player.PlayerAttributes = playerAttributes;
                         players.Add(player);
 
+                        /*
                         var matchmakingPlayer = Document.FromJson(JsonConvert.SerializeObject(player));
                         matchmakingPlayer["SimulationId"] = simulation.SimulationId;
                         matchmakingPlayer["ProfileId"] = profile.ProfileId;
                         matchmakingPlayer["ProfileName"] = profile.Name;
                         playerBatch.AddDocumentToPut(matchmakingPlayer);
+                        */
+
+
+                        var matchmakingPlayer = new MatchmakingSimulationPlayer
+                        {
+                            SimulationId = simulation.SimulationId,
+                            PlayerId = player.PlayerId,
+                            ProfileId = profile.ProfileId,
+                            ProfileName = profile.Name,
+                            PlayerData = player,
+                        };
+
+                        playerBatch.AddDocumentToPut(Document.FromJson(JsonConvert.SerializeObject(matchmakingPlayer)));
                     }
                 }
             }

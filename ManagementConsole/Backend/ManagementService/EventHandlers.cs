@@ -204,7 +204,7 @@ namespace ManagementConsoleBackend.ManagementService
                 LambdaLogger.Log(e.Message);
             }
 
-            await this.StoreSimulationResult(flexMatchEvent);
+            await StoreSimulationResult(flexMatchEvent);
             
             return true;
 
@@ -213,6 +213,8 @@ namespace ManagementConsoleBackend.ManagementService
         private async Task<bool> StoreSimulationResult(FlexMatchEvent flexMatchEvent)
         {
             var dynamoDbClient = new AmazonDynamoDBClient();
+            var dynamoDbRequestHandler = new DynamoDbRequestHandler(dynamoDbClient);
+            
             var simulationResultsTable =
                 Table.LoadTable(dynamoDbClient, Environment.GetEnvironmentVariable("SimulationResultsTableName"));
 
@@ -226,6 +228,16 @@ namespace ManagementConsoleBackend.ManagementService
                 if (flexMatchEvent.Detail.GameSessionInfo != null)
                 {
                     result.NumPlayers = flexMatchEvent.Detail.GameSessionInfo.Players.Count;
+                    result.Players = new List<MatchmakingSimulationPlayer>();
+
+                    foreach (var player in flexMatchEvent.Detail.GameSessionInfo.Players)
+                    {
+                        LambdaLogger.Log("TRYING TO GET PLAYER " + player.PlayerId);
+                        var playerData = await dynamoDbRequestHandler.GetDatabaseSimulationPlayer(result.SimulationId, player.PlayerId);
+                        playerData.MatchedTeam = player.Team;
+                        LambdaLogger.Log(JsonConvert.SerializeObject(playerData));
+                        result.Players.Add(playerData);
+                    }
                 }
             }
             else
