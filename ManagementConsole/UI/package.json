@@ -41,5 +41,11 @@
     },
     "engines": {
         "node": ">=14"
+    },
+    "dependencies": {
+        "datatables.net-bs4": "^1.12.1",
+        "datatables.net-buttons-bs4": "^2.2.3",
+        "datatables.net-responsive-bs4": "^2.3.0",
+        "jquery": "^3.6.1"
     }
 }

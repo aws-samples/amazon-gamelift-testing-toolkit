@@ -1,6 +1,10 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import jQuery from 'jquery';
+// export for others scripts to use
+window.$ = window.jQuery = jQuery;
+
 import 'phaser';
 import {ConsoleScene} from './Scenes/ConsoleScene'
 import {LoginScene} from './Scenes/LoginScene'
@@ -8,6 +12,12 @@ import {Network} from './Network/Network'
 import config from './Config/Config'
 import {BootScene} from "./Scenes/BootScene";
 import {PreloaderScene} from "./Scenes/PreloaderScene";
+
+var dt = require( 'datatables.net' );
+require( 'datatables.net-buttons-bs4' );
+require( 'datatables.net-buttons/js/buttons.colVis.js' );
+require( 'datatables.net-buttons/js/buttons.html5.js' );
+require( 'datatables.net-responsive-bs4' );
 
 declare const window: any;
 
