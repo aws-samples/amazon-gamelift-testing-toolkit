@@ -91,6 +91,10 @@ h6 { margin-top: 10px;}
     width: 600px;*/
 }
 
+.ruleSetsContent {
+    margin-top: 40px;
+}
+
 .simpleGraphContent {
     background: #eceeee;
     border: 1px solid #42464b;
