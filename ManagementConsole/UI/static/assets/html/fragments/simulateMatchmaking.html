@@ -61,17 +61,16 @@
                     <th>Date</th>
                     <th>Match ID</th>
                     <th>Players</th>
-                    <th>Rule Metrics</th>
-                    <th>View Tickets</th>
+                    <th>Match Info</th>
                 </tr>
                 </thead>
                 <tbody>
                 </tbody>
             </table>
         </div>
-
+<!--
         <div class="successfulMatchTicketHeadersContent hide">
-            <btn id="backToSuccessfulMatches" class="btn btn-primary btn-sm">Back</btn>
+            <btn id="backToMatchInfo" class="btn btn-primary btn-sm">Back</btn>
             <p class="title mb-3"></p>
             <table id="successfulMatchTicketHeadersTable" class="table table-bordered table-striped mb-0">
                 <thead>
@@ -109,9 +108,10 @@
 
             </div>
         </div>
-
+        -->
+<!--
         <div class="ruleEvaluationMetricsContent hide">
-            <btn id="backToSuccessfulMatches" class="btn btn-primary btn-sm">Back</btn>
+            <btn id="backToMatchInfo" class="btn btn-primary btn-sm">Back</btn>
             <p class="title mb-3"></p>
             <table id="ruleEvaluationMetricsTable" class="table table-bordered table-striped mb-0">
                 <thead>
@@ -124,6 +124,99 @@
                 <tbody>
                 </tbody>
             </table>
+        </div>
+-->
+        <div class="matchInfo hide">
+            <div class="matchInfoHeader">
+                <btn id="backToSuccessfulMatches" class="btn btn-primary btn-sm">Back</btn>
+                <!--<a class="viewRuleEvaluationMetrics btn btn-primary btn-sm" data-matchid="" href="#">Metrics</a>
+                <a class="viewSuccessfulMatchTickets btn btn-primary btn-sm" data-matchid="" href="#">Tickets</a>-->
+                <!--            <div id="matchInfoContent">
+                                match info!
+                            </div>-->
+                View: <select class="selectMatchInfo">
+                    <option value="matchedPlayers">Matched Players</option>
+                    <option value="ruleMetrics">Rule Evaluation Metrics</option>
+                    <option value="matchTickets">Match Tickets</option>
+                </select>
+            </div>
+
+
+            <div class="matchedPlayers">
+                <h4>Matched Players</h4>
+                <div class="columnToggle"></div>
+                <div class="matchInfoPlayersContent">
+                    <table id="matchInfoPlayersTable" class="table responsive table-bordered table-striped mb-0">
+                        <thead>
+                        <tr>
+                            <th>Matched Team</th>
+                            <th>Profile</th>
+                            <th>Player ID</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="ruleEvaluationMetrics hide">
+                <h4>Rule Evaluation Metrics</h4>
+                <div class="ruleEvaluationMetricsContent">
+                    <table id="ruleEvaluationMetricsTable" class="table table-bordered table-striped mb-0">
+                        <thead>
+                        <tr>
+                            <th>Rule Name</th>
+                            <th># Passed</th>
+                            <th># Failed</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="matchTickets hide">
+                <div class="successfulMatchTicketHeadersContent">
+                    <h4>Tickets</h4>
+                    <p class="title mb-3"></p>
+                    <table id="successfulMatchTicketHeadersTable" class="table table-bordered table-striped mb-0">
+                        <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Ticket ID</th>
+                            <th>Final Status</th>
+                            <th>Events</th>
+                            <th>View</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="successfulMatchTicketEventsContent hide">
+                    <btn id="backToSuccessfulMatchTickets" class="btn btn-primary btn-sm">Back</btn>
+                    <h4>Events</h4>
+                    <table id="successfulMatchmakingTicketEventsTable" class="table table-bordered table-striped mb-0">
+                        <thead>
+                        <tr>
+                            <th>Event Date</th>
+                            <th>Type</th>
+                            <th>View Detail</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="successfulMatchTicketEventDetailContent hide">
+                    <btn id="successfulMatchTicketEventDetailBackButton" class="btn btn-primary btn-sm">Back</btn>
+                    <div id="successfulMatchmakingTicketEventJson" style="width: 1000px; height: 575px;">
+
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="matchmakingTicketHeadersContent hide">

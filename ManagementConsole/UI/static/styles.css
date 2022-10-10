@@ -533,3 +533,63 @@ table#virtualPlayersTable td, table#virtualPlayersTable th {
 table#playerSessionsTable td, table#playerSessionsTable th {
     padding: 10px;
 }
+
+.dt-buttons .dt-button-collection {
+    margin: 5px 0 !important;
+}
+
+.dt-button.buttons-columnVisibility {
+    background-color: red;
+    color: white;
+}
+
+.dt-button.buttons-columnVisibility.active {
+    background-color: green;
+}
+
+div.dt-button-collection .dt-button {
+    min-width: 50px;
+}
+
+.btn-primary.dropdown-toggle {
+    background-color: #ff9900 !important;
+}
+
+div#matchInfoPlayersTable_filter { float: right }
+
+.dt-button-collection a.buttons-columnVisibility:before,
+.dt-button-collection a.buttons-columnVisibility.active span:before {
+    display:block;
+    position:absolute;
+    top:1.2em;
+    left:0;
+    width:12px;
+    height:12px;
+    box-sizing:border-box;
+}
+
+.dt-button-collection a.buttons-columnVisibility:before {
+    content:' ';
+    margin-top:-6px;
+    margin-left:5px;
+    border:1px solid black;
+    border-radius:0px;
+}
+
+.dt-button-collection a.buttons-columnVisibility.active span:before {
+    content:'\2714';
+    margin-top:-11px;
+    margin-left:8px;
+    text-align:center;
+    text-shadow:1px 1px #DDD, -1px -1px #DDD, 1px -1px #DDD, -1px 1px #DDD;
+}
+
+.dt-button-collection a.buttons-columnVisibility span {
+    margin-left:8px;
+}
+.columnToggle { float:right; margin-right:10px;}
+.matchInfoPlayersContent { clear: both }
+.matchedPlayers h4 { margin-top:35px}
+.ruleEvaluationMetrics h4 { margin-top:35px}
+.successfulMatchTicketHeadersContent h4 { margin-top: 35px }
+.successfulMatchTicketEventsContent h4 { margin-top: 35px }

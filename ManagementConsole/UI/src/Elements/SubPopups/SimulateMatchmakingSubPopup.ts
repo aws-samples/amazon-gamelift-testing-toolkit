@@ -88,6 +88,176 @@ export class SimulateMatchmakingSubPopup extends SubPopup
         }
     }
 
+    populateMatchInfo = (matchId) =>
+    {
+        this.resetMatchInfoPlayersTable();
+        let match = this._matches[matchId];
+        console.log(match);
+
+        $('#'+this._parentDomId).find("a.viewRuleEvaluationMetrics").attr("data-matchid", matchId);
+        $('#'+this._parentDomId).find("a.viewSuccessfulMatchTickets").attr("data-matchid", matchId);
+
+        let matchPlayerTableHtml="";
+        let columnToggleHtml="Toggle column: ";
+
+        if (match.Players.length)
+        {
+            let playerAttributes=[];
+
+            match.Players.map(player=>
+            {
+                console.log(player);
+                let attributeHtml="";
+                Object.keys(player.PlayerData.PlayerAttributes).map(playerAttributeName =>
+                {
+                    if (playerAttributes.indexOf(playerAttributeName)==-1)
+                    {
+                        playerAttributes.push(playerAttributeName);
+                    }
+                });
+            });
+
+
+            let i=2;
+            columnToggleHtml+='<a class="toggle-vis" data-column="' + i + '">Player ID</a> - ';
+            playerAttributes.map(playerAttributeName =>
+            {
+                i++;
+                $('#'+this._parentDomId).find("#matchInfoPlayersTable >thead tr").append("<th>" + playerAttributeName + "</th");
+                columnToggleHtml+='<a class="toggle-vis" data-column="' + i + '">' + playerAttributeName + '</a> - ';
+            });
+
+            columnToggleHtml = columnToggleHtml.slice(0,columnToggleHtml.length-2);
+
+            match.Players.map(player=>
+            {
+                console.log(player);
+                let attributeHtml="";
+                playerAttributes.map(playerAttributeName =>
+                {
+                    console.log(playerAttributeName);
+                    let playerAttribute = player.PlayerData.PlayerAttributes[playerAttributeName];
+                    console.log(playerAttribute);
+                    attributeHtml+= "<td>" + this.getAttributeText(playerAttribute) + "</td>";
+                    //$('#'+this._parentDomId).find("#matchInfoPlayersTable >thead tr").append("<th>" + playerAttributeName + "</th");
+
+                });
+
+                matchPlayerTableHtml += '<tr>' +
+                    '<td>' + player.MatchedTeam + '</td>'+
+                    '<td>' + player.ProfileName + '</td>'+
+                    '<td>' + player.PlayerId + '</td>'+
+                    attributeHtml +
+                    '</tr>'
+            });
+
+            $('#'+this._parentDomId).find("table#matchInfoPlayersTable tbody").html(matchPlayerTableHtml);
+
+
+
+            let table = this.activateDataTable("matchInfoPlayersTable", {
+                scrollY: "400px",
+                scrollCollapse: true,
+                dom: "Bfrtip",
+                buttons : [
+                    {
+                        extend: "copy",
+                        className: "btn btn-primary btn-sm"
+                    },
+                    {
+                        extend: "csv",
+                        className: "btn btn-primary btn-sm"
+                    }
+                    ],
+                order: [[ 0, "desc" ]],
+            });
+
+
+
+            $('#'+this._parentDomId).find(".columnToggle").html(columnToggleHtml);
+            $('#'+this._parentDomId).find("a.toggle-vis").on("click", function (e)  {
+                e.preventDefault();
+                console.log("Toggled", e.target);
+                let column = table.column($(this).attr("data-column"));
+
+                column.visible(!column.visible());
+            });
+
+
+            $('#'+this._parentDomId).find("select.selectMatchInfo").on("change",   (e) =>{
+                e.preventDefault();
+                let selectedValue = $(e.target).val();
+
+                switch(selectedValue)
+                {
+                    case "matchedPlayers":
+                        this.showMatchPlayers();
+                        this.hideRuleEvaluationMetrics();
+                        this.hideMatchTickets();
+                        break;
+                    case "ruleMetrics":
+                        this.hideMatchPlayers();
+                        this.showRuleEvaluationMetrics();
+                        this.activateDataTable("ruleEvaluationMetricsTable");
+                        this.hideMatchTickets();
+                        break;
+                    case "matchTickets":
+                        this.hideMatchPlayers();
+                        this.hideRuleEvaluationMetrics();
+                        this.showMatchTickets();
+                        this.activateDataTable("successfulMatchTicketHeadersTable");
+                        break;
+                }
+            });
+
+            this.populateRuleEvaluationMetricsList(matchId);
+            //table.buttons().container().appendTo( '#matchInfoPlayersTable_buttons' );
+        }
+
+
+        /*
+        let viewRuleEvaluationMetricsButton='<a class="viewRuleEvaluationMetrics btn btn-primary btn-sm" id="' + matchId +'" href="' + "#" + '">Metrics</a>';
+        let viewMatchTicketsButton='<a class="viewSuccessfulMatchTickets btn btn-primary btn-sm" id="' + matchId +'" href="' + "#" + '">Tickets</a>';
+
+        let html = viewRuleEvaluationMetricsButton + viewMatchTicketsButton;
+
+        $('#'+this._parentDomId).find("#matchInfoContent").html(html);
+
+         */
+    }
+
+    getAttributeText = (playerAttribute) =>
+    {
+        if (playerAttribute==undefined)
+        {
+            return "-";
+        }
+        if (playerAttribute["S"]!=null)
+        {
+            return playerAttribute["S"];
+        }
+
+        if (playerAttribute["SL"].length>0)
+        {
+            return playerAttribute["SL"].join(", ");
+        }
+
+        if (Object.keys(playerAttribute["SDM"]).length)
+        {
+            let mapText="";
+            Object.keys(playerAttribute["SDM"]).map(key=>
+            {
+                mapText+=key + ":" + playerAttribute["SDM"][key] + ", ";
+            });
+
+            mapText = mapText.slice(0,mapText.length-2);
+            return mapText;
+        }
+
+        return playerAttribute["N"];
+
+    }
+
     populateRuleEvaluationMetricsList = (matchId) =>
     {
         let html="";
@@ -107,7 +277,6 @@ export class SimulateMatchmakingSubPopup extends SubPopup
 
         $('#'+this._parentDomId).find("table#ruleEvaluationMetricsTable tbody").html(html);
 
-        this.activateDataTable("ruleEvaluationMetricsTable");
 
     }
 
@@ -136,20 +305,25 @@ export class SimulateMatchmakingSubPopup extends SubPopup
 
             Object.keys(matchPlayers).map(matchedTeam=>
             {
+                matchPlayerText += matchedTeam +" - ";
                 Object.keys(matchPlayers[matchedTeam]).map(matchedProfile=>
                 {
-                    matchPlayerText+=matchedTeam + " - " + matchPlayers[matchedTeam][matchedProfile] + " " + matchedProfile + "<br/>";
+                    matchPlayerText+= matchPlayers[matchedTeam][matchedProfile] + " " + matchedProfile + ", ";
                 });
+                matchPlayerText = matchPlayerText.slice(0,matchPlayerText.length-2);
+                matchPlayerText+="<br/>";
             });
             console.log(matchPlayers);
-            let viewRuleEvaluationMetricsTd='<td><a class="viewRuleEvaluationMetrics btn btn-primary btn-sm" id="' + matchResult.MatchId +'" href="' + "#" + '">Rule Metrics</a></td>';
-            let viewMatchTicketsTd='<td><a class="viewSuccessfulMatchTickets btn btn-primary btn-sm" id="' + matchResult.MatchId +'" href="' + "#" + '">View Tickets</a></td>';
+            let viewMatchInfoTd='<td><a class="viewMatchInfo btn btn-primary btn-sm" id="' + matchResult.MatchId +'" href="' + "#" + '">Match Info</a></td>';
+            let viewRuleEvaluationMetricsTd='<td><a class="viewRuleEvaluationMetrics btn btn-primary btn-sm" id="' + matchResult.MatchId +'" href="' + "#" + '">Metrics</a></td>';
+            let viewMatchTicketsTd='<td><a class="viewSuccessfulMatchTickets btn btn-primary btn-sm" id="' + matchResult.MatchId +'" href="' + "#" + '">Tickets</a></td>';
             html += '<tr>' +
                 '<td>' + matchResult.Date + '</td>'+
                 '<td>' + matchResult.MatchId + '</td>'+
                 '<td>' + matchPlayerText + '</td>'+
-                viewRuleEvaluationMetricsTd +
-                viewMatchTicketsTd +
+                viewMatchInfoTd +
+                //viewRuleEvaluationMetricsTd +
+                //viewMatchTicketsTd +
                 '</tr>'
         });
 
@@ -161,6 +335,20 @@ export class SimulateMatchmakingSubPopup extends SubPopup
 
         this.hideMatchmakingTicketsList();
         this.showSuccessfulMatchesList();
+        /*this.activateDataTable("successfulMatchesTable", {
+            scrollY: "400px",
+            scrollCollapse: true,
+            //ordering:false,
+            columns: [
+                { orderable:false },
+                { orderable:false },
+                { orderable:false },
+                { orderable:false },
+                { orderable:false },
+                { orderable:false },
+            ],
+            order: [[ 0, "desc" ]]
+        });*/
         this.activateDataTable("successfulMatchesTable");
 
     }
@@ -193,10 +381,13 @@ export class SimulateMatchmakingSubPopup extends SubPopup
 
         $('#'+this._parentDomId).find("table#successfulMatchTicketHeadersTable tbody").html(html);
 
+        /*
         this.hideMatchmakingTicketsList();
         this.hideSuccessfulMatchesList();
+        this.hideMatchInfo();
         this.showSuccessfulMatchTicketsList();
-        this.activateDataTable("successfulMatchTicketHeadersTable");
+         */
+
 
     }
 
@@ -436,9 +627,10 @@ export class SimulateMatchmakingSubPopup extends SubPopup
         this.hideSimulationOutput();
     }
 
-    showRuleEvaluationMetricsList()
+    showMatchInfo()
     {
-        $('#'+this._parentDomId).find(".ruleEvaluationMetricsContent").show();
+        this.resetMatchInfo();
+        $('#'+this._parentDomId).find(".matchInfo").show();
         this.hideSuccessfulMatchesList();
     }
 
@@ -448,27 +640,12 @@ export class SimulateMatchmakingSubPopup extends SubPopup
         this.hideSimulationOutput();
     }
 
-    showSuccessfulMatchTicketsList()
-    {
-        $('#'+this._parentDomId).find(".successfulMatchTicketHeadersContent").show();
-        this.hideSuccessfulMatchesList();
-    }
-
-    showSuccessfulMatchTicketEventList()
-    {
-        $('#'+this._parentDomId).find(".successfulMatchTicketEventsContent").show();
-        this.hideSuccessfulMatchesList();
-    }
-
     hideMatchmakingTicketEventList()
     {
         $('#'+this._parentDomId).find(".matchmakingTicketEventsContent").hide();
     }
 
-    hideSuccessfulMatchTicketEventList()
-    {
-        $('#'+this._parentDomId).find(".successfulMatchTicketEventsContent").hide();
-    }
+
 
     hideMatchmakingTicketsList()
     {
@@ -480,19 +657,31 @@ export class SimulateMatchmakingSubPopup extends SubPopup
         $('#'+this._parentDomId).find(".successfulMatchesContent").hide();
     }
 
+    hideMatchInfo()
+    {
+        $('#'+this._parentDomId).find(".matchInfo").hide();
+    }
+
     hideRuleEvaluationMetricsList()
     {
         $('#'+this._parentDomId).find(".ruleEvaluationMetricsContent").hide();
     }
 
-    hideSuccessfulMatchTicketsList()
-    {
-        $('#'+this._parentDomId).find(".successfulMatchTicketHeadersContent").hide();
-    }
+
 
     resetTicketHeadersTable()
     {
         this.resetElement(".matchmakingTicketHeadersContent");
+    }
+
+    resetMatchInfoPlayersTable()
+    {
+        this.resetElement(".matchInfoPlayersContent");
+    }
+
+    resetMatchInfo()
+    {
+        this.resetElement(".matchInfo");
     }
 
     resetEventsTable()
@@ -719,8 +908,7 @@ export class SimulateMatchmakingSubPopup extends SubPopup
         }
         else if (el.hasClass("viewSuccessfulMatchTickets"))
         {
-            Network.sendObject({Type:"GetMatchmakingTicketHeadersByMatchId", MatchId:event.target.id});
-
+            Network.sendObject({Type:"GetMatchmakingTicketHeadersByMatchId", MatchId:event.target.dataset.matchid});
         }
         else if (el.hasClass("viewSuccessfulMatchTicket"))
         {
@@ -730,11 +918,12 @@ export class SimulateMatchmakingSubPopup extends SubPopup
             Network.sendObject({Type:"GetMatchmakingTicket", TicketId:event.target.id});
 
         }
-        else if (el.hasClass("viewRuleEvaluationMetrics"))
+        else if (el.hasClass("viewMatchInfo"))
         {
             this.hideSuccessfulMatchesList();
-            this.showRuleEvaluationMetricsList();
-            this.populateRuleEvaluationMetricsList(event.target.id);
+            this.showMatchInfo();
+            this.populateMatchInfo(event.target.id);
+            Network.sendObject({Type:"GetMatchmakingTicketHeadersByMatchId", MatchId:event.target.id});
         }
         else if (event.target.id=="showSimulationMatches")
         {
@@ -752,10 +941,18 @@ export class SimulateMatchmakingSubPopup extends SubPopup
             this.hideMatchmakingTicketsList();
             this.hideSuccessfulMatchesList();
         }
+        else if (event.target.id=="backToMatchInfo")
+        {
+            this.hideSuccessfulMatchesList();
+            this.showMatchInfo();
+            //this.hideRuleEvaluationMetricsList();
+            this.hideSuccessfulMatchTicketsList();
+        }
         else if (event.target.id=="backToSuccessfulMatches")
         {
             this.showSuccessfulMatchesList();
-            this.hideRuleEvaluationMetricsList();
+            //this.hideRuleEvaluationMetricsList();
+            this.hideMatchInfo();
             this.hideSuccessfulMatchTicketsList();
         }
         else if (event.target.id=="backToSuccessfulMatchTickets")
@@ -770,6 +967,78 @@ export class SimulateMatchmakingSubPopup extends SubPopup
             this.backToMatchmakingTicketsList();
         }
     }
+
+    // Hide/Show for <select> panes
+
+    showMatchPlayers()
+    {
+        $('.matchedPlayers').show();
+    }
+
+    hideMatchPlayers()
+    {
+        $('.matchedPlayers').hide();
+    }
+
+    showRuleEvaluationMetrics()
+    {
+        $('.ruleEvaluationMetrics').show();
+    }
+
+    hideRuleEvaluationMetrics()
+    {
+        $('.ruleEvaluationMetrics').hide();
+    }
+
+    showMatchTickets()
+    {
+        $('#'+this._parentDomId).find(".matchTickets").show();
+        this.hideSuccessfulMatchesList();
+    }
+
+    hideMatchTickets()
+    {
+        $('#'+this._parentDomId).find(".matchTickets").hide();
+    }
+
+    showMatchInfoHeader()
+    {
+        $('#'+this._parentDomId).find(".matchInfoHeader").show();
+    }
+
+    hideMatchInfoHeader()
+    {
+        $('#'+this._parentDomId).find(".matchInfoHeader").hide();
+    }
+
+    // Hide show for match tickets list
+
+    showSuccessfulMatchTicketsList()
+    {
+        this.showMatchInfoHeader();
+        $('#'+this._parentDomId).find(".successfulMatchTicketHeadersContent").show();
+        this.hideSuccessfulMatchesList();
+    }
+
+    hideSuccessfulMatchTicketsList()
+    {
+        $('#'+this._parentDomId).find(".successfulMatchTicketHeadersContent").hide();
+    }
+
+    showSuccessfulMatchTicketEventList()
+    {
+        this.hideMatchInfoHeader();
+        $('#'+this._parentDomId).find(".successfulMatchTicketEventsContent").show();
+        this.hideSuccessfulMatchesList();
+        this.hideSuccessfulMatchTicketsList();
+    }
+
+    hideSuccessfulMatchTicketEventList()
+    {
+        $('#'+this._parentDomId).find(".successfulMatchTicketEventsContent").hide();
+    }
+
+    //
 
     backToMatchmakingTicketsList()
     {
@@ -802,15 +1071,25 @@ export class SimulateMatchmakingSubPopup extends SubPopup
         $('#'+this._parentDomId).find("#successfulMatchmakingTicketEventJson").html("");
     }
 
-    activateDataTable(id) {
+    activateDataTable(id, config=null) {
         // @ts-ignore
-        $('#'+this._parentDomId).find("#"+id).DataTable({
-            scrollY: "400px",
-            scrollCollapse: true,
-            columnDefs: [
-                { width: 200, targets: 0 }
-            ],
-            order: [[ 0, "desc" ]]
-        });
+        if ( ! $.fn.DataTable.isDataTable( '#'+id ) )
+        {
+            if (config==null)
+            {
+                config = {
+                    scrollY: "400px",
+                    scrollCollapse: true,
+                    columnDefs: [
+                        { width: 200, targets: 0 }
+                    ],
+                    order: [[ 0, "desc" ]],
+
+                };
+            }
+            // @ts-ignore
+            var table = $('#'+this._parentDomId).find("#"+id).DataTable(config);
+            return table;
+        }
     }
 }
