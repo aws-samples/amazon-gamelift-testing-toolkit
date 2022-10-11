@@ -159,17 +159,43 @@ export class SimulateMatchmakingSubPopup extends SubPopup
                 scrollY: "400px",
                 scrollCollapse: true,
                 dom: "Bfrtip",
-                buttons : [
+                /*buttons : [
                     {
-                        extend: "copy",
-                        className: "btn btn-primary btn-sm"
+                        extend: "copyHtml5",
+                        text:   '<i style="font-size:40px" class="fa fa-copy"></i>',
+                        titleAttr: 'Copy'
                     },
                     {
-                        extend: "csv",
-                        className: "btn btn-primary btn-sm"
+                        extend: "csvHtml5",
+                        text:      '<i style="font-size:40px" class="fa fa-file-csv"></i>',
+                        titleAttr: 'CSV'
                     }
+                    ],*/
+                buttons: {
+                    dom: {
+                        button: {
+                            tag: 'button',
+                            className: 'border-0'
+                        },
+                        buttonLiner: {
+                            tag: null
+                        }
+                    },
+                    buttons : [
+                        {
+                            extend: "copyHtml5",
+                            text:   '<i style="font-size:26px; color:#333" class="fa fa-copy"></i>',
+                            titleAttr: 'Copy'
+                        },
+                        {
+                            extend: "csvHtml5",
+                            text:      '<i style="font-size:26px; color:#333" class="fa fa-file-csv"></i>',
+                            titleAttr: 'CSV'
+                        }
                     ],
-                order: [[ 0, "desc" ]],
+                },
+                order: [[
+                    0, "desc" ]],
             });
 
 
