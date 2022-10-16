@@ -2,10 +2,10 @@
 # yarn lockfile v1
 
 
-aws-cdk@^2.42.1:
-  version "2.44.0"
-  resolved "https://registry.yarnpkg.com/aws-cdk/-/aws-cdk-2.44.0.tgz#eb1a6d2f5c3a3c46f80d69d6fb523d823c16b7b2"
-  integrity sha512-9hbK4Yc1GQ28zSjZE2ajidt7sRrTLYpijkI7HT7JcDhXLe2ZGP9EOZrqKy5EEsOv0wDQ7cdXB3/oMiMGSmSQ5A==
+aws-cdk@^2.46.0:
+  version "2.46.0"
+  resolved "https://registry.yarnpkg.com/aws-cdk/-/aws-cdk-2.46.0.tgz#7b66df07e77f5bc696669b54853a2a8435ee101d"
+  integrity sha512-5pacxA1zMMxxyJKhTGk22/64lV3Nb4dZMY8RW4KfzZWQz8TnsIipd0Ks37rowQd7O2+VFkITvl86Socjewr5VQ==
   optionalDependencies:
     fsevents "2.3.2"
 
