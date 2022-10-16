@@ -37,15 +37,15 @@
         "webpack-cli": "^4.7.2",
         "webpack-dev-server": "^4.9.0",
         "webpack-merge": "^5.8.0",
-        "write-file-webpack-plugin": "^4.5.1"
-    },
-    "engines": {
-        "node": ">=14"
-    },
-    "dependencies": {
+        "write-file-webpack-plugin": "^4.5.1",
+        "@types/file-saver": "^2.0.5",
         "datatables.net-bs4": "^1.12.1",
         "datatables.net-buttons-bs4": "^2.2.3",
         "datatables.net-responsive-bs4": "^2.3.0",
+        "file-saver": "^2.0.5",
         "jquery": "^3.6.1"
+    },
+    "engines": {
+        "node": ">=14"
     }
 }

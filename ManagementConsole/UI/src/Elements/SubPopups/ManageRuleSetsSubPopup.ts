@@ -118,6 +118,8 @@ export class ManageRuleSetsSubPopup extends SubPopup
         if (data.Created)
         {
             this.showSuccessAlert("Ruleset created successfully");
+            this.resetJson();
+            this.showRuleSetDetail(data.RuleSet);
         }
         else
         {
@@ -165,6 +167,9 @@ export class ManageRuleSetsSubPopup extends SubPopup
             console.log(event.target.id);
             let ruleSet = this._ruleSets.filter(ruleSet => ruleSet.RuleSetArn == event.target.id)[0];
             this.showRuleSetDetail(ruleSet);
+        } else if (event.target.className.indexOf("newRuleset") !== -1) {
+            this.hideStatusAlert();
+            this.newRuleSet();
         } else if (event.target.className.indexOf("deleteRuleSet") !== -1) {
             this.hideStatusAlert();
             console.log(event.target.id);
@@ -181,7 +186,8 @@ export class ManageRuleSetsSubPopup extends SubPopup
             console.log(this._editor.getText());
             let ruleSet = JSON.parse(this._editor.getText());
             let editorJson = JSON.stringify(ruleSet);
-            Network.sendObject({Type:"CreateMatchmakingRuleSet", RuleSetBody:editorJson, RuleSetName:ruleSet.name});
+            let ruleSetName = $('#ruleSetName').val();
+            Network.sendObject({Type:"CreateMatchmakingRuleSet", RuleSetBody:editorJson, RuleSetName:ruleSetName});
             //this.resetJson();
         }
         else if (event.target.id == "validateButton") {
@@ -201,10 +207,33 @@ export class ManageRuleSetsSubPopup extends SubPopup
         const options:JSONEditorOptions = {modes:["code", "tree"], name:"Matchmaking RuleSet"}
 
         this._editor = new JSONEditor(container, options);
-
+        $(".existingRuleSetName").hide();
+        $(".rulesetButtons").show();
+        $('#ruleSetName').val("");
         var ruleSetBody = JSON.parse(ruleSet.RuleSetBody);
-        ruleSetBody.name = ruleSetBody.name + "-Copy";
         this._editor.set(ruleSetBody);
+
+        $('#'+this._parentDomId).find(".ruleSetsContent")[0].className="ruleSetsContent hide";
+        $('#'+this._parentDomId).find("#saveButton")[0].className="btn btn-primary btn-sm";
+        $('#'+this._parentDomId).find("#validateButton")[0].className="btn btn-primary btn-sm";
+        $('#'+this._parentDomId).find(".ruleSetsDetailContent")[0].className="ruleSetsDetailContent";
+    }
+
+    newRuleSet = () =>
+    {
+        const container = document.getElementById("ruleSetJson")
+        const options:JSONEditorOptions = {modes:["code", "tree"], name:"Matchmaking RuleSet"}
+        $(".existingRuleSetName").hide();
+        $(".rulesetButtons").show();
+        $('#ruleSetName').val("");
+        this._editor = new JSONEditor(container, options);
+        $('#ruleSetName').val("");
+        let emptyRuleset = {
+            ruleLanguageVersion	: "1.0",
+            teams: [ { name:"Team", minPlayers:1, maxPlayers:2}]
+        }
+
+        this._editor.set(emptyRuleset);
 
         $('#'+this._parentDomId).find(".ruleSetsContent")[0].className="ruleSetsContent hide";
         $('#'+this._parentDomId).find("#saveButton")[0].className="btn btn-primary btn-sm";
@@ -218,6 +247,9 @@ export class ManageRuleSetsSubPopup extends SubPopup
         const options:JSONEditorOptions = {mode:"view", name:"Matchmaking RuleSet"}
 
         this._editor = new JSONEditor(container, options);
+        $(".existingRuleSetName").show();
+        $(".existingRuleSetName").html(ruleSet.RuleSetName);
+        $(".rulesetButtons").hide();
 
         console.log(container);
         console.log(this._editor);

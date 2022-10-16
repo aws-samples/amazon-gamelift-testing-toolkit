@@ -36,6 +36,7 @@ export class MatchmakingRuleSetsPopup extends Popup
     resetTable()
     {
         this._popup.node.querySelector(".ruleSetsContent").innerHTML="        <p class=\"title mb-3\"></p>\n" +
+            "        <btn class=\"newRuleset btn btn-primary btn-sm\">New Ruleset</btn>" +
             "        <table id=\"ruleSetsTable\" class=\"table table-bordered table-striped mb-0\">\n" +
             "            <thead>\n" +
             "            <tr>\n" +
@@ -112,6 +113,8 @@ export class MatchmakingRuleSetsPopup extends Popup
         if (data.Created)
         {
             this.showSuccessAlert("Ruleset created successfully");
+            this.resetJson();
+            this.showRuleSetDetail(data.RuleSet);
         }
         else
         {
@@ -167,6 +170,9 @@ export class MatchmakingRuleSetsPopup extends Popup
             console.log(event.target.id);
             let ruleSet = this._ruleSets.filter(ruleSet => ruleSet.RuleSetArn == event.target.id)[0];
             this.showRuleSetDetail(ruleSet);
+        } else if (event.target.className.indexOf("newRuleset") !== -1) {
+            this.hideStatusAlert();
+            this.newRuleSet();
         } else if (event.target.className.indexOf("deleteRuleSet") !== -1) {
             this.hideStatusAlert();
             console.log(event.target.id);
@@ -183,7 +189,8 @@ export class MatchmakingRuleSetsPopup extends Popup
             console.log(this._editor.getText());
             let ruleSet = JSON.parse(this._editor.getText());
             let editorJson = JSON.stringify(ruleSet);
-            Network.sendObject({Type:"CreateMatchmakingRuleSet", RuleSetBody:editorJson, RuleSetName:ruleSet.name});
+            let ruleSetName = $('#ruleSetName').val();
+            Network.sendObject({Type:"CreateMatchmakingRuleSet", RuleSetBody:editorJson, RuleSetName:ruleSetName});
             //this.resetJson();
         }
         else if (event.target.id == "validateButton") {
@@ -203,12 +210,36 @@ export class MatchmakingRuleSetsPopup extends Popup
 
         const container = document.getElementById("ruleSetJson")
         const options:JSONEditorOptions = {modes:["code", "tree"], name:"Matchmaking RuleSet"}
+        $(".rulesetButtons").show();
+        $('#ruleSetName').val("");
+        $(".existingRuleSetName").hide();
 
         this._editor = new JSONEditor(container, options);
 
         var ruleSetBody = JSON.parse(ruleSet.RuleSetBody);
-        ruleSetBody.name = ruleSetBody.name + "-Copy";
         this._editor.set(ruleSetBody);
+
+        this._popup.node.querySelector(".ruleSetsContent").className="ruleSetsContent hide";
+        this._popup.node.querySelector("#saveButton").className="btn btn-primary btn-sm";
+        this._popup.node.querySelector("#validateButton").className="btn btn-primary btn-sm";
+        this._popup.node.querySelector(".ruleSetsDetailContent").className="ruleSetsDetailContent";
+    }
+
+    newRuleSet = () =>
+    {
+        const container = document.getElementById("ruleSetJson")
+        const options:JSONEditorOptions = {modes:["code", "tree"], name:"Matchmaking RuleSet"}
+        $(".rulesetButtons").show();
+        $(".existingRuleSetName").hide();
+
+        this._editor = new JSONEditor(container, options);
+        $('#ruleSetName').val("");
+        let emptyRuleset = {
+            ruleLanguageVersion	: "1.0",
+            teams: [ { name:"Team", minPlayers:1, maxPlayers:2}]
+        }
+
+        this._editor.set(emptyRuleset);
 
         this._popup.node.querySelector(".ruleSetsContent").className="ruleSetsContent hide";
         this._popup.node.querySelector("#saveButton").className="btn btn-primary btn-sm";
@@ -219,7 +250,9 @@ export class MatchmakingRuleSetsPopup extends Popup
     showRuleSetDetail = (ruleSet) =>
     {
         console.log(ruleSet);
-
+        $(".rulesetButtons").hide();
+        $(".existingRuleSetName").show();
+        $(".existingRuleSetName").html(ruleSet.RuleSetName);
         const container = document.getElementById("ruleSetJson")
         const options:JSONEditorOptions = {mode:"view", name:"Matchmaking RuleSet"}
 

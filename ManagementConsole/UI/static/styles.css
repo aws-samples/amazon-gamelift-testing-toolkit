@@ -91,9 +91,11 @@ h6 { margin-top: 10px;}
     width: 600px;*/
 }
 
-.ruleSetsContent, .matchmakingTicketHeadersContent, .queueEventsContent, .gameSessionsContent, .fleetEventsContent {
+.matchmakingTicketHeadersContent, .queueEventsContent, .gameSessionsContent, .fleetEventsContent {
     margin-top: 40px;
 }
+
+.existingRuleSetName { margin-top:10px; margin-bottom:20px}
 
 .simpleGraphContent {
     background: #eceeee;
