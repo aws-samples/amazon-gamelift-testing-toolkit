@@ -9,15 +9,15 @@
 
   <ItemGroup>
     <!-- CDK Construct Library dependencies -->
-    <PackageReference Include="Amazon.CDK.Lib" Version="2.45.0" />
+    <PackageReference Include="Amazon.CDK.Lib" Version="2.46.0" />
     <PackageReference Include="Amazon.CDK.AWS.APIGatewayv2.Integrations.Alpha" Version="2.38.1-alpha.0" />
     <PackageReference Include="Amazon.CDK.AWS.APIGatewayv2.Alpha" Version="2.38.1-alpha.0" />
     <PackageReference Include="Amazon.CDK.AWS.APIGatewayv2.Authorizers.Alpha" Version="2.38.1-alpha.0" />
     <PackageReference Include="Amazon.CDK.AWS.Cognito.IdentityPool.Alpha" Version="2.38.1-alpha.0" />
-    <PackageReference Include="Constructs" Version="10.1.126" />
+    <PackageReference Include="Constructs" Version="10.1.131" />
     <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
     <PackageReference Include="Amazon.Lambda.Serialization.Json" Version="2.1.0" />
-    <PackageReference Include="Cdklabs.CdkNag" Version="2.18.33" />
+    <PackageReference Include="Cdklabs.CdkNag" Version="2.18.40" />
 
     <!-- jsii Roslyn analyzers (un-comment to obtain compile-time checks for missing required props
     <PackageReference Include="Amazon.Jsii.Analyzers" Version="*" PrivateAssets="all" />

@@ -13,16 +13,16 @@
     <PackageReference Include="Amazon.Lambda.CloudWatchEvents" Version="4.0.0" />
     <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
     <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.3.0" />
-    <PackageReference Include="AWSSDK.ApiGatewayManagementApi" Version="3.7.0.221" />
-    <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.11.43" />
-    <PackageReference Include="AWSSDK.CloudWatch" Version="3.7.7.27" />
-    <PackageReference Include="AWSSDK.CloudWatchLogs" Version="3.7.2.115" />
-    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.5.14" />
-    <PackageReference Include="AWSSDK.ECS" Version="3.7.5.92" />
-    <PackageReference Include="AWSSDK.EventBridge" Version="3.7.5.75" />
-    <PackageReference Include="AWSSDK.GameLift" Version="3.7.2.24" />
-    <PackageReference Include="AWSSDK.S3" Version="3.7.9.67" />
-    <PackageReference Include="AWSSDK.StepFunctions" Version="3.7.0.220" />
+    <PackageReference Include="AWSSDK.ApiGatewayManagementApi" Version="3.7.0.223" />
+    <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.11.45" />
+    <PackageReference Include="AWSSDK.CloudWatch" Version="3.7.7.29" />
+    <PackageReference Include="AWSSDK.CloudWatchLogs" Version="3.7.2.117" />
+    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.5.16" />
+    <PackageReference Include="AWSSDK.ECS" Version="3.7.5.94" />
+    <PackageReference Include="AWSSDK.EventBridge" Version="3.7.5.77" />
+    <PackageReference Include="AWSSDK.GameLift" Version="3.7.2.26" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.9.69" />
+    <PackageReference Include="AWSSDK.StepFunctions" Version="3.7.0.222" />
     <PackageReference Include="CompareNETObjects" Version="4.78.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
