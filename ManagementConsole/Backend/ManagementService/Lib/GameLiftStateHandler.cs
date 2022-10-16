@@ -41,66 +41,75 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             stateEvent.MatchmakingSimulator = flexMatchSimulatorConfig;
 
             stateEvent.MatchmakingConfigurations = matchmakingConfigurations;
-            var fleetCapacities = await gameLiftRequestHandler.GetFleetCapacities();
-
-            foreach (var fleetCapacity in fleetCapacities)
+            try
             {
-                var fleetId = fleetCapacity.FleetId;
+                var fleetCapacities = await gameLiftRequestHandler.GetFleetCapacities();
 
-                var activeGameSessions = await gameLiftRequestHandler.GetGameSessions(fleetId, "ACTIVE");
-                var terminatedGameSessions = await gameLiftRequestHandler.GetGameSessions(fleetId, "TERMINATED");
-                var gameSessionTable = Table.LoadTable(dynamoDbClient, Environment.GetEnvironmentVariable("GameSessionTableName"));
-                var gameSessions = new List<GameSession>();
-                foreach (var gameSession in activeGameSessions)
+                foreach (var fleetCapacity in fleetCapacities)
                 {
-                    var item = Document.FromJson(JsonConvert.SerializeObject(gameSession));
-                    item["StatusValue"] = gameSession.Status.Value;
-                    await gameSessionTable.PutItemAsync(item);
-                    gameSessions.Add(gameSession);
-                }
+                    var fleetId = fleetCapacity.FleetId;
 
-                foreach (var gameSession in terminatedGameSessions)
-                {
-                    if (gameSession.TerminationTime > (DateTime.Now - TimeSpan.FromMinutes(5)))
+                    var activeGameSessions = await gameLiftRequestHandler.GetGameSessions(fleetId, "ACTIVE");
+                    var terminatedGameSessions = await gameLiftRequestHandler.GetGameSessions(fleetId, "TERMINATED");
+                    var gameSessionTable = Table.LoadTable(dynamoDbClient, Environment.GetEnvironmentVariable("GameSessionTableName"));
+                    var gameSessions = new List<GameSession>();
+                    foreach (var gameSession in activeGameSessions)
                     {
                         var item = Document.FromJson(JsonConvert.SerializeObject(gameSession));
                         item["StatusValue"] = gameSession.Status.Value;
                         await gameSessionTable.PutItemAsync(item);
                         gameSessions.Add(gameSession);
                     }
+
+                    foreach (var gameSession in terminatedGameSessions)
+                    {
+                        if (gameSession.TerminationTime > (DateTime.Now - TimeSpan.FromMinutes(5)))
+                        {
+                            var item = Document.FromJson(JsonConvert.SerializeObject(gameSession));
+                            item["StatusValue"] = gameSession.Status.Value;
+                            await gameSessionTable.PutItemAsync(item);
+                            gameSessions.Add(gameSession);
+                        }
+                    }
+
+                    var locationAttributes = await gameLiftRequestHandler.GetFleetLocationAttributes(fleetId);
+
+                    var instances = new List<Instance>();
+                    var locationCapacities = new List<FleetCapacity>();
+                    foreach (var locationAttribute in locationAttributes)
+                    {
+                        var locationCapacity = await gameLiftRequestHandler.GetFleetLocationCapacity(fleetId, locationAttribute.LocationState.Location);
+                        locationCapacities.Add(locationCapacity);
+
+                        var locationInstances = await gameLiftRequestHandler.GetFleetInstances(fleetId, locationAttribute.LocationState.Location);
+                        instances.AddRange(locationInstances);
+                    }
+                    
+                    var fleetData = new FleetData
+                    {
+                        FleetId = fleetId,
+                        LocationAttributes = locationAttributes,
+                        FleetCapacity = fleetCapacity,
+                        LocationCapacities = locationCapacities,
+                        ScalingPolicies = await gameLiftRequestHandler.GetScalingPolicies(fleetId),
+                        RuntimeConfiguration = await gameLiftRequestHandler.GetRuntimeConfiguration(fleetId),
+                        FleetEvents = await gameLiftRequestHandler.GetFleetEvents(fleetId),
+                        FleetUtilization = await gameLiftRequestHandler.GetFleetUtilization(fleetId),
+                        FleetAttributes = await gameLiftRequestHandler.GetFleetAttributes(fleetId),
+                        Instances = instances,
+                        GameSessions = gameSessions,
+                    };
+                    
+                    stateEvent.FleetData.Add(fleetData);
                 }
-
-                var locationAttributes = await gameLiftRequestHandler.GetFleetLocationAttributes(fleetId);
-
-                var instances = new List<Instance>();
-                var locationCapacities = new List<FleetCapacity>();
-                foreach (var locationAttribute in locationAttributes)
-                {
-                    var locationCapacity = await gameLiftRequestHandler.GetFleetLocationCapacity(fleetId, locationAttribute.LocationState.Location);
-                    locationCapacities.Add(locationCapacity);
-
-                    var locationInstances = await gameLiftRequestHandler.GetFleetInstances(fleetId, locationAttribute.LocationState.Location);
-                    instances.AddRange(locationInstances);
-                }
-                
-                var fleetData = new FleetData
-                {
-                    FleetId = fleetId,
-                    LocationAttributes = locationAttributes,
-                    FleetCapacity = fleetCapacity,
-                    LocationCapacities = locationCapacities,
-                    ScalingPolicies = await gameLiftRequestHandler.GetScalingPolicies(fleetId),
-                    RuntimeConfiguration = await gameLiftRequestHandler.GetRuntimeConfiguration(fleetId),
-                    FleetEvents = await gameLiftRequestHandler.GetFleetEvents(fleetId),
-                    FleetUtilization = await gameLiftRequestHandler.GetFleetUtilization(fleetId),
-                    FleetAttributes = await gameLiftRequestHandler.GetFleetAttributes(fleetId),
-                    Instances = instances,
-                    GameSessions = gameSessions,
-                };
-
-                
-                stateEvent.FleetData.Add(fleetData);
             }
+            catch (Exception e)
+            {
+                LambdaLogger.Log(e.ToString());
+                return null;
+            }
+
+
 
             return stateEvent;
         }
