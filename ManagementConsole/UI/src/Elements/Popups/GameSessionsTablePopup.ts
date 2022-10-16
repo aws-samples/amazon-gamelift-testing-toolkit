@@ -8,11 +8,13 @@ import {Events} from "../../Events/Events";
 import {Popup} from "../Abstract/Popup";
 import GameSession = DataTypes.GameSession;
 import {Utils} from "../../Utils/Utils";
+import JSONEditor, {JSONEditorOptions} from "jsoneditor";
 
 export class GameSessionsTablePopup extends Popup
 {
     protected _gameSessions: GameSession[];
     protected _currentGameSession: GameSession;
+    protected _editor;
 
     constructor (scene:Phaser.Scene, x:number, y:number)
     {
@@ -50,6 +52,7 @@ export class GameSessionsTablePopup extends Popup
     {
         console.log(gameSession);
 
+        /*
         this._popup.getChildByID("gameSessionId").innerHTML=gameSession.GameSessionId;
         this._popup.getChildByID("ipAddress").innerHTML=gameSession.IpAddress;
         this._popup.getChildByID("dnsName").innerHTML=gameSession.DnsName;
@@ -57,10 +60,20 @@ export class GameSessionsTablePopup extends Popup
         this._popup.getChildByID("currentPlayerSessions").innerHTML=gameSession.CurrentPlayerSessionCount + "/" + gameSession.MaximumPlayerSessionCount;
         this._popup.getChildByID("instanceStatus").innerHTML=gameSession.Status.Value;
         this._popup.getChildByID("creationDate").innerHTML=new Date(gameSession.CreationTime).toISOString();
-
+*/
         this._popup.node.querySelector(".gameSessionsContent").className="gameSessionsContent hide";
         this._popup.node.querySelector(".gameSessionLogsContent").className="gameSessionLogsContent hide";
         this._popup.node.querySelector(".gameSessionDetailContent").className="gameSessionDetailContent";
+
+        console.log("SETTING UP EDITOR");
+        console.log(gameSession);
+        const container = document.getElementById("gameSessionJson");
+        container.innerHTML="";
+        const options:JSONEditorOptions = {mode:"view", name:"Game Session JSON"}
+
+        this._editor = new JSONEditor(container, options);
+
+        this._editor.set(gameSession);
     }
 
     onGetGameSessionsResponse = (data:DataTypes.GameSession[]) =>
