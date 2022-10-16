@@ -2,7 +2,7 @@
 
 ![aws provider](https://img.shields.io/badge/provider-AWS-orange?logo=amazon-aws&color=ff9900) ![Build status](https://github.com/aws-samples/amazon-gamelift-testing-toolkit/actions/workflows/build.yml/badge.svg)
 
-A test harness, visualisation and load-testing tool for Amazon GameLift.
+A test harness and visualisation tool for Amazon GameLift and Amazon GameLift FlexMatch.  The toolkit lets you visualise your GameLift infrastructure, launch virtual players, and iterate upon your FlexMatch rule sets with the FlexMatch simulator.
 
 **[📜Documentation](https://aws-samples.github.io/amazon-gamelift-testing-toolkit/)**
 
