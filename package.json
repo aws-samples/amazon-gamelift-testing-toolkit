@@ -12,7 +12,7 @@
     "deploy-toolkit": "cd ManagementConsole/Infra && npx cdk synth && npx cdk -a cdk.out/assembly-AGTT-ManagementConsoleStack deploy --all",
     "deploy-sample-game": "yarn pack-sample-game && cd SampleGame/Infra && npx cdk synth && npx cdk -a cdk.out/assembly-AGTT-SampleGameStack deploy --all",
     "delete-toolkit": "cd ManagementConsole/Infra && npx cdk -a cdk.out/assembly-AGTT-ManagementConsoleStack destroy --all",
-    "delete-sample-game": "cd SampleGame/Infra && npx cdk@1.159.0 -a cdk.out/assembly-AGTT-SampleGameStack destroy --all",
+    "delete-sample-game": "cd SampleGame/Infra && npx cdk -a cdk.out/assembly-AGTT-SampleGameStack destroy --all",
     "pack-management-console": "cd ManagementConsole/Backend && dotnet pack --configuration Release",
     "pack-sample-game": "cd SampleGame/Backend && dotnet pack --configuration Release",
     "build-web": "yarn install-web && yarn install-static && cd ManagementConsole/UI && yarn build",
