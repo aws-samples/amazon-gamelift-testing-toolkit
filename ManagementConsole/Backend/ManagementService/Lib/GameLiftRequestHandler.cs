@@ -173,22 +173,31 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             }
         }
         
-        public async Task<bool> ValidateMatchmakingRuleSet(string ruleSetBody)
+        public async Task<ServerMessageValidateMatchmakingRuleSet> ValidateMatchmakingRuleSet(string ruleSetBody)
         {
+            var validateRuleSetResponse = new ServerMessageValidateMatchmakingRuleSet
+            {
+                Validated = false,
+            };
             try
             {
                 var validationResponse = await _client.ValidateMatchmakingRuleSetAsync(new ValidateMatchmakingRuleSetRequest
                 {
                     RuleSetBody = ruleSetBody
                 });
-                
-                return validationResponse.Valid;
+
+                if (validationResponse.Valid)
+                {
+                    validateRuleSetResponse.Validated = true;
+                }
+
             }
             catch (Exception e)
             {
-                LambdaLogger.Log(e.ToString());
-                return false;
+                validateRuleSetResponse.ErrorMessage = e.Message;
             }
+
+            return validateRuleSetResponse;
         }
 
         public async Task<List<string>> StartMatchmaking(string matchmakingConfigurationArn, Player player)

@@ -196,6 +196,7 @@ namespace ManagementConsoleBackend.ManagementService.Data
     public class ServerMessageValidateMatchmakingRuleSet : ServerMessage
     {
         public new string Type = "ValidateMatchmakingRuleSet";
+        public string ErrorMessage = "";
         public bool Validated;
     }
     

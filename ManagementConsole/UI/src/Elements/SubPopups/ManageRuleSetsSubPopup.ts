@@ -107,7 +107,7 @@ export class ManageRuleSetsSubPopup extends SubPopup
         }
         else
         {
-            this.showFailureAlert("Ruleset JSON could not be validated!");
+            this.showFailureAlert(data.ErrorMessage);
         }
     }
 

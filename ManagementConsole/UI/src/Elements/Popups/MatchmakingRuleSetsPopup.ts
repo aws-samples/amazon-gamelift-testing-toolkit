@@ -102,7 +102,7 @@ export class MatchmakingRuleSetsPopup extends Popup
         }
         else
         {
-            this.showFailureAlert("Ruleset JSON could not be validated!");
+            this.showFailureAlert(data.ErrorMessage);
         }
     }
 

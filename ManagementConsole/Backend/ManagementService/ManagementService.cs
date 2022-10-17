@@ -401,7 +401,7 @@ namespace ManagementConsoleBackend.ManagementService
                             var validateMatchmakingRuleSetRequest = JsonConvert.DeserializeObject<ClientMessageValidateMatchmakingRuleSet>(request.Body);
                             LambdaLogger.Log(validateMatchmakingRuleSetRequest.RuleSetBody);
                             var validationResult = await gameLiftRequestHandler.ValidateMatchmakingRuleSet(validateMatchmakingRuleSetRequest.RuleSetBody);
-                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageValidateMatchmakingRuleSet{ Validated = validationResult});
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, validationResult);
                             break;
                         
                         case "CreateMatchmakingRuleSet":
