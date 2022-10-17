@@ -230,7 +230,7 @@ export class ManageRuleSetsSubPopup extends SubPopup
         $('#ruleSetName').val("");
         let emptyRuleset = {
             ruleLanguageVersion	: "1.0",
-            teams: [ { name:"Team", minPlayers:1, maxPlayers:2}]
+            teams: [ { name:"Team 1", minPlayers:2, maxPlayers:2}]
         }
 
         this._editor.set(emptyRuleset);
