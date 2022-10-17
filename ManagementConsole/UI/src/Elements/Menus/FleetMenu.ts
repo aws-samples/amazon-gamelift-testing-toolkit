@@ -42,7 +42,7 @@ export class FleetMenu extends SimpleMenu {
                 triggerEvent: Events.SHOW_FLEET_GRAPH_POPUP,
             },
             {
-                text: "View Game Sessions Log",
+                text: "View Game Sessions",
                 triggerEvent: Events.SHOW_GAME_SESSIONS_TABLE_POPUP,
             },
             {
