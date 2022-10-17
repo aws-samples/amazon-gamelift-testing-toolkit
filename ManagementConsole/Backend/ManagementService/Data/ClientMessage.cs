@@ -190,7 +190,7 @@ namespace ManagementConsoleBackend.ManagementService.Data
     public class ClientMessageGetGameSessionLogs : ClientMessage
     {
         public new string Type = "GetGameSessionLogs";
-        public string LogStream;
+        public string GameSessionId;
     }
     
     public class ClientMessageUpdateFleetLocations : ClientMessage

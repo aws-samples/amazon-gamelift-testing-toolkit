@@ -15,12 +15,14 @@ export class GameSessionsTablePopup extends Popup
     protected _gameSessions: GameSession[];
     protected _currentGameSession: GameSession;
     protected _editor;
+    protected _logFiles: Record<string, string[]>;
 
     constructor (scene:Phaser.Scene, x:number, y:number)
     {
         super(scene, x, y);
         this._htmlName="gameSessionsTablePopup";
         this.setupEventListeners();
+        this._logFiles={};
     }
 
     setPopupData(data:any)
@@ -170,30 +172,75 @@ export class GameSessionsTablePopup extends Popup
         this._popup.node.querySelector("#statusText").className = "alert hide";
     }
 
-    onGetGameSessionLogsResponse = (logEvents) =>
+    onGetGameSessionLogsResponse = (logResponse) =>
     {
         this.hideStatusAlert();
-        console.log(logEvents);
-        if (logEvents==null)
+        console.log(logResponse);
+        if (logResponse==null)
         {
-            this.showFailureAlert("There were no logs found for this session");
+            this.showFailureAlert("Couldn't get server response");
+            return;
+        }
+        if (logResponse.ErrorMessage!=null)
+        {
+            this.showFailureAlert(logResponse.ErrorMessage);
             return;
         }
         let html="";
 
+        this._logFiles={};
 
-        logEvents.map(logEvent => {
-            html += '<tr>' +
-                '<td>' + logEvent.Timestamp + '</td>'+
-                '<td>' + logEvent.Message + '</td></tr>'
+        let logKeys = Object.keys(logResponse.LogFiles);
+
+        $('#gameSessionLogsFileSelect').html('');
+        var sel = $('<select>').appendTo('#gameSessionLogsFileSelect');
+        logKeys.map(logFile => {
+            this._logFiles[logFile] = logResponse.LogFiles[logFile];
+            sel.append($("<option>").attr('value',logFile).text(logFile));
         });
+
+        console.log(this._logFiles);
+
+        console.log("Trying to change to " + logKeys[logKeys.length-1]);
+        this._popup.node.querySelector(".gameSessionsContent").className="gameSessionsContent hide";
+        this._popup.node.querySelector(".gameSessionLogsContent").className="gameSessionLogsContent";
+
+        sel.on("change",  (e)=>
+        {
+           console.log("ON CHANGE!");
+           this.updateLogFile();
+        });
+
+        sel.val(logKeys[logKeys.length-1]);
+        this.updateLogFile();
+
+    };
+
+    updateLogFile()
+    {
+        let selectValue = $('#gameSessionLogsFileSelect select').val() as string;
+        console.log("UPDATING LOG FILE", selectValue);
+//        var sel = $('#gameSessionLogsFileSelect select').val(key);
+        this.resetLogsTable();
+        let html="";
+
+        this._logFiles[selectValue].map((logStr)=>
+        {
+            html += '<tr><td>' + logStr + '</td></tr>'
+        })
 
         this._popup.node.querySelector("table#gameSessionLogsTable tbody").insertAdjacentHTML("beforeend", html);
 
-        this._popup.node.querySelector(".gameSessionsContent").className="gameSessionsContent hide";
-        this._popup.node.querySelector(".gameSessionLogsContent").className="gameSessionLogsContent";
-        this.activateDataTable("gameSessionLogsTable");
-    };
+        this.activateDataTable("gameSessionLogsTable", {
+            scrollY: "400px",
+            scrollCollapse: true,
+            columnDefs: [
+                { width: 200, targets: 0 }
+            ],
+            orderable:false,
+
+        });
+    }
 
     onGetPlayerSessionsResponse = (playerSessions) =>
     {
@@ -253,7 +300,7 @@ export class GameSessionsTablePopup extends Popup
             let logStream = bits[1]+"/"+bits[2];
             console.log(logStream);
 
-            Network.sendObject({Type:"GetGameSessionLogs", LogStream:logStream});
+            Network.sendObject({Type:"GetGameSessionLogs", GameSessionId:session.GameSessionId});
         }
         else
         if (event.target.className.indexOf("playerSessions")!==-1)
@@ -263,7 +310,7 @@ export class GameSessionsTablePopup extends Popup
             Network.sendObject({Type:"GetPlayerSessions", GameSessionId:session.GameSessionId});
         }
     };
-
+/*
     activateDataTable(id) {
         // @ts-ignore
         $('#'+id).DataTable({
@@ -274,5 +321,27 @@ export class GameSessionsTablePopup extends Popup
             ],
             order: [[ 0, "desc" ]]
         });
+    }
+*/
+    activateDataTable(id, config=null) {
+        // @ts-ignore
+        if ( ! $.fn.DataTable.isDataTable( '#'+id ) )
+        {
+            if (config==null)
+            {
+                config = {
+                    scrollY: "400px",
+                    scrollCollapse: true,
+                    columnDefs: [
+                        { width: 200, targets: 0 }
+                    ],
+                    order: [[ 0, "desc" ]],
+
+                };
+            }
+            // @ts-ignore
+            var table = $("#"+id).DataTable(config);
+            return table;
+        }
     }
 }

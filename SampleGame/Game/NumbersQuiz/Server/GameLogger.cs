@@ -26,13 +26,24 @@ namespace SampleGameBuild.NumbersQuiz.Server
 
         static GameLogger()
         {
-            XmlConfigurator.Configure(new System.IO.FileInfo(Directory.GetCurrentDirectory() + "/log4net.config"));
+            //XmlConfigurator.Configure(new System.IO.FileInfo(Directory.GetCurrentDirectory() + "/log4net.config"));
         }
         
         public static string LogFilePath
         {
             set
             {
+                Console.WriteLine("Setting LogFilePath to " + value);
+                Console.SetOut(new StreamWriter(value)
+                {
+                    AutoFlush = true
+                });
+                Console.SetError(new StreamWriter(value)
+                {
+                    AutoFlush = true
+                });
+
+                /*
                 var h = (log4net.Repository.Hierarchy.Hierarchy) LogManager.GetRepository();
                 foreach (var a in h.Root.Appenders)
                 {
@@ -44,6 +55,7 @@ namespace SampleGameBuild.NumbersQuiz.Server
                             fa.ActivateOptions();
                     }
                 }
+                */
             }
         }
         
@@ -83,7 +95,7 @@ namespace SampleGameBuild.NumbersQuiz.Server
         
         public static void Log(string logStr)
         {
-            Log4NetLogger.Info(logStr);
+            //Log4NetLogger.Info(logStr);
 
             if (!_cloudWatchEnabled)
             {

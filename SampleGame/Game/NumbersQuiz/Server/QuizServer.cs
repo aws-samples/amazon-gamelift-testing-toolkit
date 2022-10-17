@@ -4,10 +4,8 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
-using Amazon.GameLift.Model;
 using Aws.GameLift;
 using Newtonsoft.Json;
 using SampleGameBuild.GameLiftIntegration.Server;
@@ -24,13 +22,13 @@ namespace SampleGameBuild.NumbersQuiz.Server
         public readonly int _port;
         private GameLiftHandler _gameLiftHandler;
         private Stopwatch _connectionTimer;
-        private GameSession _gameSession;
+        private Aws.GameLift.Server.Model.GameSession _gameSession;
         private string _logFilePath;
         private readonly int _numGames;
 
         public QuizServer(int port, int numGames=15)
         {
-            _logFilePath = "/tmp/serverlogs-" + DateTime.Now.ToString("yyyyMMdd-hhmmss") + $"-{port}.txt";
+            _logFilePath = "/local/game/serverlogs-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + $"-{port}.txt";
             Console.WriteLine(_logFilePath);
             GameLogger.LogFilePath = _logFilePath;
             _port = port;
@@ -294,24 +292,9 @@ namespace SampleGameBuild.NumbersQuiz.Server
             if (AwsHandler.AssumeInstanceRole(metadata.InstanceRoleArn))
             {
                 GameLogger.Log("role assumed");
-                await GameLogger.EnableCloudWatch(AwsHandler.Credentials, "/gameserver-logs/", metadata.FleetId + "/unknown-session");
-                GameLogger.Log("CloudWatch enabled");
+                //await GameLogger.EnableCloudWatch(AwsHandler.Credentials, "/gameserver-logs/", metadata.FleetId + "/unknown-session");
+                //GameLogger.Log("CloudWatch enabled");
             }
-        }
-
-        public void OnGameLiftGameSessionRequested(Aws.GameLift.Server.Model.GameSession gameSession)
-        {
-            Console.WriteLine(GetCurrentMethod());
-        }
-
-        public void OnGameLiftGameSessionActivationSuccess(Aws.GameLift.Server.Model.GameSession gameSession, GenericOutcome outcome)
-        {
-            Console.WriteLine(GetCurrentMethod() + ":" + JsonConvert.SerializeObject(outcome));
-        }
-
-        public void OnGameLiftGameSessionActivationFailure(Aws.GameLift.Server.Model.GameSession gameSession, GenericOutcome outcome)
-        {
-            Console.WriteLine(GetCurrentMethod() + ":" + JsonConvert.SerializeObject(outcome));
         }
 
         public void OnGameLiftSDKActivationSuccess(GenericOutcome outcome)
@@ -329,20 +312,20 @@ namespace SampleGameBuild.NumbersQuiz.Server
             GameLogger.Log("GameLift SDK Activation:" + e.Message);
         }
 
-        public void OnGameLiftGameSessionRequested(GameSession gameSession)
+        public void OnGameLiftGameSessionRequested(Aws.GameLift.Server.Model.GameSession gameSession)
         {
         }
 
-        public async void OnGameLiftGameSessionActivationSuccess(GameSession gameSession, GenericOutcome outcome)
+        public async void OnGameLiftGameSessionActivationSuccess(Aws.GameLift.Server.Model.GameSession gameSession, GenericOutcome outcome)
         {
             _connectionTimer.Reset();
             _connectionTimer.Start();
             _gameSession = gameSession;
-            await GameLogger.EnableCloudWatch(AwsHandler.Credentials, "/gameserver-logs/", _gameLiftHandler.Metadata.FleetId + "/" + Path.GetFileName(_gameSession.GameSessionId));
+            //await GameLogger.EnableCloudWatch(AwsHandler.Credentials, "/gameserver-logs/", _gameLiftHandler.Metadata.FleetId + "/" + Path.GetFileName(_gameSession.GameSessionId));
             GameLogger.Log(JsonConvert.SerializeObject(gameSession));
         }
 
-        public void OnGameLiftGameSessionActivationFailure(GameSession gameSession, GenericOutcome outcome)
+        public void OnGameLiftGameSessionActivationFailure(Aws.GameLift.Server.Model.GameSession gameSession, GenericOutcome outcome)
         {
             GameLogger.Log("Failed to activate game session" + JsonConvert.SerializeObject(gameSession));
         }

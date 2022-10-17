@@ -548,6 +548,7 @@ namespace ManagementConsoleInfra.Lib
                         "gamelift:CreateMatchmakingRuleSet",
                         "gamelift:DeleteMatchmakingRuleSet",
                         "gamelift:UpdateFleetCapacity",
+                        "gamelift:GetGameSessionLogUrl",
                         "gamelift:CreateFleetLocations",
                         "gamelift:DeleteFleetLocations",
                         "gamelift:PutScalingPolicy",

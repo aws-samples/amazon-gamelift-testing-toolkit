@@ -74,7 +74,9 @@ namespace ManagementConsoleBackend.ManagementService.Data
     public class ServerMessageGetGameSessionLogs : ServerMessage
     {
         public new string Type = "GetGameSessionLogs";
-        public List<OutputLogEvent> LogEvents;
+        public List<string> LogEvents;
+        public Dictionary<string, List<string>> LogFiles;
+        public string ErrorMessage = null;
     }
 
     public class ServerMessageGetPlayerSessions : ServerMessage

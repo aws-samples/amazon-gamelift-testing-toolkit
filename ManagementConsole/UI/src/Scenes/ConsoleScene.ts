@@ -709,7 +709,7 @@ export class ConsoleScene extends Phaser.Scene
                 break;
 
             case "GetGameSessionLogs":
-                this._emitter.emit(Events.GET_GAME_SESSION_LOGS_RESPONSE, data.LogEvents);
+                this._emitter.emit(Events.GET_GAME_SESSION_LOGS_RESPONSE, data);
                 break;
 
             case "RunMatchmakingSimulation":

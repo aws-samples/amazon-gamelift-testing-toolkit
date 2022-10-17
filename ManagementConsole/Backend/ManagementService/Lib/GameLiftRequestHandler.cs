@@ -3,6 +3,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
@@ -10,6 +13,8 @@ using Amazon.GameLift;
 using Amazon.GameLift.Model;
 using Amazon.Lambda.Core;
 using ManagementConsoleBackend.ManagementService.Data;
+using Microsoft.VisualBasic.FileIO;
+using SearchOption = System.IO.SearchOption;
 
 namespace ManagementConsoleBackend.ManagementService.Lib
 {
@@ -414,6 +419,52 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                 return null;
             }
         }
+        
+        public async Task<ServerMessageGetGameSessionLogs> GetGameSessionLogs(string gameSessionId)
+        {
+            var events = new List<OutputLogEvent>();
+            var response = new ServerMessageGetGameSessionLogs();
+            response.LogEvents = new List<string>();
+            response.LogFiles = new Dictionary<string, List<string>>();
+            
+            var request = new GetGameSessionLogUrlRequest
+            {
+                GameSessionId = gameSessionId
+            };
+
+            try
+            {
+                var logOutputFile = "/tmp/logs.zip";
+                var logFolder = "/tmp/logs-" + DateTime.Now.ToString("yyyyMMdd-HHmmss");
+
+                var gameSessionLogUrlResponse = await _client.GetGameSessionLogUrlAsync(request);
+                var logUrl = gameSessionLogUrlResponse.PreSignedUrl;
+                using (var client = new WebClient())
+                {
+                    LambdaLogger.Log("DOWNLOADING " + gameSessionLogUrlResponse.PreSignedUrl);
+                    client.DownloadFile(gameSessionLogUrlResponse.PreSignedUrl, logOutputFile);
+                    LambdaLogger.Log("DOWNLOADED!");
+                }
+                
+                LambdaLogger.Log("CREATING FOLDER " + logFolder);
+                FileSystem.CreateDirectory(logFolder);
+                LambdaLogger.Log("UNZIPPING");
+                System.IO.Compression.ZipFile.ExtractToDirectory(logOutputFile, logFolder);
+                LambdaLogger.Log("UNZIPPED");
+                foreach (string file in Directory.EnumerateFiles(logFolder, "*.*", SearchOption.AllDirectories))
+                {
+                    LambdaLogger.Log("FOUND LOG FILE " + file);
+                    response.LogFiles.Add(file, File.ReadAllLines(file).ToList());
+                }
+                return response;
+            }
+            catch (Exception e)
+            {
+                response.ErrorMessage = e.Message;
+                return response;
+            }
+
+        }
 
         public async Task<CreateFleetLocationsResponse> CreateFleetLocations(string fleetId, string[] locations)
         {
@@ -468,7 +519,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                 return null;
             }
         }
-        
+
         public async Task<List<GameSession>> GetGameSessions(string fleetId, string statusFilter=null)
         {
             var gameSessions = new List<GameSession>();

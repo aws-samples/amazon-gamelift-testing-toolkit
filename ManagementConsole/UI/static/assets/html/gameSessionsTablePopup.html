@@ -56,11 +56,15 @@
         <div id="gameSessionJson" style="width: 1070px; height: 525px;"></div>
     </div>
     <div class="gameSessionLogsContent hide">
-        <btn id="backButton" class="btn btn-primary btn-sm">Back</btn>
+        <div style="width:800px; margin-bottom:50px; clear:both">
+            <div style="float:left">
+                <btn id="backButton" class="btn btn-primary btn-sm">Back</btn>
+            </div>
+            <div style="float:left; margin-left:10px; margin-top:8px" id="gameSessionLogsFileSelect"></div>
+        </div>
         <table id="gameSessionLogsTable" class="table table-bordered table-striped mb-0">
             <thead>
             <tr>
-                <th>Log Date</th>
                 <th>Message</th>
             </tr>
             </thead>

@@ -424,9 +424,9 @@ namespace ManagementConsoleBackend.ManagementService
                         
                         case "GetGameSessionLogs":
                             var getGameSessionLogsRequest = JsonConvert.DeserializeObject<ClientMessageGetGameSessionLogs>(request.Body);
-                            var cloudWatchLogs = await gameLiftRequestHandler.GetGameSessionCloudWatchLogs(getGameSessionLogsRequest.LogStream);
-                            LambdaLogger.Log("GOT CLOUDWATCH LOGS!");
-                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetGameSessionLogs { LogEvents = cloudWatchLogs});
+                            var logsResult = await gameLiftRequestHandler.GetGameSessionLogs(getGameSessionLogsRequest.GameSessionId);
+                            LambdaLogger.Log("RETURNING " + JsonConvert.SerializeObject(logsResult));
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, logsResult);
                             break;
                         
                         case "GetTaskDefinitions":
