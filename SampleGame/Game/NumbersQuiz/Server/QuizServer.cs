@@ -285,15 +285,13 @@ namespace SampleGameBuild.NumbersQuiz.Server
             Console.WriteLine(GetCurrentMethod());
         }
 
-        public async void OnGameLiftMetadataLoaded(GameLiftMetadata metadata)
+        public void OnGameLiftMetadataLoaded(GameLiftMetadata metadata)
         {
             Console.WriteLine("metadata loaded");
             GameLogger.Log("Loaded metadata:" + JsonConvert.SerializeObject(metadata));
             if (AwsHandler.AssumeInstanceRole(metadata.InstanceRoleArn))
             {
                 GameLogger.Log("role assumed");
-                //await GameLogger.EnableCloudWatch(AwsHandler.Credentials, "/gameserver-logs/", metadata.FleetId + "/unknown-session");
-                //GameLogger.Log("CloudWatch enabled");
             }
         }
 
@@ -316,12 +314,11 @@ namespace SampleGameBuild.NumbersQuiz.Server
         {
         }
 
-        public async void OnGameLiftGameSessionActivationSuccess(Aws.GameLift.Server.Model.GameSession gameSession, GenericOutcome outcome)
+        public void OnGameLiftGameSessionActivationSuccess(Aws.GameLift.Server.Model.GameSession gameSession, GenericOutcome outcome)
         {
             _connectionTimer.Reset();
             _connectionTimer.Start();
             _gameSession = gameSession;
-            //await GameLogger.EnableCloudWatch(AwsHandler.Credentials, "/gameserver-logs/", _gameLiftHandler.Metadata.FleetId + "/" + Path.GetFileName(_gameSession.GameSessionId));
             GameLogger.Log(JsonConvert.SerializeObject(gameSession));
         }
 
