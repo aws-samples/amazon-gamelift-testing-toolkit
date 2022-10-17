@@ -67,8 +67,6 @@ export class GameSessionsTablePopup extends Popup
         this._popup.node.querySelector(".gameSessionLogsContent").className="gameSessionLogsContent hide";
         this._popup.node.querySelector(".gameSessionDetailContent").className="gameSessionDetailContent";
 
-        console.log("SETTING UP EDITOR");
-        console.log(gameSession);
         const container = document.getElementById("gameSessionJson");
         container.innerHTML="";
         const options:JSONEditorOptions = {mode:"view", name:"Game Session JSON"}
@@ -81,8 +79,6 @@ export class GameSessionsTablePopup extends Popup
     onGetGameSessionsResponse = (data:DataTypes.GameSession[]) =>
     {
         this._gameSessions = data;
-
-        console.log(data);
         let html="";
         this._gameSessions.map(gameSession =>
         {
@@ -91,8 +87,7 @@ export class GameSessionsTablePopup extends Popup
             let playerSessionsLinkTd='<td><a class="playerSessions btn btn-primary btn-sm" id="' + gameSession.GameSessionId +'" href="' + "#" + '">Player Sessions</a></td>';
 
             let sessionDuration = "-";
-
-            console.log(gameSession.TerminationTime);
+            
             if (gameSession.TerminationTime[0]!="0")
             {
                 let creationDate = new Date(gameSession.CreationTime);
@@ -175,7 +170,6 @@ export class GameSessionsTablePopup extends Popup
     onGetGameSessionLogsResponse = (logResponse) =>
     {
         this.hideStatusAlert();
-        console.log(logResponse);
         if (logResponse==null)
         {
             this.showFailureAlert("Couldn't get server response");
@@ -199,15 +193,11 @@ export class GameSessionsTablePopup extends Popup
             sel.append($("<option>").attr('value',logFile).text(logFile));
         });
 
-        console.log(this._logFiles);
-
-        console.log("Trying to change to " + logKeys[logKeys.length-1]);
         this._popup.node.querySelector(".gameSessionsContent").className="gameSessionsContent hide";
         this._popup.node.querySelector(".gameSessionLogsContent").className="gameSessionLogsContent";
 
         sel.on("change",  (e)=>
         {
-           console.log("ON CHANGE!");
            this.updateLogFile();
         });
 
@@ -219,8 +209,6 @@ export class GameSessionsTablePopup extends Popup
     updateLogFile()
     {
         let selectValue = $('#gameSessionLogsFileSelect select').val() as string;
-        console.log("UPDATING LOG FILE", selectValue);
-//        var sel = $('#gameSessionLogsFileSelect select').val(key);
         this.resetLogsTable();
         let html="";
 
@@ -245,8 +233,6 @@ export class GameSessionsTablePopup extends Popup
     onGetPlayerSessionsResponse = (playerSessions) =>
     {
         //this.resetPlayerSessionTable();
-
-        console.log(playerSessions);
         let html="";
         this._popup.node.querySelector(".gameSessionsContent").className="gameSessionsContent hide";
         this._popup.node.querySelector(".playerSessionsContent").className="playerSessionsContent";
@@ -268,7 +254,6 @@ export class GameSessionsTablePopup extends Popup
     onPopupClick = async (event) => {
         this.hideStatusAlert();
         event.stopPropagation();
-        console.log(event.target);
         if (event.target.className == "closeButton")
         {
             this._emitter.emit(Events.CLOSE_POPUP);
@@ -294,12 +279,6 @@ export class GameSessionsTablePopup extends Popup
         if (event.target.className.indexOf("viewLogs")!==-1)
         {
             let session = this._gameSessions.filter(gameSession=>gameSession.GameSessionId==event.target.id)[0];
-            console.log(session);
-
-            let bits = session.GameSessionId.split("/");
-            let logStream = bits[1]+"/"+bits[2];
-            console.log(logStream);
-
             Network.sendObject({Type:"GetGameSessionLogs", GameSessionId:session.GameSessionId});
         }
         else
