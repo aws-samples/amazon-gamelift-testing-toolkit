@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import 'phaser';
-import {Player, SceneDestination} from "./Player";
+import {Player, PlayerState, SceneDestination} from "./Player";
 import {Players} from "./Players";
 import {BaseContainer} from "./Abstract/BaseContainer";
 import {RoundedRectangle} from "./RoundedRectangle";
@@ -51,6 +51,7 @@ export class PlayerMatch extends BaseContainer
     {
         let player = Players.getPlayer(playerId);
         player.scale=0.75;
+        player.playerState=PlayerState.IN_MATCH;
         this.add(player);
 
         this._elementGroup.add(player);

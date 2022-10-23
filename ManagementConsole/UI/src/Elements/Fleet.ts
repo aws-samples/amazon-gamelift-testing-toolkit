@@ -213,8 +213,8 @@ export class Fleet extends BaseContainer
                 instanceStats[instance.Status.Value]++;
             }
         })
-        console.log(gameSessionStats);
-        console.log(instanceStats);
+        //console.log(gameSessionStats);
+        //console.log(instanceStats);
         this._statsText.text = "Total Instances: " + instanceStats["TOTAL"] + "\n";
         this._statsText.text += "Active Instances: " + instanceStats["ACTIVE"] + "\n";
         this._statsText.text += "Pending Instances: " + instanceStats["PENDING"] + "\n";

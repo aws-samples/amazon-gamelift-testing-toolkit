@@ -30,6 +30,7 @@ export class Players
 
     public static removePlayer(playerId:string)
     {
+        console.log("DESTROYING PLAYER " + playerId);
         if (Players._players==null)
         {
             Players._players = {};
@@ -37,6 +38,7 @@ export class Players
 
         if (Players._players[playerId])
         {
+            Players._players[playerId].destroyTimeline();
             Players._players[playerId].destroy();
             delete Players._players[playerId];
         }

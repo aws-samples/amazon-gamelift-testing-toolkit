@@ -9,6 +9,7 @@ import Container = Phaser.GameObjects.Container;
 import Timeline = Phaser.Tweens.Timeline;
 import {ConsoleScene} from "../Scenes/ConsoleScene";
 import {PlayerSprite} from "./PlayerSprite";
+import {Players} from "./Players";
 
 export class SceneDestination
 {
@@ -19,6 +20,15 @@ export class SceneDestination
     public disappearAfter?: boolean = false;
     public delay?: number = 0;
     public callback?: Function;
+}
+
+export class PlayerState
+{
+    public static CREATED:string = "Created";
+    public static WAITING_FOR_MATCH:string = "WaitingForMatch";
+    public static WALKING_TO_MATCH:string = "WalkingToMatch";
+    public static IN_MATCH:string = "InMatch";
+    public static RESET:string = "Reset";
 }
 
 export class Player extends Container
@@ -35,6 +45,8 @@ export class Player extends Container
     protected _destinationIndex = 0;
     protected _sprite:PlayerSprite;
     protected _eventHistory: any[];
+    protected _state: string;
+    protected _lastSeen: number;
 
     constructor (scene:Phaser.Scene, x:number, y:number, playerId:string=null)
     {
@@ -44,6 +56,7 @@ export class Player extends Container
         this._emitter = EventDispatcher.getInstance();
         this._playerId = playerId;
         this._eventHistory = [];
+        this.playerState = PlayerState.CREATED;
 
         if (ConsoleScene.animationsEnabled==false)
         {
@@ -81,6 +94,21 @@ export class Player extends Container
         return this._ticketId;
     }
 
+    public set playerState(state:string)
+    {
+        this._lastSeen = Date.now();
+        this._state = state;
+    }
+
+    public get playerState()
+    {
+        return this._state;
+    }
+
+    public get lastSeen ()
+    {
+        return this._lastSeen;
+    }
 
     public addedToScene() {
         super.addedToScene();
@@ -137,6 +165,13 @@ export class Player extends Container
         return null;
     }
 
+    public resetPlayer()
+    {
+        this.playerState = PlayerState.RESET;
+        this.moveToInitialPosition();
+        this.resetDestinations();
+    }
+
     public resetDestinations()
     {
         this._destinations=[];
@@ -150,7 +185,7 @@ export class Player extends Container
 
     public addDestination(destination: SceneDestination)
     {
-        console.log("ADDING DESTINATION TO PLAYER " + this._playerId, destination);
+        console.log("ADDING DESTINATION TO PLAYER " + this._playerId, destination, this.playerState);
         this._destinations.push(destination);
 
         if (!this._moving)
@@ -166,6 +201,15 @@ export class Player extends Container
         {
             this._destinationIndex++;
             this.moveToDestination(nextDestination);
+        }
+    }
+
+    public destroyTimeline()
+    {
+        if (this._moving)
+        {
+            this._timeline?.stop();
+            this._timeline?.destroy();
         }
     }
 

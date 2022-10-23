@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import {Player, SceneDestination} from "../Elements/Player";
+import {Player, PlayerState, SceneDestination} from "../Elements/Player";
 import {Fleets} from "../Elements/Fleets";
 import {Network} from "../Network/Network"
 import {DataTypes} from "../Data/DataTypes";
@@ -75,6 +75,26 @@ export class ConsoleScene extends Phaser.Scene
 
         this.processState(state);
         this._lines = [];
+
+        window.setInterval(()=>
+        {
+            let matches = PlayerMatches.getMatches();
+            let players= Players.getPlayers();
+
+            //console.log("-------")
+            let now = Date.now();
+            //let timeNow = new Date().toTimeString();
+
+            players.map((player)=>
+            {
+                //console.log(timeNow + " - " + player.PlayerId + " - " + player.playerState + " - " + secondsSinceLastSeen);
+                let secondsSinceLastSeen = (now- player.lastSeen) / 1000;
+                if (secondsSinceLastSeen>=30 && (player.playerState==PlayerState.RESET || player.playerState==PlayerState.CREATED))
+                {
+                    Players.removePlayer(player.PlayerId);
+                }
+            });
+        }, 5000);
     }
 
     layoutScene()
@@ -195,17 +215,12 @@ export class ConsoleScene extends Phaser.Scene
 
         if (flexMatchEvent.matchId && flexMatchEvent.type == "PotentialMatchCreated") // we have a match
         {
-            console.log("RECEIVED " + flexMatchEvent.type + " SO MOVING PLAYERS TO MATCH");
             // construct match
-            /*let match = PlayerMatches.createMatch(this, flexMatchEvent.matchId, resources[0]);
-            console.log("CREATING MATCH", flexMatchEvent.matchId);
-            match.x = matchmakingConfig.x + Math.floor(Math.random() * matchmakingConfig.displayWidth);
-            match.y = 375;*/
-
             let match = this.initializeMatch(flexMatchEvent.matchId, resources[0]);
 
             eventPlayerIds.map((playerId)=> // make players move to match destination and then get added to the match
             {
+                console.log("RECEIVED " + flexMatchEvent.type + " SO MOVING PLAYER " + playerId + " TO MATCH");
                 let matchDestination:SceneDestination = {
                     type: "match",
                     container:match,
@@ -228,6 +243,7 @@ export class ConsoleScene extends Phaser.Scene
                 }
                 Players.getPlayer(playerId).storeEvent(flexMatchEvent);
                 Players.getPlayer(playerId).storeEvent(matchDestination);
+                Players.getPlayer(playerId).playerState = PlayerState.WALKING_TO_MATCH;
                 Players.getPlayer(playerId).addDestination(matchDestination);
             });
 
@@ -249,23 +265,27 @@ export class ConsoleScene extends Phaser.Scene
 
             eventPlayerIds.map((playerId)=>
             {
-                // break up any match involving these players, if one exists
-                let match = PlayerMatches.findPlayerMatch(playerId);
-                if (match)
+                if (Players.getPlayer(playerId).playerState!=PlayerState.WALKING_TO_MATCH) // in case events arrive out of order
                 {
-                    console.log("RECEIVED " + flexMatchEvent.type + " AND PLAYER ALREADY IN A MATCH, SO BREAKING UP MATCH");
-                    match?.breakUpMatch();
+                    // break up any match involving these players, if one exists
+                    let match = PlayerMatches.findPlayerMatch(playerId);
+                    if (match)
+                    {
+                        console.log("RECEIVED " + flexMatchEvent.type + " AND PLAYER ALREADY IN A MATCH, SO BREAKING UP MATCH");
+                        match?.breakUpMatch();
+                    }
+                    
+                    // send player to matchmaking config
+                    let destination:SceneDestination = {
+                        container: matchmakingConfig,
+                        type: "matchmakingConfig",
+                        disappearAfter:false,
+                        delay:0,
+                    };
+                    Players.getPlayer(playerId).playerState = PlayerState.WAITING_FOR_MATCH;
+                    Players.getPlayer(playerId).addDestination(destination);
+                    console.log("RECEIVED " + flexMatchEvent.type + " SO SENDING PLAYER " + playerId + " TO MATCHMAKING CONFIG");
                 }
-
-                // send player to matchmaking config
-                let destination:SceneDestination = {
-                    container: matchmakingConfig,
-                    type: "matchmakingConfig",
-                    disappearAfter:false,
-                    delay:0,
-                };
-                Players.getPlayer(playerId).addDestination(destination);
-                console.log("RECEIVED " + flexMatchEvent.type + " SO SENDING PLAYER " + playerId + " TO MATCHMAKING CONFIG");
             });
 
             return;
@@ -278,8 +298,7 @@ export class ConsoleScene extends Phaser.Scene
                 if (Players.getPlayer(playerId).activeTicketId == playerTicketMap[playerId]) // if we have a different type of event, make players go back to the start
                 {
                     console.log("RECEIVED " + flexMatchEvent.type + " ON PLAYER'S ACTIVE TICKET, SO SENDING PLAYER BACK TO INITIAL POSITION");
-                    Players.getPlayer(playerId).moveToInitialPosition();
-                    Players.getPlayer(playerId).resetDestinations();
+                    Players.getPlayer(playerId).resetPlayer();
                 }
             });
 
@@ -599,37 +618,6 @@ export class ConsoleScene extends Phaser.Scene
 
         let startEndRadians = Math.atan((endY - startY) / (endX - startX)) + ((endX - startX) < 0 ? Math.PI : 0);
 
-        /*
-        const arrowAngle = Math.PI / 4;
-        const arrowLine1X = endX + pointerLineLength * Math.cos(Math.PI - startEndRadians + arrowAngle);
-        const arrowLine1Y = endY - pointerLineLength * Math.sin(Math.PI - startEndRadians + arrowAngle);
-        const arrowLine2X = endX + pointerLineLength * Math.cos(Math.PI - startEndRadians - arrowAngle);
-        const arrowLine2Y = endY - pointerLineLength * Math.sin(Math.PI - startEndRadians - arrowAngle);
-
-        const line2 = this.add.line(
-            0,
-            0,
-            endX,
-            endY,
-            arrowLine1X,
-            arrowLine1Y,
-            color
-        ).setOrigin(0, 0);
-
-        const line3 = this.add.line(
-            0,
-            0,
-            endX,
-            endY,
-            arrowLine2X,
-            arrowLine2Y,
-            color
-        ).setOrigin(0, 0);
-
-
-        this._lines.push(line2);
-        this._lines.push(line3);
-*/
         line.alpha=1;
         this._lines.push(line);
 
