@@ -223,6 +223,21 @@ namespace ManagementConsoleInfra.Lib
                     Type = AttributeType.STRING
                 }
             });
+            
+            GameSessionTable.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
+            {
+                IndexName = "Fleet-StatusValue",
+                PartitionKey = new Attribute
+                {
+                    Name = "FleetId",
+                    Type = AttributeType.STRING
+                },
+                SortKey = new Attribute
+                {
+                    Name = "StatusValue",
+                    Type = AttributeType.STRING
+                }
+            });
 
             StateLogTable = new Table(this, "StateLogTable", new TableProps
             {

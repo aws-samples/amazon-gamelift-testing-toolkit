@@ -65,6 +65,42 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             return null;
         }
         
+        public async Task<List<GameSession>> GetDatabaseGameSessionsByStatus(string fleetId, string gameSessionStatus)
+        {
+            try
+            {
+                var gameSessionTable =
+                    Table.LoadTable(_client, Environment.GetEnvironmentVariable("GameSessionTableName"));
+                
+                var filter = new QueryFilter("FleetId", QueryOperator.Equal, fleetId);
+                filter.AddCondition("StatusValue", QueryOperator.Equal, gameSessionStatus);
+
+                var queryConfig = new QueryOperationConfig
+                {
+                    IndexName = "Fleet-StatusValue",
+                    Filter = filter,
+                    BackwardSearch = true,
+                };
+                
+                var search = gameSessionTable.Query(queryConfig);
+                
+                var documentSet = await search.GetNextSetAsync();
+                var results = new List<GameSession>();
+                foreach (var document in documentSet)
+                {
+                    LambdaLogger.Log(document.ToJson());
+                    results.Add(JsonConvert.DeserializeObject<GameSession>(document.ToJson()));
+                }
+                return results;
+            }
+            catch (Exception e)
+            {
+                LambdaLogger.Log(e.ToString());
+            }
+
+            return null;
+        }
+        
         public async Task<List<QueuePlacementEventDetail>> GetDatabaseQueueEvents()
         {
             var queueEvents = new List<QueuePlacementEventDetail>();

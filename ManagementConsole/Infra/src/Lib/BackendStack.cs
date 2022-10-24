@@ -48,6 +48,9 @@ namespace ManagementConsoleInfra.Lib
         public StateMachine StatePollerStateMachine;
         public Function SfnPollerFunction;
         public Function SfnRestartFunction;
+        public StateMachine GameSessionPollerStateMachine;
+        public Function SfnGameSessionPollerFunction;
+        public Function SfnGameSessionRestartFunction;
         public Function ManagementServiceFunction;
         public Function StateEventHandlerFunction;
         public Function FlexMatchEventFunction;
@@ -79,6 +82,7 @@ namespace ManagementConsoleInfra.Lib
 
             CreateFlexMatchSimulator(this);
             CreateStatePoller(this, props);
+            CreateGameSessionPoller(this, props);
             CreateVirtualPlayersRunner(this);
             CreateLambdas(this, props);
             CreateWebSocketApi(this, props);
@@ -213,14 +217,14 @@ namespace ManagementConsoleInfra.Lib
             {
                 EventBusName = "ManagementEventBus"
             });
-
             
             var statePollEventRule = new Rule(this, "StatePollEventRule", new RuleProps
             {
                 EventBus = GameEventBus,
                 EventPattern = new EventPattern
                 {
-                    Source = new[] {"CustomGameLift"}
+                    Source = new[] {"CustomGameLift"},
+                    DetailType = new [] {"CustomGameLift.GameLiftState"},
                 }
             });
             var logGroup = new LogGroup(this, "CustomEventsLogGroup", new Amazon.CDK.AWS.Logs.LogGroupProps
@@ -235,7 +239,7 @@ namespace ManagementConsoleInfra.Lib
                 MaxEventAge = Duration.Minutes(1),
                 RetryAttempts = 0
             }));
-            
+
             var flexMatchEventRule = new Rule(this, "FlexMatchEventRule", new RuleProps
             {
                 EventPattern = new EventPattern
@@ -267,7 +271,9 @@ namespace ManagementConsoleInfra.Lib
             }));
             
             GameEventBus.GrantPutEventsTo(SfnPollerFunction);
+            GameEventBus.GrantPutEventsTo(SfnGameSessionPollerFunction);
             SfnPollerFunction.AddEnvironment("EventBusName", GameEventBus.EventBusName);
+            SfnGameSessionPollerFunction.AddEnvironment("EventBusName", GameEventBus.EventBusName);
         }
 
         private void CreateVirtualPlayersRunner(Construct scope)
@@ -348,7 +354,7 @@ namespace ManagementConsoleInfra.Lib
             
             props.ManagementConfigTable.GrantReadData(SfnPollerFunction);
             props.StateLogTable.GrantReadWriteData(SfnPollerFunction);
-            props.GameSessionTable.GrantWriteData(SfnPollerFunction);
+            props.GameSessionTable.GrantReadData(SfnPollerFunction);
 
             var sfnIteratorFunctionRole = new Role(this, "SfnIteratorFunctionRole", new RoleProps
             {
@@ -484,6 +490,194 @@ namespace ManagementConsoleInfra.Lib
             });
         }
         
+        private void CreateGameSessionPoller(Construct scope, BackendProps props)
+        {
+            var sfnGameSessionPollerFunctionRole = new Role(this, "SfnGameSessionPollerFunctionRole", new RoleProps
+            {
+                AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
+            });
+            sfnGameSessionPollerFunctionRole.AddToPrincipalPolicy(DefaultLambdaPolicy);
+            
+            SfnGameSessionPollerFunction = new Function(this, "SfnGameSessionPollerLambdaFunction", new FunctionProps
+            {
+                Runtime = Program.DotNetRuntime,
+                Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.StepFunctions::GameSessionPollHandler",
+                Environment = new Dictionary<string, string>
+                {
+                    ["GameSessionTableName"] = props.GameSessionTable.TableName,
+                },
+                Timeout = Duration.Seconds(30),
+                MemorySize = 1024,
+                Role = sfnGameSessionPollerFunctionRole
+            });
+            
+            sfnGameSessionPollerFunctionRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
+                {
+                    Effect = Effect.ALLOW,
+                    Resources = new[] {"*"},
+                    Actions = new[]
+                    {
+                        "gamelift:DescribeGameSessionQueues",
+                        "gamelift:ListAliases",
+                        "gamelift:DescribeMatchmakingConfigurations",
+                        "gamelift:ListFleets",
+                        "gamelift:DescribeFleetCapacity",
+                        "gamelift:DescribeGameSessions",
+                        "gamelift:DescribeFleetLocationAttributes",
+                        "gamelift:DescribeFleetLocationCapacity",
+                        "gamelift:DescribeInstances",
+                        "gamelift:DescribeRuntimeConfiguration",
+                        "gamelift:DescribeScalingPolicies",
+                        "gamelift:DescribeFleetAttributes",
+                        "gamelift:DescribeFleetEvents",
+                        "gamelift:DescribeFleetUtilization"
+                    }
+                }));
+            // Adding specific CDK-Nag Suppressions
+            NagSuppressions.AddResourceSuppressions(sfnGameSessionPollerFunctionRole, new INagPackSuppression[]
+            {
+                new NagPackSuppression
+                {
+                    Id = "AwsSolutions-IAM5",
+                    Reason = "Suppress wildcard finding to give permission to access specific actions to whole GameLift components"
+                }
+            }, true);
+            
+            props.GameSessionTable.GrantReadWriteData(SfnGameSessionPollerFunction);
+
+            var sfnGameSessionIteratorFunctionRole = new Role(this, "SfnGameSessionIteratorFunctionRole", new RoleProps
+            {
+                AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
+            });
+            sfnGameSessionIteratorFunctionRole.AddToPrincipalPolicy(DefaultLambdaPolicy);
+            var sfnGameSessionIteratorHandlerFunction = new Function(this, "SfnGameSessionIteratorHandlerLambdaFunction", new FunctionProps
+            {
+                Runtime = Program.DotNetRuntime,
+                Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.StepFunctions::StepFunctionIteratorHandler",
+                Timeout = Duration.Seconds(30),
+                MemorySize = 128,
+                Role = sfnGameSessionIteratorFunctionRole
+            });
+            // Adding specific CDK-Nag Suppressions
+            NagSuppressions.AddResourceSuppressions(sfnGameSessionIteratorFunctionRole, new INagPackSuppression[]
+            {
+                new NagPackSuppression
+                {
+                    Id = "AwsSolutions-IAM5",
+                    Reason = "Suppress wildcard finding to give permission to access CloudWatch components"
+                }
+            }, true);
+
+            var sfnGameSessionRestartFunctionRole = new Role(this, "SfnGameSessionRestartFunctionRole", new RoleProps
+            {
+                AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
+            });
+            sfnGameSessionRestartFunctionRole.AddToPrincipalPolicy(DefaultLambdaPolicy);
+            SfnGameSessionRestartFunction = new Function(this, "SfnGameSessionRestartHandlerLambdaFunction", new FunctionProps
+            {
+                Runtime = Program.DotNetRuntime,
+                Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.StepFunctions::StepFunctionRestartHandler",
+                Timeout = Duration.Seconds(30),
+                MemorySize = 128,
+                Role = sfnGameSessionRestartFunctionRole
+            });
+            
+            sfnGameSessionRestartFunctionRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
+            {
+                Effect = Effect.ALLOW,
+                Resources = new[] {"*"},
+                Actions = new[]
+                {
+                    "states:StartExecution"
+                }
+            }));
+            // Adding specific CDK-Nag Suppressions
+            NagSuppressions.AddResourceSuppressions(sfnGameSessionRestartFunctionRole, new INagPackSuppression[]
+            {
+                new NagPackSuppression
+                {
+                    Id = "AwsSolutions-IAM5",
+                    Reason = "Suppress wildcard finding to give permission to access CloudWatch components"
+                }
+            }, true);
+
+            var iteratorData = new Dictionary<string,object>
+            {
+                {"Count", 500},
+                {"Step", 1},
+                {"Index", -1}
+            };
+            var configureCount = new Pass(this, "GameSessionPollerConfigureCount", new PassProps
+            {
+                Result = Result.FromObject(iteratorData),
+                ResultPath = "$.Iterator"
+            });
+
+            var iteratorTask = new LambdaInvoke(this, "GameSessionPollerIterator", new LambdaInvokeProps
+            {
+                LambdaFunction = sfnGameSessionIteratorHandlerFunction,
+                ResultPath = "$.Iterator",
+                PayloadResponseOnly = true
+            });
+
+            var pollTask = new LambdaInvoke(this, "GameSessionPollState", new LambdaInvokeProps
+            {
+                LambdaFunction = SfnGameSessionPollerFunction,
+                PayloadResponseOnly = true,
+                ResultPath = "$.PollAgainData"
+            });
+            
+            var restartTask = new LambdaInvoke(this, "GameSessionPollerRestartExecution", new LambdaInvokeProps
+            {
+                LambdaFunction = SfnGameSessionRestartFunction,
+                Payload = TaskInput.FromJsonPathAt("$$")
+            });
+
+            var shouldRestart = new Choice(this, "GameSessionPollerShouldRestart");
+            shouldRestart.When(Condition.BooleanEquals("$.Iterator.Continue", true), pollTask);
+
+            var successState = new Succeed(this, "GameSessionPollerSuccessState");
+            shouldRestart.Otherwise(restartTask);
+            restartTask.Next(successState);
+            
+            var waitTask = new Wait(this, "GameSessionPollerWaitTask", new WaitProps
+            {
+                Time = WaitTime.SecondsPath("$.PollAgainData.PollFrequency")
+            });
+            
+            var shouldPollAgain = new Choice(this, "GameSessionPollerShouldPollAgain");
+            shouldPollAgain.When(Condition.BooleanEquals("$.PollAgainData.PollAgain", false), successState);
+            shouldPollAgain.When(Condition.BooleanEquals("$.PollAgainData.PollAgain", true), waitTask);
+
+            configureCount.Next(iteratorTask);
+            iteratorTask.Next(shouldRestart);
+            
+            waitTask.Next(iteratorTask);
+
+            pollTask.Next(shouldPollAgain);
+
+            GameSessionPollerStateMachine = new StateMachine(this, "GameSessionPollerStateMachine", new StateMachineProps
+            {
+                Definition = configureCount,
+            });
+            // Adding specific CDK-Nag Suppressions
+            NagSuppressions.AddResourceSuppressions(GameSessionPollerStateMachine, new INagPackSuppression[]
+            {
+                new NagPackSuppression
+                {
+                    Id = "AwsSolutions-IAM5",
+                    Reason = "Suppress wildcard finding to give permission to access CloudWatch components"
+                }
+            }, true);
+
+            new CfnOutput(this, "gameSessionPollerStateMachineArn",  new CfnOutputProps {
+                Value = GameSessionPollerStateMachine.StateMachineArn
+            });
+        }
+        
         private void CreateLambdas(Construct scope, BackendProps props) 
         {
             var subnetIds = new List<string>();
@@ -518,13 +712,15 @@ namespace ManagementConsoleInfra.Lib
                     ["VirtualPlayersClusterArn"] = VirtualPlayersRunnerCluster.ClusterArn,
                     ["VirtualPlayersSecurityGroupId"] = VirtualPlayersRunnerSecurityGroup.SecurityGroupId,
                     ["VirtualPlayersSubnetIds"] = JsonConvert.SerializeObject(subnetIds),
-                    ["StateMachineArn"] = StatePollerStateMachine.StateMachineArn
+                    ["StateMachineArn"] = StatePollerStateMachine.StateMachineArn,
+                    ["GameSessionPollerStateMachineArn"] = GameSessionPollerStateMachine.StateMachineArn
                 },
                 Timeout = Duration.Minutes(15),
                 MemorySize = 1024,
                 Role = managementServiceFunctionRole
             });
             StatePollerStateMachine.GrantStartExecution(ManagementServiceFunction);
+            GameSessionPollerStateMachine.GrantStartExecution(ManagementServiceFunction);
             
             managementServiceFunctionRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
                 {

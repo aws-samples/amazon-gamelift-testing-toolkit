@@ -43,8 +43,8 @@ namespace ManagementConsoleBackend.ManagementService
 
             var compareLogic = new CompareLogic(comparisonConfig);
             var comparisonResult = compareLogic.Compare(databaseStateItem?.State, stateEventDetail);
-            LambdaLogger.Log(comparisonResult.DifferencesString);
-            LambdaLogger.Log(JsonConvert.SerializeObject(comparisonResult.Differences));
+            //LambdaLogger.Log(comparisonResult.DifferencesString);
+            //LambdaLogger.Log(JsonConvert.SerializeObject(comparisonResult.Differences));
 
             // remove this data to stop Differences from bloating in size
             foreach (var comparisonResultDifference in comparisonResult.Differences)
@@ -57,7 +57,6 @@ namespace ManagementConsoleBackend.ManagementService
             // send + store event if database event 15 minutes old, or there are differences
             if (comparisonResult.Differences.Count > 0 || databaseStateItem?.Time < fifteenMinutesAgo)
             {
-                LambdaLogger.Log("PREVIOUS STATE EVENT WAS AT " + databaseStateItem?.Time);
                 var entry = new PutEventsRequestEntry
                 {
                     Source = "CustomGameLift",
@@ -65,7 +64,7 @@ namespace ManagementConsoleBackend.ManagementService
                     Detail = JsonConvert.SerializeObject(stateEventDetail),
                     DetailType = "CustomGameLift.GameLiftState"
                 };
-                LambdaLogger.Log(JsonConvert.SerializeObject(entry));
+                //LambdaLogger.Log(JsonConvert.SerializeObject(entry));
                 var putEventsResponse = await client.PutEventsAsync(new PutEventsRequest
                 {
                     Entries = new List<PutEventsRequestEntry> {entry}
@@ -93,6 +92,12 @@ namespace ManagementConsoleBackend.ManagementService
 
             return new { PollAgain = true, PollFrequency = 15 };
         }
+        
+        public async Task<object> GameSessionPollHandler(APIGatewayProxyRequest request, ILambdaContext context)
+        {
+            await GameLiftStateHandler.UpdateGameSessions();
+            return new { PollAgain = true, PollFrequency = 15 };
+        }
 
         /// <summary>Function checks if zero running executions, and starts one if not</summary>
         ///
@@ -112,6 +117,29 @@ namespace ManagementConsoleBackend.ManagementService
                     await sfnClient.StartExecutionAsync(new StartExecutionRequest
                     {
                         StateMachineArn = Environment.GetEnvironmentVariable("StateMachineArn")
+                    });
+                }
+
+            }
+            catch (Exception e)
+            {
+                LambdaLogger.Log(e.ToString());
+            }
+            
+            try
+            {
+                var sfnClient = new AmazonStepFunctionsClient();
+                var listExecutionsResult = await sfnClient.ListExecutionsAsync(new ListExecutionsRequest
+                {
+                    StateMachineArn = Environment.GetEnvironmentVariable("GameSessionPollerStateMachineArn"),
+                    StatusFilter = ExecutionStatus.RUNNING
+                });
+                
+                if (listExecutionsResult.Executions.Count == 0)
+                {
+                    await sfnClient.StartExecutionAsync(new StartExecutionRequest
+                    {
+                        StateMachineArn = Environment.GetEnvironmentVariable("GameSessionPollerStateMachineArn")
                     });
                 }
 
@@ -184,8 +212,4 @@ namespace ManagementConsoleBackend.ManagementService
             }
         }
     }
-    
-    
-    
-    
 }
