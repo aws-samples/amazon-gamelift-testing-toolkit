@@ -93,6 +93,11 @@ export class ConsoleScene extends Phaser.Scene
                 {
                     Players.removePlayer(player.PlayerId);
                 }
+                else
+                if (secondsSinceLastSeen>=300 && player.playerState==PlayerState.WAITING_FOR_MATCH)
+                {
+                    Players.removePlayer(player.PlayerId);
+                }
             });
         }, 5000);
     }
@@ -265,7 +270,8 @@ export class ConsoleScene extends Phaser.Scene
 
             eventPlayerIds.map((playerId)=>
             {
-                if (Players.getPlayer(playerId).playerState!=PlayerState.WALKING_TO_MATCH) // in case events arrive out of order
+                console.log("RECEIVED MATCHMAKING SEARCHING FOR " + playerId + " - " + Players.getPlayer(playerId).playerState);
+                if (Players.getPlayer(playerId).playerState!=PlayerState.WALKING_TO_MATCH && Players.getPlayer(playerId).playerState!=PlayerState.IN_MATCH) // in case events arrive out of order
                 {
                     // break up any match involving these players, if one exists
                     let match = PlayerMatches.findPlayerMatch(playerId);
@@ -356,6 +362,8 @@ export class ConsoleScene extends Phaser.Scene
                         match = this.initializeMatch(queuePlacementEvent.placementId);
                     }
 
+                    match.placementEvent = queuePlacementEvent;
+
                     let queue = this._queues.getQueueByArn(resources[0]);
                     let queueDestination:SceneDestination = {
                         container: queue,
@@ -363,7 +371,7 @@ export class ConsoleScene extends Phaser.Scene
                         delay:1000,
                         disappearAfter:false,
                     };
-                    match.addDestination(queueDestination, (match.playerIds.length != playerIds.length));
+                    match.addDestination(queueDestination);
 
                     let instance = this._fleets.getInstanceByIp(queuePlacementEvent.ipAddress);
                     let instanceDestination:SceneDestination = {
@@ -372,7 +380,7 @@ export class ConsoleScene extends Phaser.Scene
                         disappearAfter: true,
                         delay:1000,
                     };
-                    match.addDestination(instanceDestination, (match.playerIds.length != playerIds.length));
+                    match.addDestination(instanceDestination);
 
                     break;
             }
@@ -478,7 +486,7 @@ export class ConsoleScene extends Phaser.Scene
 
     create ()
     {
-        this.scale.on('resize', this.doResize, this);
+        this.scale.once('resize', this.doResize, this);
         this.cameras.main.setBackgroundColor("#161925");
 
         this._settingsButton = new SettingsButton(this, 0, 0);
@@ -904,7 +912,7 @@ export class ConsoleScene extends Phaser.Scene
                             delay:1000,
                             disappearAfter:false,
                         };
-                        match.addDestination(queueDestination, (match.playerIds.length != 2));
+                        match.addDestination(queueDestination);
 
                         let instanceDestination:SceneDestination = {
                             container: instance,
@@ -912,7 +920,7 @@ export class ConsoleScene extends Phaser.Scene
                             disappearAfter: true,
                             delay:1000,
                         };
-                        match.addDestination(instanceDestination, (match.playerIds.length != 2));
+                        match.addDestination(instanceDestination);
                     }
                 }
                 Players.getPlayer(playerId).addDestination(matchDestination);

@@ -61,6 +61,11 @@ export class PlayerMatch extends BaseContainer
         player.y = this._bg.y;
         this.layoutContainer(0);
         this._players[playerId] = player;
+
+        if (this._placementEvent!=undefined && this._placementEvent.placedPlayerSessions.length == Object.values(this._players).length)
+        {
+            this.moveToNextDestination();
+        }
     }
 
     public breakUpMatch()
@@ -345,11 +350,11 @@ export class PlayerMatch extends BaseContainer
         this._moving=true;
     }
 
-    public addDestination(destination: SceneDestination, delayMove:boolean=false)
+    public addDestination(destination: SceneDestination)
     {
         this._destinations.push(destination);
 
-        if (!this._moving && delayMove==false)
+        if (!this._moving && this._placementEvent!=undefined && this._placementEvent.placedPlayerSessions.length == Object.values(this._players).length)
         {
             this.moveToNextDestination();
         }

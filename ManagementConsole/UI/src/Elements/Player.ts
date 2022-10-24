@@ -319,6 +319,6 @@ export class Player extends Container
 
     handleOver = () =>
     {
-        console.log("OVER PLAYER", this._playerId, this._eventHistory);
+        console.log("OVER PLAYER", this._playerId, this.playerState, this._eventHistory);
     };
 }
