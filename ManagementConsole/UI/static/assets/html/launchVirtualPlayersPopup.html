@@ -6,6 +6,13 @@
         <h6>Please select a Fargate Task definition for your virtual players:</h6>
         <select id="taskDefinition" style="font-size:1.3em; margin-bottom:0.5rem">
         </select>
+
+        <h6>Choose a Fargate Capacity Provider:</h6>
+        <input type="radio" name="fargateCapacityProvider" value="FARGATE_SPOT" id="fargateSpotCapacityProviderRadio" checked="checked">
+
+        <label id="fargateSpotCapacityProviderRadioLabel" for="fargateSpotCapacityProviderRadio">FARGATE_SPOT</label>
+        <input type="radio" name="fargateCapacityProvider" value="FARGATE" id="fargateCapacityProviderRadio">
+        <label id="fargateCapacityProviderRadioLabel" for="fargateCapacityProviderRadio">FARGATE</label>
         <!--
         <h6>Do you want to launch players continuously?</h6>
         <input type="radio" name="continuousLaunch" value="0" id="singleLaunchRadio" checked="checked">

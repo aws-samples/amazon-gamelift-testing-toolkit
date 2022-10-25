@@ -278,7 +278,6 @@ namespace ManagementConsoleInfra.Lib
 
         private void CreateVirtualPlayersRunner(Construct scope)
         {
-            
             VirtualPlayersRunnerVpc = new Vpc(this, "VirtualPlayersVpc", new VpcProps
             {
                 MaxAzs = 2,
@@ -287,6 +286,7 @@ namespace ManagementConsoleInfra.Lib
             VirtualPlayersRunnerCluster = new Cluster(this, "VirtualPlayersCluster", new ClusterProps
             {
                 Vpc = VirtualPlayersRunnerVpc,
+                EnableFargateCapacityProviders = true,
             });
 
             VirtualPlayersRunnerSecurityGroup = new SecurityGroup(this, "VirtualPlayersSg", new SecurityGroupProps

@@ -132,8 +132,7 @@ export class LaunchVirtualPlayersPopup extends Popup
         {
             let numPlayers = this._popup.getChildByID("numPlayers")["value"];
             let taskDefinitionArn = this._popup.getChildByID("taskDefinition")["value"];
-            console.log(numPlayers);
-            console.log(taskDefinitionArn);
+            let fargateCapacityProvider = $("input[name='fargateCapacityProvider']:checked").val();
             if (numPlayers<1 || numPlayers>1000)
             {
                 this._popup.getChildByID("errorText").className="errorText";
@@ -141,7 +140,7 @@ export class LaunchVirtualPlayersPopup extends Popup
             else
             {
                 this._popup.getChildByID("errorText").className="errorText hide";
-                this._emitter.emit(Events.LAUNCH_PLAYERS, {numPlayers:numPlayers, taskDefinitionArn: taskDefinitionArn});
+                this._emitter.emit(Events.LAUNCH_PLAYERS, {numPlayers:numPlayers, taskDefinitionArn: taskDefinitionArn, capacityProvider:fargateCapacityProvider});
             }
         }
         if (event.target.className == "refreshButton")

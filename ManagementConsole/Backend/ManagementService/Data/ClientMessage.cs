@@ -55,6 +55,7 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public new string Type = "LaunchPlayers";
         public int NumPlayers;
         public string TaskDefinitionArn;
+        public string CapacityProvider;
     }
     
     public class ClientMessageDeleteMatchmakingRuleSet : ClientMessage

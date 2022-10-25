@@ -117,6 +117,7 @@ export class ManageVirtualPlayersPopup extends Popup
             html += '<tr>' +
                 '<td>' + task.CreatedAt + '</td>'+
                 '<td>' + task.TaskArn + '</td>'+
+                '<td>' + task.CapacityProviderName + '</td>'+
                 '<td>' + task.LastStatus + '</td>'+
                 '<td>' + task.Cpu + '</td>'+
                 '<td>' + task.Memory + '</td>'+

@@ -21,7 +21,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
         }
         
         // Launches a number of virtual players via Fargate
-        public async Task<bool> LaunchPlayers(int numPlayers, string taskDefinitionArn)
+        public async Task<bool> LaunchPlayers(int numPlayers, string taskDefinitionArn, string capacityProvider)
         {
             var maxTasksPerRequest = 10;
             var remainingPlayersToLaunch = numPlayers;
@@ -48,12 +48,19 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                         Key = "AmazonGameLiftTestingToolkit-VirtualPlayers",
                         Value = "true",
                     });
+
+                    var strategies = new List<CapacityProviderStrategyItem>();
+                    strategies.Add(new CapacityProviderStrategyItem
+                    {
+                        CapacityProvider = capacityProvider,
+                        Weight = 1,
+                    });
                     
                     var request = new RunTaskRequest
                     {
                         Cluster = Environment.GetEnvironmentVariable("VirtualPlayersClusterArn"),
                         TaskDefinition = taskDefinitionArn,
-                        LaunchType = LaunchType.FARGATE,
+                        CapacityProviderStrategy = strategies,
                         Count = playersToLaunch,
                         NetworkConfiguration = new Amazon.ECS.Model.NetworkConfiguration
                         {

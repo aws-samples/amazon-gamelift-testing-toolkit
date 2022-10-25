@@ -437,7 +437,7 @@ namespace ManagementConsoleBackend.ManagementService
                         case "LaunchPlayers":
                             var launchPlayersRequest = JsonConvert.DeserializeObject<ClientMessageLaunchPlayers>(request.Body);
                             var result = await virtualPlayersHandler.LaunchPlayers(launchPlayersRequest.NumPlayers,
-                                launchPlayersRequest.TaskDefinitionArn);
+                                launchPlayersRequest.TaskDefinitionArn, launchPlayersRequest.CapacityProvider);
                             await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageLaunchPlayers { Result = result, NumPlayers = launchPlayersRequest.NumPlayers});
                             break;
                         

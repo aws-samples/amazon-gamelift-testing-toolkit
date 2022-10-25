@@ -932,7 +932,7 @@ export class ConsoleScene extends Phaser.Scene
 
     onLaunchPlayers = (event) =>
     {
-        Network.sendObject({"Type":"LaunchPlayers", "NumPlayers":parseInt(event.numPlayers), "TaskDefinitionArn":event.taskDefinitionArn});
+        Network.sendObject({"Type":"LaunchPlayers", "NumPlayers":parseInt(event.numPlayers), "TaskDefinitionArn":event.taskDefinitionArn, "CapacityProvider":event.capacityProvider});
     };
 
     onAddFakeFleet = (numInstances=10) =>
