@@ -736,6 +736,14 @@ export class ConsoleScene extends Phaser.Scene
                 this._emitter.emit(Events.DELETE_PLAYER_PROFILE_RESPONSE, data);
                 break;
 
+            case "SaveLatencyProfile":
+                this._emitter.emit(Events.SAVE_LATENCY_PROFILE_RESPONSE, data);
+                break;
+
+            case "DeleteLatencyProfile":
+                this._emitter.emit(Events.DELETE_LATENCY_PROFILE_RESPONSE, data);
+                break;
+
             case "GetQueueEvents":
                 this._emitter.emit(Events.GET_QUEUE_EVENTS_RESPONSE, data.Events);
                 break;
@@ -758,6 +766,10 @@ export class ConsoleScene extends Phaser.Scene
 
             case "GetPlayerProfiles":
                 this._emitter.emit(Events.GET_PLAYER_PROFILES_RESPONSE, data.Profiles);
+                break;
+
+            case "GetLatencyProfiles":
+                this._emitter.emit(Events.GET_LATENCY_PROFILES_RESPONSE, data.Profiles);
                 break;
 
             case "GetVirtualPlayers":

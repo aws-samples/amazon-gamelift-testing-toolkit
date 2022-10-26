@@ -28,6 +28,18 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public List<string> Errors;
     }
     
+    public class ServerMessageSaveLatencyProfile : ServerMessage
+    {
+        public new string Type = "SaveLatencyProfile";
+        public List<string> Errors;
+    }
+    
+    public class ServerMessageDeleteLatencyProfile : ServerMessage
+    {
+        public new string Type = "DeleteLatencyProfile";
+        public List<string> Errors;
+    }
+    
     public class ServerMessageGetFleets : ServerMessage
     {
         public new string Type = "GetFleets";
@@ -165,6 +177,12 @@ namespace ManagementConsoleBackend.ManagementService.Data
     {
         public new string Type = "GetPlayerProfiles";
         public List<PlayerProfile> Profiles;
+    }
+    
+    public class ServerMessageGetLatencyProfiles : ServerMessage
+    {
+        public new string Type = "GetLatencyProfiles";
+        public List<LatencyProfile> Profiles;
     }
     
     public class ServerMessageGetMatchmakingTicket : ServerMessage

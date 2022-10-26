@@ -15,7 +15,6 @@ namespace ManagementConsoleInfra.Lib
     {
         public Table ManagementConnectionsTable;
         public Table ManagementConfigTable;
-        public Table ResourceStatsTable;
         public Table EventLogTable;
         public Table GameSessionTable;
         public Table TicketLogTable;
@@ -24,6 +23,7 @@ namespace ManagementConsoleInfra.Lib
         public Table SimulationResultsTable;
         public Table SimulationPlayersTable;
         public Table PlayerProfileTable;
+        public Table LatencyProfileTable;
         
         internal DataStack(Construct scope, string id, DataProps props = null) : base(scope, id, props)
         {
@@ -38,19 +38,6 @@ namespace ManagementConsoleInfra.Lib
                 Encryption = TableEncryption.AWS_MANAGED,
                 RemovalPolicy = RemovalPolicy.DESTROY,
                 TimeToLiveAttribute = "TimeToLive",
-                PointInTimeRecovery = true,
-            });
-
-            ResourceStatsTable = new Table(this, "ResourceStatsTable", new TableProps
-            {
-                PartitionKey = new Attribute
-                {
-                    Name = "ResourceArn",
-                    Type = AttributeType.STRING
-                },
-                BillingMode = BillingMode.PAY_PER_REQUEST,
-                Encryption = TableEncryption.AWS_MANAGED,
-                RemovalPolicy = RemovalPolicy.DESTROY,
                 PointInTimeRecovery = true,
             });
 
@@ -148,6 +135,19 @@ namespace ManagementConsoleInfra.Lib
                 Encryption = TableEncryption.AWS_MANAGED,
                 RemovalPolicy = RemovalPolicy.DESTROY,
                 TimeToLiveAttribute = "TimeToLive",
+                PointInTimeRecovery = true,
+            });
+            
+            LatencyProfileTable = new Table(this, "LatencyProfileTable", new TableProps
+            {
+                PartitionKey = new Attribute
+                {
+                    Name = "ProfileId",
+                    Type = AttributeType.STRING
+                },
+                BillingMode = BillingMode.PAY_PER_REQUEST,
+                Encryption = TableEncryption.AWS_MANAGED,
+                RemovalPolicy = RemovalPolicy.DESTROY,
                 PointInTimeRecovery = true,
             });
 
@@ -339,6 +339,14 @@ namespace ManagementConsoleInfra.Lib
                 Value = PlayerProfileTable.TableArn
             });
             
+            new CfnOutput(this, "latencyProfileTableName",  new CfnOutputProps {
+                Value = LatencyProfileTable.TableName
+            });
+            
+            new CfnOutput(this, "latencyProfileTableArn",  new CfnOutputProps {
+                Value = LatencyProfileTable.TableArn
+            });
+            
             new CfnOutput(this, "eventLogTableName",  new CfnOutputProps {
                 Value = EventLogTable.TableName
             });
@@ -354,15 +362,7 @@ namespace ManagementConsoleInfra.Lib
             new CfnOutput(this, "managementConnectionsTableArn",  new CfnOutputProps {
                 Value = ManagementConnectionsTable.TableArn
             });
-            
-            new CfnOutput(this, "resourceStatsTableName",  new CfnOutputProps {
-                Value = ResourceStatsTable.TableName
-            });
-            
-            new CfnOutput(this, "resourceStatsTableArn",  new CfnOutputProps {
-                Value = ResourceStatsTable.TableArn
-            });
-            
+
             new CfnOutput(this, "stateLogTableName",  new CfnOutputProps {
                 Value = StateLogTable.TableName
             });

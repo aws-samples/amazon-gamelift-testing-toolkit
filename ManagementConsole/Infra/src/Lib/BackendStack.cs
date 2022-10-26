@@ -37,6 +37,7 @@ namespace ManagementConsoleInfra.Lib
         public Table StateLogTable;
         public Table TicketLogTable;
         public Table PlayerProfileTable;
+        public Table LatencyProfileTable;
         public Table MatchmakingSimulationTable;
         public Table SimulationResultsTable;
         public Table SimulationPlayersTable;
@@ -702,6 +703,7 @@ namespace ManagementConsoleInfra.Lib
                     ["EventLogTableName"] = props.EventLogTable.TableName,
                     ["MatchmakingSimulationTableName"] = props.MatchmakingSimulationTable.TableName,
                     ["PlayerProfileTableName"] = props.PlayerProfileTable.TableName,
+                    ["LatencyProfileTableName"] = props.LatencyProfileTable.TableName,
                     ["TicketLogTableName"] = props.TicketLogTable.TableName,
                     ["SimulationResultsTableName"] = props.SimulationResultsTable.TableName,
                     ["SimulationPlayersTableName"] = props.SimulationPlayersTable.TableName,
@@ -803,6 +805,7 @@ namespace ManagementConsoleInfra.Lib
             props.MatchmakingSimulationTable.GrantReadWriteData(ManagementServiceFunction);
             props.SimulationPlayersTable.GrantReadWriteData(ManagementServiceFunction);
             props.PlayerProfileTable.GrantReadWriteData(ManagementServiceFunction);
+            props.LatencyProfileTable.GrantReadWriteData(ManagementServiceFunction);
             props.TicketLogTable.GrantReadData(ManagementServiceFunction);
             props.SimulationResultsTable.GrantReadData(ManagementServiceFunction);
             props.GameSessionTable.GrantReadWriteData(ManagementServiceFunction);

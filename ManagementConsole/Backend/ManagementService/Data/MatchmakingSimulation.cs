@@ -66,6 +66,7 @@ namespace ManagementConsoleBackend.ManagementService.Data
     {
         public string ProfileId;
         public int NumPlayers;
+        public string LatencyProfileId;
     }
     
     public class MatchmakingSimulationPlayer
@@ -79,6 +80,7 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public string ProfileName;
         public string MatchedTeam;
         public Player PlayerData;
+        public string LatencyProfileId;
     }
 
     public class PlayerAttribute

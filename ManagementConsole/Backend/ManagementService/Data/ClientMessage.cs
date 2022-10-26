@@ -32,6 +32,18 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public PlayerProfile Profile;
     }
     
+    public class ClientMessageDeleteLatencyProfile : ClientMessage
+    {
+        public new string Type = "DeleteLatencyProfile";
+        public string ProfileId;
+    }
+    
+    public class ClientMessageSaveLatencyProfile : ClientMessage
+    {
+        public new string Type = "SaveLatencyProfile";
+        public LatencyProfile Profile;
+    }
+    
     public class ClientMessageAdjustFleetCapacity : ClientMessage
     {
         public new string Type = "AdjustFleetCapacity";
@@ -92,6 +104,11 @@ namespace ManagementConsoleBackend.ManagementService.Data
     public class ClientMessageGetPlayerProfiles : ClientMessage
     {
         public new string Type = "GetPlayerProfiles";
+    }
+    
+    public class ClientMessageGetLatencyProfiles : ClientMessage
+    {
+        public new string Type = "GetLatencyProfiles";
     }
     
     public class ClientMessageGetMatchmakingSimulations : ClientMessage

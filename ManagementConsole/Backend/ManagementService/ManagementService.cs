@@ -322,7 +322,54 @@ namespace ManagementConsoleBackend.ManagementService
                             catch (Exception e)
                             {
                                 LambdaLogger.Log(e.ToString());
-                                await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageSavePlayerProfile { Errors = new List<string>
+                                await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageDeletePlayerProfile { Errors = new List<string>
+                                {
+                                    e.Message
+                                } });
+                                throw;
+                            }
+                            break;
+                        
+                        case "GetLatencyProfiles":
+                            var getLatencyProfilesRequest = JsonConvert.DeserializeObject<ClientMessageGetLatencyProfiles>(request.Body);
+                            var latencyProfiles = await dynamoDbRequestHandler.GetLatencyProfiles();
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetLatencyProfiles { Profiles = latencyProfiles});
+                            break;
+                        
+                        case "SaveLatencyProfile":
+                            LambdaLogger.Log(request.Body);
+                            try
+                            {
+                                var saveLatencyProfileRequest =
+                                    JsonConvert.DeserializeObject<ClientMessageSaveLatencyProfile>(request.Body);
+                                LambdaLogger.Log("PROFILE CONVERTED:" + JsonConvert.SerializeObject(saveLatencyProfileRequest.Profile));
+                                await dynamoDbRequestHandler.SaveLatencyProfile(saveLatencyProfileRequest.Profile);
+                                await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageSaveLatencyProfile { Errors = new List<string>() });
+                            }
+                            catch (Exception e)
+                            {
+                                LambdaLogger.Log(e.ToString());
+                                await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageSaveLatencyProfile { Errors = new List<string>
+                                {
+                                    e.Message
+                                } });
+                                throw;
+                            }
+                            break;
+                        
+                        case "DeleteLatencyProfile":
+                            LambdaLogger.Log(request.Body);
+                            try
+                            {
+                                var deletePlayerProfileRequest =
+                                    JsonConvert.DeserializeObject<ClientMessageDeleteLatencyProfile>(request.Body);
+                                await dynamoDbRequestHandler.DeleteLatencyProfile(deletePlayerProfileRequest.ProfileId);
+                                await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageDeleteLatencyProfile { Errors = new List<string>() });
+                            }
+                            catch (Exception e)
+                            {
+                                LambdaLogger.Log(e.ToString());
+                                await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageDeleteLatencyProfile { Errors = new List<string>
                                 {
                                     e.Message
                                 } });
@@ -544,12 +591,14 @@ namespace ManagementConsoleBackend.ManagementService
             
             LambdaLogger.Log("GOT PLAYERS TABLE!");
             var playerProfiles = await dynamoDbRequestHandler.GetPlayerProfiles();
+            var latencyProfiles = await dynamoDbRequestHandler.GetLatencyProfiles();
             var players = new List<Player>();
 
             var playerNum = 0;
             foreach (var playerProfileConfig in simulation.PlayersConfig) // loop through the player configs for the simulation
             {
                 var profile = playerProfiles.Find(x => x.ProfileId == playerProfileConfig.ProfileId); // find the profile definition
+                var latencyProfile = latencyProfiles.Find(x => x.ProfileId == playerProfileConfig.LatencyProfileId); // find the latency profile definition
 
                 if (profile != null)
                 {
@@ -632,27 +681,42 @@ namespace ManagementConsoleBackend.ManagementService
                         }
 
                         player.PlayerAttributes = playerAttributes;
+                        
+                        if (latencyProfile != null)
+                        {
+                            foreach (var regionLatency in latencyProfile.LatencyData)
+                            {
+                                var numLatencyMS = Utils.RandomInt(regionLatency.MinLatency, regionLatency.MaxLatency);
+                                player.LatencyInMs.Add(regionLatency.Region, numLatencyMS);
+                            }
+                        }
+
+                        LambdaLogger.Log(JsonConvert.SerializeObject(player));
                         players.Add(player);
 
-                        /*
-                        var matchmakingPlayer = Document.FromJson(JsonConvert.SerializeObject(player));
-                        matchmakingPlayer["SimulationId"] = simulation.SimulationId;
-                        matchmakingPlayer["ProfileId"] = profile.ProfileId;
-                        matchmakingPlayer["ProfileName"] = profile.Name;
-                        playerBatch.AddDocumentToPut(matchmakingPlayer);
-                        */
-
-
-                        var matchmakingPlayer = new MatchmakingSimulationPlayer
+                        try
                         {
-                            SimulationId = simulation.SimulationId,
-                            PlayerId = player.PlayerId,
-                            ProfileId = profile.ProfileId,
-                            ProfileName = profile.Name,
-                            PlayerData = player,
-                        };
+                            var matchmakingPlayer = new MatchmakingSimulationPlayer
+                            {
+                                SimulationId = simulation.SimulationId,
+                                PlayerId = player.PlayerId,
+                                ProfileId = profile.ProfileId,
+                                ProfileName = profile.Name,
+                                PlayerData = player,
+                            };
 
-                        playerBatch.AddDocumentToPut(Document.FromJson(JsonConvert.SerializeObject(matchmakingPlayer)));
+                            if (latencyProfile != null)
+                            {
+                                matchmakingPlayer.LatencyProfileId = latencyProfile.ProfileId;
+                            }
+
+                            playerBatch.AddDocumentToPut(
+                                Document.FromJson(JsonConvert.SerializeObject(matchmakingPlayer)));
+                        }
+                        catch (Exception e)
+                        {
+                            LambdaLogger.Log(e.Message);
+                        }
                     }
                 }
             }

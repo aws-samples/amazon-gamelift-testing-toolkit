@@ -359,5 +359,17 @@ export namespace DataTypes
         ValueMap: Record<string, number>;
     }
 
+    export interface LatencyProfile {
+        ProfileId?: string;
+        Name: string;
+        LatencyData: RegionLatency[];
+    }
+
+    export interface RegionLatency {
+        Region: string;
+        MinLatency: number;
+        MaxLatency: number;
+    }
+
 }
 

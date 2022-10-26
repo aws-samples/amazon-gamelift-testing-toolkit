@@ -66,7 +66,7 @@ export class PlayerProfilesSubPopup extends SubPopup
         }
         else
         {
-            this.showFailureAlert(data.Errors.length[0]);
+            this.showFailureAlert(data.Errors[0]);
         }
     }
 
@@ -80,7 +80,7 @@ export class PlayerProfilesSubPopup extends SubPopup
         }
         else
         {
-            this.showFailureAlert(data.Errors.length[0]);
+            this.showFailureAlert(data.Errors[0]);
         }
     }
 

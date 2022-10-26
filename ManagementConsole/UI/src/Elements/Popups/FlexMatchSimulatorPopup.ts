@@ -8,6 +8,7 @@ import {SimulateMatchmakingSubPopup} from "../SubPopups/SimulateMatchmakingSubPo
 import {ManageRuleSetsSubPopup} from "../SubPopups/ManageRuleSetsSubPopup";
 import {PlayerProfilesSubPopup} from "../SubPopups/PlayerProfilesSubPopup";
 import {RuleSetBuilderSubPopup} from "../SubPopups/RuleSetBuilderSubPopup";
+import {LatencyProfilesSubPopup} from "../SubPopups/LatencyProfilesSubPopup";
 
 export class FlexMatchSimulatorPopup extends Popup
 {
@@ -19,6 +20,7 @@ export class FlexMatchSimulatorPopup extends Popup
 
         this.registerSubPopup("simulateMatchmaking", new SimulateMatchmakingSubPopup("assets/html/fragments/simulateMatchmaking.html", "simulateMatchmaking"));
         this.registerSubPopup("configurePlayerProfiles", new PlayerProfilesSubPopup("assets/html/fragments/playerProfiles.html", "playerProfiles"));
+        this.registerSubPopup("configureLatencyProfiles", new LatencyProfilesSubPopup("assets/html/fragments/latencyProfiles.html", "latencyProfiles"));
         //this.registerSubPopup("ruleSetBuilder", new RuleSetBuilderSubPopup("assets/html/fragments/simulateMatchmaking.html", "ruleSetBuilder"));
         this.registerSubPopup("ruleSetBuilder", new RuleSetBuilderSubPopup("assets/html/fragments/ruleSetBuilder.html", "ruleSetBuilder"));
         this.registerSubPopup("manageRuleSets", new ManageRuleSetsSubPopup("assets/html/fragments/ruleSets.html", "ruleSets"));
@@ -56,6 +58,11 @@ export class FlexMatchSimulatorPopup extends Popup
             if (el.hasClass("configurePlayerProfiles"))
             {
                 this.switchSubPopup("configurePlayerProfiles");
+            }
+            else
+            if (el.hasClass("configureLatencyProfiles"))
+            {
+                this.switchSubPopup("configureLatencyProfiles");
             }
             else
             if (el.hasClass("simulateMatchmaking"))

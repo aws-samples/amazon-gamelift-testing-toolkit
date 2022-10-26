@@ -9,6 +9,7 @@ import JSONEditor, {JSONEditorOptions} from 'jsoneditor';
 import MatchmakingRuleSet = DataTypes.MatchmakingRuleSet;
 import {SubPopup} from "../Abstract/SubPopup";
 import PlayerProfile = DataTypes.PlayerProfile;
+import LatencyProfile = DataTypes.LatencyProfile;
 
 export class SimulateMatchmakingSubPopup extends SubPopup
 {
@@ -16,6 +17,7 @@ export class SimulateMatchmakingSubPopup extends SubPopup
     protected _matches: Record<string, any>;
     protected _ruleSets: MatchmakingRuleSet[];
     protected _playerProfiles: PlayerProfile[];
+    protected _latencyProfiles: LatencyProfile[];
     protected _intervalId;
     protected _currentSimulation;
     protected _state="";
@@ -32,6 +34,7 @@ export class SimulateMatchmakingSubPopup extends SubPopup
         Network.sendObject({Type:"GetMatchmakingSimulations"});
         Network.sendObject({Type:"GetMatchmakingRuleSets"});
         Network.sendObject({Type:"GetPlayerProfiles"});
+        Network.sendObject({Type:"GetLatencyProfiles"});
     }
 
     resetElement(selector)
@@ -55,6 +58,7 @@ export class SimulateMatchmakingSubPopup extends SubPopup
         this._emitter.on(Events.GET_MATCHMAKING_SIMULATION_RESPONSE, this.onGetMatchmakingSimulationResponse);
         this._emitter.on(Events.GET_MATCHMAKING_RULESETS_RESPONSE, this.onGetMatchmakingRuleSetsResponse);
         this._emitter.on(Events.GET_PLAYER_PROFILES_RESPONSE, this.onGetPlayerProfilesResponse);
+        this._emitter.on(Events.GET_LATENCY_PROFILES_RESPONSE, this.onGetLatencyProfilesResponse);
         this._emitter.on(Events.RUN_MATCHMAKING_SIMULATION_RESPONSE, this.onRunMatchmakingSimulationResponse);
         this._emitter.on(Events.MATCHMAKING_SIMULATION_UPDATE, this.onMatchmakingSimulationUpdate);
     }
@@ -69,6 +73,7 @@ export class SimulateMatchmakingSubPopup extends SubPopup
         this._emitter.off(Events.GET_MATCHMAKING_SIMULATIONS_RESPONSE, this.onGetMatchmakingSimulationsResponse);
         this._emitter.off(Events.GET_MATCHMAKING_RULESETS_RESPONSE, this.onGetMatchmakingRuleSetsResponse);
         this._emitter.off(Events.GET_PLAYER_PROFILES_RESPONSE, this.onGetPlayerProfilesResponse);
+        this._emitter.off(Events.GET_LATENCY_PROFILES_RESPONSE, this.onGetLatencyProfilesResponse);
         this._emitter.off(Events.RUN_MATCHMAKING_SIMULATION_RESPONSE, this.onRunMatchmakingSimulationResponse);
         this._emitter.off(Events.MATCHMAKING_SIMULATION_UPDATE, this.onMatchmakingSimulationUpdate);
         this.stopPolling();
@@ -103,11 +108,13 @@ export class SimulateMatchmakingSubPopup extends SubPopup
         if (match.Players.length)
         {
             let playerAttributes=[];
+            let showLatencyData=false;
 
             match.Players.map(player=>
             {
                 console.log(player);
                 let attributeHtml="";
+
                 Object.keys(player.PlayerData.PlayerAttributes).map(playerAttributeName =>
                 {
                     if (playerAttributes.indexOf(playerAttributeName)==-1)
@@ -115,6 +122,11 @@ export class SimulateMatchmakingSubPopup extends SubPopup
                         playerAttributes.push(playerAttributeName);
                     }
                 });
+
+                if (player.PlayerData.LatencyInMs!=null && Object.keys(player.PlayerData.LatencyInMs).length)
+                {
+                    showLatencyData=true;
+                }
             });
 
 
@@ -126,6 +138,13 @@ export class SimulateMatchmakingSubPopup extends SubPopup
                 $('#'+this._parentDomId).find("#matchInfoPlayersTable >thead tr").append("<th>" + playerAttributeName + "</th");
                 columnToggleHtml+='<a class="toggle-vis" data-column="' + i + '">' + playerAttributeName + '</a> - ';
             });
+
+            if (showLatencyData)
+            {
+                i++;
+                $('#'+this._parentDomId).find("#matchInfoPlayersTable >thead tr").append("<th>Latency</th");
+                columnToggleHtml+='<a class="toggle-vis" data-column="' + i + '">Latency</a> - ';
+            }
 
             columnToggleHtml = columnToggleHtml.slice(0,columnToggleHtml.length-2);
 
@@ -142,6 +161,11 @@ export class SimulateMatchmakingSubPopup extends SubPopup
                     //$('#'+this._parentDomId).find("#matchInfoPlayersTable >thead tr").append("<th>" + playerAttributeName + "</th");
 
                 });
+
+                if (showLatencyData)
+                {
+                    attributeHtml+="<td>" + JSON.stringify(player.PlayerData.LatencyInMs) + "</td>";
+                }
 
                 matchPlayerTableHtml += '<tr>' +
                     '<td>' + player.MatchedTeam + '</td>'+
@@ -207,6 +231,7 @@ export class SimulateMatchmakingSubPopup extends SubPopup
                 let column = table.column($(this).attr("data-column"));
 
                 column.visible(!column.visible());
+                table.columns.adjust().draw();
             });
 
 
@@ -526,19 +551,11 @@ export class SimulateMatchmakingSubPopup extends SubPopup
     onGetPlayerProfilesResponse = (data) =>
     {
         this._playerProfiles = data;
-        /*
-        this._playerProfiles.map(profile => {
-            $('#'+this._parentDomId).find("#simulationPlayerProfiles").append('<div>' +
-                '<div style="width:100px">' +
-                '<p class="medium">' + profile.ProfileId +'</p>' +
-                '</div>' +
-                '<div style="width:100px">' +
-                '<input type="number"/>' +
-                '<div>' +
-                '</div>')
-        })
-        console.log(this._playerProfiles);
-         */
+    }
+
+    onGetLatencyProfilesResponse = (data) =>
+    {
+        this._latencyProfiles = data;
     }
 
     onGetMatchmakingTicketHeadersBySimulationIdResponse = (data) =>
@@ -741,7 +758,11 @@ export class SimulateMatchmakingSubPopup extends SubPopup
         $.get('assets/html/fragments/playerProfileTemplate.html', (data) => {
             let template = $(data);
             this._playerProfiles.map(profile => {
-                template.find("select").append('<option value="' + profile.ProfileId + '">' + profile.Name + '</option>');
+                template.find("select#playerProfile").append('<option value="' + profile.ProfileId + '">' + profile.Name + '</option>');
+                console.log(data);
+            });
+            this._latencyProfiles.map(profile => {
+                template.find("select#latencyProfile").append('<option value="' + profile.ProfileId + '">' + profile.Name + '</option>');
                 console.log(data);
             });
             template.appendTo($('#'+this._parentDomId).find("#simulationPlayerProfiles"));
@@ -756,9 +777,10 @@ export class SimulateMatchmakingSubPopup extends SubPopup
         $('#'+this._parentDomId).find(".playerProfileTemplate").each(function ()
         {
            console.log($(this));
-            playerProfileConfigs.push({
+           playerProfileConfigs.push({
                ProfileId: $(this).find('#playerProfile').val(),
-               NumPlayers: parseInt($(this).find('.numPlayers').val() as string)
+               NumPlayers: parseInt($(this).find('.numPlayers').val() as string),
+               LatencyProfileId: $(this).find('#latencyProfile').val(),
            });
 
            totalPlayersAdded += parseInt($(this).find('.numPlayers').val() as string);

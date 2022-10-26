@@ -256,6 +256,7 @@ span.medium {font-family: "Noto Sans"; font-size:1.3em}
 select { font-size:1.3em; height: 25px;}
 
 #playerProfileAttributes div {margin-right:5px;}
+#latencyProfileAttributes div {margin-right:5px;}
 #simulationPlayerProfiles div {margin-right:5px;}
 .addStringDoubleMapValue { font-size:30px; color:#00cc00}
 .addStringDoubleMapValueContainer {     height: 10px; float: right; margin-top: -10px; margin-left: 10px; }

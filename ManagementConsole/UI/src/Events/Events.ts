@@ -33,11 +33,14 @@ export class Events
     public static GET_MATCHMAKING_SIMULATIONS_RESPONSE:string = "GetMatchmakingSimulationsResponse";
     public static GET_MATCHMAKING_SIMULATION_RESPONSE:string = "GetMatchmakingSimulationResponse";
     public static GET_SIMULATION_SUCCESSFUL_MATCHES_RESPONSE:string = "GetSimulationSuccessfulMatchesResponse";
-    public static GET_PLAYER_PROFILES_RESPONSE:string = "GetPlayerProfilesResponse";
-    public static SAVE_PLAYER_PROFILE_RESPONSE:string = "SavePlayerProfileResponse";
     public static RUN_MATCHMAKING_SIMULATION_RESPONSE:string = "RunMatchmakingSimulationResponse";
     public static MATCHMAKING_SIMULATION_UPDATE:string = "MatchmakingSimulationUpdate";
+    public static GET_PLAYER_PROFILES_RESPONSE:string = "GetPlayerProfilesResponse";
+    public static SAVE_PLAYER_PROFILE_RESPONSE:string = "SavePlayerProfileResponse";
     public static DELETE_PLAYER_PROFILE_RESPONSE:string = "DeletePlayerProfileResponse";
+    public static GET_LATENCY_PROFILES_RESPONSE:string = "GetLatencyProfilesResponse";
+    public static SAVE_LATENCY_PROFILE_RESPONSE:string = "SaveLatencyProfileResponse";
+    public static DELETE_LATENCY_PROFILE_RESPONSE:string = "DeleteLatencyProfileResponse";
     public static GET_PLAYER_SESSIONS_RESPONSE:string = "GetPlayerSessionsResponse";
     public static GET_VIRTUAL_PLAYERS_RESPONSE:string = "GetVirtualPlayersResponse";
     public static LAUNCH_VIRTUAL_PLAYERS_RESPONSE:string = "LaunchVirtualPlayersResponse";

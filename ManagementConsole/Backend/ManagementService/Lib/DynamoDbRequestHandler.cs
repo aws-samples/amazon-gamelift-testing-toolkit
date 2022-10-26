@@ -403,6 +403,39 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             return null;
         }
         
+        public async Task<List<LatencyProfile>> GetLatencyProfiles()
+        {
+            try
+            {
+                var latencyProfileTable =
+                    Table.LoadTable(_client, Environment.GetEnvironmentVariable("LatencyProfileTableName"));
+
+                var search = latencyProfileTable.Scan(new ScanOperationConfig());
+                
+                var latencyProfiles = new List<LatencyProfile>();
+                var context = new DynamoDBContext(_client);
+                List<Document> documentList = new List<Document>();
+                do
+                {
+                    documentList = await search.GetNextSetAsync();
+                    foreach (var document in documentList)
+                    {
+                        latencyProfiles.Add(JsonConvert.DeserializeObject<LatencyProfile>(document.ToJson()));
+                        //document.Remove("TimeToLive");
+                        //playerProfiles.Add(context.FromDocument<PlayerProfile>(document));
+                    }
+                } while (!search.IsDone);
+
+                return latencyProfiles;
+            }
+            catch (Exception e)
+            {
+                LambdaLogger.Log(e.ToString());
+            }
+
+            return null;
+        }
+        
         public async Task<List<MatchmakingSimulation>> GetMatchmakingSimulations()
         {
             try
@@ -450,6 +483,28 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             try
             {
                 await playerProfileTable.PutItemAsync(item);
+            }
+            catch (Exception e)
+            {
+                LambdaLogger.Log(e.ToString());
+            }
+        }
+        
+        public async Task SaveLatencyProfile(LatencyProfile profile)
+        {
+            var latencyProfileTable =
+                Table.LoadTable(_client, Environment.GetEnvironmentVariable("LatencyProfileTableName"));
+
+            if (profile.ProfileId == null)
+            {
+                profile.ProfileId = Guid.NewGuid().ToString();
+            }
+            
+            var item = Document.FromJson(JsonConvert.SerializeObject(profile));
+
+            try
+            {
+                await latencyProfileTable.PutItemAsync(item);
             }
             catch (Exception e)
             {
@@ -509,6 +564,24 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             try
             {
                 await playerProfileTable.DeleteItemAsync(item);
+            }
+            catch (Exception e)
+            {
+                LambdaLogger.Log(e.ToString());
+            }
+        }
+        
+        public async Task DeleteLatencyProfile(string profileId)
+        {
+            var latencyProfileTable =
+                Table.LoadTable(_client, Environment.GetEnvironmentVariable("LatencyProfileTableName"));
+            
+            var item = new Document();
+            item["ProfileId"] = profileId;
+            
+            try
+            {
+                await latencyProfileTable.DeleteItemAsync(item);
             }
             catch (Exception e)
             {
