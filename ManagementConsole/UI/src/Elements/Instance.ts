@@ -34,7 +34,7 @@ export class Instance extends Container
             loop:-1,
             targets: this._image,
             alpha: {
-                getStart: () => 0.2,
+                getStart: () => 0.4,
                 getEnd: () => 0.75,
             },
             duration: 1000,
@@ -50,15 +50,14 @@ export class Instance extends Container
 
     protected startFlashing()
     {
-        console.log("START FLASHING");
         if (!this._flashingAnim.isPlaying())
         {
-            console.log("PLAY!!");
+            console.log("PLAY FLASHING!");
             setTimeout(()=>
             {
                 this._image.alpha=1;
                 this._flashingAnim.play();
-            });
+            }, 1000);
         }
     }
 
