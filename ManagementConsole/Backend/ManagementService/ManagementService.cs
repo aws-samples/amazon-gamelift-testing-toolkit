@@ -13,14 +13,17 @@ using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.ECS;
 using Amazon.GameLift;
 using Amazon.GameLift.Model;
+using Amazon.Lambda;
 using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
+using Amazon.Lambda.Model;
 using Amazon.S3;
 using Amazon.S3.Model;
 using ManagementConsoleBackend.Common;
 using ManagementConsoleBackend.ManagementService.Data;
 using ManagementConsoleBackend.ManagementService.Lib;
 using Newtonsoft.Json;
+using Environment = System.Environment;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using Task = System.Threading.Tasks.Task;
 
@@ -266,9 +269,26 @@ namespace ManagementConsoleBackend.ManagementService
                             {
                                 errorList.Add(e.Message);
                             }
+                            
+                            var lambdaClient = new AmazonLambdaClient();
+                            try
+                            {
+                                var lambdaResponse = await lambdaClient.InvokeAsync(
+                                    new InvokeRequest
+                                    {
+                                        FunctionName = Environment.GetEnvironmentVariable("FlexMatchSimulatorFunctionName"),
+                                        Payload = JsonConvert.SerializeObject(simulation),
+                                        InvocationType = "Event",
+                                    });
+                            }
+                            catch (Exception e)
+                            {
+                                LambdaLogger.Log(e.Message);
+                                errorList.Add(e.Message);
+                            }
 
                             await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageRunMatchmakingSimulation { Simulation = simulation, Errors = errorList });
-                            await RunMatchmakingSimulation(simulation);
+                            //await RunMatchmakingSimulation(simulation);
                             break;
                         
                         case "GetMatchmakingSimulations":
@@ -703,6 +723,7 @@ namespace ManagementConsoleBackend.ManagementService
                                 ProfileId = profile.ProfileId,
                                 ProfileName = profile.Name,
                                 PlayerData = player,
+                                TimeDelay = playerProfileConfig.TimeDelay,
                             };
 
                             if (latencyProfile != null)

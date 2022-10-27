@@ -781,6 +781,7 @@ export class SimulateMatchmakingSubPopup extends SubPopup
                ProfileId: $(this).find('#playerProfile').val(),
                NumPlayers: parseInt($(this).find('.numPlayers').val() as string),
                LatencyProfileId: $(this).find('#latencyProfile').val(),
+               TimeDelay: parseInt($(this).find('#timeDelay').val() as string),
            });
 
            totalPlayersAdded += parseInt($(this).find('.numPlayers').val() as string);

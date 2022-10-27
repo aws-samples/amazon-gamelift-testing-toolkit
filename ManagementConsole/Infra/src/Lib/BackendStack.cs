@@ -53,6 +53,7 @@ namespace ManagementConsoleInfra.Lib
         public Function SfnGameSessionPollerFunction;
         public Function SfnGameSessionRestartFunction;
         public Function ManagementServiceFunction;
+        public Function FlexMatchSimulatorFunction;
         public Function StateEventHandlerFunction;
         public Function FlexMatchEventFunction;
         public Function QueuePlacementEventFunction;
@@ -686,6 +687,8 @@ namespace ManagementConsoleInfra.Lib
             {
                 subnetIds.Add(subnet.SubnetId);
             }
+            
+            // SETUP MANAGEMENT SERVICE FUNCTION
 
             var managementServiceFunctionRole = new Role(this, "ManagementServiceFunctionRole", new RoleProps
             {
@@ -821,6 +824,68 @@ namespace ManagementConsoleInfra.Lib
                     Reason = "Suppress wildcard finding to give permission to access CloudWatch and GameLift generic components"
                 }
             }, true);
+            
+            // SETUP FLEXMATCH SIMULATOR FUNCTION
+            
+            var flexMatchSimulatorFunctionRole = new Role(this, "FlexMatchSimulatorFunctionRole", new RoleProps
+            {
+                AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
+            });
+            flexMatchSimulatorFunctionRole.AddToPrincipalPolicy(DefaultLambdaPolicy);
+            FlexMatchSimulatorFunction = new Function(this, "FlexMatchSimulatorLambdaFunction", new FunctionProps
+            {
+                Runtime = Program.DotNetRuntime,
+                Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.FlexMatchSimulator::FlexMatchSimulatorHandler",
+                Environment = new Dictionary<string, string>
+                {
+                    ["MatchmakingSimulationTableName"] = props.MatchmakingSimulationTable.TableName,
+                    ["PlayerProfileTableName"] = props.PlayerProfileTable.TableName,
+                    ["LatencyProfileTableName"] = props.LatencyProfileTable.TableName,
+                    ["SimulationResultsTableName"] = props.SimulationResultsTable.TableName,
+                    ["SimulationPlayersTableName"] = props.SimulationPlayersTable.TableName,
+                    ["FlexMatchSimulatorArn"] = FlexMatchSimulator.AttrArn,
+                },
+                Timeout = Duration.Minutes(15),
+                MemorySize = 1024,
+                Role = flexMatchSimulatorFunctionRole
+            });
+            FlexMatchSimulatorFunction.GrantInvoke(ManagementServiceFunction);
+            ManagementServiceFunction.AddEnvironment("FlexMatchSimulatorFunctionName", FlexMatchSimulatorFunction.FunctionName);
+            
+            flexMatchSimulatorFunctionRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
+                {
+                    Effect = Effect.ALLOW,
+                    Resources = new[] {"*"},
+                    Actions = new[]
+                    {
+                        "gamelift:UpdateMatchmakingConfiguration",
+                        "gamelift:StartMatchmaking",
+                        "gamelift:DescribeMatchmakingRuleSets",
+                        "gamelift:ValidateMatchmakingRuleSet",
+                        "gamelift:CreateMatchmakingRuleSet",
+                        "gamelift:DeleteMatchmakingRuleSet",
+                        "gamelift:DescribeMatchmakingConfigurations",
+                    }
+                }));
+
+            props.MatchmakingSimulationTable.GrantReadWriteData(FlexMatchSimulatorFunction);
+            props.SimulationPlayersTable.GrantReadWriteData(FlexMatchSimulatorFunction);
+            props.PlayerProfileTable.GrantReadWriteData(FlexMatchSimulatorFunction);
+            props.LatencyProfileTable.GrantReadWriteData(FlexMatchSimulatorFunction);
+            props.SimulationResultsTable.GrantReadData(FlexMatchSimulatorFunction);
+
+            // Adding specific CDK-Nag Suppressions
+            NagSuppressions.AddResourceSuppressions(flexMatchSimulatorFunctionRole, new INagPackSuppression[]
+            {
+                new NagPackSuppression
+                {
+                    Id = "AwsSolutions-IAM5",
+                    Reason = "Suppress wildcard finding to give permission to access CloudWatch and GameLift generic components"
+                }
+            }, true);
+            
+            // SETUP STATE EVENT HANDLER FUNCTION
 
             var stateEventFunctionRole = new Role(this, "stateEventFunctionRole", new RoleProps
             {
@@ -852,6 +917,8 @@ namespace ManagementConsoleInfra.Lib
             
             props.ManagementConnectionsTable.GrantReadWriteData(StateEventHandlerFunction);
 
+            // SETUP CONFIG POPULATOR FUNCTION
+            
             var configPopulatorFunctionRole = new Role(this, "ConfigPopulatorFunctionRole", new RoleProps
             {
                 AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
@@ -882,6 +949,8 @@ namespace ManagementConsoleInfra.Lib
             }, true);
             
             props.ManagementConfigTable.GrantReadWriteData(ConfigPopulatorFunction);
+            
+            // SETUP FLEXMATCH EVENT HANDLER FUNCTION
             
             var flexMatchEventFunctionRole = new Role(this, "FlexMatchEventFunctionRole", new RoleProps
             {
@@ -925,6 +994,8 @@ namespace ManagementConsoleInfra.Lib
             props.SimulationPlayersTable.GrantReadData(FlexMatchEventFunction);
             props.SimulationResultsTable.GrantReadWriteData(FlexMatchEventFunction);
 
+            // SETUP QUEUE PLACEMENT EVENT HANDLER FUNCTION
+            
             var queuePlacementEventFunctionRole = new Role(this, "QueuePlacementEventFunctionRole", new RoleProps
             {
                 AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
