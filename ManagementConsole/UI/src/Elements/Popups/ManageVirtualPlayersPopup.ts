@@ -45,41 +45,23 @@ export class ManageVirtualPlayersPopup extends Popup
 
     showSuccessAlert = (text) =>
     {
-        this._popup.node.querySelector("#statusText").className = "alert alert-success";
-        this._popup.node.querySelector("#statusText").innerHTML = text;
+        this.element.find("#statusText").attr("class", "alert alert-success");
+        this.element.find("#statusText").html(text);
     }
 
     showFailureAlert = (text) =>
     {
-        this._popup.node.querySelector("#statusText").className = "alert alert-danger";
-        this._popup.node.querySelector("#statusText").innerHTML = text;
+        this.element.find("#statusText").attr("class", "alert alert-danger");
+        this.element.find("#statusText").html(text);
     }
 
     hideStatusAlert = () =>
     {
-        this._popup.node.querySelector("#statusText").className = "alert hide";
-    }
-
-    showSessionDetail = (gameSession) =>
-    {
-        console.log(gameSession);
-
-        this._popup.getChildByID("gameSessionId").innerHTML=gameSession.GameSessionId;
-        this._popup.getChildByID("ipAddress").innerHTML=gameSession.IpAddress;
-        this._popup.getChildByID("dnsName").innerHTML=gameSession.DnsName;
-        this._popup.getChildByID("region").innerHTML=gameSession.Location;
-        this._popup.getChildByID("currentPlayerSessions").innerHTML=gameSession.CurrentPlayerSessionCount + "/" + gameSession.MaximumPlayerSessionCount;
-        this._popup.getChildByID("instanceStatus").innerHTML=gameSession.Status.Value;
-        this._popup.getChildByID("creationDate").innerHTML=new Date(gameSession.CreationTime).toISOString();
-
-        this._popup.node.querySelector(".gameSessionsContent").className="gameSessionsContent hide";
-        this._popup.node.querySelector(".gameSessionLogsContent").className="gameSessionLogsContent hide";
-        this._popup.node.querySelector(".gameSessionDetailContent").className="gameSessionDetailContent";
+        this.element.find("#statusText").attr("class", "alert hide");
     }
 
     onTerminateVirtualPlayerResponse = (data) =>
     {
-        console.log("TERMINATE RESPONSE", data);
         if (data.Errors && data.Errors.length)
         {
             this.showFailureAlert(data.Errors[0]);
@@ -95,10 +77,10 @@ export class ManageVirtualPlayersPopup extends Popup
         let parser = new DOMParser();
         let element = parser.parseFromString(this._html, "text/html");
 
-        this._popup.node.querySelector("#virtualPlayersTable_wrapper")?.remove();
-        if (this._popup.node.querySelector("table#virtualPlayersTable")==null)
+        this.element.find("#virtualPlayersTable_wrapper")?.remove();
+        if (this.element.find("table#virtualPlayersTable").length==0)
         {
-            this._popup.node.querySelector(".virtualPlayersContent")?.appendChild(element.querySelector("#virtualPlayersTable"));
+            this.element.find(".virtualPlayersContent").append(element.querySelector("#virtualPlayersTable"));
         }
     }
 
@@ -127,7 +109,7 @@ export class ManageVirtualPlayersPopup extends Popup
 
         this.resetVirtualPlayersTable();
 
-        this._popup.node.querySelector("table#virtualPlayersTable tbody").insertAdjacentHTML("beforeend", html);
+        this.element.find("table#virtualPlayersTable tbody").append(html);
         this.activateDataTable("virtualPlayersTable");
     };
 

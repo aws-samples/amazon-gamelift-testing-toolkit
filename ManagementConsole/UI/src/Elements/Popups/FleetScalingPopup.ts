@@ -53,13 +53,13 @@ export class FleetScalingPopup extends Popup
     {
         if (response.Errors.length==0)
         {
-            this._popup.node.querySelector("#capacityAlert").innerHTML = "Fleet capacities updated!";
-            this._popup.node.querySelector("#capacityAlert").className = "alert alert-success p-1";
+            this.element.find("#capacityAlert").html("Fleet capacities updated!");
+            this.element.find("#capacityAlert").attr("class", "alert alert-success p-1");
         }
         else
         {
-            this._popup.node.querySelector("#capacityAlert").innerHTML = response.Errors.join("<br/>");
-            this._popup.node.querySelector("#capacityAlert").className = "alert alert-danger p-1";
+            this.element.find("#capacityAlert").html(response.Errors.join("<br/>"));
+            this.element.find("#capacityAlert").attr("class", "alert alert-danger p-1");
 
         }
     };
@@ -68,13 +68,13 @@ export class FleetScalingPopup extends Popup
     {
         if (response.Errors.length==0)
         {
-            this._popup.node.querySelector("#scalingAlert").innerHTML = "Scaling policy updated!";
-            this._popup.node.querySelector("#scalingAlert").className = "alert alert-success p-1";
+            this.element.find("#scalingAlert").html("Scaling policy updated!");
+            this.element.find("#scalingAlert").attr("class", "alert alert-success p-1");
         }
         else
         {
-            this._popup.node.querySelector("#scalingAlert").innerHTML = response.Errors.join("<br/>");
-            this._popup.node.querySelector("#scalingAlert").className = "alert alert-danger p-1";
+            this.element.find("#scalingAlert").html(response.Errors.join("<br/>"));
+            this.element.find("#scalingAlert").attr("class", "alert alert-danger p-1");
 
         }
     };
@@ -83,19 +83,26 @@ export class FleetScalingPopup extends Popup
     {
         if (response.Errors.length==0)
         {
-            this._popup.node.querySelector("#scalingAlert").innerHTML = "Scaling policy deleted!";
-            this._popup.node.querySelector("#scalingAlert").className = "alert alert-success p-1";
+            this.element.find("#scalingAlert").html("Scaling policy deleted!");
+            this.element.find("#scalingAlert").attr("class", "alert alert-success p-1");
         }
         else
         {
-            this._popup.node.querySelector("#scalingAlert").innerHTML = response.Errors.join("<br/>");
-            this._popup.node.querySelector("#scalingAlert").className = "alert alert-danger p-1";
+            this.element.find("#scalingAlert").html(response.Errors.join("<br/>"));
+            this.element.find("#scalingAlert").attr("class", "alert alert-danger p-1");
 
         }
     };
 
+    resetElement(selector)
+    {
+        let el = $(this._html);
+        this.element.find(selector).html(el.find(selector).html());
+    }
+
     onGetFleetScalingResponse = (data) =>
     {
+        this.resetElement(".fleetScalingPopup");
         console.log(data);
         this._scalingData = data;
 
@@ -103,14 +110,14 @@ export class FleetScalingPopup extends Popup
 
         console.log(this._fleetData.ScalingPolicies);
 
-        this._popup.node.querySelector("p.title").insertAdjacentHTML("beforeend", "Adjust Scaling for Fleet \"" + this._fleetData.FleetAttributes.Name + "\"");
+        this.element.find("p.title").append("Adjust Scaling for Fleet \"" + this._fleetData.FleetAttributes.Name + "\"");
 
         data.FleetCapacities.map(locationCapacity=>{
             const tr = '<tr><td>' + locationCapacity.Location + '</td>' +
                 '<td>Min: <input style="max-width:50px" id="' + locationCapacity.Location + '-min" type="number" value="' + locationCapacity.InstanceCounts.MINIMUM + '"/> </td>' +
                 '<td>Desired: <input style="max-width:50px" id="' + locationCapacity.Location + '-desired" type="number" value="' + locationCapacity.InstanceCounts.DESIRED + '"/> </td>' +
                 '<td>Max: <input style="max-width:50px" id="' + locationCapacity.Location + '-max" type="number" value="' + locationCapacity.InstanceCounts.MAXIMUM + '"/> </td></tr>';
-            this._popup.node.querySelector("#fleetScalingTable").insertAdjacentHTML("beforeend", tr);
+            this.element.find("#fleetScalingTable").append(tr);
         });
 
         let scalingTargetValue=15;
@@ -125,7 +132,7 @@ export class FleetScalingPopup extends Popup
 
         scalingPolicyHtml += '</td><td>Maintain a buffer of <input style="max-width:50px" id="scalingTarget" type="number" value="'+scalingTargetValue.toString()+'"/> percent game session availability</td></tr>';
 
-        this._popup.node.querySelector("#scalingPoliciesTable").insertAdjacentHTML("beforeend", scalingPolicyHtml);
+        this.element.find("#scalingPoliciesTable").append(scalingPolicyHtml);
 
     };
 
@@ -146,17 +153,21 @@ export class FleetScalingPopup extends Popup
 
         if (event.target.id=="setScalingPolicyButton")
         {
-            this._popup.node.querySelector("#scalingAlert").innerHTML = "";
-            this._popup.node.querySelector("#scalingAlert").className = "alert p-1";
+            this.element.find("#scalingAlert").html("");
+            this.element.find("#scalingAlert").attr("class", "alert p-1");
 
-            let enabled = (this._popup.node.querySelector("#scalingEnabled") as HTMLInputElement).checked;
-            let scalingTarget = parseInt((this._popup.node.querySelector("#scalingTarget") as HTMLInputElement).value, 10);
-            if (!enabled /*&& activeScalingPolicies.length > 0*/) // need to delete scaling policy
+            let enabled = (this.element.find("#scalingEnabled")[0] as HTMLInputElement).checked;
+            let scalingTarget = parseInt((this.element.find("#scalingTarget")[0] as HTMLInputElement).value, 10);
+            if (!enabled && activeScalingPolicies.length > 0) // need to delete scaling policy
             {
                 Network.sendObject({Type:"DeleteScalingPolicy", FleetId:this._fleetData.FleetId, Name:activeScalingPolicies[0].Name})
+                setTimeout(()=>
+                {
+                    Network.sendObject({Type:"GetFleetScaling", FleetId:this._fleetData.FleetId});
+                }, 3000);
             }
             else
-            if ((enabled /*&& activeScalingPolicies.length==0*/) || (activeScalingPolicies.length>0 && activeScalingPolicies[0].TargetConfiguration.TargetValue!=scalingTarget)) // need to put scaling policy
+            if ((enabled && activeScalingPolicies.length==0) || (activeScalingPolicies.length>0 && activeScalingPolicies[0].TargetConfiguration.TargetValue!=scalingTarget)) // need to put scaling policy
             {
                 console.log("SHOULD UPDATE/SET POLICY!");
                 Network.sendObject({
@@ -169,11 +180,15 @@ export class FleetScalingPopup extends Popup
                     },
                     PolicyType:"TargetBased"
                 });
+                setTimeout(()=>
+                {
+                    Network.sendObject({Type:"GetFleetScaling", FleetId:this._fleetData.FleetId});
+                }, 3000);
             }
             else // no changes
             {
-                this._popup.node.querySelector("#scalingAlert").innerHTML = "No changes!";
-                this._popup.node.querySelector("#scalingAlert").className = "alert alert-danger p-1";
+                this.element.find("#scalingAlert").html("No changes, or scaling policy may be in the process of updating");
+                this.element.find("#scalingAlert").attr("class", "alert alert-danger p-1");
             }
         }
 
@@ -182,9 +197,9 @@ export class FleetScalingPopup extends Popup
             let changes=[];
             this._scalingData.FleetCapacities.map(locationCapacity=>
             {
-                let min = parseInt((this._popup.node.querySelector("#" + locationCapacity.Location + "-min") as HTMLInputElement).value);
-                let desired = parseInt((this._popup.node.querySelector("#" + locationCapacity.Location + "-desired") as HTMLInputElement).value);
-                let max = parseInt((this._popup.node.querySelector("#" + locationCapacity.Location + "-max") as HTMLInputElement).value);
+                let min = parseInt((this.element.find("#" + locationCapacity.Location + "-min")[0] as HTMLInputElement).value);
+                let desired = parseInt((this.element.find("#" + locationCapacity.Location + "-desired")[0] as HTMLInputElement).value);
+                let max = parseInt((this.element.find("#" + locationCapacity.Location + "-max")[0] as HTMLInputElement).value);
 
                 if (min!=locationCapacity.InstanceCounts.MINIMUM || desired!=locationCapacity.InstanceCounts.DESIRED || max!=locationCapacity.InstanceCounts.MAXIMUM)
                 {
@@ -194,13 +209,13 @@ export class FleetScalingPopup extends Popup
 
             if (changes.length==0)
             {
-                this._popup.node.querySelector("#capacityAlert").innerHTML = "No changes!";
-                this._popup.node.querySelector("#capacityAlert").className = "alert alert-danger p-1";
+                this.element.find("#capacityAlert").html("No changes!");
+                this.element.find("#capacityAlert").attr("class", "alert alert-danger p-1");
             }
             else
             {
-                this._popup.node.querySelector("#capacityAlert").innerHTML = "Adjusting scale...";
-                this._popup.node.querySelector("#capacityAlert").className = "alert p-1";
+                this.element.find("#capacityAlert").html("Adjusting scale...");
+                this.element.find("#capacityAlert").attr("class", "alert p-1");
 
                 let changeRequest = {Type:"AdjustFleetCapacity", Changes : changes};
                 Network.sendObject(changeRequest);

@@ -34,13 +34,13 @@ export class MatchmakingGraphPopup extends Popup
             "PlayersStarted",
             "TicketsTimedOut",
         ];
-        this._popup.node.querySelector("#timeperiod").addEventListener("change", this.refresh, false);
+        this.element.find("#timeperiod").on("change", this.refresh);
         options.map((option)=>
         {
-            this._popup.node.querySelector("#metric").innerHTML += '<option value="' + option + '">' + option + '</option>';
+            this.element.find("#metric").append('<option value="' + option + '">' + option + '</option>');
         })
 
-        this._popup.node.querySelector("#metric").addEventListener("change", this.refresh, false);
+        this.element.find("#metric").on("change", this.refresh);
 
         this.refresh();
     }
@@ -50,8 +50,8 @@ export class MatchmakingGraphPopup extends Popup
         console.log("GOT CLOUDWATCH GRAPH:", data);
 
         var html='<img style="display:block; margin-left:auto; margin-right:auto" src="data:image/png;base64, ' + data.Image + '"/>';
-        this._popup.node.querySelector("div#graphImg").innerHTML = html;
-        this._popup.node.querySelector("#timeperiod").addEventListener("change", this.refresh, false);
+        this.element.find("div#graphImg").html(html);
+        this.element.find("#timeperiod").on("change", this.refresh);
     }
 
 
@@ -85,10 +85,10 @@ export class MatchmakingGraphPopup extends Popup
             "view": "timeSeries",
             "stacked": false,
             "metrics": [
-                [ "AWS/GameLift", (this._popup.node.querySelector("#metric") as HTMLInputElement).value, "ConfigurationName", this._matchmakingConfigData.Name]
+                [ "AWS/GameLift", (this.element.find("#metric")[0] as HTMLInputElement).value, "ConfigurationName", this._matchmakingConfigData.Name]
             ],
             "region": "eu-west-1",
-            "start" : (this._popup.node.querySelector("#timeperiod") as HTMLInputElement).value
+            "start" : (this.element.find("#timeperiod")[0] as HTMLInputElement).value
         }
 
         Network.sendObject({Type:"GetCloudWatchGraph", MetricWidgetJson:JSON.stringify(image)});

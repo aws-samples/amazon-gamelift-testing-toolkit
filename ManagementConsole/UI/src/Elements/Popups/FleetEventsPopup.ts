@@ -35,7 +35,7 @@ export class FleetEventsPopup extends Popup
                 logLinkTd +
                 '</tr>';
         })
-        this._popup.node.querySelector("tbody").insertAdjacentHTML("beforeend", html);
+        this.element.find("tbody").append(html);
     }
 
     drawComplete() {

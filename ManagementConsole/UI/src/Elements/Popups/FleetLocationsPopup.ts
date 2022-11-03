@@ -49,15 +49,12 @@ export class FleetLocationsPopup extends Popup
     {
         this._fleetData = data.gameObject.Data as FleetData;
 
-        this._popup.node.querySelector("p.title").insertAdjacentHTML("beforeend", "Update Locations for Fleet \"" + this._fleetData.FleetAttributes.Name + "\"");
+        this.element.find("p.title").append("Update Locations for Fleet \"" + this._fleetData.FleetAttributes.Name + "\"");
 
         const homeRegionCode = this._fleetData.FleetUtilization.Location;
-        let tr = document.createElement('tr');
-        let td1 = document.createElement('td');
-        td1.textContent="Home region " + homeRegionCode;
-        tr.append(td1);
-        tr.append(document.createElement("td"))
-        document.querySelector("#fleetLocationsTable").append(tr);
+
+        let row = '<tr><td>' + "" + 'Home region ' + homeRegionCode + '</td><td></td></tr>';
+        this.element.find('#fleetLocationsTable').append(row);
 
         let activeLocations = this.getActiveLocations();
 
@@ -65,22 +62,19 @@ export class FleetLocationsPopup extends Popup
         {
            if (locationRecord.regionCode != homeRegionCode)
            {
-               let tr = document.createElement('tr');
-               let td1 = document.createElement('td');
-               td1.textContent=locationRecord.regionCode + " - " + locationRecord.regionTitle;
-               tr.append(td1);
-               let td2 = document.createElement('td');
-               let checkbox = document.createElement("input");
-               checkbox.setAttribute("type", "checkbox");
-               checkbox.setAttribute("id", "location-" + locationRecord.regionCode);
-               if (activeLocations.indexOf(locationRecord.regionCode)!==-1)
-               {
-                   checkbox.checked=true;
+               let regionTitle=locationRecord.regionCode + " - " + locationRecord.regionTitle;
+
+               let checkboxAttributes = {
+                   type: 'checkbox',
+                   id: 'location-' + locationRecord.regionCode
+               };
+
+               if (activeLocations.indexOf(locationRecord.regionCode)!==-1) {
+                   checkboxAttributes["checked"] = 'checked';
                }
-               td2.append(checkbox);
-               //td2.textContent=destination.DestinationArn;
-               tr.append(td2);
-               document.querySelector("#fleetLocationsTable").append(tr);
+
+               let row='<tr><td>' + regionTitle + '</td><td>' + $('<input>', checkboxAttributes).prop("outerHTML") + '</td></tr>';
+               this.element.find('#fleetLocationsTable').append(row);
            }
         });
     }
@@ -89,13 +83,13 @@ export class FleetLocationsPopup extends Popup
     {
         if (response.Errors.length==0)
         {
-            this._popup.node.querySelector("div.alert").innerHTML = "Fleet locations updated!";
-            this._popup.node.querySelector("div.alert").className = "alert alert-success p-1";
+            this.element.find('div.alert').html('Fleet locations updated!');
+            this.element.find('div.alert').attr("class", "alert alert-success p-1");
         }
         else
         {
-            this._popup.node.querySelector("div.alert").innerHTML = response.Errors.join("<br/>");
-            this._popup.node.querySelector("div.alert").className = "alert alert-danger p-1";
+            this.element.find('div.alert').html(response.Errors.join("<br/>"));
+            this.element.find('div.alert').attr("class", "alert alert-danger p-1");
 
         }
     };
@@ -119,7 +113,7 @@ export class FleetLocationsPopup extends Popup
             {
                 if (this._fleetData.FleetUtilization.Location!=locationRecord.regionCode)
                 {
-                    let isChecked = (this._popup.node.querySelector("#location-" + locationRecord.regionCode) as HTMLInputElement).checked;
+                    let isChecked = (this.element.find("#location-" + locationRecord.regionCode)[0] as HTMLInputElement).checked;
 
                     if (isChecked && activeLocations.indexOf(locationRecord.regionCode)===-1)
                     {
@@ -135,13 +129,13 @@ export class FleetLocationsPopup extends Popup
 
             if (addedLocations.length==0 && removedLocations.length==0)
             {
-                this._popup.node.querySelector("div.alert").innerHTML = "No changes!";
-                this._popup.node.querySelector("div.alert").className = "alert alert-danger p-1";
+                this.element.find('div.alert').html('No changes!');
+                this.element.find('div.alert').attr("class", "alert alert-danger p-1");
             }
             else
             {
-                this._popup.node.querySelector("div.alert").innerHTML = "Updating locations...";
-                this._popup.node.querySelector("div.alert").className = "alert p-1";
+                this.element.find('div.alert').html('Updating locations...');
+                this.element.find('div.alert').attr("class", "alert p-1");
 
                 let changeRequest = {Type:"UpdateFleetLocations", FleetId: this._fleetData.FleetId, AddedLocations : addedLocations, RemovedLocations: removedLocations};
                 Network.sendObject(changeRequest);

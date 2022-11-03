@@ -3,7 +3,6 @@
 
 import {PopupClickEvent} from "../../Events/PopupClickEvent";
 import {FleetScalingPopup} from "./FleetScalingPopup";
-import {GameSessionPopup} from "./GameSessionPopup";
 import {EventDispatcher} from "../../Events/EventDispatcher";
 import {Popup} from "../Abstract/Popup";
 import {Events} from "../../Events/Events";
@@ -47,7 +46,6 @@ export class PopupHandler
         PopupHandler.emitter.on(Events.SHOW_FLEET_LOCATIONS_POPUP, PopupHandler.onShowFleetLocationsPopup);
         PopupHandler.emitter.on(Events.SHOW_FLEET_EVENTS_POPUP, PopupHandler.onShowFleetEventsPopup);
         PopupHandler.emitter.on(Events.SHOW_GAME_SESSIONS_TABLE_POPUP, PopupHandler.onShowGameSessionsTablePopup);
-        PopupHandler.emitter.on(Events.SHOW_GAME_SESSION_POPUP, PopupHandler.onShowGameSessionPopup);
         PopupHandler.emitter.on(Events.SHOW_MANAGE_VIRTUAL_PLAYERS_POPUP, PopupHandler.onShowManageVirtualPlayersPopup);
         PopupHandler.emitter.on(Events.SHOW_FLEXMATCH_SIMULATOR_POPUP, PopupHandler.onShowFlexMatchSimulatorPopup);
         PopupHandler.emitter.on(Events.SHOW_LAUNCH_VIRTUAL_PLAYERS_POPUP, PopupHandler.onShowLaunchVirtualPlayersPopup);
@@ -111,8 +109,6 @@ export class PopupHandler
         }
         else
         {
-            //PopupHandler.popup = new MatchmakingPopup(PopupHandler.scene, 0, 0);
-            //PopupHandler.popup = new SimpleGraphPopup(PopupHandler.scene, 0, 0, "Graph Test");
             PopupHandler.popup = new MatchmakingGraphPopup(PopupHandler.scene, 0, 0);
             PopupHandler.scene.add.existing(PopupHandler.popup);
             PopupHandler.popup.show(event.gameObject._matchmakingConfig);
@@ -129,8 +125,6 @@ export class PopupHandler
         }
         else
         {
-            //PopupHandler.popup = new MatchmakingPopup(PopupHandler.scene, 0, 0);
-            //PopupHandler.popup = new SimpleGraphPopup(PopupHandler.scene, 0, 0, "Graph Test");
             PopupHandler.popup = new QueueGraphPopup(PopupHandler.scene, 0, 0);
             PopupHandler.scene.add.existing(PopupHandler.popup);
             PopupHandler.popup.show(event.gameObject._gameSessionQueue);
@@ -147,8 +141,6 @@ export class PopupHandler
         }
         else
         {
-            //PopupHandler.popup = new MatchmakingPopup(PopupHandler.scene, 0, 0);
-            //PopupHandler.popup = new SimpleGraphPopup(PopupHandler.scene, 0, 0, "Graph Test");
             PopupHandler.popup = new FleetGraphPopup(PopupHandler.scene, 0, 0);
             PopupHandler.scene.add.existing(PopupHandler.popup);
             PopupHandler.popup.show(event.gameObject.Data);
@@ -304,15 +296,6 @@ export class PopupHandler
             PopupHandler.popup.show(event);
         }
     };
-
-    static onShowGameSessionPopup = (event:PopupClickEvent) =>
-    {
-        PopupHandler.onClosePopup();
-        PopupHandler.popup = new GameSessionPopup(PopupHandler.scene, 0, 0);
-        PopupHandler.scene.add.existing(PopupHandler.popup);
-        PopupHandler.popup.show(event);
-    };
-
 
     static onShowFleetPopup = (event:PopupClickEvent) =>
     {

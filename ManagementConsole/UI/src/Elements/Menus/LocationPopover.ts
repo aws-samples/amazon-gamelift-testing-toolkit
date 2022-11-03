@@ -44,10 +44,8 @@ export class LocationPopover extends SimpleMenu {
         {
             locations.push(locationAttribute.LocationState.Location + " (" + locationAttribute.LocationState.Status.Value + ")");
         })
-        let p = document.createElement('p');
-        p.className="mb-0"
-        p.innerHTML=locations.join("<br/>");
-        this._element.node.querySelector(".locationPopover").append(p);
+
+        this.element.find('.locationPopover').append('<p class="mb-0">' + locations.join('<br/>') + '</p>');
     }
 
     handleClick(className: string) {

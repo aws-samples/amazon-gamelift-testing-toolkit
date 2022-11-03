@@ -42,45 +42,28 @@ export class LaunchVirtualPlayersPopup extends Popup
         this._emitter.off(Events.LAUNCH_VIRTUAL_PLAYERS_RESPONSE, this.onLaunchVirtualPlayersResponse);
     }
 
-    showSessionDetail = (gameSession) =>
-    {
-        console.log(gameSession);
-
-        this._popup.getChildByID("gameSessionId").innerHTML=gameSession.GameSessionId;
-        this._popup.getChildByID("ipAddress").innerHTML=gameSession.IpAddress;
-        this._popup.getChildByID("dnsName").innerHTML=gameSession.DnsName;
-        this._popup.getChildByID("region").innerHTML=gameSession.Location;
-        this._popup.getChildByID("currentPlayerSessions").innerHTML=gameSession.CurrentPlayerSessionCount + "/" + gameSession.MaximumPlayerSessionCount;
-        this._popup.getChildByID("instanceStatus").innerHTML=gameSession.Status.Value;
-        this._popup.getChildByID("creationDate").innerHTML=new Date(gameSession.CreationTime).toISOString();
-
-        this._popup.node.querySelector(".gameSessionsContent").className="gameSessionsContent hide";
-        this._popup.node.querySelector(".gameSessionLogsContent").className="gameSessionLogsContent hide";
-        this._popup.node.querySelector(".gameSessionDetailContent").className="gameSessionDetailContent";
-    }
-
     resetVirtualPlayersTable()
     {
         let parser = new DOMParser();
         let element = parser.parseFromString(this._html, "text/html");
 
-        this._popup.node.querySelector("#virtualPlayersTable_wrapper")?.remove();
-        if (this._popup.node.querySelector("table#virtualPlayersTable")==null)
+        this.element.find("#virtualPlayersTable_wrapper").remove();
+        if (this.element.find("table#virtualPlayersTable").length==0)
         {
-            this._popup.node.querySelector(".virtualPlayersContent")?.appendChild(element.querySelector("#virtualPlayersTable"));
+            this.element.find(".virtualPlayersContent").append(element.querySelector("#virtualPlayersTable"));
         }
     }
 
     showSuccessAlert = (text) =>
     {
-        this._popup.node.querySelector("#statusText").className = "alert alert-success";
-        this._popup.node.querySelector("#statusText").innerHTML = text;
+        this.element.find("#statusText").attr("class", "alert alert-success");
+        this.element.find("#statusText").html(text);
     }
 
     showFailureAlert = (text) =>
     {
-        this._popup.node.querySelector("#statusText").className = "alert alert-danger";
-        this._popup.node.querySelector("#statusText").innerHTML = text;
+        this.element.find("#statusText").attr("class", "alert alert-danger");
+        this.element.find("#statusText").html(text);
     }
 
     onLaunchVirtualPlayersResponse = (data) =>
@@ -121,25 +104,25 @@ export class LaunchVirtualPlayersPopup extends Popup
         }
         else
         if (event.target.id == "singleLaunchRadio" || event.target.id == "singleLaunchRadioLabel") {
-            this._popup.node.querySelector("#continuousLaunchOptions").className="hide";
+            this.element.find("#continuousLaunchOptions").attr("class", "hide");
         }
         else
         if (event.target.id == "continuousLaunchRadio" || event.target.id == "continuousLaunchRadioLabel") {
-            this._popup.node.querySelector("#continuousLaunchOptions").className="";
+            this.element.find("#continuousLaunchOptions").attr("class", "");
         }
         else
         if (event.target.id == "launchPlayers")
         {
-            let numPlayers = this._popup.getChildByID("numPlayers")["value"];
-            let taskDefinitionArn = this._popup.getChildByID("taskDefinition")["value"];
+            let numPlayers = this.element.find("#numPlayers").val();
+            let taskDefinitionArn = this.element.find("#taskDefinition").val();
             let fargateCapacityProvider = $("input[name='fargateCapacityProvider']:checked").val();
             if (numPlayers<1 || numPlayers>1000)
             {
-                this._popup.getChildByID("errorText").className="errorText";
+                this.element.find("#errorText").attr("class", "errorText");
             }
             else
             {
-                this._popup.getChildByID("errorText").className="errorText hide";
+                this.element.find("#errorText").attr("class", "errorText hide");
                 this._emitter.emit(Events.LAUNCH_PLAYERS, {numPlayers:numPlayers, taskDefinitionArn: taskDefinitionArn, capacityProvider:fargateCapacityProvider});
             }
         }

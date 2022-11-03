@@ -37,7 +37,6 @@ export  class PreloaderScene extends Phaser.Scene {
         this.load.html('launchVirtualPlayersPopup', 'assets/html/launchVirtualPlayersPopup.html');
         this.load.html('virtualPlayersTablePopup', 'assets/html/virtualPlayersTablePopup.html');
         this.load.html('matchmakingTicketHeadersTablePopup', 'assets/html/matchmakingTicketHeadersTablePopup.html');
-        this.load.html('gameSessionPopup', 'assets/html/gameSessionPopup.html');
         this.load.html('ruleSetsPopup', 'assets/html/ruleSetsPopup.html');
         this.load.html('flexMatchSimulatorPopup', 'assets/html/flexMatchSimulatorPopup.html');
         this.load.html('matchmakingConfigPopup', 'assets/html/matchmakingConfigPopup.html');

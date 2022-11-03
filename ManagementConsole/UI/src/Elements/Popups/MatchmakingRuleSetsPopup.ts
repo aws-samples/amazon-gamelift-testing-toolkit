@@ -35,7 +35,7 @@ export class MatchmakingRuleSetsPopup extends Popup
 
     resetTable()
     {
-        this._popup.node.querySelector(".ruleSetsContent").innerHTML="        <p class=\"title mb-3\"></p>\n" +
+        this.element.find(".ruleSetsContent").html("        <p class=\"title mb-3\"></p>\n" +
             "        <btn class=\"newRuleset btn btn-primary btn-sm\">New Ruleset</btn>" +
             "        <table id=\"ruleSetsTable\" class=\"table table-bordered table-striped mb-0\">\n" +
             "            <thead>\n" +
@@ -48,7 +48,7 @@ export class MatchmakingRuleSetsPopup extends Popup
             "            </thead>\n" +
             "            <tbody>\n" +
             "            </tbody>\n" +
-            "        </table>";
+            "        </table>");
     }
 
     setupEventListeners()
@@ -88,7 +88,7 @@ export class MatchmakingRuleSetsPopup extends Popup
                 '</tr>';
         });
 
-        this._popup.node.querySelector("table#ruleSetsTable tbody").insertAdjacentHTML("beforeend", html);
+        this.element.find("table#ruleSetsTable tbody").append(html);
         this.activateDataTable("ruleSetsTable");
     }
 
@@ -138,19 +138,19 @@ export class MatchmakingRuleSetsPopup extends Popup
 
     showSuccessAlert = (text) =>
     {
-        this._popup.node.querySelector("#statusText").className = "alert alert-success";
-        this._popup.node.querySelector("#statusText").innerHTML = text;
+        this.element.find("#statusText").attr("class", "alert alert-success");
+        this.element.find("#statusText").html(text);
     }
 
     showFailureAlert = (text) =>
     {
-        this._popup.node.querySelector("#statusText").className = "alert alert-danger";
-        this._popup.node.querySelector("#statusText").innerHTML = text;
+        this.element.find("#statusText").attr("class", "alert alert-danger");
+        this.element.find("#statusText").html(text);
     }
 
     hideStatusAlert = () =>
     {
-        this._popup.node.querySelector("#statusText").className = "alert hide";
+        this.element.find("#statusText").attr("class", "alert hide");
     }
 
     onPopupClick = async (event) => {
@@ -161,8 +161,8 @@ export class MatchmakingRuleSetsPopup extends Popup
             this._emitter.emit(Events.CLOSE_POPUP);
             this.setVisible(false);
         } else if (event.target.id == "backButton") {
-            this._popup.node.querySelector(".ruleSetsContent").className = "ruleSetsContent";
-            this._popup.node.querySelector(".ruleSetsDetailContent").className = "ruleSetsDetailContent hide";
+            this.element.find(".ruleSetsContent").attr("class", "ruleSetsContent");
+            this.element.find(".ruleSetsDetailContent").attr("class", "ruleSetsDetailContent hide");
             this.resetJson();
             this.refresh();
         } else if (event.target.className.indexOf("viewDetail") !== -1) {
@@ -219,10 +219,10 @@ export class MatchmakingRuleSetsPopup extends Popup
         var ruleSetBody = JSON.parse(ruleSet.RuleSetBody);
         this._editor.set(ruleSetBody);
 
-        this._popup.node.querySelector(".ruleSetsContent").className="ruleSetsContent hide";
-        this._popup.node.querySelector("#saveButton").className="btn btn-primary btn-sm";
-        this._popup.node.querySelector("#validateButton").className="btn btn-primary btn-sm";
-        this._popup.node.querySelector(".ruleSetsDetailContent").className="ruleSetsDetailContent";
+        this.element.find(".ruleSetsContent").attr("class", "ruleSetsContent hide");
+        this.element.find("#saveButton").attr("class", "btn btn-primary btn-sm");
+        this.element.find("#validateButton").attr("class", "btn btn-primary btn-sm");
+        this.element.find(".ruleSetsDetailContent").attr("class", "ruleSetsDetailContent");
     }
 
     newRuleSet = () =>
@@ -241,10 +241,10 @@ export class MatchmakingRuleSetsPopup extends Popup
 
         this._editor.set(emptyRuleset);
 
-        this._popup.node.querySelector(".ruleSetsContent").className="ruleSetsContent hide";
-        this._popup.node.querySelector("#saveButton").className="btn btn-primary btn-sm";
-        this._popup.node.querySelector("#validateButton").className="btn btn-primary btn-sm";
-        this._popup.node.querySelector(".ruleSetsDetailContent").className="ruleSetsDetailContent";
+        this.element.find(".ruleSetsContent").attr("class", "ruleSetsContent hide");
+        this.element.find("#saveButton").attr("class", "btn btn-primary btn-sm");
+        this.element.find("#validateButton").attr("class", "btn btn-primary btn-sm");
+        this.element.find(".ruleSetsDetailContent").attr("class", "ruleSetsDetailContent");
     }
 
     showRuleSetDetail = (ruleSet) =>
@@ -260,10 +260,10 @@ export class MatchmakingRuleSetsPopup extends Popup
 
         this._editor.set(JSON.parse(ruleSet.RuleSetBody));
 
-        this._popup.node.querySelector(".ruleSetsContent").className="ruleSetsContent hide";
-        this._popup.node.querySelector("#saveButton").className="btn btn-primary btn-sm hide";
-        this._popup.node.querySelector("#validateButton").className="btn btn-primary btn-sm hide";
-        this._popup.node.querySelector(".ruleSetsDetailContent").className="ruleSetsDetailContent";
+        this.element.find(".ruleSetsContent").attr("class", "ruleSetsContent hide");
+        this.element.find("#saveButton").attr("class", "btn btn-primary btn-sm hide");
+        this.element.find("#validateButton").attr("class", "btn btn-primary btn-sm hide");
+        this.element.find(".ruleSetsDetailContent").attr("class", "ruleSetsDetailContent");
     }
 
     deleteRuleSet = (ruleSet) =>
@@ -275,7 +275,7 @@ export class MatchmakingRuleSetsPopup extends Popup
 
     resetJson()
     {
-        this._popup.node.querySelector("#ruleSetJson").innerHTML="";
+        this.element.find("#ruleSetJson").html("");
     }
 
     activateDataTable(id) {

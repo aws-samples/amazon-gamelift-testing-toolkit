@@ -40,10 +40,10 @@ export class QueueEventsPopup extends Popup
         let parser = new DOMParser();
         let element = parser.parseFromString(this._html, "text/html");
 
-        this._popup.node.querySelector("#queueEventsTable_wrapper")?.remove();
-        if (this._popup.node.querySelector("table#queueEventsTable")==null)
+        this.element.find("#queueEventsTable_wrapper").remove();
+        if (this.element.find("table#queueEventsTable").length==0)
         {
-            this._popup.node.querySelector(".queueEventsContent")?.appendChild(element.querySelector("#queueEventsTable"));
+            this.element.find(".queueEventsContent").append(element.querySelector("#queueEventsTable"));
         }
     }
 
@@ -52,30 +52,27 @@ export class QueueEventsPopup extends Popup
         let parser = new DOMParser();
         let element = parser.parseFromString(this._html, "text/html");
 
-        this._popup.node.querySelector("#matchmakingTicketHeadersTable_wrapper")?.remove();
-        if (this._popup.node.querySelector("table#matchmakingTicketHeadersTable")==null)
+        this.element.find("#matchmakingTicketHeadersTable_wrapper").remove();
+        if (this.element.find("table#matchmakingTicketHeadersTable").length==0)
         {
-            this._popup.node.querySelector(".matchmakingTicketHeadersContent")?.appendChild(element.querySelector("#matchmakingTicketHeadersTable"));
+            this.element.find(".matchmakingTicketHeadersContent").append(element.querySelector("#matchmakingTicketHeadersTable"));
         }
     }
 
     resetTicketEventJson()
     {
-        this._popup.node.querySelector("#matchmakingTicketEventJson").innerHTML="";
+        this.element.find("#matchmakingTicketEventJson").html("");
     }
 
     resetTicketEventsTable()
     {
-        console.log(this._html);
-        //const original = new DOMElement(this.scene, 0, 0).createFromCache(this._htmlName);
-        console.log(this._popup.node.querySelector("table#matchmakingTicketEventsTable").outerHTML);
         let parser = new DOMParser();
         let element = parser.parseFromString(this._html, "text/html");
 
-        this._popup.node.querySelector("#matchmakingTicketEventsTable_wrapper")?.remove();
-        if (this._popup.node.querySelector("table#matchmakingTicketEventsTableTable")==null)
+        this.element.find("#matchmakingTicketEventsTable_wrapper").remove();
+        if (this.element.find("table#matchmakingTicketEventsTableTable").length==0)
         {
-            this._popup.node.querySelector(".matchmakingTicketEventsContent")?.appendChild(element.querySelector("#matchmakingTicketEventsTable"));
+            this.element.find(".matchmakingTicketEventsContent").append(element.querySelector("#matchmakingTicketEventsTable"));
         }
     }
 
@@ -111,13 +108,12 @@ export class QueueEventsPopup extends Popup
 
         this.resetTicketHeadersTable();
 
-        this._popup.node.querySelector("table#matchmakingTicketHeadersTable tbody").insertAdjacentHTML("beforeend", html);
+        this.element.find("table#matchmakingTicketHeadersTable tbody").append(html);
         this.activateDataTable("matchmakingTicketHeadersTable");
     }
 
     onGetMatchmakingTicketResponse = (ticket) =>
     {
-        console.log(ticket);
         let html="";
 
         this._ticketEvents = ticket.Ticket.Events;
@@ -131,9 +127,7 @@ export class QueueEventsPopup extends Popup
                 '</tr>'
         });
 
-        console.log(html);
-
-        this._popup.node.querySelector("table#matchmakingTicketEventsTable tbody").insertAdjacentHTML("beforeend", html);
+        this.element.find("table#matchmakingTicketEventsTable tbody").append(html);
 
         this.hideMatchmakingTicketsList();
         this.showMatchmakingTicketEventList();
@@ -184,7 +178,7 @@ export class QueueEventsPopup extends Popup
 
         this.resetTable();
 
-        this._popup.node.querySelector("table#queueEventsTable tbody").insertAdjacentHTML("beforeend", html);
+        this.element.find("table#queueEventsTable tbody").append(html);
         this.activateDataTable("queueEventsTable");
     }
 
@@ -214,21 +208,17 @@ export class QueueEventsPopup extends Popup
             this.backToMatchmakingTicketEventList();
         }
         else if (event.target.className.indexOf("viewDetail") !== -1) {
-            console.log(event.target.id);
             let queueEvent = this._queueEvents.filter(queueEvent => queueEvent.placementId == event.target.id)[0];
             this.showEventDetail(queueEvent);
             this.hideRefreshButton();
         }
         else if (event.target.className.indexOf("viewTicketEvent") !== -1)
         {
-            console.log("VIEWING TICKET DETAIL!");
-            console.log(event.target.id);
             let ticketEvent = this._ticketEvents.filter(ticketEvent => ticketEvent.id == event.target.id)[0];
             this.showTicketEventDetail(ticketEvent);
         }
         else if (event.target.className.indexOf("viewTicket") !== -1)
         {
-            console.log("VIEWING TICKET!");
             Network.sendObject({Type:"GetMatchmakingTicket", TicketId:event.target.id});
         }
         else if (event.target.className.indexOf("viewMatchmakingTickets") !== -1)
@@ -240,8 +230,6 @@ export class QueueEventsPopup extends Popup
 
     showEventDetail = (queueEvent) =>
     {
-        console.log(queueEvent);
-
         const container = document.getElementById("queueEventJson")
         const options:JSONEditorOptions = {mode:"view", name:"Queue Placement Event"}
 
@@ -271,17 +259,17 @@ export class QueueEventsPopup extends Popup
 
     showMatchmakingTicketJson()
     {
-        this._popup.node.querySelector(".matchmakingTicketEventDetailContent").className="matchmakingTicketEventDetailContent";
+        this.element.find(".matchmakingTicketEventDetailContent").attr("class","matchmakingTicketEventDetailContent");
     }
 
     hideMatchmakingTicketJson()
     {
-        this._popup.node.querySelector(".matchmakingTicketEventDetailContent").className="matchmakingTicketEventDetailContent hide";
+        this.element.find(".matchmakingTicketEventDetailContent").attr("class","matchmakingTicketEventDetailContent hide");
     }
 
     resetJson()
     {
-        this._popup.node.querySelector("#queueEventJson").innerHTML="";
+        this.element.find("#queueEventJson").html("");
     }
 
     backToQueueEventList()
@@ -315,52 +303,52 @@ export class QueueEventsPopup extends Popup
 
     showRefreshButton()
     {
-        this._popup.node.querySelector(".refreshButton").className="refreshButton";
+        this.element.find(".refreshButton").attr("class","refreshButton");
     }
 
     hideRefreshButton()
     {
-        this._popup.node.querySelector(".refreshButton").className="refreshButton hide";
+        this.element.find(".refreshButton").attr("class","refreshButton hide");
     }
 
     showQueueEventsList()
     {
-        this._popup.node.querySelector(".queueEventsContent").className = "queueEventsContent";
+        this.element.find(".queueEventsContent").attr("class","queueEventsContent");
     }
 
     hideQueueEventsList()
     {
-        this._popup.node.querySelector(".queueEventsContent").className = "queueEventsContent hide";
+        this.element.find(".queueEventsContent").attr("class","queueEventsContent hide");
     }
 
     showQueueEventJson()
     {
-        this._popup.node.querySelector(".queueEventDetailContent").className = "queueEventDetailContent";
+        this.element.find(".queueEventDetailContent").attr("class","queueEventDetailContent");
     }
 
     hideQueueEventJson()
     {
-        this._popup.node.querySelector(".queueEventDetailContent").className = "queueEventDetailContent hide";
+        this.element.find(".queueEventDetailContent").attr("class","queueEventDetailContent hide");
     }
 
     showMatchmakingTicketsList()
     {
-        this._popup.node.querySelector(".matchmakingTicketHeadersContent").className="matchmakingTicketHeadersContent";
+        this.element.find(".matchmakingTicketHeadersContent").attr("class","matchmakingTicketHeadersContent");
     }
 
     hideMatchmakingTicketsList()
     {
-        this._popup.node.querySelector(".matchmakingTicketHeadersContent").className="matchmakingTicketHeadersContent hide";
+        this.element.find(".matchmakingTicketHeadersContent").attr("class","matchmakingTicketHeadersContent hide");
     }
 
     showMatchmakingTicketEventList()
     {
-        this._popup.node.querySelector(".matchmakingTicketEventsContent").className="matchmakingTicketEventsContent";
+        this.element.find(".matchmakingTicketEventsContent").attr("class","matchmakingTicketEventsContent");
     }
 
     hideMatchmakingTicketEventList()
     {
-        this._popup.node.querySelector(".matchmakingTicketEventsContent").className="matchmakingTicketEventsContent hide";
+        this.element.find(".matchmakingTicketEventsContent").attr("class","matchmakingTicketEventsContent hide");
     }
 
     activateDataTable(id) {

@@ -52,27 +52,14 @@ export class GameSessionsTablePopup extends Popup
 
     showSessionDetail = (gameSession) =>
     {
-        console.log(gameSession);
+        this.element.find(".gameSessionsContent").attr("class","gameSessionsContent hide");
+        this.element.find(".gameSessionLogsContent").attr("class","gameSessionLogsContent hide");
+        this.element.find(".gameSessionDetailContent").attr("class","gameSessionDetailContent");
 
-        /*
-        this._popup.getChildByID("gameSessionId").innerHTML=gameSession.GameSessionId;
-        this._popup.getChildByID("ipAddress").innerHTML=gameSession.IpAddress;
-        this._popup.getChildByID("dnsName").innerHTML=gameSession.DnsName;
-        this._popup.getChildByID("region").innerHTML=gameSession.Location;
-        this._popup.getChildByID("currentPlayerSessions").innerHTML=gameSession.CurrentPlayerSessionCount + "/" + gameSession.MaximumPlayerSessionCount;
-        this._popup.getChildByID("instanceStatus").innerHTML=gameSession.Status.Value;
-        this._popup.getChildByID("creationDate").innerHTML=new Date(gameSession.CreationTime).toISOString();
-*/
-        this._popup.node.querySelector(".gameSessionsContent").className="gameSessionsContent hide";
-        this._popup.node.querySelector(".gameSessionLogsContent").className="gameSessionLogsContent hide";
-        this._popup.node.querySelector(".gameSessionDetailContent").className="gameSessionDetailContent";
-
-        const container = document.getElementById("gameSessionJson");
+        const container = this.element.find("#gameSessionJson")[0];
         container.innerHTML="";
         const options:JSONEditorOptions = {mode:"view", name:"Game Session JSON"}
-
         this._editor = new JSONEditor(container, options);
-
         this._editor.set(gameSession);
     }
 
@@ -112,7 +99,7 @@ export class GameSessionsTablePopup extends Popup
                 logLinkTd +
                 '</tr>';
         })
-        this._popup.node.querySelector("table#gameSessionsTable tbody").insertAdjacentHTML("beforeend", html);
+        this.element.find("table#gameSessionsTable tbody").append(html);
         this.activateDataTable("gameSessionsTable");
 
         if (this._currentGameSession)
@@ -124,47 +111,43 @@ export class GameSessionsTablePopup extends Popup
     resetLogsTable()
     {
         this.hideStatusAlert();
-        console.log(this._popup.node.querySelector("table#gameSessionLogsTable").outerHTML);
         let parser = new DOMParser();
         let element = parser.parseFromString(this._html, "text/html");
 
-        this._popup.node.querySelector("#gameSessionLogsTable_wrapper")?.remove();
-        if (this._popup.node.querySelector("table#gameSessionLogsTable")==null)
+        this.element.find("#gameSessionLogsTable_wrapper").remove();
+        if (this.element.find("table#gameSessionLogsTable").length==0)
         {
-            this._popup.node.querySelector(".gameSessionLogsContent")?.appendChild(element.querySelector("#gameSessionLogsTable"));
+            this.element.find(".gameSessionLogsContent").append(element.querySelector("#gameSessionLogsTable"));
         }
     }
 
     resetPlayerSessionTable()
     {
-        console.log(this._html);
-        //const original = new DOMElement(this.scene, 0, 0).createFromCache(this._htmlName);
-        console.log(this._popup.node.querySelector("table#playerSessionsTable").outerHTML);
         let parser = new DOMParser();
         let element = parser.parseFromString(this._html, "text/html");
 
-        this._popup.node.querySelector("#playerSessionsTable_wrapper")?.remove();
-        if (this._popup.node.querySelector("table#playerSessionsTable")==null)
+        this.element.find("#playerSessionsTable_wrapper").remove();
+        if (this.element.find("table#playerSessionsTable").length==0)
         {
-            this._popup.node.querySelector(".playerSessionsContent")?.appendChild(element.querySelector("#playerSessionsTable"));
+            this.element.find(".playerSessionsContent").append(element.querySelector("#playerSessionsTable"));
         }
     }
 
     showSuccessAlert = (text) =>
     {
-        this._popup.node.querySelector("#statusText").className = "alert alert-success";
-        this._popup.node.querySelector("#statusText").innerHTML = text;
+        this.element.find("#statusText").attr("class","alert alert-success");
+        this.element.find("#statusText").html(text);
     }
 
     showFailureAlert = (text) =>
     {
-        this._popup.node.querySelector("#statusText").className = "alert alert-danger";
-        this._popup.node.querySelector("#statusText").innerHTML = text;
+        this.element.find("#statusText").attr("class","alert alert-danger");
+        this.element.find("#statusText").html(text);
     }
 
     hideStatusAlert = () =>
     {
-        this._popup.node.querySelector("#statusText").className = "alert hide";
+        this.element.find("#statusText").attr("class","alert hide");
     }
 
     onGetGameSessionLogsResponse = (logResponse) =>
@@ -193,8 +176,8 @@ export class GameSessionsTablePopup extends Popup
             sel.append($("<option>").attr('value',logFile).text(logFile));
         });
 
-        this._popup.node.querySelector(".gameSessionsContent").className="gameSessionsContent hide";
-        this._popup.node.querySelector(".gameSessionLogsContent").className="gameSessionLogsContent";
+        this.element.find(".gameSessionsContent").attr("class","gameSessionsContent hide");
+        this.element.find(".gameSessionLogsContent").attr("class","gameSessionLogsContent");
 
         sel.on("change",  (e)=>
         {
@@ -217,7 +200,7 @@ export class GameSessionsTablePopup extends Popup
             html += '<tr><td>' + logStr + '</td></tr>'
         })
 
-        this._popup.node.querySelector("table#gameSessionLogsTable tbody").insertAdjacentHTML("beforeend", html);
+        this.element.find("table#gameSessionLogsTable tbody").append(html);
 
         this.activateDataTable("gameSessionLogsTable", {
             scrollY: "400px",
@@ -234,8 +217,8 @@ export class GameSessionsTablePopup extends Popup
     {
         //this.resetPlayerSessionTable();
         let html="";
-        this._popup.node.querySelector(".gameSessionsContent").className="gameSessionsContent hide";
-        this._popup.node.querySelector(".playerSessionsContent").className="playerSessionsContent";
+        this.element.find(".gameSessionsContent").attr("class","gameSessionsContent hide");
+        this.element.find(".playerSessionsContent").attr("class","playerSessionsContent");
         playerSessions.map(playerSession => {
             html += '<tr>' +
                 '<td>' + playerSession.CreationTime + '</td>'+
@@ -245,9 +228,9 @@ export class GameSessionsTablePopup extends Popup
                 '<td>' + playerSession.TerminationTime + '</td></tr>'
         });
 
-        this._popup.node.querySelector("table#playerSessionsTable tbody").insertAdjacentHTML("beforeend", html);
-        this._popup.node.querySelector(".gameSessionsContent").className="gameSessionsContent hide";
-        this._popup.node.querySelector(".playerSessionsContent").className="playerSessionsContent";
+        this.element.find("table#playerSessionsTable tbody").append(html);
+        this.element.find(".gameSessionsContent").attr("class","gameSessionsContent hide");
+        this.element.find(".playerSessionsContent").attr("class","playerSessionsContent");
         this.activateDataTable("playerSessionsTable");
     };
 
@@ -262,10 +245,10 @@ export class GameSessionsTablePopup extends Popup
         else
         if (event.target.id == "backButton")
         {
-            this._popup.node.querySelector(".gameSessionsContent").className="gameSessionsContent";
-            this._popup.node.querySelector(".gameSessionDetailContent").className="gameSessionDetailContent hide";
-            this._popup.node.querySelector(".gameSessionLogsContent").className="gameSessionLogsContent hide";
-            this._popup.node.querySelector(".playerSessionsContent").className="playerSessionsContent hide";
+            this.element.find(".gameSessionsContent").attr("class","gameSessionsContent");
+            this.element.find(".gameSessionDetailContent").attr("class","gameSessionDetailContent hide");
+            this.element.find(".gameSessionLogsContent").attr("class","gameSessionLogsContent hide");
+            this.element.find(".playerSessionsContent").attr("class","playerSessionsContent hide");
             this.resetLogsTable();
             this.resetPlayerSessionTable();
         }
@@ -289,19 +272,7 @@ export class GameSessionsTablePopup extends Popup
             Network.sendObject({Type:"GetPlayerSessions", GameSessionId:session.GameSessionId});
         }
     };
-/*
-    activateDataTable(id) {
-        // @ts-ignore
-        $('#'+id).DataTable({
-            scrollY: "400px",
-            scrollCollapse: true,
-            columnDefs: [
-                { width: 200, targets: 0 }
-            ],
-            order: [[ 0, "desc" ]]
-        });
-    }
-*/
+
     activateDataTable(id, config=null) {
         // @ts-ignore
         if ( ! $.fn.DataTable.isDataTable( '#'+id ) )

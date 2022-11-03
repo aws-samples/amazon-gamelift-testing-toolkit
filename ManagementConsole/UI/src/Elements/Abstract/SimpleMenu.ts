@@ -107,4 +107,9 @@ export abstract class SimpleMenu extends Phaser.GameObjects.Container
         this.menuVisible=false;
     }
 
+    get element()
+    {
+        return $(this._element.node);
+    }
+
 }

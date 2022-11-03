@@ -57,11 +57,7 @@ export class FleetMenu extends SimpleMenu {
 
         this._menuOptions.map((option)=>
         {
-            let a = document.createElement('a');
-            a.className=option.triggerEvent;
-            a.text=option.text;
-            a.href="#";
-            this._element.node.querySelector(".fleetMenu").append(a);
+            this.element.find(".fleetMenu").append('<a class="'+ option.triggerEvent + '" href="#">' + option.text + '</a>');
         })
     }
 

@@ -64,9 +64,13 @@ export abstract class Popup extends Phaser.GameObjects.Container
 
     }
 
+    get element()
+    {
+        return $(this._popup.node);
+    }
+
     show(event:PopupClickEvent)
     {
-        console.log("SHOWING POPUP", this, event);
         this.drawPopup();
 
         this.setPopupData(event);
@@ -89,7 +93,6 @@ export abstract class Popup extends Phaser.GameObjects.Container
     onPopupClick = async (event) => {
 
         event.stopPropagation();
-        console.log(event.target.className);
         switch (event.target.className) {
             case "closeButton":
                 this._emitter.emit(Events.CLOSE_POPUP);
@@ -109,7 +112,6 @@ export abstract class Popup extends Phaser.GameObjects.Container
     }
 
     public destroy() {
-        console.log("DESTROYING POPUP!");
         this._currentSubPopup?.removeEventListeners();
         this.removeEventListeners();
         super.destroy();

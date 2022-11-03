@@ -82,7 +82,6 @@ export class Events
     public static SHOW_QUEUE_FLEETS:string = "ShowQueueFleets";
     public static HIDE_QUEUE_FLEETS:string = "HideQueueFleets";
     public static SHOW_INSTANCE_POPUP:string = "ShowInstancePopup";
-    public static SHOW_GAME_SESSION_POPUP:string = "ShowGameSessionPopup";
     public static TOGGLE_FLEET_DISPLAY:string = "ToggleFleetDisplay";
     public static PLAYER_ADDED_TO_GAME_SESSION:string = "PlayerAddedToGameSession";
     public static CLICK:string = "Click";

@@ -18,18 +18,18 @@ export class SimpleJsonPopup extends Popup
 
     setPopupData(data:any)
     {
-        const container = document.getElementById("simpleJson")
-        this._popup.node.querySelector(".title").innerHTML=this._title;
-        const options:JSONEditorOptions = {mode:"view"}
+        const container = $("#simpleJson")[0];
+        $(".title").html(this._title);
 
-        console.log(data);
+        const options:JSONEditorOptions = {mode:"view"}
         const editor = new JSONEditor(container, options);
+
         editor.set(data);
         editor.expandAll();
     }
 
     resetJson()
     {
-        this._popup.node.querySelector("#simpleJson").innerHTML="";
+        this.element.find("#simpleJson").html("");
     }
 }

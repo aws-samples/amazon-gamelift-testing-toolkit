@@ -59,8 +59,6 @@ export class MatchmakingConfigPopup extends Popup
 
     onGetMatchmakingRulesetsResponse = (data) =>
     {
-
-        console.log(data);
         var optionHtml="";
         data?.map(ruleSet =>
         {
@@ -70,33 +68,31 @@ export class MatchmakingConfigPopup extends Popup
                 optionHtml += "selected=\"selected\" ";
             }
             optionHtml += "value=\"" + ruleSet.RuleSetName + "\">" + ruleSet.RuleSetName + "</option>";
-            console.log(ruleSet);
         });
 
-        this._popup.getChildByID("ruleSet").innerHTML=optionHtml;
+        this.element.find("#ruleSet").html(optionHtml);
     };
 
     showSuccessAlert = (text) =>
     {
-        this._popup.node.querySelector("#statusText").className = "alert alert-success";
-        this._popup.node.querySelector("#statusText").innerHTML = text;
+        this.element.find("#statusText").attr("class", "alert alert-success");
+        this.element.find("#statusText").html(text);
     }
 
     showFailureAlert = (text) =>
     {
-        this._popup.node.querySelector("#statusText").className = "alert alert-danger";
-        this._popup.node.querySelector("#statusText").innerHTML = text;
+        this.element.find("#statusText").attr("class", "alert alert-danger");
+        this.element.find("#statusText").html(text);
     }
 
     hideStatusAlert = () =>
     {
-        this._popup.node.querySelector("#statusText").className = "alert hide";
+        this.element.find("#statusText").attr("class", "alert hide");
     }
 
     onPopupClick = async (event) => {
 
         event.stopPropagation();
-        console.log(event.target);
         if (event.target.className == "closeButton") {
             this._emitter.emit(Events.CLOSE_POPUP);
             this.setVisible(false);
@@ -104,9 +100,7 @@ export class MatchmakingConfigPopup extends Popup
         else
         if (event.target.id == "updateConfig")
         {
-            let ruleSetName = this._popup.getChildByID("ruleSet")["value"];
-            console.log(ruleSetName);
-
+            let ruleSetName = this.element.find("#ruleSet").val();
             this.hideStatusAlert();
             Network.sendObject({"Type":"UpdateMatchmakingConfiguration", "RuleSetName": ruleSetName, "MatchmakingConfigName": this._matchmakingConfig.Name});
         }

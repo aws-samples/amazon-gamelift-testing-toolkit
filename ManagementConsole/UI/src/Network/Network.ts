@@ -114,8 +114,7 @@ export class Network
 
     public static sendObject(obj:Object)
     {
-        console.log("SENDING!");
-        console.log(obj);
+        console.log("SENDING!", obj);
         Network.socket.send(JSON.stringify(obj));
     }
 

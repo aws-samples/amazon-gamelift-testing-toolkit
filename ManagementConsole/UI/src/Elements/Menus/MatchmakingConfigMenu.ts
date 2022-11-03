@@ -10,7 +10,7 @@ import {MatchmakingConfigMenuButton} from "../Buttons/MatchmakingConfigMenuButto
 export class MatchmakingConfigMenu extends SimpleMenu {
 
     protected _mmConfig:MatchmakingConfig;
-    protected _html:string = '<div class="queueMenu"></div>';
+    protected _html:string = '<div class="mmConfigMenu"></div>';
 
     constructor(scene:Phaser.Scene, x:number, y:number, mmConfig:MatchmakingConfig) {
         super(scene, x, y);
@@ -49,11 +49,7 @@ export class MatchmakingConfigMenu extends SimpleMenu {
 
         this._menuOptions.map((option)=>
         {
-            let a = document.createElement('a');
-            a.className=option.triggerEvent;
-            a.text=option.text;
-            a.href="#";
-            this._element.node.querySelector(".queueMenu").append(a);
+            this.element.find(".mmConfigMenu").append('<a class="'+ option.triggerEvent + '" href="#">' + option.text + '</a>');
         })
     }
 
