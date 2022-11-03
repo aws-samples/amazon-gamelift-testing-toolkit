@@ -67,18 +67,26 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                             gameSessions.Add(gameSession);
                         }
                     }
-
-                    var locationAttributes = await gameLiftRequestHandler.GetFleetLocationAttributes(fleetId);
-
-                    var instances = new List<Instance>();
+                    
+                    var instances = new List<Instance>();           
                     var locationCapacities = new List<FleetCapacity>();
-                    foreach (var locationAttribute in locationAttributes)
+                    var locationAttributes = await gameLiftRequestHandler.GetFleetLocationAttributes(fleetId);
+                    if (locationAttributes != null)
                     {
-                        var locationCapacity = await gameLiftRequestHandler.GetFleetLocationCapacity(fleetId, locationAttribute.LocationState.Location);
-                        locationCapacities.Add(locationCapacity);
+                        foreach (var locationAttribute in locationAttributes)
+                        {
+                            var locationCapacity = await gameLiftRequestHandler.GetFleetLocationCapacity(fleetId, locationAttribute.LocationState.Location);
+                            if (locationCapacity != null)
+                            {
+                                locationCapacities.Add(locationCapacity);
+                            }
 
-                        var locationInstances = await gameLiftRequestHandler.GetFleetInstances(fleetId, locationAttribute.LocationState.Location);
-                        instances.AddRange(locationInstances);
+                            var locationInstances = await gameLiftRequestHandler.GetFleetInstances(fleetId, locationAttribute.LocationState.Location);
+                            if (locationInstances != null)
+                            {
+                                instances.AddRange(locationInstances);
+                            }
+                        }                        
                     }
 
                     var fleetData = new FleetData
@@ -122,7 +130,10 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             try
             {
                 var fleetIds = await gameLiftRequestHandler.GetFleetIds();
-                var gameSessions = new List<GameSession>();
+                if (fleetIds == null)
+                {
+                    return false;
+                }
                 
                 foreach (var fleetId in fleetIds)
                 {
@@ -130,14 +141,21 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                     var activeGameSessions = await gameLiftRequestHandler.GetGameSessions(fleetId, "ACTIVE");
                     var gameSessionTable = Table.LoadTable(dynamoDbClient, Environment.GetEnvironmentVariable("GameSessionTableName"));
 
-                    foreach (var gameSession in activeGameSessions)
+                    if (activeGameSessions != null)
                     {
-                        var item = Document.FromJson(JsonConvert.SerializeObject(gameSession));
-                        item["StatusValue"] = gameSession.Status.Value;
-                        await gameSessionTable.PutItemAsync(item);
-                        gameSessions.Add(gameSession);
+                        foreach (var gameSession in activeGameSessions)
+                        {
+                            var item = Document.FromJson(JsonConvert.SerializeObject(gameSession));
+                            item["StatusValue"] = gameSession.Status.Value;
+                            await gameSessionTable.PutItemAsync(item);
+                        }
                     }
 
+                    if (databaseActiveGameSessions == null)
+                    {
+                        continue;
+                    }
+                    
                     foreach (var dbGameSession in databaseActiveGameSessions)
                     {
                         var match = activeGameSessions.FirstOrDefault(gameSession => gameSession.GameSessionId == dbGameSession.GameSessionId);
