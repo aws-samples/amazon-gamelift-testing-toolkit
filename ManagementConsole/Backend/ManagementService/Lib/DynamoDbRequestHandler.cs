@@ -125,7 +125,6 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                     documentList = await search.GetNextSetAsync();
                     foreach (var document in documentList)
                     {
-                        //document.Remove("TimeToLive");
                         var queueEvent = JsonConvert.DeserializeObject<QueuePlacementEvent>(document.ToJson());
                         queueEvents.Add(queueEvent.Detail);
                     }
@@ -169,7 +168,6 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                     documentList = await search.GetNextSetAsync();
                     foreach (var document in documentList)
                     {
-                        //document.Remove("TimeToLive");
                         queueEvent = JsonConvert.DeserializeObject<QueuePlacementEvent>(document.ToJson());
                     }
                 } while (!search.IsDone);
@@ -209,7 +207,6 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                     documentList = await search.GetNextSetAsync();
                     foreach (var document in documentList)
                     {
-                        //document.Remove("TimeToLive");
                         tickets.Add(context.FromDocument<TicketTableDocument>(document));
                     }
                 } while (!search.IsDone);
@@ -248,7 +245,6 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                     documentList = await search.GetNextSetAsync();
                     foreach (var document in documentList)
                     {
-                        //document.Remove("TimeToLive");
                         tickets.Add(context.FromDocument<TicketTableDocument>(document));
                     }
                 } while (!search.IsDone);
@@ -282,8 +278,6 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                     documentList = await search.GetNextSetAsync();
                     foreach (var document in documentList)
                     {
-                        //document.Remove("TimeToLive");
-                        //matchResults.Add(context.FromDocument<MatchResultData>(document));
                         matchResults.Add(JsonConvert.DeserializeObject<MatchResultData>(document.ToJson()));
                     }
                 } while (!search.IsDone);
@@ -314,7 +308,6 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                 var documentList = await search.GetNextSetAsync();
                 foreach (var document in documentList)
                 {
-                    //document.Remove("TimeToLive");
                     LambdaLogger.Log(document.ToJson());
                     var player = JsonConvert.DeserializeObject<MatchmakingSimulationPlayer>(document.ToJson());
                     
@@ -355,7 +348,6 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                     documentList = await search.GetNextSetAsync();
                     foreach (var document in documentList)
                     {
-                        //document.Remove("TimeToLive");
                         tickets.Add(context.FromDocument<TicketTableDocument>(document));
                     }
                 } while (!search.IsDone);
@@ -388,8 +380,6 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                     foreach (var document in documentList)
                     {
                         playerProfiles.Add(JsonConvert.DeserializeObject<PlayerProfile>(document.ToJson()));
-                        //document.Remove("TimeToLive");
-                        //playerProfiles.Add(context.FromDocument<PlayerProfile>(document));
                     }
                 } while (!search.IsDone);
 
@@ -421,8 +411,6 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                     foreach (var document in documentList)
                     {
                         latencyProfiles.Add(JsonConvert.DeserializeObject<LatencyProfile>(document.ToJson()));
-                        //document.Remove("TimeToLive");
-                        //playerProfiles.Add(context.FromDocument<PlayerProfile>(document));
                     }
                 } while (!search.IsDone);
 
