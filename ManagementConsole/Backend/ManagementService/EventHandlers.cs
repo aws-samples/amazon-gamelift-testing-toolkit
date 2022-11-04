@@ -295,7 +295,7 @@ namespace ManagementConsoleBackend.ManagementService
                     case "MatchmakingCancelled":
                     case "MatchmakingSucceeded":
                         updateRequest.UpdateExpression =
-                            "ADD #events :eventId SET #time = :startTime, #lastEventType = :eventType, #matchmakingConfigArn = :matchmakingConfigArn";
+                            "ADD #events :eventId SET #time = :startTime, #lastEventType = :eventType, #matchmakingConfigArn = :matchmakingConfigArn, #timeToLive = :timeToLive";
                         updateRequest.ExpressionAttributeNames.Add("#lastEventType", "lastEventType");
                         updateRequest.ExpressionAttributeValues.Add(":eventType", new AttributeValue { S = flexMatchEvent.Detail.Type });
                         
