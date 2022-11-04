@@ -261,6 +261,8 @@ namespace ManagementConsoleBackend.ManagementService
         private async Task<bool> StoreFlexMatchEvent(string eventStr, FlexMatchEvent flexMatchEvent)
         {
             var dynamoDbClient = new AmazonDynamoDBClient();
+            var timeToLive = (Utils.GetUnixTimestamp() + (86400 * 7));
+            
             foreach (var ticket in flexMatchEvent.Detail.Tickets)
             {
                 // add event id to ticket log table
@@ -268,12 +270,13 @@ namespace ManagementConsoleBackend.ManagementService
                 {
                     TableName = Environment.GetEnvironmentVariable("TicketLogTableName"),
                     Key = new Dictionary<string, AttributeValue>() {{"TicketId", new AttributeValue {S = ticket.TicketId}}},
-                    UpdateExpression = "ADD #events :eventId SET #time = :startTime, #matchmakingConfigArn = :matchmakingConfigArn",
+                    UpdateExpression = "ADD #events :eventId SET #time = :startTime, #matchmakingConfigArn = :matchmakingConfigArn, #timeToLive = :timeToLive",
                     ExpressionAttributeNames = new Dictionary<string, string>
                     {
                         {"#events", "events"},
                         {"#time", "time"},
                         {"#matchmakingConfigArn", "matchmakingConfigArn"},
+                        {"#timeToLive", "TimeToLive"},
                         
                     },
                     ExpressionAttributeValues = new Dictionary<string, AttributeValue>()
@@ -281,6 +284,7 @@ namespace ManagementConsoleBackend.ManagementService
                         {":eventId",new AttributeValue { SS = {flexMatchEvent.Id.ToString()}}},
                         {":startTime",new AttributeValue { S = ticket.StartTime.ToString("yyyy-MM-ddTHH:mm:ss.fffZ") }},
                         {":matchmakingConfigArn",new AttributeValue { S = flexMatchEvent.Resources[0] }},
+                        {":timeToLive", new AttributeValue { N = timeToLive.ToString() }},
                     },
                 };
 
@@ -331,7 +335,7 @@ namespace ManagementConsoleBackend.ManagementService
                 var item = Document.FromJson(eventStr);
                 item["date"] = flexMatchEvent.Time.DateTime.ToString("yyyy-MM-dd");
                 item["time-id"] = flexMatchEvent.Time.DateTime.ToString("s")+"Z" + "-" + flexMatchEvent.Id;
-                item["TimeToLive"] = (Utils.GetUnixTimestamp() + (86400 * 7));
+                item["TimeToLive"] = timeToLive;
                 LambdaLogger.Log("SAVING:" + JsonConvert.SerializeObject(item));
                 await eventLogTable.PutItemAsync(item);
                 LambdaLogger.Log("SAVED!");
