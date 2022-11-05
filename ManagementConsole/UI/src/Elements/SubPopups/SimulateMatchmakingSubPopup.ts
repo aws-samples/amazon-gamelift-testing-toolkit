@@ -129,9 +129,9 @@ export class SimulateMatchmakingSubPopup extends SubPopup
                 }
             });
 
-
-            let i=2;
-            columnToggleHtml+='<a class="toggle-vis" data-column="' + i + '">Player ID</a> - ';
+            columnToggleHtml+='<a class="toggle-vis" data-column="2">Player ID</a> - ';
+            columnToggleHtml+='<a class="toggle-vis" data-column="3">Match Time</a> - ';
+            let i=3;
             playerAttributes.map(playerAttributeName =>
             {
                 i++;
@@ -171,6 +171,7 @@ export class SimulateMatchmakingSubPopup extends SubPopup
                     '<td>' + player.MatchedTeam + '</td>'+
                     '<td>' + player.ProfileName + '</td>'+
                     '<td>' + player.PlayerId + '</td>'+
+                    '<td>' + (player.EndMatchTime-player.StartMatchTime) + ' seconds</td>'+
                     attributeHtml +
                     '</tr>'
             });
@@ -341,8 +342,12 @@ export class SimulateMatchmakingSubPopup extends SubPopup
             this._matches[matchResult.MatchId] = matchResult;
             let matchPlayerText="";
             let matchPlayers={};
+            let totalMatchTime=0;
+            let totalPlayers=0;
             matchResult.Players.map(player =>
             {
+                let timeTaken = player.EndMatchTime - player.StartMatchTime;
+                totalMatchTime+=timeTaken;
                 if (matchPlayers[player.MatchedTeam]==undefined)
                 {
                     matchPlayers[player.MatchedTeam]={};
@@ -352,6 +357,7 @@ export class SimulateMatchmakingSubPopup extends SubPopup
                     matchPlayers[player.MatchedTeam][player["ProfileName"]]=0;
                 }
                 matchPlayers[player.MatchedTeam][player["ProfileName"]]++;
+                totalPlayers++;
             });
 
             Object.keys(matchPlayers).map(matchedTeam=>
@@ -372,6 +378,7 @@ export class SimulateMatchmakingSubPopup extends SubPopup
                 '<td>' + matchResult.Date + '</td>'+
                 '<td>' + matchResult.MatchId + '</td>'+
                 '<td>' + matchPlayerText + '</td>'+
+                '<td>' + (totalMatchTime/totalPlayers).toFixed(1) + ' seconds</td>'+
                 viewMatchInfoTd +
                 //viewRuleEvaluationMetricsTd +
                 //viewMatchTicketsTd +

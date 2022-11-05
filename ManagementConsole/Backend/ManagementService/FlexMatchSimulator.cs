@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
+using Amazon.DynamoDBv2.Model;
 using Amazon.GameLift;
 using Amazon.GameLift.Model;
 using Amazon.Lambda.Core;
@@ -15,6 +16,7 @@ using ManagementConsoleBackend.Common;
 using ManagementConsoleBackend.ManagementService.Data;
 using ManagementConsoleBackend.ManagementService.Lib;
 using Newtonsoft.Json;
+using AttributeValue = Amazon.DynamoDBv2.Model.AttributeValue;
 
 namespace ManagementConsoleBackend.ManagementService
 {
@@ -211,7 +213,7 @@ namespace ManagementConsoleBackend.ManagementService
                 if (playersByTimeDelay.ContainsKey(secondsPassed))
                 {
                     LambdaLogger.Log(DateTime.Now.ToLongTimeString() + " REQUESTING " + playersByTimeDelay[secondsPassed].Count + " PLAYERS");
-                    await StartMatching(playersByTimeDelay[secondsPassed], gameLiftRequestHandler, flexMatchSimulatorArn);
+                    await StartMatching(playersByTimeDelay[secondsPassed], gameLiftRequestHandler, flexMatchSimulatorArn, simulation.SimulationId);
                 }
                 System.Threading.Thread.Sleep(1000);
                 secondsPassed++;
@@ -222,7 +224,7 @@ namespace ManagementConsoleBackend.ManagementService
             return true;
         }
     
-        private async Task<bool> StartMatching(List<Player> players, GameLiftRequestHandler gameLiftRequestHandler, string flexMatchSimulatorArn)
+        private async Task<bool> StartMatching(List<Player> players, GameLiftRequestHandler gameLiftRequestHandler, string flexMatchSimulatorArn, string simulationId)
         {
             var errors = new List<string>();
             
@@ -248,6 +250,144 @@ namespace ManagementConsoleBackend.ManagementService
 
             return true;
         }
+        
+               
+        public async Task<bool> HandleSimulatorFlexMatchEvent(FlexMatchEvent flexMatchEvent)
+        {
+            var dynamoDbClient = new AmazonDynamoDBClient();
+
+            var updateRequest = new UpdateItemRequest
+            {
+                TableName = Environment.GetEnvironmentVariable("MatchmakingSimulationTableName"),
+                Key = new Dictionary<string, AttributeValue>()
+                    {{"SimulationId", new AttributeValue {S = flexMatchEvent.Detail.CustomEventData}}},
+                UpdateExpression = "SET #eventType = #eventType + :incr",
+                ExpressionAttributeNames = new Dictionary<string, string>
+                {
+                },
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>()
+                {
+                    {":incr", new AttributeValue {N = "1"}},
+                }
+            };
+
+            switch (flexMatchEvent.Detail.Type)
+            {
+                case "PotentialMatchCreated":
+                    updateRequest.ExpressionAttributeNames.Add("#eventType", "PotentialMatchCreatedEvents");
+                    break;
+                
+                case "MatchmakingSearching":
+                    updateRequest.ExpressionAttributeNames.Add("#eventType", "MatchmakingSearchingEvents");
+                    break; 
+                
+                case "MatchmakingTimedOut":
+
+                    updateRequest.UpdateExpression += ", #matchesFailed = #matchesFailed + :incr, #playersFailed = #playersFailed + :playersFailed";
+                    updateRequest.ExpressionAttributeNames.Add("#eventType", "MatchmakingTimedOutEvents");
+                    updateRequest.ExpressionAttributeNames.Add("#playersFailed", "PlayersFailed");
+                    updateRequest.ExpressionAttributeNames.Add("#matchesFailed", "MatchesFailed");
+                    updateRequest.ExpressionAttributeValues.Add(":playersFailed", new AttributeValue {N = flexMatchEvent.Detail.GameSessionInfo.Players.Count.ToString() });
+                    break; 
+
+                case "MatchmakingFailed":
+                    updateRequest.UpdateExpression += ", #matchesFailed = #matchesFailed + :incr, #playersFailed = #playersFailed + :playersFailed";
+                    updateRequest.ExpressionAttributeNames.Add("#eventType", "MatchmakingFailedEvents");
+                    updateRequest.ExpressionAttributeNames.Add("#playersFailed", "PlayersFailed");
+                    updateRequest.ExpressionAttributeValues.Add(":playersFailed", new AttributeValue {N = flexMatchEvent.Detail.GameSessionInfo.Players.Count.ToString() });
+                    updateRequest.ExpressionAttributeNames.Add("#matchesFailed", "MatchesFailed");
+                    break; 
+                
+                case "MatchmakingCancelled":
+                    updateRequest.UpdateExpression += ", #matchesFailed = #matchesFailed + :incr, #playersFailed = #playersFailed + :playersFailed";
+                    updateRequest.ExpressionAttributeNames.Add("#eventType", "MatchmakingCancelledEvents");
+                    updateRequest.ExpressionAttributeNames.Add("#playersFailed", "PlayersFailed");
+                    updateRequest.ExpressionAttributeNames.Add("#matchesFailed", "MatchesFailed");
+                    updateRequest.ExpressionAttributeValues.Add(":playersFailed", new AttributeValue {N = flexMatchEvent.Detail.GameSessionInfo.Players.Count.ToString() });
+                    break; 
+                
+                case "MatchmakingSucceeded":
+                    updateRequest.UpdateExpression += ", #matchesMade = #matchesMade + :incr, #playersMatched = #playersMatched + :playersMatched";
+                    updateRequest.ExpressionAttributeNames.Add("#eventType", "MatchmakingSucceededEvents");
+                    updateRequest.ExpressionAttributeNames.Add("#playersMatched", "PlayersMatched");
+                    updateRequest.ExpressionAttributeNames.Add("#matchesMade", "MatchesMade");
+                    updateRequest.ExpressionAttributeValues.Add(":playersMatched", new AttributeValue {N = flexMatchEvent.Detail.GameSessionInfo.Players.Count.ToString() });
+                    break;                    
+            }
+            
+            try
+            {
+                await dynamoDbClient.UpdateItemAsync(updateRequest);
+            }
+            catch (Exception e)
+            {
+                LambdaLogger.Log(e.Message);
+            }
+
+            await StoreSimulationResult(flexMatchEvent);
+            
+            return true;
+
+        }
+        
+        private async Task<bool> StoreSimulationResult(FlexMatchEvent flexMatchEvent)
+        {
+            var dynamoDbClient = new AmazonDynamoDBClient();
+            var dynamoDbRequestHandler = new DynamoDbRequestHandler(dynamoDbClient);
+            
+            var simulationResultsTable =
+                Table.LoadTable(dynamoDbClient, Environment.GetEnvironmentVariable("SimulationResultsTableName"));
+
+            var result = new MatchResultData();
+            if (flexMatchEvent.Detail.Type == "PotentialMatchCreated")
+            {
+                result.SimulationId = flexMatchEvent.Detail.CustomEventData;
+                result.MatchId = flexMatchEvent.Detail.MatchId;
+                result.RuleEvaluationMetrics = flexMatchEvent.Detail.RuleEvaluationMetrics;
+                result.Date = flexMatchEvent.Time.ToString("s")+"Z";
+                var playerStartTimes = new Dictionary<string, long>();
+                if (flexMatchEvent.Detail.Tickets != null)
+                {
+                    foreach (var ticket in flexMatchEvent.Detail.Tickets)
+                    {
+                        playerStartTimes.Add(ticket.Players[0].PlayerId, ticket.StartTime.ToUnixTimeSeconds());
+                    }
+                }
+
+                if (flexMatchEvent.Detail.GameSessionInfo != null)
+                {
+                    result.NumPlayers = flexMatchEvent.Detail.GameSessionInfo.Players.Count;
+                    result.Players = new List<MatchmakingSimulationPlayer>();
+
+                    foreach (var player in flexMatchEvent.Detail.GameSessionInfo.Players)
+                    {
+                        LambdaLogger.Log("TRYING TO GET PLAYER " + player.PlayerId);
+                        var playerData = await dynamoDbRequestHandler.GetDatabaseSimulationPlayer(result.SimulationId, player.PlayerId);
+                        playerData.StartMatchTime = playerStartTimes[player.PlayerId];
+                        playerData.EndMatchTime = flexMatchEvent.Time.ToUnixTimeSeconds();
+                        playerData.MatchedTeam = player.Team;
+                        playerData.MatchedSuccessfully = true;
+                        LambdaLogger.Log(JsonConvert.SerializeObject(playerData));
+                        result.Players.Add(playerData);
+                    }
+                }
+            }
+            else
+            {
+                return false;
+            }
+            
+            try
+            {
+                var item = Document.FromJson(JsonConvert.SerializeObject(result));
+                await simulationResultsTable.PutItemAsync(item);
+            }
+            catch (Exception e)
+            {
+                LambdaLogger.Log(e.Message);
+            }
+            
+            return true;
+        }
     }
-    
 }

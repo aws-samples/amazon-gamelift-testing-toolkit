@@ -83,6 +83,10 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public Player PlayerData;
         public string LatencyProfileId;
         public int TimeDelay;
+        public bool MatchedSuccessfully = false;
+        public long StartMatchTime;
+        public long EndMatchTime;
+        
     }
 
     public class PlayerAttribute
