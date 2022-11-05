@@ -215,7 +215,12 @@ export class Fleet extends BaseContainer
         })
         //console.log(gameSessionStats);
         //console.log(instanceStats);
-        this._statsText.text = "Total Instances: " + instanceStats["TOTAL"] + "\n";
+        let percentAvailableGameSessions = this._fleet.Metrics["PercentAvailableGameSessions"] != undefined ? this._fleet.Metrics["PercentAvailableGameSessions"] : "-";
+        let availableGameSessions = this._fleet.Metrics["AvailableGameSessions"] != undefined ? this._fleet.Metrics["AvailableGameSessions"] : "-";
+
+        this._statsText.text = "Percent Available Game Sessions: " + percentAvailableGameSessions + "\n";
+        this._statsText.text += "Available Game Sessions: " + availableGameSessions + "\n";
+        this._statsText.text += "Total Instances: " + instanceStats["TOTAL"] + "\n";
         this._statsText.text += "Active Instances: " + instanceStats["ACTIVE"] + "\n";
         this._statsText.text += "Pending Instances: " + instanceStats["PENDING"] + "\n";
         this._statsText.text += "Total Game Sessions: " + gameSessionStats["TOTAL"] + "\n";

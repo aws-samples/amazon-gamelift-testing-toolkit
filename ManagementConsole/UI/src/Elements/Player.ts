@@ -321,4 +321,16 @@ export class Player extends Container
     {
         console.log("OVER PLAYER", this._playerId, this.playerState, this._eventHistory);
     };
+
+    showPlayer()
+    {
+        this.visible=true;
+        this._sprite.visible=true;
+    }
+
+    hidePlayer()
+    {
+        this.visible=false;
+        this._sprite.visible=false;
+    }
 }

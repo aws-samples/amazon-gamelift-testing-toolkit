@@ -31,15 +31,6 @@ namespace ManagementConsoleBackend.ManagementService.Data
     
     public class GameLiftStateEventDetail
     {
-        //public List<GameSession> GameSessions = new List<GameSession>();
-        //public List<FleetCapacity> FleetCapacities = new List<FleetCapacity>();
-        //public List<FleetUtilization> FleetUtilization = new List<FleetUtilization>();
-        //public List<Event> FleetEvents = new List<Event>();
-        //public List<FleetAttributes> FleetAttributes = new List<FleetAttributes>();
-        //public List<LocationAttributes> LocationAttributes = new List<LocationAttributes>();
-        //public List<RuntimeConfiguration> RuntimeConfigurations = new List<RuntimeConfiguration>();
-        //public List<Instance> Instances = new List<Instance>();
-        //public List<ScalingPolicy> ScalingPolicies = new List<ScalingPolicy>();
         public List<FleetData> FleetData = new List<FleetData>();
         public List<MatchmakingConfiguration> MatchmakingConfigurations = new List<MatchmakingConfiguration>();
         public MatchmakingConfiguration MatchmakingSimulator = new MatchmakingConfiguration();
@@ -60,5 +51,6 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public List<Event> FleetEvents = new List<Event>();
         public List<GameSession> GameSessions = new List<GameSession>();
         public List<Instance> Instances = new List<Instance>();
+        public Dictionary<string, double> Metrics = new Dictionary<string, double>();
     }
 }

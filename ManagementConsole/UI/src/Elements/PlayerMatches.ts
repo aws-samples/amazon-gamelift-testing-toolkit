@@ -40,13 +40,13 @@ export class PlayerMatches
     public static hideMatches()
     {
         let matches = Object.values(PlayerMatches._matches);
-        matches?.map(match => match.visible=false);
+        matches?.map(match => match.hideMatch());
     }
 
     public static showMatches()
     {
         let matches = Object.values(PlayerMatches._matches);
-        matches?.map(match => match.visible=true);
+        matches?.map(match => match.showMatch());
     }
 
     public static destroyMatch(matchId:string)

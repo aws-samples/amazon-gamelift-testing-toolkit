@@ -101,6 +101,7 @@ export namespace DataTypes
         FleetEvents:            FleetEvent[];
         GameSessions:           GameSession[];
         Instances:              Instance[];
+        Metrics:                {};
     }
 
     export interface ScalingPolicy {

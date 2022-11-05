@@ -341,7 +341,9 @@ namespace ManagementConsoleInfra.Lib
                         "gamelift:DescribeScalingPolicies",
                         "gamelift:DescribeFleetAttributes",
                         "gamelift:DescribeFleetEvents",
-                        "gamelift:DescribeFleetUtilization"
+                        "gamelift:DescribeFleetUtilization",
+                        "cloudwatch:ListMetrics",
+                        "cloudwatch:GetMetricData",
                     }
                 }));
             // Adding specific CDK-Nag Suppressions
@@ -738,6 +740,8 @@ namespace ManagementConsoleInfra.Lib
                         "ecs:DescribeTaskDefinition",
                         "cloudwatch:GetMetricWidgetImage",
                         "cloudwatch:GetLogEvents",
+                        "cloudwatch:ListMetrics",
+                        "cloudwatch:GetMetricData",
                         "states:ListExecutions",
                         "iam:PassRole",
                         "gamelift:DescribeFleetCapacity",

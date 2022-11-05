@@ -102,6 +102,7 @@ namespace ManagementConsoleBackend.ManagementService.Data
     {
         public new string Type = "GetState";
         public GameLiftStateEventDetail State;
+        public bool IsDb = false;
     }
     
     public class ServerMessageTerminateVirtualPlayer : ServerMessage

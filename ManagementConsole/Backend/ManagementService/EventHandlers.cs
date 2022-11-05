@@ -32,7 +32,8 @@ namespace ManagementConsoleBackend.ManagementService
 
             var serverMessage = new ServerMessageGetState
             {
-                State = stateEvent?.Detail
+                State = stateEvent?.Detail,
+                IsDb = false,
             };
 
             await ManagementService.SendToActiveConnections(serverMessage);

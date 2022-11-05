@@ -141,7 +141,6 @@ export class PlayerMatch extends BaseContainer
         this._configArn=configArn;
     }
 
-
     public get playerIds():string[]
     {
         return Object.keys(this._players);
@@ -255,6 +254,17 @@ export class PlayerMatch extends BaseContainer
             this.moveToNextDestination();
         });
     }
+
+    public showMatch()
+    {
+        this.visible=true;
+    }
+
+    public hideMatch()
+    {
+        this.visible=false;
+    }
+
 
     public moveToCoordinates(destinationX:number, destinationY:number, disappearAfter:boolean=false, delay:number=0, callback:Function=null)
     {

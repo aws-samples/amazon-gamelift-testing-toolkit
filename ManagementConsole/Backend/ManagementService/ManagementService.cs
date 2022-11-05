@@ -3,11 +3,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Amazon.CloudWatch;
-using Amazon.CloudWatch.Model;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.ECS;
@@ -36,35 +34,6 @@ namespace ManagementConsoleBackend.ManagementService
         private string _connectionId;
         private ClientMessage _body;
 
-        // Authorizer function called to secure API
-        public APIGatewayCustomAuthorizerResponse Authorizer(APIGatewayCustomAuthorizerRequest request, ILambdaContext context)
-        {
-            LambdaLogger.Log(JsonSerializer.Serialize(request));
-            LambdaLogger.Log(JsonSerializer.Serialize(context));
-
-            var token = Environment.GetEnvironmentVariable("AuthorizerToken");
-            var userPoolId = Environment.GetEnvironmentVariable("UserPoolId");
-            LambdaLogger.Log(userPoolId);
-            var authorized = (!string.IsNullOrEmpty(token) && request.QueryStringParameters["Auth"] == token) ? true : false;
-            
-            return new APIGatewayCustomAuthorizerResponse
-            {
-                PrincipalID = "me",
-                PolicyDocument = new APIGatewayCustomAuthorizerPolicy
-                {
-                    Version = "2012-10-17",
-                    Statement = new List<APIGatewayCustomAuthorizerPolicy.IAMPolicyStatement>() {
-                        new APIGatewayCustomAuthorizerPolicy.IAMPolicyStatement
-                        {
-                            Action = new HashSet<string>(){"execute-api:Invoke"},
-                            Effect = authorized ? "Allow" : "Deny",
-                            Resource = new HashSet<string>(){  request.MethodArn } // resource arn here
-                        }
-                    },
-                }
-            };
-        }
-        
         public async Task<CfnResponse> PopulateConfigData(CfnRequest request, ILambdaContext context)
         {
             LambdaLogger.Log(JsonConvert.SerializeObject(request));
@@ -180,7 +149,7 @@ namespace ManagementConsoleBackend.ManagementService
             _request = request;
             _context = context;
             var dynamoDbClient = new AmazonDynamoDBClient();
-            
+
             var stageServiceUrl = Environment.GetEnvironmentVariable("StageServiceUrl");
             var errorList = new List<string>();
             
@@ -223,6 +192,7 @@ namespace ManagementConsoleBackend.ManagementService
                     var gameLiftRequestHandler = new GameLiftRequestHandler(new AmazonGameLiftClient());
                     var dynamoDbRequestHandler = new DynamoDbRequestHandler(dynamoDbClient);
                     var virtualPlayersHandler = new VirtualPlayersHandler(new AmazonECSClient());
+                    var cloudWatchRequestHandler = new CloudWatchRequestHandler(new AmazonCloudWatchClient());
                     
                     var response = new ServerMessage();
                     switch (_body.Type)
@@ -438,24 +408,17 @@ namespace ManagementConsoleBackend.ManagementService
                             break;
 
                         case "GetCloudWatchGraph":
-                            var getCloudWatchGraphRequest = JsonConvert.DeserializeObject<ClientMessageGetCloudWatchGraph>(request.Body);
-                            var cloudWatch = new AmazonCloudWatchClient();
                             try
                             {
-                                var getCloudWatchGraphResponse = await cloudWatch.GetMetricWidgetImageAsync(
-                                    new GetMetricWidgetImageRequest
-                                    {
-                                        MetricWidget = getCloudWatchGraphRequest.MetricWidgetJson,
-                                    });
-                                
-                                var imageStr = Convert.ToBase64String(getCloudWatchGraphResponse.MetricWidgetImage.ToArray());
+                                var getCloudWatchGraphRequest = JsonConvert.DeserializeObject<ClientMessageGetCloudWatchGraph>(request.Body);
+                                var metricWidgetImage = await cloudWatchRequestHandler.GetWidgetImage(getCloudWatchGraphRequest.MetricWidgetJson);
+                                var imageStr = Convert.ToBase64String(metricWidgetImage.ToArray());
                                 await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetCloudWatchGraph {Image = imageStr});
                             }
                             catch (Exception e)
                             {
                                 LambdaLogger.Log(e.Message);
                             }
-                            
                             break;
                         
                         case "GetMatchmakingRuleSets":
@@ -554,11 +517,11 @@ namespace ManagementConsoleBackend.ManagementService
                             if (dbStateItem == null) // need to get the state again as a recent version is not in the database
                             {
                                 var stateEventDetail = await GameLiftStateHandler.GetStateEventDetail();
-                                await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetState { State = stateEventDetail});
+                                await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetState { State = stateEventDetail, IsDb = false});
                             }
                             else // return the state object stored in the database
                             {
-                                await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetState { State = dbStateItem.State});
+                                await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetState { State = dbStateItem.State, IsDb = true});
                             }
                             
                             await StepFunctions.StartStateMachineExecutionIfNotRunning();

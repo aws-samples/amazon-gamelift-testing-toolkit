@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amazon.CloudWatch;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
 using Amazon.DynamoDBv2.Model;
@@ -22,6 +23,8 @@ namespace ManagementConsoleBackend.ManagementService.Lib
         public static async Task<GameLiftStateEventDetail> GetStateEventDetail()
         {
             var gameLiftRequestHandler = new GameLiftRequestHandler(new AmazonGameLiftClient());
+            var cloudWatchRequestHandler = new CloudWatchRequestHandler(new AmazonCloudWatchClient());
+            
             var stateEvent = new GameLiftStateEventDetail();
 
             var dynamoDbClient = new AmazonDynamoDBClient();
@@ -33,7 +36,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             var configDocument = await dynamoDbRequestHandler.GetManagementConfig("mainConfig");
             
             var matchmakingConfigurations = await gameLiftRequestHandler.GetMatchmakingConfigurations();
-
+            
             LambdaLogger.Log("SIMULATOR ARN:" + configDocument.FlexMatchSimulatorArn);
                 
             // remove flexmatch simulator config as we don't want it in the state
@@ -49,7 +52,21 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                 foreach (var fleetCapacity in fleetCapacities)
                 {
                     var fleetId = fleetCapacity.FleetId;
-                    
+
+                    var metricData = new Dictionary<string, double>();
+                    var fleetMetricData = await cloudWatchRequestHandler.GetFleetMetricData(fleetId);
+                    if (fleetMetricData != null)
+                    {
+                        foreach (var fleetMetric in fleetMetricData)
+                        {
+                            metricData[fleetMetric.Label] = -1;
+                            if (fleetMetric.Values.Count>0)
+                            {
+                                metricData[fleetMetric.Label] = fleetMetric.Values[0];
+                            }
+                        }
+                    }
+
                     var activeGameSessions = await dynamoDbRequestHandler.GetDatabaseGameSessionsByStatus(fleetId, "ACTIVE");
                     
                     var gameSessions = new List<GameSession>();
@@ -102,6 +119,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                         FleetAttributes = await gameLiftRequestHandler.GetFleetAttributes(fleetId),
                         Instances = instances,
                         GameSessions = gameSessions,
+                        Metrics = metricData,
                     };
 
                     stateEvent.FleetData.Add(fleetData);
@@ -112,8 +130,6 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                 LambdaLogger.Log(e.ToString());
                 return null;
             }
-
-
 
             return stateEvent;
         }

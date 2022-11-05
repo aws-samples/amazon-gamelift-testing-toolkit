@@ -10,12 +10,12 @@ export class Players
 
     public static hidePlayers()
     {
-        Players.getPlayers()?.map(player => player.visible=false);
+        Players.getPlayers()?.map(player => player.hidePlayer());
     }
 
     public static showPlayers()
     {
-        Players.getPlayers()?.map(player => player.visible=true);
+        Players.getPlayers()?.map(player => player.showPlayer());
     }
 
     public static addPlayer(player:Player)
@@ -30,7 +30,6 @@ export class Players
 
     public static removePlayer(playerId:string)
     {
-        console.log("DESTROYING PLAYER " + playerId);
         if (Players._players==null)
         {
             Players._players = {};
