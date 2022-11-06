@@ -32,7 +32,7 @@ export class Events
     public static GET_MATCHMAKING_RULESETS_RESPONSE:string = "GetMatchmakingRuleSetsResponse";
     public static GET_MATCHMAKING_SIMULATIONS_RESPONSE:string = "GetMatchmakingSimulationsResponse";
     public static GET_MATCHMAKING_SIMULATION_RESPONSE:string = "GetMatchmakingSimulationResponse";
-    public static GET_SIMULATION_SUCCESSFUL_MATCHES_RESPONSE:string = "GetSimulationSuccessfulMatchesResponse";
+    public static GET_SIMULATION_MATCHES_RESPONSE:string = "GetSimulationSuccessfulMatchesResponse";
     public static RUN_MATCHMAKING_SIMULATION_RESPONSE:string = "RunMatchmakingSimulationResponse";
     public static MATCHMAKING_SIMULATION_UPDATE:string = "MatchmakingSimulationUpdate";
     public static GET_PLAYER_PROFILES_RESPONSE:string = "GetPlayerProfilesResponse";

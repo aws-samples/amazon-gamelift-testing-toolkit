@@ -15,6 +15,7 @@ export class SimulateMatchmakingSubPopup extends SubPopup
 {
     protected _ticketEvents: any[];
     protected _matches: Record<string, any>;
+    protected _failedPlayers: any[]=[];
     protected _ruleSets: MatchmakingRuleSet[];
     protected _playerProfiles: PlayerProfile[];
     protected _latencyProfiles: LatencyProfile[];
@@ -51,7 +52,7 @@ export class SimulateMatchmakingSubPopup extends SubPopup
     setupEventListeners()
     {
         this._emitter.on(Events.GET_MATCHMAKING_SIMULATIONS_RESPONSE, this.onGetMatchmakingSimulationsResponse);
-        this._emitter.on(Events.GET_SIMULATION_SUCCESSFUL_MATCHES_RESPONSE, this.onGetSimulationSuccessfulMatchesResponse);
+        this._emitter.on(Events.GET_SIMULATION_MATCHES_RESPONSE, this.onGetSimulationMatchesResponse);
         this._emitter.on(Events.GET_MATCHMAKING_TICKET_HEADERS_BY_MATCH_ID_RESPONSE, this.onGetSimulationSuccessfulMatchTicketsResponse);
         this._emitter.on(Events.GET_MATCHMAKING_TICKET_RESPONSE, this.onGetMatchmakingTicketResponse);
         this._emitter.on(Events.GET_MATCHMAKING_TICKET_HEADERS_BY_SIMULATION_ID_RESPONSE, this.onGetMatchmakingTicketHeadersBySimulationIdResponse);
@@ -66,7 +67,7 @@ export class SimulateMatchmakingSubPopup extends SubPopup
     removeEventListeners()
     {
         this._emitter.off(Events.GET_MATCHMAKING_SIMULATION_RESPONSE, this.onGetMatchmakingSimulationResponse);
-        this._emitter.off(Events.GET_SIMULATION_SUCCESSFUL_MATCHES_RESPONSE, this.onGetSimulationSuccessfulMatchesResponse);
+        this._emitter.off(Events.GET_SIMULATION_MATCHES_RESPONSE, this.onGetSimulationMatchesResponse);
         this._emitter.off(Events.GET_MATCHMAKING_TICKET_HEADERS_BY_MATCH_ID_RESPONSE, this.onGetSimulationSuccessfulMatchTicketsResponse);
         this._emitter.off(Events.GET_MATCHMAKING_TICKET_RESPONSE, this.onGetMatchmakingTicketResponse);
         this._emitter.off(Events.GET_MATCHMAKING_TICKET_HEADERS_BY_SIMULATION_ID_RESPONSE, this.onGetMatchmakingTicketHeadersBySimulationIdResponse);
@@ -225,8 +226,8 @@ export class SimulateMatchmakingSubPopup extends SubPopup
 
 
 
-            $('#'+this._parentDomId).find(".columnToggle").html(columnToggleHtml);
-            $('#'+this._parentDomId).find("a.toggle-vis").on("click", function (e)  {
+            $('#'+this._parentDomId).find("div.matchedPlayers div.columnToggle").html(columnToggleHtml);
+            $('#'+this._parentDomId).find("div.matchedPlayers div.columnToggle a.toggle-vis").on("click", function (e)  {
                 e.preventDefault();
                 console.log("Toggled", e.target);
                 let column = table.column($(this).attr("data-column"));
@@ -263,19 +264,132 @@ export class SimulateMatchmakingSubPopup extends SubPopup
             });
 
             this.populateRuleEvaluationMetricsList(matchId);
-            //table.buttons().container().appendTo( '#matchInfoPlayersTable_buttons' );
         }
+    }
 
+    populateFailedMatchInfo = () =>
+    {
+        this.resetFailedMatchPlayersTable();
 
-        /*
-        let viewRuleEvaluationMetricsButton='<a class="viewRuleEvaluationMetrics btn btn-primary btn-sm" id="' + matchId +'" href="' + "#" + '">Metrics</a>';
-        let viewMatchTicketsButton='<a class="viewSuccessfulMatchTickets btn btn-primary btn-sm" id="' + matchId +'" href="' + "#" + '">Tickets</a>';
+        let matchPlayerTableHtml="";
+        let columnToggleHtml="Toggle column: ";
 
-        let html = viewRuleEvaluationMetricsButton + viewMatchTicketsButton;
+        if (this._failedPlayers.length)
+        {
+            let playerAttributes=[];
+            let showLatencyData=false;
 
-        $('#'+this._parentDomId).find("#matchInfoContent").html(html);
+            this._failedPlayers.map(player=>
+            {
+                console.log(player);
+                let attributeHtml="";
 
-         */
+                Object.keys(player.PlayerData.PlayerAttributes).map(playerAttributeName =>
+                {
+                    if (playerAttributes.indexOf(playerAttributeName)==-1)
+                    {
+                        playerAttributes.push(playerAttributeName);
+                    }
+                });
+
+                if (player.PlayerData.LatencyInMs!=null && Object.keys(player.PlayerData.LatencyInMs).length)
+                {
+                    showLatencyData=true;
+                }
+            });
+
+            columnToggleHtml+='<a class="toggle-vis" data-column="1">Player ID</a> - ';
+            columnToggleHtml+='<a class="toggle-vis" data-column="2">Ticket Status</a> - ';
+            columnToggleHtml+='<a class="toggle-vis" data-column="3">Match Time</a> - ';
+            let i=3;
+            playerAttributes.map(playerAttributeName =>
+            {
+                i++;
+                $('#'+this._parentDomId).find("#failedMatchPlayersTable >thead tr").append("<th>" + playerAttributeName + "</th");
+                columnToggleHtml+='<a class="toggle-vis" data-column="' + i + '">' + playerAttributeName + '</a> - ';
+            });
+
+            if (showLatencyData)
+            {
+                i++;
+                $('#'+this._parentDomId).find("#failedMatchPlayersTable >thead tr").append("<th>Latency</th");
+                columnToggleHtml+='<a class="toggle-vis" data-column="' + i + '">Latency</a> - ';
+            }
+
+            $('#'+this._parentDomId).find("#failedMatchPlayersTable >thead tr").append("<th>Ticket</th");
+
+            columnToggleHtml = columnToggleHtml.slice(0,columnToggleHtml.length-2);
+
+            this._failedPlayers.map(player=>
+            {
+                console.log(player);
+                let attributeHtml="";
+                playerAttributes.map(playerAttributeName =>
+                {
+                    console.log(playerAttributeName);
+                    let playerAttribute = player.PlayerData.PlayerAttributes[playerAttributeName];
+                    console.log(playerAttribute);
+                    attributeHtml+= "<td>" + this.getAttributeText(playerAttribute) + "</td>";
+                    //$('#'+this._parentDomId).find("#matchInfoPlayersTable >thead tr").append("<th>" + playerAttributeName + "</th");
+
+                });
+
+                if (showLatencyData)
+                {
+                    attributeHtml+="<td>" + JSON.stringify(player.PlayerData.LatencyInMs) + "</td>";
+                }
+
+                matchPlayerTableHtml += '<tr>' +
+                    '<td>' + player.ProfileName + '</td>'+
+                    '<td>' + player.PlayerId + '</td>'+
+                    '<td>' + player.MatchTicketStatus + '</td>'+
+                    '<td>' + (player.EndMatchTime-player.StartMatchTime) + ' seconds</td>'+
+                    attributeHtml +
+                    '<td><a class="viewFailedMatchTicket btn btn-primary btn-sm" id="' + player.TicketId + '" href="#">View Ticket</a></td>'+
+                    '</tr>'
+            });
+
+            $('#'+this._parentDomId).find("table#failedMatchPlayersTable tbody").html(matchPlayerTableHtml);
+
+            let table = this.activateDataTable("failedMatchPlayersTable", {
+                scrollY: "400px",
+                scrollCollapse: true,
+                dom: "Bfrtip",
+                buttons: {
+                    dom: {
+                        button: {
+                            tag: 'button',
+                            className: 'border-0'
+                        },
+                        buttonLiner: {
+                            tag: null
+                        }
+                    },
+                    buttons : [
+                        {
+                            extend: "copyHtml5",
+                            text:   '<i style="font-size:26px; color:#333" class="fa fa-copy"></i>',
+                            titleAttr: 'Copy'
+                        },
+                        {
+                            extend: "csvHtml5",
+                            text:      '<i style="font-size:26px; color:#333" class="fa fa-file-csv"></i>',
+                            titleAttr: 'CSV'
+                        }
+                    ],
+                }
+            });
+
+            $('#'+this._parentDomId).find("div.unmatchedPlayers div.columnToggle").html(columnToggleHtml);
+            $('#'+this._parentDomId).find("div.unmatchedPlayers div.columnToggle a.toggle-vis").on("click", function (e)  {
+                e.preventDefault();
+                console.log("Toggled", e.target);
+                let column = table.column($(this).attr("data-column"));
+
+                column.visible(!column.visible());
+                table.columns.adjust().draw();
+            });
+        }
     }
 
     getAttributeText = (playerAttribute) =>
@@ -315,28 +429,33 @@ export class SimulateMatchmakingSubPopup extends SubPopup
         let html="";
         let metrics = this._matches[matchId].RuleEvaluationMetrics;
 
-        metrics.map(matchResult => {
-            this._matches[matchResult.MatchId] = matchResult;
-            html += '<tr>' +
-                '<td>' + matchResult.ruleName + '</td>'+
-                '<td>' + matchResult.passedCount + '</td>'+
-                '<td>' + matchResult.failedCount + '</td>'+
-                '</tr>'
-        });
+        if (metrics!=null)
+        {
+            metrics.map(matchResult => {
+                this._matches[matchResult.MatchId] = matchResult;
+                html += '<tr>' +
+                    '<td>' + matchResult.ruleName + '</td>'+
+                    '<td>' + matchResult.passedCount + '</td>'+
+                    '<td>' + matchResult.failedCount + '</td>'+
+                    '</tr>'
+            });
+        }
 
         console.log(html);
         this.resetRuleEvaluationMetricsTable();
 
         $('#'+this._parentDomId).find("table#ruleEvaluationMetricsTable tbody").html(html);
-
-
     }
 
-    onGetSimulationSuccessfulMatchesResponse = (matchResults) =>
+    onGetSimulationMatchesResponse = (matchResults) =>
     {
-        console.log("GOT SIMULATION MATCHES RESPONSE", matchResults);
-        let html="";
+        console.log("SIMULATION MATCHES RESPONSE", matchResults);
+        let successHtml="";
+        let failedHtml="";
         this._matches = {};
+        this._failedPlayers=[];
+        let successfulMatches=0;
+        let failedMatches=0;
 
         matchResults.map(matchResult => {
             this._matches[matchResult.MatchId] = matchResult;
@@ -359,10 +478,13 @@ export class SimulateMatchmakingSubPopup extends SubPopup
                 matchPlayers[player.MatchedTeam][player["ProfileName"]]++;
                 totalPlayers++;
             });
-
+            
             Object.keys(matchPlayers).map(matchedTeam=>
             {
-                matchPlayerText += matchedTeam +" - ";
+                if (matchResult.MatchedSuccessfully)
+                {
+                    matchPlayerText += matchedTeam +" - ";
+                }
                 Object.keys(matchPlayers[matchedTeam]).map(matchedProfile=>
                 {
                     matchPlayerText+= matchPlayers[matchedTeam][matchedProfile] + " " + matchedProfile + ", ";
@@ -370,50 +492,57 @@ export class SimulateMatchmakingSubPopup extends SubPopup
                 matchPlayerText = matchPlayerText.slice(0,matchPlayerText.length-2);
                 matchPlayerText+="<br/>";
             });
-            console.log(matchPlayers);
-            let viewMatchInfoTd='<td><a class="viewMatchInfo btn btn-primary btn-sm" id="' + matchResult.MatchId +'" href="' + "#" + '">Match Info</a></td>';
-            let viewRuleEvaluationMetricsTd='<td><a class="viewRuleEvaluationMetrics btn btn-primary btn-sm" id="' + matchResult.MatchId +'" href="' + "#" + '">Metrics</a></td>';
-            let viewMatchTicketsTd='<td><a class="viewSuccessfulMatchTickets btn btn-primary btn-sm" id="' + matchResult.MatchId +'" href="' + "#" + '">Tickets</a></td>';
-            html += '<tr>' +
-                '<td>' + matchResult.Date + '</td>'+
-                '<td>' + matchResult.MatchId + '</td>'+
-                '<td>' + matchPlayerText + '</td>'+
-                '<td>' + (totalMatchTime/totalPlayers).toFixed(1) + ' seconds</td>'+
-                viewMatchInfoTd +
-                //viewRuleEvaluationMetricsTd +
-                //viewMatchTicketsTd +
-                '</tr>'
+            
+            if (matchResult.MatchedSuccessfully)
+            {
+                successfulMatches++;
+                successHtml += '<tr>' +
+                    '<td>' + matchResult.Date + '</td>'+
+                    '<td>' + matchResult.MatchId + '</td>'+
+                    '<td>' + matchPlayerText + '</td>'+
+                    '<td>' + (totalMatchTime/totalPlayers).toFixed(1) + ' seconds</td>'+
+                    '<td><a class="viewMatchInfo btn btn-primary btn-sm" id="' + matchResult.MatchId +'" href="' + "#" + '">Match Info</a></td>' +
+                    '</tr>';
+            }
+            else
+            {
+                failedMatches++;
+                matchResult.Players[0]["MatchTicketStatus"]=matchResult.MatchTicketStatus;
+                this._failedPlayers.push(matchResult.Players[0]);
+            }
         });
 
-        console.log(html);
         this.resetSuccessfulMatchesTable();
         this.resetSuccessfulMatchTicketEventTable();
 
-        $('#'+this._parentDomId).find("table#successfulMatchesTable tbody").html(html);
+        $('#'+this._parentDomId).find("table#successfulMatchesTable tbody").html(successHtml);
 
         this.hideMatchmakingTicketsList();
-        this.showSuccessfulMatchesList();
-        /*this.activateDataTable("successfulMatchesTable", {
-            scrollY: "400px",
-            scrollCollapse: true,
-            //ordering:false,
-            columns: [
-                { orderable:false },
-                { orderable:false },
-                { orderable:false },
-                { orderable:false },
-                { orderable:false },
-                { orderable:false },
-            ],
-            order: [[ 0, "desc" ]]
-        });*/
+        this.showMatchResults();
         this.activateDataTable("successfulMatchesTable");
 
+        if (successfulMatches==0)
+        {
+            this.hideSuccessfulMatchesList();
+        }
+        else
+        {
+            this.showSuccessfulMatchesList();
+        }
+
+        if (failedMatches==0)
+        {
+            this.hideFailedMatchesList();
+        }
+        else
+        {
+            this.showFailedMatchesList();
+            this.populateFailedMatchInfo();
+        }
     }
 
     onGetSimulationSuccessfulMatchTicketsResponse = (data) =>
     {
-        console.log("GOT SUCCESSFUL MATCH TICKETS RESPONSE", data);
         let html="";
 
         data.TicketHeaders?.map(header =>
@@ -433,20 +562,8 @@ export class SimulateMatchmakingSubPopup extends SubPopup
                 '</tr>';
         });
 
-
-        console.log(html);
         this.resetSuccessfulMatchTicketsTable();
-
         $('#'+this._parentDomId).find("table#successfulMatchTicketHeadersTable tbody").html(html);
-
-        /*
-        this.hideMatchmakingTicketsList();
-        this.hideSuccessfulMatchesList();
-        this.hideMatchInfo();
-        this.showSuccessfulMatchTicketsList();
-         */
-
-
     }
 
     onGetMatchmakingSimulationResponse = (simulation) =>
@@ -520,7 +637,7 @@ export class SimulateMatchmakingSubPopup extends SubPopup
         {
             console.log(simulation);
 
-            let viewResultsTd='<td><a class="viewSimulationOutput btn btn-primary btn-sm" id="' + simulation.SimulationId +'" href="' + "#" + '">View Results</a></td>';
+            let viewResultsTd='<td><a class="viewSimulationOutput btn btn-primary btn-sm" id="' + simulation.SimulationId +'" href="' + "#" + '">View</a></td>';
 
             let totalPlayers = 0;
             simulation.PlayersConfig.map(config =>
@@ -662,6 +779,21 @@ export class SimulateMatchmakingSubPopup extends SubPopup
             this.showSuccessfulMatchTicketEventList();
             this.activateDataTable("successfulMatchmakingTicketEventsTable");
         }
+        else if (this._state=="viewFailedMatchTicket")
+        {
+            this._ticketEvents.map(ticketEvent => {
+                let viewEventDetailTd='<td><a class="viewFailedMatchTicketEvent btn btn-primary btn-sm" id="' + ticketEvent.id +'" href="' + "#" + '">View Detail</a></td>';
+                html += '<tr>' +
+                    '<td>' + ticketEvent.time + '</td>'+
+                    '<td>' + ticketEvent.detail.type + '</td>'+
+                    viewEventDetailTd +
+                    '</tr>'
+            });
+
+            $('#'+this._parentDomId).find("table#failedMatchmakingTicketEventsTable tbody").html(html);
+            this.showFailedMatchTicketEventList();
+            this.activateDataTable("failedMatchmakingTicketEventsTable");
+        }
 
     };
 
@@ -671,17 +803,29 @@ export class SimulateMatchmakingSubPopup extends SubPopup
         this.hideSimulationOutput();
     }
 
-    showSuccessfulMatchesList()
+    showMatchResults()
     {
-        $('#'+this._parentDomId).find(".successfulMatchesContent").show();
+        $('#'+this._parentDomId).find(".matchResultsContent").show();
         this.hideSimulationOutput();
+    }
+
+    hideMatchResults()
+    {
+        $('#'+this._parentDomId).find(".matchResultsContent").hide();
     }
 
     showMatchInfo()
     {
         this.resetMatchInfo();
         $('#'+this._parentDomId).find(".matchInfo").show();
-        this.hideSuccessfulMatchesList();
+        this.hideMatchResults();
+    }
+
+    showFailedMatchInfo()
+    {
+        this.resetFailedMatchInfo();
+        $('#'+this._parentDomId).find(".failedMatchInfo").show();
+        this.hideMatchResults();
     }
 
     showMatchmakingTicketEventList()
@@ -695,11 +839,14 @@ export class SimulateMatchmakingSubPopup extends SubPopup
         $('#'+this._parentDomId).find(".matchmakingTicketEventsContent").hide();
     }
 
-
-
     hideMatchmakingTicketsList()
     {
         $('#'+this._parentDomId).find(".matchmakingTicketHeadersContent").hide();
+    }
+
+    showSuccessfulMatchesList()
+    {
+        $('#'+this._parentDomId).find(".successfulMatchesContent").show();
     }
 
     hideSuccessfulMatchesList()
@@ -707,9 +854,24 @@ export class SimulateMatchmakingSubPopup extends SubPopup
         $('#'+this._parentDomId).find(".successfulMatchesContent").hide();
     }
 
+    showFailedMatchesList()
+    {
+        $('#'+this._parentDomId).find(".failedMatchesContent").show();
+    }
+
+    hideFailedMatchesList()
+    {
+        $('#'+this._parentDomId).find(".failedMatchesContent").hide();
+    }
+
     hideMatchInfo()
     {
         $('#'+this._parentDomId).find(".matchInfo").hide();
+    }
+
+    hideFailedMatchInfo()
+    {
+        $('#'+this._parentDomId).find(".failedMatchInfo").hide();
     }
 
     hideRuleEvaluationMetricsList()
@@ -729,9 +891,19 @@ export class SimulateMatchmakingSubPopup extends SubPopup
         this.resetElement(".matchInfoPlayersContent");
     }
 
+    resetFailedMatchPlayersTable()
+    {
+        this.resetElement(".failedMatchPlayersContent");
+    }
+
     resetMatchInfo()
     {
         this.resetElement(".matchInfo");
+    }
+
+    resetFailedMatchInfo()
+    {
+        this.resetElement(".failedMatchInfo");
     }
 
     resetEventsTable()
@@ -742,6 +914,11 @@ export class SimulateMatchmakingSubPopup extends SubPopup
     resetSuccessfulMatchesTable()
     {
         this.resetElement(".successfulMatchesContent");
+    }
+
+    resetFailedMatchesTable()
+    {
+        this.resetElement(".failedMatchesContent");
     }
 
     resetSuccessfulMatchTicketsTable()
@@ -861,6 +1038,15 @@ export class SimulateMatchmakingSubPopup extends SubPopup
         $('#'+this._parentDomId).find(".successfulMatchTicketEventDetailContent").hide();
     }
 
+    showFailedMatchTicketJson()
+    {
+        $('#'+this._parentDomId).find(".failedMatchTicketEventDetailContent").show();
+    }
+
+    hideFailedMatchTicketJson()
+    {
+        $('#'+this._parentDomId).find(".failedMatchTicketEventDetailContent").hide();
+    }
 
     showEventDetail = (ticketEvent) =>
     {
@@ -892,6 +1078,21 @@ export class SimulateMatchmakingSubPopup extends SubPopup
         this.showSuccessfulMatchTicketJson();
     }
 
+    showFailedMatchTicketEventDetail = (ticketEvent) =>
+    {
+        console.log(ticketEvent);
+
+        const container = document.getElementById("failedMatchmakingTicketEventJson")
+        const options:JSONEditorOptions = {mode:"view", name:"FlexMatch Event"}
+
+        const editor = new JSONEditor(container, options);
+        editor.set(ticketEvent);
+        editor.expandAll();
+
+        this.hideFailedMatchTicketEventList();
+        this.showFailedMatchTicketJson();
+    }
+
     onPopupClick = async (event) => {
         event.stopPropagation();
         let el = $(event.target);
@@ -913,6 +1114,14 @@ export class SimulateMatchmakingSubPopup extends SubPopup
             this.showSuccessfulMatchTicketEventDetail(ticketEvent);
         }
         else
+        if (event.target.className.indexOf("viewFailedMatchTicketEvent") !== -1)
+        {
+            console.log("VIEWING FAILED MATCH TICKET DETAIL!");
+            console.log(event.target.id);
+            let ticketEvent = this._ticketEvents.filter(ticketEvent => ticketEvent.id == event.target.id)[0];
+            this.showFailedMatchTicketEventDetail(ticketEvent);
+        }
+        else
         if (event.target.id=="eventDetailBackButton") // back to event list
         {
             this.backToMatchmakingTicketEventList();
@@ -921,6 +1130,11 @@ export class SimulateMatchmakingSubPopup extends SubPopup
         if (event.target.id=="successfulMatchTicketEventDetailBackButton") // back to event list
         {
             this.backToSuccessfulMatchTicketEventList();
+        }
+        else
+        if (event.target.id=="failedMatchTicketEventDetailBackButton") // back to event list
+        {
+            this.backToFailedMatchTicketEventList();
         }
         else
         if (event.target.id=="simulateMatchmakingButton") // show simulation formn
@@ -974,12 +1188,27 @@ export class SimulateMatchmakingSubPopup extends SubPopup
             Network.sendObject({Type:"GetMatchmakingTicket", TicketId:event.target.id});
 
         }
+        else if (el.hasClass("viewFailedMatchTicket"))
+        {
+            this._state = "viewFailedMatchTicket";
+
+            console.log("View failed match ticket", event.target.id);
+            Network.sendObject({Type:"GetMatchmakingTicket", TicketId:event.target.id});
+
+        }
         else if (el.hasClass("viewMatchInfo"))
         {
-            this.hideSuccessfulMatchesList();
+            this.hideMatchResults();
             this.showMatchInfo();
             this.populateMatchInfo(event.target.id);
             Network.sendObject({Type:"GetMatchmakingTicketHeadersByMatchId", MatchId:event.target.id});
+        }
+        else if (el.hasClass("viewFailedMatchInfo"))
+        {
+            this.hideMatchResults();
+            this.showFailedMatchInfo();
+//            this.populateMatchInfo(event.target.id);
+//            Network.sendObject({Type:"GetMatchmakingTicketHeadersByMatchId", MatchId:event.target.id});
         }
         else if (event.target.id=="showSimulationMatches")
         {
@@ -995,21 +1224,23 @@ export class SimulateMatchmakingSubPopup extends SubPopup
         {
             this.showSimulationOutput();
             this.hideMatchmakingTicketsList();
-            this.hideSuccessfulMatchesList();
+            this.hideMatchResults();
         }
         else if (event.target.id=="backToMatchInfo")
         {
-            this.hideSuccessfulMatchesList();
+            this.hideMatchResults();
             this.showMatchInfo();
             //this.hideRuleEvaluationMetricsList();
             this.hideSuccessfulMatchTicketsList();
         }
-        else if (event.target.id=="backToSuccessfulMatches")
+        else if (event.target.id=="backToMatchResults")
         {
-            this.showSuccessfulMatchesList();
+            this.showMatchResults();
             //this.hideRuleEvaluationMetricsList();
             this.hideMatchInfo();
+            this.hideFailedMatchInfo();
             this.hideSuccessfulMatchTicketsList();
+            this.hideFailedMatchTicketEventList();
         }
         else if (event.target.id=="backToSuccessfulMatchTickets")
         {
@@ -1049,7 +1280,7 @@ export class SimulateMatchmakingSubPopup extends SubPopup
     showMatchTickets()
     {
         $('#'+this._parentDomId).find(".matchTickets").show();
-        this.hideSuccessfulMatchesList();
+        this.hideMatchResults();
     }
 
     hideMatchTickets()
@@ -1073,7 +1304,7 @@ export class SimulateMatchmakingSubPopup extends SubPopup
     {
         this.showMatchInfoHeader();
         $('#'+this._parentDomId).find(".successfulMatchTicketHeadersContent").show();
-        this.hideSuccessfulMatchesList();
+        this.hideMatchResults();
     }
 
     hideSuccessfulMatchTicketsList()
@@ -1085,13 +1316,24 @@ export class SimulateMatchmakingSubPopup extends SubPopup
     {
         this.hideMatchInfoHeader();
         $('#'+this._parentDomId).find(".successfulMatchTicketEventsContent").show();
-        this.hideSuccessfulMatchesList();
+        this.hideMatchResults();
         this.hideSuccessfulMatchTicketsList();
     }
 
     hideSuccessfulMatchTicketEventList()
     {
         $('#'+this._parentDomId).find(".successfulMatchTicketEventsContent").hide();
+    }
+
+    showFailedMatchTicketEventList()
+    {
+        this.hideMatchResults();
+        $('#'+this._parentDomId).find(".failedMatchTicketEventsContent").show();
+    }
+
+    hideFailedMatchTicketEventList()
+    {
+        $('#'+this._parentDomId).find(".failedMatchTicketEventsContent").hide();
     }
 
     //
@@ -1117,6 +1359,13 @@ export class SimulateMatchmakingSubPopup extends SubPopup
         this.resetSuccessfulMatchJson();
     }
 
+    backToFailedMatchTicketEventList()
+    {
+        this.showFailedMatchTicketEventList();
+        this.hideFailedMatchTicketJson();
+        this.resetFailedMatchJson();
+    }
+
     resetJson()
     {
         $('#'+this._parentDomId).find("#matchmakingTicketEventJson").html("");
@@ -1125,6 +1374,11 @@ export class SimulateMatchmakingSubPopup extends SubPopup
     resetSuccessfulMatchJson()
     {
         $('#'+this._parentDomId).find("#successfulMatchmakingTicketEventJson").html("");
+    }
+
+    resetFailedMatchJson()
+    {
+        $('#'+this._parentDomId).find("#failedMatchmakingTicketEventJson").html("");
     }
 
     activateDataTable(id, config=null) {

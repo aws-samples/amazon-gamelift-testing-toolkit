@@ -86,7 +86,8 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public bool MatchedSuccessfully = false;
         public long StartMatchTime;
         public long EndMatchTime;
-        
+        public string TicketId;
+
     }
 
     public class PlayerAttribute
@@ -102,6 +103,12 @@ namespace ManagementConsoleBackend.ManagementService.Data
         [DynamoDBRangeKey]
         public string MatchId;
         
+        [DynamoDBProperty("MatchedSuccessfully")]
+        public bool MatchedSuccessfully=false;
+
+        [DynamoDBProperty("MatchTicketStatus")]
+        public string MatchTicketStatus;
+
         [DynamoDBProperty("NumPlayers")]
         public int NumPlayers;
         

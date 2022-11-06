@@ -717,7 +717,7 @@ export class ConsoleScene extends Phaser.Scene
                 break;
 
             case "GetSimulationMatches":
-                this._emitter.emit(Events.GET_SIMULATION_SUCCESSFUL_MATCHES_RESPONSE, data.MatchResults);
+                this._emitter.emit(Events.GET_SIMULATION_MATCHES_RESPONSE, data.MatchResults);
                 break;
 
             case "GetTaskDefinitions":

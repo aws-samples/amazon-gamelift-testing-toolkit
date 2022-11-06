@@ -339,21 +339,38 @@ namespace ManagementConsoleBackend.ManagementService
                 Table.LoadTable(dynamoDbClient, Environment.GetEnvironmentVariable("SimulationResultsTableName"));
 
             var result = new MatchResultData();
+            var playerTickets = new Dictionary<string, FlexMatchEventTicket>();
+            
+            result.SimulationId = flexMatchEvent.Detail.CustomEventData;
+            
+            result.Date = flexMatchEvent.Time.ToString("s")+"Z";
+            result.MatchId = flexMatchEvent.Detail.MatchId ?? "No Match-" + flexMatchEvent.Id;
+            
+            if (flexMatchEvent.Detail.Tickets != null)
+            {
+                foreach (var ticket in flexMatchEvent.Detail.Tickets)
+                {
+                    playerTickets.Add(ticket.Players[0].PlayerId, ticket);
+                }
+            }
+
             if (flexMatchEvent.Detail.Type == "PotentialMatchCreated")
             {
-                result.SimulationId = flexMatchEvent.Detail.CustomEventData;
-                result.MatchId = flexMatchEvent.Detail.MatchId;
                 result.RuleEvaluationMetrics = flexMatchEvent.Detail.RuleEvaluationMetrics;
-                result.Date = flexMatchEvent.Time.ToString("s")+"Z";
-                var playerStartTimes = new Dictionary<string, long>();
-                if (flexMatchEvent.Detail.Tickets != null)
-                {
-                    foreach (var ticket in flexMatchEvent.Detail.Tickets)
-                    {
-                        playerStartTimes.Add(ticket.Players[0].PlayerId, ticket.StartTime.ToUnixTimeSeconds());
-                    }
-                }
+                result.MatchedSuccessfully = true;
+            }
+            else
+            {
+                result.MatchedSuccessfully = false;
+            }
 
+            if (flexMatchEvent.Detail.Type == "PotentialMatchCreated" 
+                || flexMatchEvent.Detail.Type == "MatchmakingTimedOut" 
+                || flexMatchEvent.Detail.Type == "MatchmakingFailed" 
+                || flexMatchEvent.Detail.Type == "MatchmakingCancelled")
+            {
+                result.MatchTicketStatus = flexMatchEvent.Detail.Type;
+                
                 if (flexMatchEvent.Detail.GameSessionInfo != null)
                 {
                     result.NumPlayers = flexMatchEvent.Detail.GameSessionInfo.Players.Count;
@@ -361,32 +378,31 @@ namespace ManagementConsoleBackend.ManagementService
 
                     foreach (var player in flexMatchEvent.Detail.GameSessionInfo.Players)
                     {
-                        LambdaLogger.Log("TRYING TO GET PLAYER " + player.PlayerId);
                         var playerData = await dynamoDbRequestHandler.GetDatabaseSimulationPlayer(result.SimulationId, player.PlayerId);
-                        playerData.StartMatchTime = playerStartTimes[player.PlayerId];
+                        playerData.StartMatchTime = playerTickets[player.PlayerId].StartTime.ToUnixTimeSeconds();
                         playerData.EndMatchTime = flexMatchEvent.Time.ToUnixTimeSeconds();
+                        playerData.TicketId = playerTickets[player.PlayerId].TicketId;
                         playerData.MatchedTeam = player.Team;
-                        playerData.MatchedSuccessfully = true;
-                        LambdaLogger.Log(JsonConvert.SerializeObject(playerData));
+                        playerData.MatchedSuccessfully = flexMatchEvent.Detail.Type == "PotentialMatchCreated";
                         result.Players.Add(playerData);
                     }
+                }
+                
+                try
+                {
+                    var item = Document.FromJson(JsonConvert.SerializeObject(result));
+                    await simulationResultsTable.PutItemAsync(item);
+                }
+                catch (Exception e)
+                {
+                    LambdaLogger.Log(e.Message);
                 }
             }
             else
             {
                 return false;
             }
-            
-            try
-            {
-                var item = Document.FromJson(JsonConvert.SerializeObject(result));
-                await simulationResultsTable.PutItemAsync(item);
-            }
-            catch (Exception e)
-            {
-                LambdaLogger.Log(e.Message);
-            }
-            
+
             return true;
         }
     }
