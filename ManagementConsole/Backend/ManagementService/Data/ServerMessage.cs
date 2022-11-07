@@ -153,15 +153,7 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public MatchmakingSimulation Simulation;
         public List<string> Errors;
     }
-    
-    public class ServerMessageMatchmakingSimulationUpdate : ServerMessage
-    {
-        public new string Type = "MatchmakingSimulationUpdate";
-        public MatchmakingSimulation Simulation;
-    }
-    
 
-    
     public class ServerMessageGetMatchmakingSimulations : ServerMessage
     {
         public new string Type = "GetMatchmakingSimulations";
