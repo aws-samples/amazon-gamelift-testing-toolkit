@@ -20,7 +20,7 @@
     <PackageReference Include="AWSSDK.ECS" Version="3.7.100.8" />
     <PackageReference Include="AWSSDK.EventBridge" Version="3.7.100.8" />
     <PackageReference Include="AWSSDK.GameLift" Version="3.7.100.8" />
-    <PackageReference Include="AWSSDK.S3" Version="3.7.101.8" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.101.10" />
     <PackageReference Include="AWSSDK.StepFunctions" Version="3.7.100.8" />
     <PackageReference Include="CompareNETObjects" Version="4.78.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
