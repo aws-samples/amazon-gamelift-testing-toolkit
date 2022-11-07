@@ -5,11 +5,6 @@ import 'phaser';
 import {DataTypes} from "../../Data/DataTypes";
 import {Network} from "../../Network/Network";
 import {Events} from "../../Events/Events";
-import JSONEditor, {JSONEditorOptions} from 'jsoneditor';
-import MatchmakingRuleSet = DataTypes.MatchmakingRuleSet;
-import {SubPopup} from "../Abstract/SubPopup";
-import PlayerProfile = DataTypes.PlayerProfile;
-import LatencyProfile = DataTypes.LatencyProfile;
 import {PageManager} from "../Pages/PageManager";
 import {Page} from "../Abstract/Page";
 import {Pages} from "./Pages";
@@ -148,7 +143,6 @@ export class SimulateMatchmakingResults extends Page
 
         $('#'+this._domId).find("table#successfulMatchesTable tbody").html(successHtml);
 
-        //this.hideMatchmakingTicketsList();
         this.showMatchResults();
         this.activateDataTable("successfulMatchesTable");
 
@@ -289,18 +283,6 @@ export class SimulateMatchmakingResults extends Page
                 scrollY: "400px",
                 scrollCollapse: true,
                 dom: "Bfrtip",
-                /*buttons : [
-                    {
-                        extend: "copyHtml5",
-                        text:   '<i style="font-size:40px" class="fa fa-copy"></i>',
-                        titleAttr: 'Copy'
-                    },
-                    {
-                        extend: "csvHtml5",
-                        text:      '<i style="font-size:40px" class="fa fa-file-csv"></i>',
-                        titleAttr: 'CSV'
-                    }
-                    ],*/
                 buttons: {
                     dom: {
                         button: {
@@ -328,8 +310,6 @@ export class SimulateMatchmakingResults extends Page
                     0, "desc" ]],
             });
 
-
-
             $('#'+this._domId).find("div.matchedPlayers div.columnToggle").html(columnToggleHtml);
             $('#'+this._domId).find("div.matchedPlayers div.columnToggle a.toggle-vis").on("click", function (e)  {
                 e.preventDefault();
@@ -339,7 +319,6 @@ export class SimulateMatchmakingResults extends Page
                 column.visible(!column.visible());
                 table.columns.adjust().draw();
             });
-
 
             $('#'+this._domId).find("select.selectMatchInfo").on("change",   (e) =>{
                 e.preventDefault();

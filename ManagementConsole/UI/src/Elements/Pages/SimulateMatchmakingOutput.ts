@@ -2,14 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import 'phaser';
-import {DataTypes} from "../../Data/DataTypes";
 import {Network} from "../../Network/Network";
 import {Events} from "../../Events/Events";
-import JSONEditor, {JSONEditorOptions} from 'jsoneditor';
-import MatchmakingRuleSet = DataTypes.MatchmakingRuleSet;
-import {SubPopup} from "../Abstract/SubPopup";
-import PlayerProfile = DataTypes.PlayerProfile;
-import LatencyProfile = DataTypes.LatencyProfile;
 import {PageManager} from "../Pages/PageManager";
 import {Page} from "../Abstract/Page";
 import {Pages} from "./Pages";
@@ -21,7 +15,6 @@ export class SimulateMatchmakingOutput extends Page
     protected _currentSimulation;
     protected _intervalId;
 
-
     public constructor (parentPage:Page=null)
     {
         super( SimulateMatchmakingOutput.url,  parentPage, SimulateMatchmakingOutput.id);
@@ -29,20 +22,11 @@ export class SimulateMatchmakingOutput extends Page
     }
 
     public onPopupClick(event) {
-        console.log("OUTPUT POPUP CLICK!");
         let el = $(event.target);
 
         if (el.attr("id")=="backToMatchmakingSimulations") // back to simulations table
         {
             this.goBack();
-            /*
-            this.stopPolling();
-            this.hideStatusAlert();
-            this.refresh();
-            $('.simulateMatchmakingForm').hide();
-            $('.simulateMatchmakingTableContainer').show();
-            this.hideSimulationOutput();
-             */
         }
         else
         if (el.attr("id")=="showSimulationTickets")
@@ -111,9 +95,9 @@ export class SimulateMatchmakingOutput extends Page
 
         if (simulation.PlayersMatched + simulation.PlayersFailed == totalPlayers)
         {
+            this.stopPolling();
             $('#'+this._domId).find(".simulateMatchmakingOutput span.matchmakingStatus").html("Simulation Complete");
             $('#'+this._domId).find(".simulateMatchmakingOutput span.matchmakingStatus").removeClass("inProgressBg").addClass("completeBg");
-            this.stopPolling();
             $('#'+this._domId).find("#showSimulationResults").show();
             $('#'+this._domId).find("#showSimulationTickets").show();
         }

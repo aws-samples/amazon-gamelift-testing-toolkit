@@ -2,15 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import 'phaser';
-import {DataTypes} from "../../Data/DataTypes";
 import {Network} from "../../Network/Network";
 import {Events} from "../../Events/Events";
 import JSONEditor, {JSONEditorOptions} from 'jsoneditor';
-import MatchmakingRuleSet = DataTypes.MatchmakingRuleSet;
-import {SubPopup} from "../Abstract/SubPopup";
-import PlayerProfile = DataTypes.PlayerProfile;
-import LatencyProfile = DataTypes.LatencyProfile;
-import {PageManager} from "../Pages/PageManager";
 import {Page} from "../Abstract/Page";
 import {Pages} from "./Pages";
 
@@ -58,16 +52,6 @@ export class SimulateMatchmakingTickets extends Page
             console.log("VIEWING TICKET!");
             Network.sendObject({Type:"GetMatchmakingTicket", TicketId:event.target.id});
         }
-/*
-if (el.attr("id")=="simulateMatchmakingButton") // show simulation form
-{
-    PageManager.switchPage(Pages.SIMULATE_MATCHMAKING_FORM);
-}
-else
-if (el.hasClass("viewSimulationOutput"))
-{
-    PageManager.switchPage(Pages.SIMULATE_MATCHMAKING_OUTPUT, {SimulationId: el.attr("id")});
-}*/
     }
 
     public setPageData(data:any)
@@ -94,9 +78,6 @@ if (el.hasClass("viewSimulationOutput"))
     {
         let html="";
 
-//        this.showMatchmakingTicketsList();
-//        this.hideSimulationOutput();
-
         let matchData = {successfulMatches:{}, failedMatches:[]};
 
         data.TicketHeaders?.map(header =>
@@ -106,7 +87,6 @@ if (el.hasClass("viewSimulationOutput"))
 
             if (header.MatchId==undefined)
             {
-                viewQueueEventsTd='<td></td>';
                 matchData.failedMatches.push(header);
             }
             else
@@ -230,8 +210,6 @@ if (el.hasClass("viewSimulationOutput"))
 
     showEventDetail = (ticketEvent) =>
     {
-        console.log(ticketEvent);
-
         const container = document.getElementById("matchmakingTicketEventJson")
         const options:JSONEditorOptions = {mode:"view", name:"FlexMatch Event"}
 

@@ -47,46 +47,6 @@ export class SimulateMatchmakingFailedTickets extends Page
         {
             this.goBack(this._currentSimulation);
         }
-/*
-        if (el.attr("id")=="backToSimulationOutput")
-        {
-            this.goBack(this._currentSimulation);
-        }
-        else
-        if (el.hasClass("viewTicket"))
-        {
-            this.goBack(this._currentSimulation);
-        }
-        else
-        if (el.attr("id") == "backButton")
-        {
-            this.backToMatchmakingTicketsList();
-        }
-        else
-        if (el.attr("id") == "eventDetailBackButton") // back to event list
-        {
-            this.backToMatchmakingTicketEventList();
-        }
-        else
-        if (el.hasClass("viewTicketEvent"))
-        {
-            console.log("VIEWING TICKET DETAIL!");
-            console.log(event.target.id);
-            let ticketEvent = this._ticketEvents.filter(ticketEvent => ticketEvent.id == el.attr("id"));
-            this.showEventDetail(ticketEvent);
-        }
-
- */
-        /*
-        if (el.attr("id")=="simulateMatchmakingButton") // show simulation form
-        {
-            PageManager.switchPage(Pages.SIMULATE_MATCHMAKING_FORM);
-        }
-        else
-        if (el.hasClass("viewSimulationOutput"))
-        {
-            PageManager.switchPage(Pages.SIMULATE_MATCHMAKING_OUTPUT, {SimulationId: el.attr("id")});
-        }*/
     }
 
     initPage() {
@@ -302,5 +262,4 @@ export class SimulateMatchmakingFailedTickets extends Page
     {
         $('#'+this._domId).find("#failedMatchmakingTicketEventJson").html("");
     }
-
 }
