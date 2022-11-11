@@ -144,7 +144,15 @@ export class SimulateMatchmakingResults extends Page
         $('#'+this._domId).find("table#successfulMatchesTable tbody").html(successHtml);
 
         this.showMatchResults();
-        this.activateDataTable("successfulMatchesTable");
+        this.activateDataTable("successfulMatchesTable", {
+            scrollY: "370px",
+            scrollCollapse: true,
+            columnDefs: [
+                { width: 200, targets: 0 }
+            ],
+            order: [[ 0, "desc" ]],
+
+        });
 
         if (successfulMatches==0)
         {
@@ -435,7 +443,7 @@ export class SimulateMatchmakingResults extends Page
             $('#'+this._domId).find("table#failedMatchPlayersTable tbody").html(matchPlayerTableHtml);
 
             let table = this.activateDataTable("failedMatchPlayersTable", {
-                scrollY: "400px",
+                scrollY: "370px",
                 scrollCollapse: true,
                 dom: "Bfrtip",
                 buttons: {

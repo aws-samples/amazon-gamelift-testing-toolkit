@@ -36,7 +36,7 @@ export class MatchmakingRuleSetsPopup extends Popup
     resetTable()
     {
         this.element.find(".ruleSetsContent").html("        <p class=\"title mb-3\"></p>\n" +
-            "        <btn class=\"newRuleset btn btn-primary btn-sm\">New Ruleset</btn>" +
+            "        <btn class=\"newRuleset btn btn-primary btn-sm\">New Rule Set</btn>" +
             "        <table id=\"ruleSetsTable\" class=\"table table-bordered table-striped mb-0\">\n" +
             "            <thead>\n" +
             "            <tr>\n" +
