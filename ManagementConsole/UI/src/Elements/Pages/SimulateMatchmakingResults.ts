@@ -8,6 +8,7 @@ import {Events} from "../../Events/Events";
 import {PageManager} from "../Pages/PageManager";
 import {Page} from "../Abstract/Page";
 import {Pages} from "./Pages";
+import {Utils} from "../../Utils/Utils";
 
 export class SimulateMatchmakingResults extends Page
 {
@@ -237,7 +238,8 @@ export class SimulateMatchmakingResults extends Page
             });
 
             columnToggleHtml+='<a class="toggle-vis" data-column="2">Player ID</a> - ';
-            columnToggleHtml+='<a class="toggle-vis" data-column="3">Match Time</a> - ';
+            columnToggleHtml+='<a class="toggle-vis" data-column="3">Start Time</a> - ';
+            columnToggleHtml+='<a class="toggle-vis" data-column="4">Match Time</a> - ';
             let i=3;
             playerAttributes.map(playerAttributeName =>
             {
@@ -264,7 +266,7 @@ export class SimulateMatchmakingResults extends Page
                     console.log(playerAttributeName);
                     let playerAttribute = player.PlayerData.PlayerAttributes[playerAttributeName];
                     console.log(playerAttribute);
-                    attributeHtml+= "<td>" + this.getAttributeText(playerAttribute) + "</td>";
+                    attributeHtml+= "<td>" + Utils.getPlayerAttributeText(playerAttribute) + "</td>";
                     //$('#'+this._domId).find("#matchInfoPlayersTable >thead tr").append("<th>" + playerAttributeName + "</th");
 
                 });
@@ -420,9 +422,7 @@ export class SimulateMatchmakingResults extends Page
                     console.log(playerAttributeName);
                     let playerAttribute = player.PlayerData.PlayerAttributes[playerAttributeName];
                     console.log(playerAttribute);
-                    attributeHtml+= "<td>" + this.getAttributeText(playerAttribute) + "</td>";
-                    //$('#'+this._domId).find("#matchInfoPlayersTable >thead tr").append("<th>" + playerAttributeName + "</th");
-
+                    attributeHtml+= "<td>" + Utils.getPlayerAttributeText(playerAttribute) + "</td>";
                 });
 
                 if (showLatencyData)
@@ -481,38 +481,6 @@ export class SimulateMatchmakingResults extends Page
                 table.columns.adjust().draw();
             });
         }
-    }
-
-    getAttributeText = (playerAttribute) =>
-    {
-        if (playerAttribute==undefined)
-        {
-            return "-";
-        }
-        if (playerAttribute["S"]!=null)
-        {
-            return playerAttribute["S"];
-        }
-
-        if (playerAttribute["SL"].length>0)
-        {
-            return playerAttribute["SL"].join(", ");
-        }
-
-        if (Object.keys(playerAttribute["SDM"]).length)
-        {
-            let mapText="";
-            Object.keys(playerAttribute["SDM"]).map(key=>
-            {
-                mapText+=key + ":" + playerAttribute["SDM"][key] + ", ";
-            });
-
-            mapText = mapText.slice(0,mapText.length-2);
-            return mapText;
-        }
-
-        return playerAttribute["N"];
-
     }
 
     populateRuleEvaluationMetricsList = (matchId) =>

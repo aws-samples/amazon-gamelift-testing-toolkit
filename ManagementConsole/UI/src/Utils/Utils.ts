@@ -31,5 +31,37 @@ export class Utils
         if (!results[2]) return '';
         return decodeURIComponent(results[2].replace(/\+/g, ' '));
     }
+
+    public static getPlayerAttributeText(playerAttribute)
+    {
+        if (playerAttribute==undefined)
+        {
+            return "-";
+        }
+        if (playerAttribute["S"]!=null)
+        {
+            return playerAttribute["S"];
+        }
+
+        if (playerAttribute["SL"].length>0)
+        {
+            return playerAttribute["SL"].join(", ");
+        }
+
+        if (Object.keys(playerAttribute["SDM"]).length)
+        {
+            let mapText="";
+            Object.keys(playerAttribute["SDM"]).map(key=>
+            {
+                mapText+=key + ":" + playerAttribute["SDM"][key] + ", ";
+            });
+
+            mapText = mapText.slice(0,mapText.length-2);
+            return mapText;
+        }
+
+        return playerAttribute["N"];
+
+    }
 }
 

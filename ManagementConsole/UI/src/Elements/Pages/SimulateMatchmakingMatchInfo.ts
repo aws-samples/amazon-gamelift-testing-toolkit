@@ -7,6 +7,7 @@ import {Events} from "../../Events/Events";
 import JSONEditor, {JSONEditorOptions} from 'jsoneditor';
 import {Page} from "../Abstract/Page";
 import {Pages} from "./Pages";
+import {Utils} from "../../Utils/Utils";
 
 export class SimulateMatchmakingMatchInfo extends Page
 {
@@ -35,11 +36,6 @@ export class SimulateMatchmakingMatchInfo extends Page
             this.resetSuccessfulMatchTicketEventTable();
             this.showSuccessfulMatchTicketsList();
             this.hideSuccessfulMatchTicketEventList();
-        }
-        else if (el.hasClass("viewFailedMatchInfo"))
-        {
-            this.hideMatchResults();
-            this.showFailedMatchInfo();
         }
         else if (el.hasClass("viewSuccessfulMatchTickets"))
         {
@@ -94,7 +90,6 @@ export class SimulateMatchmakingMatchInfo extends Page
     {
         console.log("SIMULATION MATCHES RESPONSE", matchResults);
         let successHtml="";
-        let failedHtml="";
         this._matches = {};
         this._failedPlayers=[];
         let successfulMatches=0;
@@ -171,16 +166,6 @@ export class SimulateMatchmakingMatchInfo extends Page
         else
         {
             this.showSuccessfulMatchesList();
-        }
-
-        if (failedMatches==0)
-        {
-            this.hideFailedMatchesList();
-        }
-        else
-        {
-            this.showFailedMatchesList();
-            this.populateFailedMatchInfo();
         }
     }
 
@@ -274,7 +259,7 @@ export class SimulateMatchmakingMatchInfo extends Page
                     console.log(playerAttributeName);
                     let playerAttribute = player.PlayerData.PlayerAttributes[playerAttributeName];
                     console.log(playerAttribute);
-                    attributeHtml+= "<td>" + this.getAttributeText(playerAttribute) + "</td>";
+                    attributeHtml+= "<td>" + Utils.getPlayerAttributeText(playerAttribute) + "</td>";
                     //$('#'+this._domId).find("#matchInfoPlayersTable >thead tr").append("<th>" + playerAttributeName + "</th");
 
                 });
@@ -368,162 +353,7 @@ export class SimulateMatchmakingMatchInfo extends Page
         }
     }
 
-    populateFailedMatchInfo = () =>
-    {
-        this.resetFailedMatchPlayersTable();
 
-        let matchPlayerTableHtml="";
-        let columnToggleHtml="Toggle column: ";
-
-        if (this._failedPlayers.length)
-        {
-            let playerAttributes=[];
-            let showLatencyData=false;
-
-            this._failedPlayers.map(player=>
-            {
-                console.log(player);
-                let attributeHtml="";
-
-                Object.keys(player.PlayerData.PlayerAttributes).map(playerAttributeName =>
-                {
-                    if (playerAttributes.indexOf(playerAttributeName)==-1)
-                    {
-                        playerAttributes.push(playerAttributeName);
-                    }
-                });
-
-                if (player.PlayerData.LatencyInMs!=null && Object.keys(player.PlayerData.LatencyInMs).length)
-                {
-                    showLatencyData=true;
-                }
-            });
-
-            columnToggleHtml+='<a class="toggle-vis" data-column="1">Player ID</a> - ';
-            columnToggleHtml+='<a class="toggle-vis" data-column="2">Ticket Status</a> - ';
-            columnToggleHtml+='<a class="toggle-vis" data-column="3">Match Time</a> - ';
-            let i=3;
-            playerAttributes.map(playerAttributeName =>
-            {
-                i++;
-                $('#'+this._domId).find("#failedMatchPlayersTable >thead tr").append("<th>" + playerAttributeName + "</th");
-                columnToggleHtml+='<a class="toggle-vis" data-column="' + i + '">' + playerAttributeName + '</a> - ';
-            });
-
-            if (showLatencyData)
-            {
-                i++;
-                $('#'+this._domId).find("#failedMatchPlayersTable >thead tr").append("<th>Latency</th");
-                columnToggleHtml+='<a class="toggle-vis" data-column="' + i + '">Latency</a> - ';
-            }
-
-            $('#'+this._domId).find("#failedMatchPlayersTable >thead tr").append("<th>Ticket</th");
-
-            columnToggleHtml = columnToggleHtml.slice(0,columnToggleHtml.length-2);
-
-            this._failedPlayers.map(player=>
-            {
-                console.log(player);
-                let attributeHtml="";
-                playerAttributes.map(playerAttributeName =>
-                {
-                    console.log(playerAttributeName);
-                    let playerAttribute = player.PlayerData.PlayerAttributes[playerAttributeName];
-                    console.log(playerAttribute);
-                    attributeHtml+= "<td>" + this.getAttributeText(playerAttribute) + "</td>";
-                    //$('#'+this._domId).find("#matchInfoPlayersTable >thead tr").append("<th>" + playerAttributeName + "</th");
-
-                });
-
-                if (showLatencyData)
-                {
-                    attributeHtml+="<td>" + JSON.stringify(player.PlayerData.LatencyInMs) + "</td>";
-                }
-
-                matchPlayerTableHtml += '<tr>' +
-                    '<td>' + player.ProfileName + '</td>'+
-                    '<td>' + player.PlayerId + '</td>'+
-                    '<td>' + player.MatchTicketStatus + '</td>'+
-                    '<td>' + (player.EndMatchTime-player.StartMatchTime) + ' seconds</td>'+
-                    attributeHtml +
-                    '<td><a class="viewFailedMatchTicket btn btn-primary btn-sm" id="' + player.TicketId + '" href="#">View Ticket</a></td>'+
-                    '</tr>'
-            });
-
-            $('#'+this._domId).find("table#failedMatchPlayersTable tbody").html(matchPlayerTableHtml);
-
-            let table = this.activateDataTable("failedMatchPlayersTable", {
-                scrollY: "400px",
-                scrollCollapse: true,
-                dom: "Bfrtip",
-                buttons: {
-                    dom: {
-                        button: {
-                            tag: 'button',
-                            className: 'border-0'
-                        },
-                        buttonLiner: {
-                            tag: null
-                        }
-                    },
-                    buttons : [
-                        {
-                            extend: "copyHtml5",
-                            text:   '<i style="font-size:26px; color:#333" class="fa fa-copy"></i>',
-                            titleAttr: 'Copy'
-                        },
-                        {
-                            extend: "csvHtml5",
-                            text:      '<i style="font-size:26px; color:#333" class="fa fa-file-csv"></i>',
-                            titleAttr: 'CSV'
-                        }
-                    ],
-                }
-            });
-
-            $('#'+this._domId).find("div.unmatchedPlayers div.columnToggle").html(columnToggleHtml);
-            $('#'+this._domId).find("div.unmatchedPlayers div.columnToggle a.toggle-vis").on("click", function (e)  {
-                e.preventDefault();
-                console.log("Toggled", e.target);
-                let column = table.column($(this).attr("data-column"));
-
-                column.visible(!column.visible());
-                table.columns.adjust().draw();
-            });
-        }
-    }
-
-    getAttributeText = (playerAttribute) =>
-    {
-        if (playerAttribute==undefined)
-        {
-            return "-";
-        }
-        if (playerAttribute["S"]!=null)
-        {
-            return playerAttribute["S"];
-        }
-
-        if (playerAttribute["SL"].length>0)
-        {
-            return playerAttribute["SL"].join(", ");
-        }
-
-        if (Object.keys(playerAttribute["SDM"]).length)
-        {
-            let mapText="";
-            Object.keys(playerAttribute["SDM"]).map(key=>
-            {
-                mapText+=key + ":" + playerAttribute["SDM"][key] + ", ";
-            });
-
-            mapText = mapText.slice(0,mapText.length-2);
-            return mapText;
-        }
-
-        return playerAttribute["N"];
-
-    }
 
     populateRuleEvaluationMetricsList = (matchId) =>
     {
@@ -600,11 +430,6 @@ export class SimulateMatchmakingMatchInfo extends Page
         this.resetElement(".successfulMatchesContent");
     }
 
-    resetFailedMatchesTable()
-    {
-        this.resetElement(".failedMatchesContent");
-    }
-
     resetSuccessfulMatchTicketsTable()
     {
         this.resetElement(".successfulMatchTicketHeadersContent");
@@ -625,19 +450,9 @@ export class SimulateMatchmakingMatchInfo extends Page
         this.resetElement(".matchInfoPlayersContent");
     }
 
-    resetFailedMatchPlayersTable()
-    {
-        this.resetElement(".failedMatchPlayersContent");
-    }
-
     resetMatchInfo()
     {
         this.resetElement(".matchInfo");
-    }
-
-    resetFailedMatchInfo()
-    {
-        this.resetElement(".failedMatchInfo");
     }
 
     // Hide/Show for <select> panes
@@ -676,13 +491,6 @@ export class SimulateMatchmakingMatchInfo extends Page
     {
         this.resetMatchInfo();
         $('#'+this._domId).find(".matchInfo").show();
-        this.hideMatchResults();
-    }
-
-    showFailedMatchInfo()
-    {
-        this.resetFailedMatchInfo();
-        $('#'+this._domId).find(".failedMatchInfo").show();
         this.hideMatchResults();
     }
 
@@ -734,17 +542,6 @@ export class SimulateMatchmakingMatchInfo extends Page
         $('#'+this._domId).find(".successfulMatchTicketEventsContent").hide();
     }
 
-    showFailedMatchTicketEventList()
-    {
-        this.hideMatchResults();
-        $('#'+this._domId).find(".failedMatchTicketEventsContent").show();
-    }
-
-    hideFailedMatchTicketEventList()
-    {
-        $('#'+this._domId).find(".failedMatchTicketEventsContent").hide();
-    }
-
     showSuccessfulMatchesList()
     {
         $('#'+this._domId).find(".successfulMatchesContent").show();
@@ -753,16 +550,6 @@ export class SimulateMatchmakingMatchInfo extends Page
     hideSuccessfulMatchesList()
     {
         $('#'+this._domId).find(".successfulMatchesContent").hide();
-    }
-
-    showFailedMatchesList()
-    {
-        $('#'+this._domId).find(".failedMatchesContent").show();
-    }
-
-    hideFailedMatchesList()
-    {
-        $('#'+this._domId).find(".failedMatchesContent").hide();
     }
 
     hideMatchInfo()
