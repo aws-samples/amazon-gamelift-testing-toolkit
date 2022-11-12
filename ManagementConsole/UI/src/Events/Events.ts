@@ -5,6 +5,9 @@ export class Events
 {
     public static SCENE_CLICKED:string = "SceneClicked";
     public static SOCKET_MESSAGE:string = "SocketMessage";
+    public static STATE_UPDATE:string = "StateUpdate";
+    public static FLEXMATCH_EVENT:string = "FlexMatchEvent";
+    public static QUEUE_PLACEMENT_EVENT:string = "QueuePlacementEvent";
     public static OPEN_SETTINGS:string = "OpenSettings";
     public static CLOSE_SETTINGS:string = "CloseSettings";
     public static ENABLE_ANIMATIONS:string = "EnableAnimations";

@@ -37,7 +37,6 @@ export class Network
                 session_token: credentials.sessionToken,
             }
 
-            //Network.socket = new WebSocket(url + "?Auth=" + token);
             const signedUrl = Signer.signUrl(url, accessInfo)
             console.log(signedUrl);
             Network.socket = new WebSocket(signedUrl);
@@ -49,7 +48,6 @@ export class Network
                     Network._intervalId = setInterval(Network.reconnectIfDisconnected, 3600000);
                 }
                 resolve(true);
-                //Network.socket.send(JSON.stringify({"Type":"GetFleets"}));
             };
 
             Network.socket.onclose = (event:Event) =>

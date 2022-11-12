@@ -114,6 +114,7 @@ h6 { margin-top: 10px;}
 .flexMatchSimulatorContainer
 {
     margin-top: 40px;
+    min-width: 1240px;
 }
 
 .flexMatchSimulatorContent {
@@ -524,7 +525,7 @@ table#fleetEventsTable.table td {
 table td { font-size: 1em !important;}
 
 .btn-primary, .pagination .page-item.active .page-link  { background-color: #ff9900 !important; }
-.btn-primary { margin:0; margin-bottom: 0.375rem; margin-right:0.375rem;}
+.btn-primary { margin-left:0;}
 
 table.fleetTable td, table.fleetTable th {
     padding: 5px;

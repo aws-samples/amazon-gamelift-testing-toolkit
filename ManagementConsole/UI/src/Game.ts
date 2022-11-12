@@ -34,7 +34,7 @@ export class Game extends Phaser.Game {
         this.scene.add('Boot', BootScene);
         this.scene.add('Preloader', PreloaderScene);
         this.scene.add('Login', LoginScene);
-        this.scene.add('Console', ConsoleScene);
+        this.scene.add('Console', ConsoleScene.getInstance());
         this.scene.start('Boot');
     }
 

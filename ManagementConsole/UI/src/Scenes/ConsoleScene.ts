@@ -6,7 +6,6 @@ import {Fleets} from "../Elements/Fleets";
 import {Network} from "../Network/Network"
 import {DataTypes} from "../Data/DataTypes";
 import State = DataTypes.State;
-import StateMessage = DataTypes.StateMessage;
 import {SettingsPanel} from "../Elements/Settings/SettingsPanel";
 import {EventDispatcher} from "../Events/EventDispatcher";
 import {Events} from "../Events/Events";
@@ -14,20 +13,19 @@ import {SettingsButton} from "../Elements/Buttons/SettingsButton";
 import UUID = Phaser.Utils.String.UUID;
 import {MatchmakingConfigs} from "../Elements/MatchmakingConfigs";
 import {GameSessionQueues} from "../Elements/GameSessionQueues";
-import FlexMatchEventDetail = DataTypes.FlexMatchEventDetail;
-import QueuePlacementEventDetail = DataTypes.QueuePlacementEventDetail;
 import {Players} from "../Elements/Players";
 import {PopupHandler} from "../Elements/Popups/PopupHandler";
 import {MatchmakingConfig} from "../Elements/MatchmakingConfig";
 import {GameSessionQueue} from "../Elements/GameSessionQueue";
 import Alias = DataTypes.Alias;
-import SimpleResult = DataTypes.SimpleResult;
 import {ToggleAnimationButton} from "../Elements/Buttons/ToggleAnimationButton";
 import {PlayerMatches} from "../Elements/PlayerMatches";
 import Sprite = Phaser.GameObjects.Sprite;
 import {Fleet} from "../Elements/Fleet";
 import {ScreenResolution} from "../Data/ScreenResolution";
 import {PlayerMatch} from "../Elements/PlayerMatch";
+import {MessageHandler} from "../Network/MessageHandler";
+import {GameLiftEventHandler} from "../Events/GameLiftEventHandler";
 
 export class ConsoleScene extends Phaser.Scene
 {
@@ -42,22 +40,32 @@ export class ConsoleScene extends Phaser.Scene
     protected _aliases: Alias[];
     protected _gtLogo: Sprite;
     public static animationsEnabled=true;
-    public static disableUpdates=false;
-    protected _stateLoaded:boolean = false;
+    protected _disableUpdates=false;
+    public stateLoaded:boolean = false;
     public static moveSpeed:number = 3;
     protected _currentState: State;
+    protected static instance:ConsoleScene;
 
     constructor ()
     {
         super("Console");
         this._emitter = EventDispatcher.getInstance();
+        new GameLiftEventHandler();
+        new MessageHandler();
         PopupHandler.registerScene(this);
         console.log(this);
+        ConsoleScene.instance = this;
+    }
+
+    static getInstance() {
+        if (ConsoleScene.instance == null) {
+            ConsoleScene.instance = new ConsoleScene();
+        }
+        return ConsoleScene.instance;
     }
 
     init(state:State)
     {
-        console.log("INIT CALLED", state);
         ScreenResolution.updateUserResolution(this.scale.width, this.scale.height);
 
         this._settingsPanel = new SettingsPanel(this, 0, 0);
@@ -78,16 +86,12 @@ export class ConsoleScene extends Phaser.Scene
 
         window.setInterval(()=>
         {
-            let matches = PlayerMatches.getMatches();
             let players= Players.getPlayers();
 
-            //console.log("-------")
             let now = Date.now();
-            //let timeNow = new Date().toTimeString();
 
             players.map((player)=>
             {
-                //console.log(timeNow + " - " + player.PlayerId + " - " + player.playerState + " - " + secondsSinceLastSeen);
                 let secondsSinceLastSeen = (now- player.lastSeen) / 1000;
                 if (secondsSinceLastSeen>=30 && (player.playerState==PlayerState.RESET || player.playerState==PlayerState.CREATED))
                 {
@@ -111,6 +115,21 @@ export class ConsoleScene extends Phaser.Scene
         this._matchmakingConfigurations.y=this._queues.y - this._matchmakingConfigurations.displayHeight - 50;
     }
 
+    getMatchmakingConfigurations():MatchmakingConfigs
+    {
+        return this._matchmakingConfigurations;
+    }
+
+    getQueues():GameSessionQueues
+    {
+        return this._queues;
+    }
+
+    getFleets():Fleets
+    {
+        return this._fleets;
+    }
+
     addPlayer(playerId:string=null)
     {
         let fakePlayer:boolean = false;
@@ -120,14 +139,12 @@ export class ConsoleScene extends Phaser.Scene
             fakePlayer=true;
         }
         let player = Players.getPlayer(playerId);
-        console.log("FOUND PLAYER", player);
         if (player==undefined)
         {
             player = new Player(this, 0, 0, playerId);
         }
 
         player.alpha=1;
-        console.log("ADDING PLAYER WITH ID", playerId, player.added);
 
         if (player.added==false)
         {
@@ -140,7 +157,6 @@ export class ConsoleScene extends Phaser.Scene
             Players.setClearXPos(player, 400, 1000);
             player.initialX = player.x;
             player.initialY = player.y;
-            console.log("ADDING PLAYER WITH INITIAL VALUES", player.x, player.y);
             this.add.existing(player);
 
             if (fakePlayer)
@@ -191,217 +207,9 @@ export class ConsoleScene extends Phaser.Scene
         return match;
     }
 
-    processFlexMatchEvent(flexMatchEvent:FlexMatchEventDetail, resources:string[])
-    {
-        let eventPlayerIds:string[] = [];
-
-        let playerTicketMap: Record<string, string> = {};
-        // TODO HANDLE BACKFILL CORRECTLY FOR ADDED PLAYERS
-        flexMatchEvent.tickets.map((ticket)=>
-        {
-            // ADD PLAYERS
-            if (!ticket.ticketId.startsWith("auto-backfill"))
-            {
-                ticket.players.map((player)=>
-                {
-                    playerTicketMap[player.playerId] = ticket.ticketId;
-//                    eventPlayerIds.push(player.playerId);
-                    eventPlayerIds.push(player.playerId);
-                    this.addPlayer(player.playerId);
-                });
-            }
-        });
-
-        let matchmakingConfig = this._matchmakingConfigurations.getConfigByArn(resources[0]);
-        if (matchmakingConfig==null)
-        {
-            return;
-        }
-
-        if (flexMatchEvent.matchId && flexMatchEvent.type == "PotentialMatchCreated") // we have a match
-        {
-            // construct match
-            let match = this.initializeMatch(flexMatchEvent.matchId, resources[0]);
-
-            eventPlayerIds.map((playerId)=> // make players move to match destination and then get added to the match
-            {
-                console.log("RECEIVED " + flexMatchEvent.type + " SO MOVING PLAYER " + playerId + " TO MATCH");
-                let matchDestination:SceneDestination = {
-                    type: "match",
-                    container:match,
-                    callback: () =>
-                    {
-                        console.log("ADDING PLAYER TO MATCH:", playerId, flexMatchEvent.matchId);
-                        match.addPlayerToMatch(playerId);
-                        console.log(PlayerMatches.getMatch(flexMatchEvent.matchId).playerIds);
-
-                        if (PlayerMatches.getMatch(flexMatchEvent.matchId).playerIds.length == eventPlayerIds.length) // once all the players are added to match, move to queue
-                        {
-                            Players.getPlayer(playerId).storeEvent("MATCH IS FULL");
-                            PlayerMatches.getMatch(flexMatchEvent.matchId).moveToNextDestination();
-                        }
-                        else
-                        {
-                            Players.getPlayer(playerId).storeEvent("MATCH NOT FULL YET - EXPECTING " + PlayerMatches.getMatch(flexMatchEvent.matchId).playerIds.length + " BUT GOT " + eventPlayerIds.length);
-                        }
-                    }
-                }
-                Players.getPlayer(playerId).storeEvent(flexMatchEvent);
-                Players.getPlayer(playerId).storeEvent(matchDestination);
-                Players.getPlayer(playerId).playerState = PlayerState.WALKING_TO_MATCH;
-                Players.getPlayer(playerId).addDestination(matchDestination);
-            });
-
-            return;
-        }
-        else
-        if (flexMatchEvent.type=="MatchmakingSearching") // MatchmakingSearching is the start of a matchmaking cycle, so set player's active ticketId so we can ignore old ticket events
-        {
-            flexMatchEvent.tickets.map((ticket)=>
-            {
-                if (!ticket.ticketId.startsWith("auto-backfill"))
-                {
-                    ticket.players.map((player)=>
-                    {
-                        Players.getPlayer(player.playerId).activeTicketId = ticket.ticketId;
-                    });
-                }
-            });
-
-            eventPlayerIds.map((playerId)=>
-            {
-                console.log("RECEIVED MATCHMAKING SEARCHING FOR " + playerId + " - " + Players.getPlayer(playerId).playerState);
-                if (Players.getPlayer(playerId).playerState!=PlayerState.WALKING_TO_MATCH && Players.getPlayer(playerId).playerState!=PlayerState.IN_MATCH) // in case events arrive out of order
-                {
-                    // break up any match involving these players, if one exists
-                    let match = PlayerMatches.findPlayerMatch(playerId);
-                    if (match)
-                    {
-                        console.log("RECEIVED " + flexMatchEvent.type + " AND PLAYER ALREADY IN A MATCH, SO BREAKING UP MATCH");
-                        match?.breakUpMatch();
-                    }
-                    
-                    // send player to matchmaking config
-                    let destination:SceneDestination = {
-                        container: matchmakingConfig,
-                        type: "matchmakingConfig",
-                        disappearAfter:false,
-                        delay:0,
-                    };
-                    Players.getPlayer(playerId).playerState = PlayerState.WAITING_FOR_MATCH;
-                    Players.getPlayer(playerId).addDestination(destination);
-                    console.log("RECEIVED " + flexMatchEvent.type + " SO SENDING PLAYER " + playerId + " TO MATCHMAKING CONFIG");
-                }
-            });
-
-            return;
-        }
-
-        if (flexMatchEvent.type == "MatchmakingTimedOut" || flexMatchEvent.type == "MatchmakingCancelled")
-        {
-            eventPlayerIds.map((playerId)=>
-            {
-                if (Players.getPlayer(playerId).activeTicketId == playerTicketMap[playerId]) // if we have a different type of event, make players go back to the start
-                {
-                    console.log("RECEIVED " + flexMatchEvent.type + " ON PLAYER'S ACTIVE TICKET, SO SENDING PLAYER BACK TO INITIAL POSITION");
-                    Players.getPlayer(playerId).resetPlayer();
-                }
-            });
-
-            return;
-        }
-
-        console.log("RECEIVED " + flexMatchEvent.type + " SO DOING NOTHING", flexMatchEvent);
-    }
-
-    processQueuePlacementEvent(queuePlacementEvent:QueuePlacementEventDetail, resources:string[])
-    {
-        let playerIds:string[] = [];
-        console.log(queuePlacementEvent.type, queuePlacementEvent);
-        if (queuePlacementEvent.placedPlayerSessions==null) // the queue placement has failed for some reason
-        {
-            console.log("QUEUE PLACEMENT FAILED!", queuePlacementEvent);
-            if (queuePlacementEvent.placementId)
-            {
-                let match = PlayerMatches.getMatch(queuePlacementEvent.placementId); // look up the corresponding match and break it up
-                if (match)
-                {
-                    playerIds = match.playerIds;
-                    let configArn = match.configArn;
-                    match?.breakUpMatch();
-                    let matchmakingConfig = this._matchmakingConfigurations.getConfigByArn(configArn);
-                    let destination:SceneDestination = {
-                        container: matchmakingConfig,
-                        type: "matchmakingConfig",
-                        disappearAfter:false,
-                        delay:0,
-                    };
-                    playerIds.map((playerId)=> // make players go back to the matchmaking config
-                    {
-                        Players.getPlayer(playerId).addDestination(destination);
-                    });
-                }
-            }
-            return;
-        }
-
-        queuePlacementEvent.placedPlayerSessions.map(playerSession => {
-            playerIds.push(playerSession.playerId);
-        });
-
-        if (queuePlacementEvent.placementId)
-        {
-            let match = PlayerMatches.getMatch(queuePlacementEvent.placementId);
-
-            switch (queuePlacementEvent.type)
-            {
-                case "PlacementFulfilled":
-                    if (match==undefined)
-                    {
-                        console.log("UNDEFINED MATCH PLACEMENT FULFILLED!", queuePlacementEvent.placementId);
-                        match = this.initializeMatch(queuePlacementEvent.placementId);
-                    }
-
-                    match.placementEvent = queuePlacementEvent;
-
-                    let queue = this._queues.getQueueByArn(resources[0]);
-                    let queueDestination:SceneDestination = {
-                        container: queue,
-                        type: "queue",
-                        delay:1000,
-                        disappearAfter:false,
-                    };
-                    match.addDestination(queueDestination);
-
-                    let instance = this._fleets.getInstanceByIp(queuePlacementEvent.ipAddress);
-                    let instanceDestination:SceneDestination = {
-                        container: instance,
-                        type: "instance",
-                        disappearAfter: true,
-                        delay:1000,
-                    };
-                    match.addDestination(instanceDestination);
-
-                    break;
-            }
-        }
-
-        //let instance = this._fleets.getInstanceByIp(queuePlacementEvent.ipAddress);
-        //player.matchedSuccessfully(instance);
-    }
-
     processState(state:State)
     {
         this._currentState = state;
-        /*
-        let playerSessions=[];
-        for (let playerSession of state.PlayerSessions)
-        {
-            playerSessions[playerSession.GameSessionId] = playerSessions[playerSession.GameSessionId] || [];
-            playerSessions[playerSession.GameSessionId].push(playerSession);
-        }
-
-         */
 
         if (state!=null)
         {
@@ -432,61 +240,13 @@ export class ConsoleScene extends Phaser.Scene
                 this._aliases = state.Aliases;
             }
 
-            this._stateLoaded=true;
+            this.stateLoaded=true;
         }
-
-
-        /*
-        for (let fleetAttributes of state.FleetAttributes)
-        {
-            var currentFleet=fleetAttributes;
-            currentFleet["GameSessions"]=[];
-            currentFleet["Instances"]=[];
-
-            for (let capacity of state.FleetCapacities)
-            {
-                if (capacity.FleetId == currentFleet.FleetId)
-                {
-                    currentFleet["FleetCapacity"] = capacity;
-                }
-            }
-
-            for (let gameSession of state.GameSessions)
-            {
-                if (gameSession.FleetId == currentFleet.FleetId)
-                {
-                    //gameSession["PlayerSessions"] = playerSessions[gameSession.GameSessionId] || [];
-                    currentFleet["GameSessions"].push(gameSession);
-                }
-            }
-
-            for (let utilization of state.FleetUtilization)
-            {
-                if (utilization.FleetId == currentFleet.FleetId)
-                {
-                    currentFleet["FleetUtilization"] = utilization;
-                }
-            }
-
-            for (let instance of state.Instances)
-            {
-                if (instance.FleetId == currentFleet.FleetId)
-                {
-                    currentFleet["Instances"].push(instance);
-                }
-            }
-
-            this._fleets.updateFleet(currentFleet as Data.Fleet);
-
-        }
-
-         */
-        //console.log(this._fleets);
     }
 
     create ()
     {
-        this.scale.once('resize', this.doResize, this);
+        ScreenResolution.updateUserResolution(this.scale.width, this.scale.height);
         this.cameras.main.setBackgroundColor("#161925");
 
         this._settingsButton = new SettingsButton(this, 0, 0);
@@ -500,7 +260,6 @@ export class ConsoleScene extends Phaser.Scene
         this._animationButton.x = this._settingsButton.x + this._settingsButton.displayWidth + 10;
         this._animationButton.y = this._settingsButton.y;
         this.add.existing(this._animationButton);
-        //this.input.enableDebug(this._settingsButton);
 
         this._gtLogo = this.add.sprite(0,0,"toolkit", "gtlogo.png");
         this._gtLogo.scale = 0.5;
@@ -515,6 +274,7 @@ export class ConsoleScene extends Phaser.Scene
 
     setupEventListeners = () =>
     {
+        this._emitter.on(Events.STATE_UPDATE, this.onStateMessage);
         this._emitter.on(Events.OPEN_SETTINGS, this.onSettingsOpen);
         this._emitter.on(Events.ENABLE_ANIMATIONS, this.onEnableAnimations);
         this._emitter.on(Events.DISABLE_ANIMATIONS, this.onDisableAnimations);
@@ -534,9 +294,16 @@ export class ConsoleScene extends Phaser.Scene
         this._emitter.on(Events.HIDE_MATCHMAKING_CONFIG_QUEUES, this.onHideLines);
         this._emitter.on(Events.SHOW_QUEUE_FLEETS, this.onShowQueueFleets);
         this._emitter.on(Events.HIDE_QUEUE_FLEETS, this.onHideLines);
-        this._emitter.on(Events.SOCKET_MESSAGE, this.onSocketMessage);
         this._emitter.on(Events.PLAYER_ADDED_TO_GAME_SESSION, this.onPlayerAddedToGameSession);
     };
+
+    onStateMessage = (stateMessage) =>
+    {
+        if (this._disableUpdates==false)
+        {
+            this.processState(stateMessage.State);
+        }
+    }
 
     onPlayerAddedToGameSession = (playerId) =>
     {
@@ -559,11 +326,8 @@ export class ConsoleScene extends Phaser.Scene
         this._fleets.redrawFleets();
     }
 
-
     onShowMatchmakingConfigQueues = (matchmakingConfig:MatchmakingConfig) =>
     {
-        //console.log("SHOW MATCHMAKING CONFIG QUEUES");
-
         const matchmakingConfigWorldTranslation = matchmakingConfig.getWorldTranslation();
         matchmakingConfig.Data.GameSessionQueueArns.map((queueArn)=>
         {
@@ -584,8 +348,6 @@ export class ConsoleScene extends Phaser.Scene
 
     onShowQueueFleets = (queue:GameSessionQueue) =>
     {
-        //console.log("SHOW QUEUE FLEETS");
-
         const queueWorldTranslation = queue.getWorldTranslation();
         const fleets=[];
         queue.Data.Destinations.map((destination)=> {
@@ -646,192 +408,16 @@ export class ConsoleScene extends Phaser.Scene
         this._lines=[];
     };
 
-    onSocketMessage = (data:any)=>
-    {
-        //console.log(data);
-
-        console.log("MESSAGE RECEIVED!", data);
-        let stateMessage:StateMessage = null;
-        if (this._stateLoaded==false && data["Type"]!="GetState")
-        {
-            return;
-        }
-        switch (data["Type"])
-        {
-            case "GetState":
-                stateMessage = data as StateMessage;
-                if (ConsoleScene.disableUpdates==false)
-                {
-                    this.processState(stateMessage.State);
-                }
-                break;
-
-            case "QueuePlacementEvent":
-                stateMessage = data as StateMessage;
-                this.processQueuePlacementEvent(stateMessage.QueuePlacementEventDetail, stateMessage.Resources);
-                break;
-
-            case "FlexMatchEvent":
-                stateMessage = data as StateMessage;
-                this.processFlexMatchEvent(stateMessage.FlexMatchEventDetail, stateMessage.Resources);
-                break;
-
-            case "AdjustFleetCapacity":
-                this._emitter.emit(Events.ADJUST_FLEET_SCALING_RESPONSE, data as SimpleResult);
-                break;
-
-            case "SetScalingPolicy":
-                this._emitter.emit(Events.SET_SCALING_POLICY_RESPONSE, data as SimpleResult);
-                break;
-
-            case "DeleteScalingPolicy":
-                this._emitter.emit(Events.DELETE_SCALING_POLICY_RESPONSE, data as SimpleResult);
-                break;
-
-            case "UpdateFleetLocations":
-                this._emitter.emit(Events.UPDATE_FLEET_LOCATIONS_RESPONSE, data as SimpleResult);
-                break;
-
-            case "TerminateVirtualPlayer":
-                this._emitter.emit(Events.TERMINATE_VIRTUAL_PLAYER_RESPONSE, data as SimpleResult);
-                break;
-
-            case "GetGameSessions":
-                this._emitter.emit(Events.GET_GAME_SESSIONS_RESPONSE, data.GameSessions);
-                break;
-
-            case "GetFleetScaling":
-                this._emitter.emit(Events.GET_FLEET_SCALING_RESPONSE, data as SimpleResult);
-                break;
-
-            case "GetGameSessionLogs":
-                this._emitter.emit(Events.GET_GAME_SESSION_LOGS_RESPONSE, data);
-                break;
-
-            case "RunMatchmakingSimulation":
-                this._emitter.emit(Events.RUN_MATCHMAKING_SIMULATION_RESPONSE, data.Simulation);
-                break;
-
-            case "MatchmakingSimulationUpdate":
-                this._emitter.emit(Events.MATCHMAKING_SIMULATION_UPDATE, data.Simulation);
-                break;
-
-            case "GetSimulationMatches":
-                this._emitter.emit(Events.GET_SIMULATION_MATCHES_RESPONSE, data.MatchResults);
-                break;
-
-            case "GetTaskDefinitions":
-                this._emitter.emit(Events.GET_TASK_DEFINITIONS_RESPONSE, data as SimpleResult);
-                break;
-
-            case "GetPlayerSessions":
-                this._emitter.emit(Events.GET_PLAYER_SESSIONS_RESPONSE, data.PlayerSessions);
-                break;
-
-            case "SavePlayerProfile":
-                this._emitter.emit(Events.SAVE_PLAYER_PROFILE_RESPONSE, data);
-                break;
-
-            case "DeletePlayerProfile":
-                this._emitter.emit(Events.DELETE_PLAYER_PROFILE_RESPONSE, data);
-                break;
-
-            case "SaveLatencyProfile":
-                this._emitter.emit(Events.SAVE_LATENCY_PROFILE_RESPONSE, data);
-                break;
-
-            case "DeleteLatencyProfile":
-                this._emitter.emit(Events.DELETE_LATENCY_PROFILE_RESPONSE, data);
-                break;
-
-            case "GetQueueEvents":
-                this._emitter.emit(Events.GET_QUEUE_EVENTS_RESPONSE, data.Events);
-                break;
-
-            case "GetQueueEventByPlacementId":
-                this._emitter.emit(Events.GET_QUEUE_EVENT_BY_PLACEMENT_ID_RESPONSE, data.Event);
-                break;
-
-            case "GetMatchmakingRuleSets":
-                this._emitter.emit(Events.GET_MATCHMAKING_RULESETS_RESPONSE, data.RuleSets);
-                break;
-
-            case "GetMatchmakingSimulations":
-                this._emitter.emit(Events.GET_MATCHMAKING_SIMULATIONS_RESPONSE, data.Simulations);
-                break;
-
-            case "GetMatchmakingSimulation":
-                this._emitter.emit(Events.GET_MATCHMAKING_SIMULATION_RESPONSE, data.Simulation);
-                break;
-
-            case "GetPlayerProfiles":
-                this._emitter.emit(Events.GET_PLAYER_PROFILES_RESPONSE, data.Profiles);
-                break;
-
-            case "GetLatencyProfiles":
-                this._emitter.emit(Events.GET_LATENCY_PROFILES_RESPONSE, data.Profiles);
-                break;
-
-            case "GetVirtualPlayers":
-                this._emitter.emit(Events.GET_VIRTUAL_PLAYERS_RESPONSE, data);
-                break;
-
-            case "GetMatchmakingTicketHeaders":
-                this._emitter.emit(Events.GET_MATCHMAKING_TICKET_HEADERS_RESPONSE, data);
-                break;
-
-            case "GetMatchmakingTicketHeadersByMatchId":
-                this._emitter.emit(Events.GET_MATCHMAKING_TICKET_HEADERS_BY_MATCH_ID_RESPONSE, data);
-                break;
-
-            case "GetMatchmakingTicketHeadersBySimulationId":
-                this._emitter.emit(Events.GET_MATCHMAKING_TICKET_HEADERS_BY_SIMULATION_ID_RESPONSE, data);
-                break;
-
-            case "GetMatchmakingTicket":
-                this._emitter.emit(Events.GET_MATCHMAKING_TICKET_RESPONSE, data);
-                break;
-
-            case "GetCloudWatchGraph":
-                this._emitter.emit(Events.GET_CLOUDWATCH_GRAPH_RESPONSE, data);
-                break;
-
-            case "ValidateMatchmakingRuleSet":
-                this._emitter.emit(Events.VALIDATE_MATCHMAKING_RULESET_RESPONSE, data);
-                break;
-
-            case "CreateMatchmakingRuleSet":
-                this._emitter.emit(Events.CREATE_MATCHMAKING_RULESET_RESPONSE, data);
-                break;
-
-            case "DeleteMatchmakingRuleSet":
-                this._emitter.emit(Events.DELETE_MATCHMAKING_RULESET_RESPONSE, data);
-                break;
-
-            case "UpdateMatchmakingConfiguration":
-                this._emitter.emit(Events.UPDATE_MATCHMAKING_CONFIGURATION_RESPONSE, data);
-                break;
-
-            case "LaunchPlayers":
-                this._emitter.emit(Events.LAUNCH_VIRTUAL_PLAYERS_RESPONSE, data);
-                break;
-
-        }
-    }
-
-
 
     onSettingsOpen = () =>
     {
         this._settingsPanel.show();
-        //this._settingsButton.input.enabled=false;
         this._settingsButton.disable();
     };
 
     onSettingsClose = () =>
     {
         this._settingsPanel.hide();
-        //this._settingsButton.input.enabled=true;
         this._settingsButton.enable();
     };
 
@@ -954,7 +540,7 @@ export class ConsoleScene extends Phaser.Scene
         {
             numInstances=3;
         }
-        ConsoleScene.disableUpdates=true;
+        this._disableUpdates=true;
         let fleetId = Phaser.Utils.String.UUID();
         this._fleets.addFleet(fleetId, true);
         for (let i=0;i<numInstances;i++)
@@ -980,21 +566,18 @@ export class ConsoleScene extends Phaser.Scene
             fleetId = Object.keys(this._fleets.Fleets)[0];
         }
         this._fleets.Fleets[fleetId].addInstance(Phaser.Utils.String.UUID(), true);
-        //this._fleets.addFleet(Phaser.Utils.String.UUID(), true);
     };
 
     onAddFakeGameSession = () =>
     {
         let fleetId = Object.keys(this._fleets.Fleets)[0];
         this._fleets.Fleets[fleetId].addGameSession(Phaser.Utils.String.UUID(), true);
-        //this._fleets.addFleet(Phaser.Utils.String.UUID(), true);
     };
 
     onSceneClick = (pointer, localX, localY, event)  =>
     {
         this._emitter.emit(Events.CLOSE_POPUP);
         this._emitter.emit(Events.CLOSE_MENUS);
-        //this._popup?.hide();
     };
 
     doResize = (gameSize, baseSize, displaySize, resolution) =>
