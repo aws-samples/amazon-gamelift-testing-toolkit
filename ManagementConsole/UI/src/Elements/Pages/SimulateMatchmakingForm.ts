@@ -56,21 +56,26 @@ export class SimulateMatchmakingForm extends Page
         $('#'+this._domId).find(".playerProfileTemplate").each(function ()
         {
             console.log($(this));
-            playerProfileConfigs.push({
-                ProfileId: $(this).find('#playerProfile').val(),
-                NumPlayers: parseInt($(this).find('.numPlayers').val() as string),
-                LatencyProfileId: $(this).find('#latencyProfile').val(),
-                TimeDelay: parseInt($(this).find('#timeDelay').val() as string),
-            });
+            let numPlayers = parseInt($(this).find('.numPlayers').val() as string);
+            if (numPlayers >0)
+            {
+                playerProfileConfigs.push({
+                    ProfileId: $(this).find('#playerProfile').val(),
+                    NumPlayers: numPlayers,
+                    LatencyProfileId: $(this).find('#latencyProfile').val(),
+                    TimeDelay: parseInt($(this).find('#timeDelay').val() as string),
+                });
 
-            totalPlayersAdded += parseInt($(this).find('.numPlayers').val() as string);
+                totalPlayersAdded += parseInt($(this).find('.numPlayers').val() as string);
+            }
+
         });
 
         console.log(playerProfileConfigs);
 
         if (totalPlayersAdded==0 || totalPlayersAdded>1000)
         {
-            this.showFailureAlert("You need to simulate between 0-1000 profiles");
+            this.showFailureAlert("You need to simulate between 1-1000 players");
         }
         else
         {
