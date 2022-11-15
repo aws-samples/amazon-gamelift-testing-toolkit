@@ -524,6 +524,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                 MatchmakingFailedEvents = 0,
                 MatchmakingCancelledEvents = 0,
                 LastUpdateSent = Utils.GetUnixTimestamp(),
+                TimeToLive = (Utils.GetUnixTimestamp() + (86400*7)),
             };
 
             var item = Document.FromJson(JsonConvert.SerializeObject(matchmakingSimulation));

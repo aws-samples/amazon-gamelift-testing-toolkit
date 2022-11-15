@@ -60,6 +60,9 @@ namespace ManagementConsoleBackend.ManagementService.Data
         
         [DynamoDBProperty("LastUpdateSent")]
         public long LastUpdateSent;
+
+        [DynamoDBProperty("TimeToLive")]
+        public long TimeToLive;
     }
 
     public class MatchmakingSimulationPlayerConfig
