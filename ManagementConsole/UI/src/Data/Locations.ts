@@ -4,7 +4,7 @@
 export interface Location {
     regionCode: string;
     regionTitle: string;
-};
+}
 
 export class Locations
 {
@@ -19,6 +19,7 @@ export class Locations
             { regionCode: "ap-east-1", regionTitle: "Asia Pacific (Hong Kong)" },
             { regionCode: "ap-northeast-1", regionTitle: "Asia Pacific (Tokyo)" },
             { regionCode: "ap-northeast-2", regionTitle: "Asia Pacific (Seoul)" },
+            { regionCode: "ap-northeast-3", regionTitle: "Asia Pacific (Osaka)" },
             { regionCode: "ap-southeast-1", regionTitle: "Asia Pacific (Singapore)" },
             { regionCode: "ap-southeast-2", regionTitle: "Asia Pacific (Sydney)" },
             { regionCode: "ca-central-1", regionTitle: "Canada (Central)" },
@@ -29,7 +30,7 @@ export class Locations
             { regionCode: "eu-north-1", regionTitle: "Europe (Stockholm)" },
             { regionCode: "eu-central-1", regionTitle: "Europe (Frankfurt)" },
             { regionCode: "me-south-1", regionTitle: "Middle East (Bahrain)" },
-            { regionCode: "sa-east-1", regionTitle: "South America (São Paulo)" }
+            { regionCode: "sa-east-1", regionTitle: "South America (São Paulo)" },
         ];
 
 
