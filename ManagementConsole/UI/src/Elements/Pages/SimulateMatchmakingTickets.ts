@@ -41,15 +41,12 @@ export class SimulateMatchmakingTickets extends Page
         else
         if (el.hasClass("viewTicketEvent"))
         {
-            console.log("VIEWING TICKET DETAIL!");
-            console.log(event.target.id);
             let ticketEvent = this._ticketEvents.filter(ticketEvent => ticketEvent.id == el.attr("id"));
             this.showEventDetail(ticketEvent);
         }
         else
         if (el.hasClass("viewTicket"))
         {
-            console.log("VIEWING TICKET!");
             Network.sendObject({Type:"GetMatchmakingTicket", TicketId:event.target.id});
         }
     }
@@ -116,8 +113,6 @@ export class SimulateMatchmakingTickets extends Page
                 '</tr>';
         });
 
-        console.log(matchData);
-
         this.resetTicketHeadersTable();
 
         $('#'+this._domId).find("table#matchmakingTicketHeadersTable tbody").html(html);
@@ -130,7 +125,6 @@ export class SimulateMatchmakingTickets extends Page
     }
 
     onGetMatchmakingTicketResponse = (ticket) => {
-        console.log(ticket);
         let html = "";
 
         this._ticketEvents = ticket.Ticket.Events;
@@ -144,7 +138,6 @@ export class SimulateMatchmakingTickets extends Page
                 '</tr>'
         });
 
-        console.log(html);
         this.resetEventsTable();
 
         $('#' + this._domId).find("table#matchmakingTicketEventsTable tbody").html(html);

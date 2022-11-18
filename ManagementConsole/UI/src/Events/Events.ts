@@ -19,6 +19,10 @@ export class Events
     public static UPDATE_FLEET_LOCATIONS_RESPONSE:string = "UpdateFleetLocationsResponse";
     public static GET_GAME_SESSIONS_RESPONSE:string = "GetGameSessionsResponse";
     public static GET_GAME_SESSION_LOGS_RESPONSE:string = "GetGameSessionLogsResponse";
+    public static GET_GAME_SESSION_QUEUE:string = "GetGameSessionQueue";
+    public static GET_FLEET_ATTRIBUTES:string = "GetFleetAttributes";
+    public static GET_ALIASES:string = "GetAliases";
+    public static GET_GAME_SESSION_QUEUE_DESTINATION_INFO:string = "GetGameSessionQueueDestinationInfo";
     public static GET_QUEUE_EVENTS_RESPONSE:string = "GetQueueEventsResponse";
     public static GET_QUEUE_EVENT_BY_PLACEMENT_ID_RESPONSE:string = "GetQueueEventByPlacementIdResponse";
     public static GET_TASK_DEFINITIONS_RESPONSE:string = "GetTaskDefinitionsResponse";
@@ -31,6 +35,7 @@ export class Events
     public static DELETE_MATCHMAKING_RULESET_RESPONSE:string = "DeleteMatchmakingRuleSetResponse";
     public static VALIDATE_MATCHMAKING_RULESET_RESPONSE:string = "ValidateMatchmakingRuleSetResponse";
     public static UPDATE_MATCHMAKING_CONFIGURATION_RESPONSE:string = "UpdateMatchmakingConfigurationResponse";
+    public static UPDATE_GAME_SESSION_QUEUE_RESPONSE:string = "UpdateGameSessionQueueResponse";
     public static GET_FLEET_SCALING_RESPONSE:string = "GetFleetScalingResponse";
     public static GET_MATCHMAKING_RULESETS_RESPONSE:string = "GetMatchmakingRuleSetsResponse";
     public static GET_MATCHMAKING_SIMULATIONS_RESPONSE:string = "GetMatchmakingSimulationsResponse";
@@ -69,7 +74,9 @@ export class Events
     public static SHOW_FLEET_EVENTS_POPUP:string = "ShowFleetEventsPopup";
     public static SHOW_GAME_SESSIONS_TABLE_POPUP:string = "ShowGameSessionsTablePopup";
     public static SHOW_GAME_SESSION_LOGS_POPUP:string = "ShowGameSessionLogsPopup";
+    public static SET_QUEUE_DATA:string = "SetQueueData";
     public static SHOW_QUEUE_EVENTS_POPUP:string = "ShowQueueEventsPopup";
+    public static SHOW_QUEUE_SETTINGS_POPUP:string = "ShowQueueSettingsPopup";
     public static SHOW_FLEXMATCH_SIMULATOR_POPUP:string = "ShowFlexMatchSimulatorPopup";
     public static SHOW_MATCHMAKING_RULESETS_POPUP:string = "ShowMatchmakingRuleSetsPopup";
     public static SHOW_MATCHMAKING_TICKETS_POPUP:string = "ShowMatchmakingTicketsPopup";

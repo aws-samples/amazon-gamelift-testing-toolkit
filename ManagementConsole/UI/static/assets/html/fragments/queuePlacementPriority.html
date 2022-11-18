@@ -1,0 +1,40 @@
+<div class="alert hide" id="statusText"></div>
+<div class="queuePlacementPriorityContent">
+    <h5 style="margin-top:20px">Game Session Placement Priority</h5>
+    <p>Click and drag the Order column to modify the game session placement priority.  The default order is latency, cost, destination and location.</p>
+    <div class="queuePriorityTableContainer">
+        <table id="queuePriorityTable" class="table table-bordered table-striped mb-0">
+            <thead>
+            <tr>
+                <th class="no-sort">Order</th>
+                <th class="no-sort">Name</th>
+                <th class="no-sort">Priority</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <h5 style="margin-top:20px; float:left;">Location Order</h5>
+    <select class="locationOrder-location" style="float:left; margin-top:20px; margin-left:20px;">
+    </select>
+    <button style="margin-left:10px; float:left; margin-top:16px;" class="addLocation btn btn-primary btn-sm">Add Location</button>
+    <p style="clear:both;">An ordered list of locations that the queue can use for game session placement.  Click and drag the Order column to modify the location order.</p>
+
+    <div class="queueLocationOrderTableContainer">
+        <table id="queueLocationOrderTable" class="table table-bordered table-striped mb-0">
+            <thead>
+            <tr>
+                <th class="no-sort">Order</th>
+                <th class="no-sort">Name</th>
+                <th class="no-sort">Remove</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div id="updateQueuePriorityButtonContainer" style="clear:both">
+        <button style="margin-left:0" class="updateQueuePriority btn btn-primary btn-sm">Save Changes</button>
+    </div>
+</div>

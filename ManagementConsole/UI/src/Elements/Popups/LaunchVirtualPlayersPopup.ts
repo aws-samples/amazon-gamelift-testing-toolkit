@@ -68,7 +68,6 @@ export class LaunchVirtualPlayersPopup extends Popup
 
     onLaunchVirtualPlayersResponse = (data) =>
     {
-        console.log(data);
         if (data.Result)
         {
             this.showSuccessAlert(data.NumPlayers + " players launched");
@@ -81,13 +80,10 @@ export class LaunchVirtualPlayersPopup extends Popup
 
     onGetTaskDefinitionsResponse = (data) =>
     {
-
-        console.log(data);
         var optionHtml="<option value=\"\">Please select a task definition</option>";
         data.TaskDefinitions?.map(taskDefinition =>
         {
             optionHtml += "<option value=\"" + taskDefinition.TaskDefinitionArn + "\">" + taskDefinition.Family + "</option>";
-           console.log(taskDefinition);
         });
 
         this._popup.getChildByID("taskDefinition").innerHTML=optionHtml;
@@ -97,7 +93,7 @@ export class LaunchVirtualPlayersPopup extends Popup
     onPopupClick = async (event) => {
 
         event.stopPropagation();
-        console.log(event.target);
+
         if (event.target.className == "closeButton") {
             this._emitter.emit(Events.CLOSE_POPUP);
             this.setVisible(false);

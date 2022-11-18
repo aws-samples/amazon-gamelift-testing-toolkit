@@ -34,12 +34,9 @@ export class SimulateMatchmakingSimulations extends Page
 
     onGetMatchmakingSimulationsResponse = (data) =>
     {
-        console.log("GOT MATCHMAKING SIMULATIONS RESPONSE!");
         let html="";
         data.map(simulation =>
         {
-            console.log(simulation);
-
             let viewResultsTd='<td><a class="viewSimulationOutput btn btn-primary btn-sm" id="' + simulation.SimulationId +'" href="' + "#" + '">View</a></td>';
 
             let totalPlayers = 0;
@@ -66,13 +63,11 @@ export class SimulateMatchmakingSimulations extends Page
     }
 
     initPage() {
-        console.log("INIT PAGE", this._domId);
         Network.sendObject({Type:"GetMatchmakingSimulations"});
     }
 
     resetTable()
     {
-        console.log("RESETTING TABLE!");
         this.resetElement(".simulateMatchmakingTableContainer");
     }
 

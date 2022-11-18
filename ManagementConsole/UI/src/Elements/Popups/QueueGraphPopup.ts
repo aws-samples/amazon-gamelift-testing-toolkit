@@ -23,7 +23,6 @@ export class QueueGraphPopup extends Popup
     setPopupData(data:any)
     {
         this._queueConfigData = data;
-        console.log(this._queueConfigData);
 
         var options= [
             "AverageWaitTime",

@@ -747,6 +747,7 @@ namespace ManagementConsoleInfra.Lib
                         "gamelift:DescribeFleetCapacity",
                         "gamelift:DescribePlayerSessions",
                         "gamelift:UpdateMatchmakingConfiguration",
+                        "gamelift:UpdateGameSessionQueue",
                         "gamelift:StartMatchmaking",
                         "gamelift:DescribeMatchmakingRuleSets",
                         "gamelift:ValidateMatchmakingRuleSet",

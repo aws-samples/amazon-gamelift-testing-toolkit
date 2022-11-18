@@ -76,6 +76,26 @@ export class MessageHandler
                 this._emitter.emit(Events.GET_GAME_SESSION_LOGS_RESPONSE, data);
                 break;
 
+            case "UpdateGameSessionQueue":
+                this._emitter.emit(Events.UPDATE_GAME_SESSION_QUEUE_RESPONSE, data);
+                break;
+
+            case "GetGameSessionQueue":
+                this._emitter.emit(Events.GET_GAME_SESSION_QUEUE, data);
+                break;
+
+            case "GetFleetAttributes":
+                this._emitter.emit(Events.GET_FLEET_ATTRIBUTES, data);
+                break;
+
+            case "GetAliases":
+                this._emitter.emit(Events.GET_ALIASES, data);
+                break;
+
+            case "GetGameSessionQueueDestinationInfo":
+                this._emitter.emit(Events.GET_GAME_SESSION_QUEUE_DESTINATION_INFO, data);
+                break;
+
             case "RunMatchmakingSimulation":
                 this._emitter.emit(Events.RUN_MATCHMAKING_SIMULATION_RESPONSE, data.Simulation);
                 break;

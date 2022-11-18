@@ -96,7 +96,6 @@ export class Network
 
                 if ( Network.socket.readyState === 3 ) {
                     Network.socket.close();
-                    console.log("TRYING TO RECONNECT!");
                     const credentials = await Auth.currentCredentials();
                     clearInterval(Network._intervalId);
                     Network.connect(credentials, Network._url);

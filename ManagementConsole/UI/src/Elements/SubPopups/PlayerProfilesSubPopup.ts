@@ -26,12 +26,6 @@ export class PlayerProfilesSubPopup extends SubPopup
         Network.sendObject({Type:"GetPlayerProfiles"});
     }
 
-    resetElement(selector)
-    {
-        let el = $(this._html);
-        $('#'+this._parentDomId).find(selector).html(el.find(selector).html());
-    }
-
     resetTable()
     {
         this.resetElement(".playerProfilesTableContainer");
@@ -58,7 +52,6 @@ export class PlayerProfilesSubPopup extends SubPopup
 
     onSavePlayerProfileResponse = (data) =>
     {
-        console.log(data);
         if (data.Errors.length==0)
         {
             this.refresh();
@@ -72,7 +65,6 @@ export class PlayerProfilesSubPopup extends SubPopup
 
     onDeletePlayerProfileResponse = (data) =>
     {
-        console.log(data);
         if (data.Errors.length==0)
         {
             this.refresh();
@@ -86,14 +78,11 @@ export class PlayerProfilesSubPopup extends SubPopup
 
     onGetPlayerProfilesResponse = (data) =>
     {
-        console.log("GOT PLAYER PROFILES RESPONSE!");
         let html="";
         this._playerProfiles={};
         data.map(profile =>
         {
             this._playerProfiles[profile.ProfileId] = profile;
-
-            console.log(profile);
 
             let editProfileTd='<td><a class="editPlayerProfile btn btn-primary btn-sm" id="' + profile.ProfileId +'" href="' + "#" + '">Edit Profile</a></td>';
             let deleteProfileTd='<td><a class="deletePlayerProfile btn btn-primary btn-sm" id="' + profile.ProfileId +'" href="' + "#" + '">Delete Profile</a></td>';
@@ -129,10 +118,7 @@ export class PlayerProfilesSubPopup extends SubPopup
 
     onAttributeTypeChange = async (event) =>
     {
-        console.log("ATTRIBUTE TYPE CHANGE!");
-
         let el = $(event.target);
-        console.log("SHOWING", 'div.playerAttributeForm-'+el.val());
         el.parent().parent().find("div.playerAttributeForm-S").hide();
         el.parent().parent().find("div.playerAttributeForm-N").hide();
         el.parent().parent().find("div.playerAttributeForm-SL").hide();
@@ -142,24 +128,20 @@ export class PlayerProfilesSubPopup extends SubPopup
 
     onValueTypeChange = async (event) =>
     {
-        console.log("VALUE TYPE CHANGE");
         let el = $(event.target);
         let parent = $(event.target).parent().parent().parent();
-        //console.log(el);
+
         let attributeType = parent.find(".attributeType").val();
-        //console.log(attributeType);
+
         switch(attributeType)
         {
             case "N":
             case "SL":
                 parent.find("div.playerAttributeForm-"+attributeType+" div.valueTypes div.playerValue").hide(); // need to only hide the top divs
-                console.log(parent.html());
-                console.log("SHOWING " + "div.playerAttributeForm-"+attributeType+"-"+el.val());
                 parent.find("div.playerAttributeForm-"+attributeType+"-"+el.val()).show();
-                console.log(parent.html());
                 break;
         }
-        //console.log(parent.html());
+
         el.parent().parent().find("div.playerAttributeForm-S").hide();
         el.parent().parent().find("div.playerAttributeForm-N").hide();
         el.parent().parent().find("div.playerAttributeForm-SL").hide();
@@ -194,9 +176,7 @@ export class PlayerProfilesSubPopup extends SubPopup
                 $(this).find("input.playerAttributeForm-name").removeClass("errorBorder");
             }
             let attributeType = $(this).find("select.attributeType").val();
-            console.log(attributeType);
             let valueType = $(this).find(".playerAttributeForm-"+attributeType).find("select.valueType").val();
-            console.log(valueType);
 
             let myObj: PlayerProfileAttribute = {
                 AttributeName:attributeName as string,
@@ -232,7 +212,6 @@ export class PlayerProfilesSubPopup extends SubPopup
                 {
                     let stringListValues = [];
                     let stringListText = $(this).find(".playerAttributeForm-"+attributeType+"-value-value").val() as string;
-                    console.log("STRING LIST TEXT:", stringListText);
                     stringListText.split("\n").map((str=>
                     {
                         str = str.trim();
@@ -241,7 +220,6 @@ export class PlayerProfilesSubPopup extends SubPopup
                             stringListValues.push(str);
                         }
                     }));
-                    console.log(stringListValues);
                     myObj.Value=stringListValues;
 //                        myObj["value"] = $(this).find(".playerAttributeForm-"+attributeType+"-value").val();
                 }
@@ -258,8 +236,6 @@ export class PlayerProfilesSubPopup extends SubPopup
                 }
             }
             playerAttributes.push(myObj);
-            console.log(myObj);
-            //console.log($( this ).html());
         });
 
     }
@@ -290,9 +266,7 @@ export class PlayerProfilesSubPopup extends SubPopup
                 $(this).find("input.playerAttributeForm-name").removeClass("errorBorder");
             }
             let attributeType = $(this).find("select.attributeType").val();
-            console.log(attributeType);
             let valueType = $(this).find(".playerAttributeForm-"+attributeType).find("select.valueType").val();
-            console.log(valueType);
 
             let myObj: PlayerProfileAttribute = {
                 AttributeName:attributeName as string,
@@ -371,7 +345,6 @@ export class PlayerProfilesSubPopup extends SubPopup
                 }
             }
             playerAttributes.push(myObj);
-            //console.log($( this ).html());
         });
 
 
@@ -390,15 +363,12 @@ export class PlayerProfilesSubPopup extends SubPopup
             playerProfile.ProfileId = profileId;
         }
 
-        console.log(playerProfile);
-
         return playerProfile;
     }
 
     onPopupClick = async (event) => {
         event.stopPropagation();
         let el = $(event.target);
-        console.log(el);
 
         if (el.hasClass("deleteAttribute"))
         {
@@ -408,9 +378,7 @@ export class PlayerProfilesSubPopup extends SubPopup
         {
             this.hideStatusAlert();
 
-            console.log("CREATE PLAYER PROFILE!");
             let playerProfile = this.constructPlayerProfileObject();
-            console.log(playerProfile);
             if (playerProfile!=null)
             {
                 Network.sendObject({Type:"SavePlayerProfile", Profile:playerProfile});
@@ -428,23 +396,15 @@ export class PlayerProfilesSubPopup extends SubPopup
         }
         if (el.attr("id")=="addPlayerProfileAttribute")
         {
-            console.log("ADD PLAYER PROFILE ATTRIBUTE");
             this.addNewPlayerProfileAttribute();
-            /*
-            let addedEl = $('#playerProfileAttributes').append($('#playerAttributeTemplate').html());
-            console.log(addedEl);
-
-             */
         }
         if (el.hasClass("addStringDoubleMapValue"))
         {
             el.parent().parent().parent().parent().append(this.getStringDoubleMapValueHtml());
 
-            console.log("ADD STRING DOUBLE MAP VALUE!");
         }
         if (el.hasClass("removeStringDoubleMapValue"))
         {
-            console.log("REMOVE STRING DOUBLE MAP VALUE!");
             el.parent().parent().parent().remove();
         }
         else if (event.target.id=="showCreatePlayerProfileFormButton")
@@ -495,7 +455,6 @@ export class PlayerProfilesSubPopup extends SubPopup
     {
         $.get('assets/html/fragments/playerAttributeTemplate.html', (data) => {
 
-            console.log("ADDING ATTRIBUTE", attribute);
             let addedEl = $(data).appendTo("#playerProfileAttributes");
             addedEl.find('.playerAttributeForm-S').hide();
             addedEl.find('.playerAttributeForm-N').hide();
@@ -601,12 +560,11 @@ export class PlayerProfilesSubPopup extends SubPopup
     showEditPlayerProfileForm(profileId:string)
     {
         let profile = this._playerProfiles[profileId];
-        console.log(profile);
         this.resetPlayerProfileForm();
 
         $('.playerProfileForm input#playerProfileId').val(profile.ProfileId);
         $('.playerProfileForm input#playerProfileName').val(profile.Name);
-        console.log(profile.Team);
+
         if (profile.Team!=null)
         {
             $('.playerProfileForm input#playerTeamName').val(profile.Team);
@@ -629,7 +587,6 @@ export class PlayerProfilesSubPopup extends SubPopup
     }
 
     activateDataTable(id) {
-        console.log($('#'+id).html());
 
         // @ts-ignore
         $('#'+id).DataTable({

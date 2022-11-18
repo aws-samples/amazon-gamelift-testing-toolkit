@@ -18,7 +18,6 @@ export class BootScene extends Phaser.Scene {
 
     async create () {
         let configObj = this.game.cache.json.get("configJson");
-        console.log(configObj);
 
         Amplify.configure({
             Auth: {

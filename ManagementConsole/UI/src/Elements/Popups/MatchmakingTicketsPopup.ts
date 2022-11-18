@@ -88,7 +88,6 @@ export class MatchmakingTicketsPopup extends Popup
 
     onGetMatchmakingTicketResponse = (ticket) =>
     {
-        console.log(ticket);
         let html="";
 
         this._ticketEvents = ticket.Ticket.Events;

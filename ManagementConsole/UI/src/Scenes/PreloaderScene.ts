@@ -20,6 +20,7 @@ export  class PreloaderScene extends Phaser.Scene {
                 frameHeight: 32
             });
         }
+
         this.scene.start('Login');
     }
 
@@ -39,6 +40,7 @@ export  class PreloaderScene extends Phaser.Scene {
         this.load.html('matchmakingTicketHeadersTablePopup', 'assets/html/matchmakingTicketHeadersTablePopup.html');
         this.load.html('ruleSetsPopup', 'assets/html/ruleSetsPopup.html');
         this.load.html('flexMatchSimulatorPopup', 'assets/html/flexMatchSimulatorPopup.html');
+        this.load.html('queueSettingsPopup', 'assets/html/queueSettingsPopup.html');
         this.load.html('matchmakingConfigPopup', 'assets/html/matchmakingConfigPopup.html');
         this.load.html('queueEventsPopup', 'assets/html/queueEventsPopup.html');
         this.load.html('settings', 'assets/html/settings.html');

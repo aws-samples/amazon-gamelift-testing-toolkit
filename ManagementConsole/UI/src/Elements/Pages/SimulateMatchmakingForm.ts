@@ -55,7 +55,6 @@ export class SimulateMatchmakingForm extends Page
 
         $('#'+this._domId).find(".playerProfileTemplate").each(function ()
         {
-            console.log($(this));
             let numPlayers = parseInt($(this).find('.numPlayers').val() as string);
             if (numPlayers >0)
             {
@@ -70,8 +69,6 @@ export class SimulateMatchmakingForm extends Page
             }
 
         });
-
-        console.log(playerProfileConfigs);
 
         if (totalPlayersAdded==0 || totalPlayersAdded>1000)
         {

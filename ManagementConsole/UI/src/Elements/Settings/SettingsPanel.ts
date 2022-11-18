@@ -32,7 +32,6 @@ export class SettingsPanel extends Phaser.GameObjects.Container
 
         if (Game.debugMode)
         {
-            console.log("SHOWING TEST MENU");
             $('.testMenu').show();
         }
     }

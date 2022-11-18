@@ -44,7 +44,6 @@ export class Fleets extends BaseContainer
 
     public resize(width:number, height:number)
     {
-        console.log("RESIZING FLEET TO ", width, height);
         let dottedLineTexture = this.getDottedLineTexture("fleetsLine");
 
         this._dottedLineImg.destroy();

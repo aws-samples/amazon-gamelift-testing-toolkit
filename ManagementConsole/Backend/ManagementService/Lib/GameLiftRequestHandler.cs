@@ -14,6 +14,7 @@ using Amazon.GameLift.Model;
 using Amazon.Lambda.Core;
 using ManagementConsoleBackend.ManagementService.Data;
 using Microsoft.VisualBasic.FileIO;
+using Newtonsoft.Json;
 using SearchOption = System.IO.SearchOption;
 
 namespace ManagementConsoleBackend.ManagementService.Lib
@@ -95,6 +96,34 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                 LambdaLogger.Log(e.ToString());
                 return null;
             }
+        }
+        
+        public async Task<GameSessionQueue> GetGameSessionQueue(string queueArn)
+        {
+            try
+            {
+                var queueResponse = await _client.DescribeGameSessionQueuesAsync(
+                    new DescribeGameSessionQueuesRequest
+                    {
+                        Names = new List<string>
+                        {
+                            queueArn
+                        }
+                    });
+
+                if (queueResponse.GameSessionQueues.Count > 0)
+                {
+                    return queueResponse.GameSessionQueues[0];
+                }
+
+            }
+            catch (Exception e)
+            {
+                LambdaLogger.Log(e.ToString());
+                return null;
+            }
+
+            return null;
         }
         
         public async Task<List<GameSessionQueue>> GetGameSessionQueues()
@@ -298,6 +327,27 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             {
                 var updateMatchmakingConfigurationResponse = await _client.UpdateMatchmakingConfigurationAsync(request);
                 result.Configuration = updateMatchmakingConfigurationResponse.Configuration;
+                result.Updated = true;
+                return result;
+            }
+            catch (Exception e)
+            {
+                result.Updated = false;
+                result.ErrorMessage = e.Message;
+                LambdaLogger.Log(e.ToString());
+                return result;
+            }
+        }
+        
+        public async Task<ServerMessageUpdateGameSessionQueue> UpdateGameSessionQueue(UpdateGameSessionQueueRequest request)
+        {
+            LambdaLogger.Log("UPDATE GAME SESSION QUEUE!");
+            LambdaLogger.Log(JsonConvert.SerializeObject(request));
+            var result = new ServerMessageUpdateGameSessionQueue();
+            try
+            {
+                var updateGameSessionQueueResponse = await _client.UpdateGameSessionQueueAsync(request);
+                result.UpdatedQueue = updateGameSessionQueueResponse.GameSessionQueue;
                 result.Updated = true;
                 return result;
             }
@@ -781,11 +831,10 @@ namespace ManagementConsoleBackend.ManagementService.Lib
         {
             try
             {
-                var fleetAttributesPaginator = _client.Paginators.DescribeFleetAttributes(
-                    new DescribeFleetAttributesRequest
-                    {
-                        FleetIds = new List<string> { fleetId }
-                    });
+                var fleetAttributesPaginator = _client.Paginators.DescribeFleetAttributes(new DescribeFleetAttributesRequest
+                {
+                    FleetIds = new List<string> {fleetId},
+                });
             
                 await foreach (var fleetAttributes in fleetAttributesPaginator.FleetAttributes)
                 {
@@ -793,6 +842,25 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                 }
 
                 return null;
+            }
+            catch (Exception e)
+            {
+                LambdaLogger.Log(e.ToString());
+                return null;
+            }
+        }
+        
+        public async Task<List<FleetAttributes>> GetFleetAttributes()
+        {
+            try
+            {
+                var fleetAttributesPaginator = _client.Paginators.DescribeFleetAttributes(new DescribeFleetAttributesRequest());
+                var fleetAttributesList = new List<FleetAttributes>();
+                await foreach (var fleetAttributes in fleetAttributesPaginator.FleetAttributes)
+                {
+                    fleetAttributesList.Add(fleetAttributes);
+                }
+                return fleetAttributesList;
             }
             catch (Exception e)
             {

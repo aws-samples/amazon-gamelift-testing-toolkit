@@ -40,10 +40,16 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public List<string> Errors;
     }
     
-    public class ServerMessageGetFleets : ServerMessage
+    public class ServerMessageGetFleetAttributes : ServerMessage
     {
-        public new string Type = "GetFleets";
-        public List<FleetCapacity> Fleets;
+        public new string Type = "GetFleetAttributes";
+        public List<FleetAttributes> FleetAttributes;
+    }
+    
+    public class ServerMessageGetAliases : ServerMessage
+    {
+        public new string Type = "GetAliases";
+        public List<Alias> Aliases;
     }
     
     public class ServerMessageGetFleetScaling : ServerMessage
@@ -57,6 +63,20 @@ namespace ManagementConsoleBackend.ManagementService.Data
     {
         public new string Type = "GetGameSessions";
         public List<GameSession> GameSessions;
+    }
+    
+    public class ServerMessageGetGameSessionQueue : ServerMessage
+    {
+        public new string Type = "GetGameSessionQueue";
+        public GameSessionQueue GameSessionQueue;
+    }
+    
+    public class ServerMessageGetGameSessionQueueDestinationInfo : ServerMessage
+    {
+        public new string Type = "GetGameSessionQueueDestinationInfo";
+        public GameSessionQueue GameSessionQueue;
+        public List<FleetAttributes> FleetAttributes;
+        public List<Alias> Aliases;
     }
     
     public class ServerMessageGetVirtualPlayers : ServerMessage
@@ -200,6 +220,14 @@ namespace ManagementConsoleBackend.ManagementService.Data
     {
         public new string Type = "UpdateMatchmakingConfiguration";
         public MatchmakingConfiguration Configuration;
+        public string ErrorMessage = "";
+        public bool Updated = false;
+    }
+    
+    public class ServerMessageUpdateGameSessionQueue : ServerMessage
+    {
+        public new string Type = "UpdateGameSessionQueue";
+        public GameSessionQueue UpdatedQueue;
         public string ErrorMessage = "";
         public bool Updated = false;
     }

@@ -3,8 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Amazon;
 using Amazon.CloudWatch;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.DocumentModel;
@@ -21,6 +23,7 @@ using ManagementConsoleBackend.Common;
 using ManagementConsoleBackend.ManagementService.Data;
 using ManagementConsoleBackend.ManagementService.Lib;
 using Newtonsoft.Json;
+using Arn = Amazon.Runtime.Internal.Endpoints.StandardLibrary.Arn;
 using Environment = System.Environment;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using Task = System.Threading.Tasks.Task;
@@ -30,7 +33,6 @@ namespace ManagementConsoleBackend.ManagementService
     public class ManagementService
     {
         private APIGatewayProxyRequest _request;
-        private ILambdaContext _context;
         private string _connectionId;
         private ClientMessage _body;
 
@@ -147,7 +149,6 @@ namespace ManagementConsoleBackend.ManagementService
         public async Task<APIGatewayProxyResponse> ManagementServiceHandler(APIGatewayProxyRequest request, ILambdaContext context)
         {
             _request = request;
-            _context = context;
             var dynamoDbClient = new AmazonDynamoDBClient();
 
             var stageServiceUrl = Environment.GetEnvironmentVariable("StageServiceUrl");
@@ -188,8 +189,13 @@ namespace ManagementConsoleBackend.ManagementService
                     }
 
                     LambdaLogger.Log(_body.Type);
-                    
-                    var gameLiftRequestHandler = new GameLiftRequestHandler(new AmazonGameLiftClient());
+                    var gameLiftClient = new AmazonGameLiftClient();
+                    if (_body.Region != null)
+                    {
+                        gameLiftClient = new AmazonGameLiftClient(Amazon.RegionEndpoint.GetBySystemName(_body.Region));
+                    }
+
+                    var gameLiftRequestHandler = new GameLiftRequestHandler(gameLiftClient);
                     var dynamoDbRequestHandler = new DynamoDbRequestHandler(dynamoDbClient);
                     var virtualPlayersHandler = new VirtualPlayersHandler(new AmazonECSClient());
                     var cloudWatchRequestHandler = new CloudWatchRequestHandler(new AmazonCloudWatchClient());
@@ -197,9 +203,44 @@ namespace ManagementConsoleBackend.ManagementService
                     var response = new ServerMessage();
                     switch (_body.Type)
                     {
-                        case "GetFleets":
-                            var fleetCapacities = await gameLiftRequestHandler.GetFleetCapacities();
-                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetFleets { Fleets = fleetCapacities});
+                        case "GetFleetAttributes":
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetFleetAttributes { FleetAttributes = await gameLiftRequestHandler.GetFleetAttributes()});
+                            break;
+                        
+                        case "GetAliases":
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetAliases { Aliases = await gameLiftRequestHandler.GetAliases()});
+                            break;
+
+                        case "GetGameSessionQueueDestinationInfo":
+                            var getQueueDestinationInfoRequest = JsonConvert.DeserializeObject<ClientMessageGetGameSessionQueueDestinationInfo>(request.Body);
+                            var gameSessionQueue = await gameLiftRequestHandler.GetGameSessionQueue(getQueueDestinationInfoRequest.QueueArn);
+                            var aliasRegions = new List<string>();
+                            var fleetRegions = new List<string>();
+                            var queueFleetAttributes = new List<FleetAttributes>();
+                            var queueAliases = new List<Alias>();
+                            foreach (var destination in gameSessionQueue.Destinations)
+                            {
+                                var arn = Arn.Parse(destination.DestinationArn);
+                                if (arn.resourceId[0]=="alias" && aliasRegions.Contains(arn.region) == false)
+                                {
+                                    var regionGameLiftHandler = new GameLiftRequestHandler(new AmazonGameLiftClient(RegionEndpoint.GetBySystemName(arn.region)));
+                                    queueAliases.AddRange(await regionGameLiftHandler.GetAliases());
+                                    aliasRegions.Add(arn.region);
+                                }
+                                else
+                                if (arn.resourceId[0]=="fleet" && fleetRegions.Contains(arn.region) == false)
+                                {
+                                    var regionGameLiftHandler = new GameLiftRequestHandler(new AmazonGameLiftClient(RegionEndpoint.GetBySystemName(arn.region)));
+                                    queueFleetAttributes.AddRange(await regionGameLiftHandler.GetFleetAttributes());
+                                    fleetRegions.Add(arn.region);
+                                }
+                            }
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetGameSessionQueueDestinationInfo
+                            {
+                                Aliases = queueAliases,
+                                FleetAttributes = queueFleetAttributes,
+                                GameSessionQueue = gameSessionQueue,
+                            });
                             break;
 
                         case "GetFleetScaling":
@@ -214,6 +255,12 @@ namespace ManagementConsoleBackend.ManagementService
                             var getPlayerSessionsRequest = JsonConvert.DeserializeObject<ClientMessageGetPlayerSessions>(request.Body);
                             var playerSessions = await gameLiftRequestHandler.GetPlayerSessions(getPlayerSessionsRequest.GameSessionId);
                             await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetPlayerSessions { PlayerSessions = playerSessions});
+                            break;
+                       
+                        case "GetGameSessionQueue":
+                            var getQueueRequest = JsonConvert.DeserializeObject<ClientMessageGetGameSessionQueue>(request.Body);
+                            var queue = await gameLiftRequestHandler.GetGameSessionQueue(getQueueRequest.QueueArn);
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetGameSessionQueue { GameSessionQueue = queue});
                             break;
                         
                         case "GetQueueEvents":
@@ -243,7 +290,7 @@ namespace ManagementConsoleBackend.ManagementService
                             var lambdaClient = new AmazonLambdaClient();
                             try
                             {
-                                var lambdaResponse = await lambdaClient.InvokeAsync(
+                                await lambdaClient.InvokeAsync(
                                     new InvokeRequest
                                     {
                                         FunctionName = Environment.GetEnvironmentVariable("FlexMatchSimulatorFunctionName"),
@@ -261,7 +308,6 @@ namespace ManagementConsoleBackend.ManagementService
                             break;
                         
                         case "GetMatchmakingSimulations":
-                            var getMatchmakingSimulationsRequest = JsonConvert.DeserializeObject<ClientMessageGetMatchmakingSimulations>(request.Body);
                             var matchmakingSimulations = await dynamoDbRequestHandler.GetMatchmakingSimulations();
                             await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetMatchmakingSimulations { Simulations = matchmakingSimulations});
                             break;
@@ -273,7 +319,6 @@ namespace ManagementConsoleBackend.ManagementService
                             break;
                         
                         case "GetPlayerProfiles":
-                            var getPlayerProfilesRequest = JsonConvert.DeserializeObject<ClientMessageGetPlayerProfiles>(request.Body);
                             var playerProfiles = await dynamoDbRequestHandler.GetPlayerProfiles();
                             await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetPlayerProfiles { Profiles = playerProfiles});
                             break;
@@ -375,6 +420,65 @@ namespace ManagementConsoleBackend.ManagementService
                             };
                             var updateResponse = await gameLiftRequestHandler.UpdateMatchmakingConfiguration(apiRequest);
                             await Utils.SendJsonResponse(_connectionId, stageServiceUrl, updateResponse);
+                            break;
+                        
+                        case "UpdateQueueSettings":
+                            var updateQueueSettingsRequest = JsonConvert.DeserializeObject<ClientMessageUpdateQueueSettings>(request.Body);
+                            var updateQueueSettingsApiRequest = new UpdateGameSessionQueueRequest
+                            {
+                                Name = updateQueueSettingsRequest.QueueArn,
+                                TimeoutInSeconds = updateQueueSettingsRequest.TimeoutInSeconds,
+                                PlayerLatencyPolicies = updateQueueSettingsRequest.PlayerLatencyPolicies.ToList(),
+                            };
+
+                            LambdaLogger.Log(JsonConvert.SerializeObject(updateQueueSettingsApiRequest));
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, await gameLiftRequestHandler.UpdateGameSessionQueue(updateQueueSettingsApiRequest));
+                            break;
+                        
+                        case "UpdateQueuePriorityConfiguration":
+                            var updateQueuePriorityConfigurationRequest = JsonConvert.DeserializeObject<ClientMessageUpdateQueuePriorityConfiguration>(request.Body);
+                            var priorityConfiguration = new PriorityConfiguration
+                            {
+                                LocationOrder = updateQueuePriorityConfigurationRequest.LocationOrder.ToList(),
+                                PriorityOrder = updateQueuePriorityConfigurationRequest.PriorityOrder.ToList(),
+                            };
+                            var updateQueuePriorityConfigurationApiRequest = new UpdateGameSessionQueueRequest
+                            {
+                                Name = updateQueuePriorityConfigurationRequest.QueueArn,
+                                PriorityConfiguration = priorityConfiguration,
+                            };
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, await gameLiftRequestHandler.UpdateGameSessionQueue(updateQueuePriorityConfigurationApiRequest));
+                            break;
+                        
+                        case "UpdateQueueDestinations":
+                            var updateQueueDestinationsRequest = JsonConvert.DeserializeObject<ClientMessageUpdateQueueDestinations>(request.Body);
+                            var queueDestinations = new List<GameSessionQueueDestination>();
+                            foreach (var destinationArn in updateQueueDestinationsRequest.Destinations)
+                            {
+                                queueDestinations.Add(new GameSessionQueueDestination
+                                {
+                                    DestinationArn = destinationArn
+                                });
+                            }
+                            var updateQueueDestinationsApiRequest = new UpdateGameSessionQueueRequest
+                            {
+                                Name = updateQueueDestinationsRequest.QueueArn,
+                                Destinations = queueDestinations,
+                            };
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, await gameLiftRequestHandler.UpdateGameSessionQueue(updateQueueDestinationsApiRequest));
+                            break;
+                        
+                        case "UpdateQueueAllowedLocations":
+                            var updateQueueAllowedLocationsRequest = JsonConvert.DeserializeObject<ClientMessageUpdateQueueAllowedLocations>(request.Body);
+                            var updateQueueAllowedLocationsApiRequest = new UpdateGameSessionQueueRequest
+                            {
+                                Name = updateQueueAllowedLocationsRequest.QueueArn,
+                                FilterConfiguration = new FilterConfiguration
+                                {
+                                    AllowedLocations = updateQueueAllowedLocationsRequest.AllowedLocations.ToList()
+                                },
+                            };
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, await gameLiftRequestHandler.UpdateGameSessionQueue(updateQueueAllowedLocationsApiRequest));
                             break;
                         
                         case "GetMatchmakingTicketHeaders":

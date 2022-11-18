@@ -43,14 +43,11 @@ export class SimulateMatchmakingMatchInfo extends Page
         }
         else if (el.hasClass("viewSuccessfulMatchTicket"))
         {
-            console.log("View successful match ticket", event.target.id);
             Network.sendObject({Type:"GetMatchmakingTicket", TicketId:event.target.id});
         }
         else
         if (el.hasClass("viewSuccessfulMatchTicketEvent"))
         {
-            console.log("VIEWING SUCCESSFUL MATCH TICKET DETAIL!");
-            console.log(event.target.id);
             let ticketEvent = this._ticketEvents.filter(ticketEvent => ticketEvent.id == event.target.id)[0];
             this.showSuccessfulMatchTicketEventDetail(ticketEvent);
         }
@@ -88,7 +85,6 @@ export class SimulateMatchmakingMatchInfo extends Page
 
     onGetSimulationMatchesResponse = (matchResults) =>
     {
-        console.log("SIMULATION MATCHES RESPONSE", matchResults);
         let successHtml="";
         this._matches = {};
         this._failedPlayers=[];
@@ -199,7 +195,6 @@ export class SimulateMatchmakingMatchInfo extends Page
     {
         this.resetMatchInfoPlayersTable();
         let match = this._matches[matchId];
-        console.log(match);
 
         $('#'+this._domId).find("a.viewRuleEvaluationMetrics").attr("data-matchid", matchId);
         $('#'+this._domId).find("a.viewSuccessfulMatchTickets").attr("data-matchid", matchId);
@@ -214,7 +209,6 @@ export class SimulateMatchmakingMatchInfo extends Page
 
             match.Players.map(player=>
             {
-                console.log(player);
                 let attributeHtml="";
 
                 Object.keys(player.PlayerData.PlayerAttributes).map(playerAttributeName =>
@@ -252,13 +246,10 @@ export class SimulateMatchmakingMatchInfo extends Page
 
             match.Players.map(player=>
             {
-                console.log(player);
                 let attributeHtml="";
                 playerAttributes.map(playerAttributeName =>
                 {
-                    console.log(playerAttributeName);
                     let playerAttribute = player.PlayerData.PlayerAttributes[playerAttributeName];
-                    console.log(playerAttribute);
                     attributeHtml+= "<td>" + Utils.getPlayerAttributeText(playerAttribute) + "</td>";
                     //$('#'+this._domId).find("#matchInfoPlayersTable >thead tr").append("<th>" + playerAttributeName + "</th");
 
@@ -316,7 +307,6 @@ export class SimulateMatchmakingMatchInfo extends Page
             $('#'+this._domId).find("div.matchedPlayers div.columnToggle").html(columnToggleHtml);
             $('#'+this._domId).find("div.matchedPlayers div.columnToggle a.toggle-vis").on("click", function (e)  {
                 e.preventDefault();
-                console.log("Toggled", e.target);
                 let column = table.column($(this).attr("data-column"));
 
                 column.visible(!column.visible());
@@ -372,7 +362,6 @@ export class SimulateMatchmakingMatchInfo extends Page
             });
         }
 
-        console.log(html);
         this.resetRuleEvaluationMetricsTable();
 
         $('#'+this._domId).find("table#ruleEvaluationMetricsTable tbody").html(html);
@@ -382,7 +371,6 @@ export class SimulateMatchmakingMatchInfo extends Page
     {
         this._ticketEvents = ticket.Ticket.Events;
 
-        console.log(ticket);
         let html="";
 
         this._ticketEvents.map(ticketEvent => {
@@ -402,8 +390,6 @@ export class SimulateMatchmakingMatchInfo extends Page
 
     showSuccessfulMatchTicketEventDetail = (ticketEvent) =>
     {
-        console.log(ticketEvent);
-
         const container = document.getElementById("successfulMatchmakingTicketEventJson")
         const options:JSONEditorOptions = {mode:"view", name:"FlexMatch Event"}
 

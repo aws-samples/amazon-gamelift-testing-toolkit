@@ -10,7 +10,7 @@ namespace ManagementConsoleBackend.ManagementService.Data
     {
         [JsonProperty(Required = Required.Always)] public string Type;
         [JsonProperty(Required = Required.Default)] public string PlayerId;
-
+        [JsonProperty(Required = Required.Default)] public string Region;
     }
     
     public class ClientMessageRunMatchmakingSimulation : ClientMessage
@@ -199,6 +199,18 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public string GameSessionId;
     }
     
+    public class ClientMessageGetGameSessionQueue : ClientMessage
+    {
+        public new string Type = "GetGameSessionQueue";
+        public string QueueArn;
+    }
+    
+    public class ClientMessageGetGameSessionQueueDestinationInfo : ClientMessage
+    {
+        public new string Type = "GetGameSessionQueueDestinationInfo";
+        public string QueueArn;
+    }
+    
     public class ClientMessageGetFleetScaling : ClientMessage
     {
         public new string Type = "GetFleetScaling";
@@ -218,7 +230,37 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public string[] AddedLocations;
         public string[] RemovedLocations;
     }
+    
+    public class ClientMessageUpdateQueueSettings : ClientMessage
+    {
+        public new string Type = "UpdateQueueSettings";
+        public string QueueArn;
+        public int TimeoutInSeconds;
+        public PlayerLatencyPolicy[] PlayerLatencyPolicies;
+    }
 
+    public class ClientMessageUpdateQueuePriorityConfiguration : ClientMessage
+    {
+        public new string Type = "UpdateQueuePriorityConfiguration";
+        public string QueueArn;
+        public string[] LocationOrder;
+        public string[] PriorityOrder;
+    }
+
+    public class ClientMessageUpdateQueueDestinations : ClientMessage
+    {
+        public new string Type = "UpdateQueueDestinations";
+        public string QueueArn;
+        public string[] Destinations;
+    }    
+    
+    public class ClientMessageUpdateQueueAllowedLocations : ClientMessage
+    {
+        public new string Type = "UpdateQueueAllowedLocations";
+        public string QueueArn;
+        public string[] AllowedLocations;
+    }   
+    
     public class FleetCapacityAdjustment
     {
         public string FleetId;

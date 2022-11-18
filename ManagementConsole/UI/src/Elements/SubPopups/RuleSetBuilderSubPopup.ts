@@ -54,8 +54,6 @@ export class RuleSetBuilderSubPopup extends SubPopup
         let html="";
         data.map(simulation =>
         {
-            console.log(simulation);
-
             let viewResultsTd='<td><a class="editPlayerProfile btn btn-primary btn-sm" id="' + simulation.SimulationId +'" href="' + "#" + '">View Results</a></td>';
 
             html += '<tr>' +
@@ -91,7 +89,6 @@ export class RuleSetBuilderSubPopup extends SubPopup
     onPopupClick = async (event) => {
         event.stopPropagation();
         let el = $(event.target);
-        console.log(el);
 
         if (event.target.id == "backButton") {
             $('#'+this._parentDomId).find(".ruleSetsContent")[0].className = "ruleSetsContent";

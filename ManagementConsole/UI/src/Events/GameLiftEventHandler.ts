@@ -65,15 +65,12 @@ export class GameLiftEventHandler
 
             eventPlayerIds.map((playerId)=> // make players move to match destination and then get added to the match
             {
-                console.log("RECEIVED " + flexMatchEvent.type + " SO MOVING PLAYER " + playerId + " TO MATCH");
                 let matchDestination:SceneDestination = {
                     type: "match",
                     container:match,
                     callback: () =>
                     {
-                        console.log("ADDING PLAYER TO MATCH:", playerId, flexMatchEvent.matchId);
                         match.addPlayerToMatch(playerId);
-                        console.log(PlayerMatches.getMatch(flexMatchEvent.matchId).playerIds);
 
                         if (PlayerMatches.getMatch(flexMatchEvent.matchId).playerIds.length == eventPlayerIds.length) // once all the players are added to match, move to queue
                         {
@@ -110,14 +107,12 @@ export class GameLiftEventHandler
 
             eventPlayerIds.map((playerId)=>
             {
-                console.log("RECEIVED MATCHMAKING SEARCHING FOR " + playerId + " - " + Players.getPlayer(playerId).playerState);
                 if (Players.getPlayer(playerId).playerState!=PlayerState.WALKING_TO_MATCH && Players.getPlayer(playerId).playerState!=PlayerState.IN_MATCH) // in case events arrive out of order
                 {
                     // break up any match involving these players, if one exists
                     let match = PlayerMatches.findPlayerMatch(playerId);
                     if (match)
                     {
-                        console.log("RECEIVED " + flexMatchEvent.type + " AND PLAYER ALREADY IN A MATCH, SO BREAKING UP MATCH");
                         match?.breakUpMatch();
                     }
 
@@ -130,7 +125,6 @@ export class GameLiftEventHandler
                     };
                     Players.getPlayer(playerId).playerState = PlayerState.WAITING_FOR_MATCH;
                     Players.getPlayer(playerId).addDestination(destination);
-                    console.log("RECEIVED " + flexMatchEvent.type + " SO SENDING PLAYER " + playerId + " TO MATCHMAKING CONFIG");
                 }
             });
 
@@ -143,15 +137,12 @@ export class GameLiftEventHandler
             {
                 if (Players.getPlayer(playerId).activeTicketId == playerTicketMap[playerId]) // if we have a different type of event, make players go back to the start
                 {
-                    console.log("RECEIVED " + flexMatchEvent.type + " ON PLAYER'S ACTIVE TICKET, SO SENDING PLAYER BACK TO INITIAL POSITION");
                     Players.getPlayer(playerId).resetPlayer();
                 }
             });
 
             return;
         }
-
-        console.log("RECEIVED " + flexMatchEvent.type + " SO DOING NOTHING", flexMatchEvent);
     }
 
     onQueuePlacementEvent(stateMessage:StateMessage)
@@ -161,10 +152,9 @@ export class GameLiftEventHandler
         let consoleScene = ConsoleScene.getInstance();
 
         let playerIds:string[] = [];
-        console.log(queuePlacementEvent.type, queuePlacementEvent);
+
         if (queuePlacementEvent.placedPlayerSessions==null) // the queue placement has failed for some reason
         {
-            console.log("QUEUE PLACEMENT FAILED!", queuePlacementEvent);
             if (queuePlacementEvent.placementId)
             {
                 let match = PlayerMatches.getMatch(queuePlacementEvent.placementId); // look up the corresponding match and break it up
@@ -202,7 +192,6 @@ export class GameLiftEventHandler
                 case "PlacementFulfilled":
                     if (match==undefined)
                     {
-                        console.log("UNDEFINED MATCH PLACEMENT FULFILLED!", queuePlacementEvent.placementId);
                         match = consoleScene.initializeMatch(queuePlacementEvent.placementId);
                     }
 

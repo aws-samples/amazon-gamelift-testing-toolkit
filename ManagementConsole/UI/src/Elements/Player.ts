@@ -63,8 +63,6 @@ export class Player extends Container
             this.visible=false;
         }
 
-        console.log("CONSTRUCTING NEW PLAYER", this._playerId);
-
         this._sprite = PlayerSprite.Random(scene);
         this.add(this._sprite);
         this._sprite._emitter.on(Events.OVER_PLAYER, this.handleOver);
@@ -185,7 +183,6 @@ export class Player extends Container
 
     public addDestination(destination: SceneDestination)
     {
-        console.log("ADDING DESTINATION TO PLAYER " + this._playerId, destination, this.playerState);
         this._destinations.push(destination);
 
         if (!this._moving)

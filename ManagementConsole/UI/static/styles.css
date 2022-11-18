@@ -111,14 +111,17 @@ h6 { margin-top: 10px;}
     margin: 20px auto 0;
     width: 600px;*/
 }
+
 .flexMatchSimulatorContainer
 {
     margin-top: 40px;
     min-width: 1240px;
 }
 
-.flexMatchSimulatorContent {
-    /*width: 900px;*/
+.queueSettingsContainer
+{
+    margin-top: 40px;
+    min-width: 1240px;
 }
 
 .fleetEventsPopup {
@@ -142,6 +145,16 @@ h6 { margin-top: 10px;}
 }
 
 .flexMatchSimulatorPopup {
+    background: #eceeee;
+    border: 1px solid #42464b;
+    border-radius: 6px;
+    height: 715px;
+    margin: 3px auto 0;
+    /*width: 1260px;*/
+    padding: 10px
+}
+
+.queueSettingsPopup {
     background: #eceeee;
     border: 1px solid #42464b;
     border-radius: 6px;
@@ -428,7 +441,7 @@ p.title {
     width:150px;
 }
 
-.fleetMenu a, .settingsMenu a, .queueMenu a, .mmConfigMenu a, .flexMatchSimulatorMenu a {
+.fleetMenu a, .settingsMenu a, .queueMenu a, .mmConfigMenu a, .flexMatchSimulatorMenu a, .queueSettingsMenu a {
     background-color: #eceeee;
     color: black;
     display: block;
@@ -448,11 +461,11 @@ p.title {
     text-decoration: none;
     font-size: 1.5em;
 }
-.flexMatchSimulatorMenu{
+.flexMatchSimulatorMenu, .queueSettingsMenu {
     float:left;
 }
 
-.flexMatchSimulatorMenu a {
+.flexMatchSimulatorMenu a, .queueSettingsMenu a {
     background-color: #eceeee;
     color: black;
     display: block;
@@ -462,13 +475,19 @@ p.title {
     font-size: 1.5em;
 }
 
-.fleetMenu a:hover, .settingsMenu a:hover, .queueMenu a:hover, .mmConfigMenu a:hover, .flexMatchSimulatorMenu a:hover {
+.fleetMenu a:hover, .settingsMenu a:hover, .queueMenu a:hover, .mmConfigMenu a:hover, .flexMatchSimulatorMenu a:hover, .queueSettingsMenu a:hover {
     background-color: #ff9900;
     cursor:pointer;
     color: #000000;
 }
 
-.flexMatchSimulatorMenu a.active, .flexMatchSimulatorMenu a:active {
+.queueSettingsPopup #queueSettingsName {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);
+}
+
+.flexMatchSimulatorMenu a.active, .flexMatchSimulatorMenu a:active, .queueSettingsMenu a.active, .queueSettingsMenu a:active {
     background-color: #ff9900;
     color: #000000;
 }
@@ -608,3 +627,7 @@ div#failedMatchPlayersTable { float: right }
 .ruleEvaluationMetrics h4 { margin-top:35px}
 .successfulMatchTicketHeadersContent h4 { margin-top: 35px }
 .successfulMatchTicketEventsContent h4 { margin-top: 35px }
+
+.no-sort::after { display: none!important; }
+
+.no-sort { pointer-events: none!important; cursor: default!important; }

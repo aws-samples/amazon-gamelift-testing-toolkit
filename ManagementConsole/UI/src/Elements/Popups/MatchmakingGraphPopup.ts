@@ -24,7 +24,6 @@ export class MatchmakingGraphPopup extends Popup
     setPopupData(data:any)
     {
         this._matchmakingConfigData = data;
-        console.log(this._matchmakingConfigData);
 
         var options= [
             "TimeToMatch",
@@ -47,8 +46,6 @@ export class MatchmakingGraphPopup extends Popup
 
     onGetCloudWatchGraphResponse = (data) =>
     {
-        console.log("GOT CLOUDWATCH GRAPH:", data);
-
         var html='<img style="display:block; margin-left:auto; margin-right:auto" src="data:image/png;base64, ' + data.Image + '"/>';
         this.element.find("div#graphImg").html(html);
         this.element.find("#timeperiod").on("change", this.refresh);

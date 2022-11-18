@@ -52,7 +52,6 @@ export class Instance extends Container
     {
         if (!this._flashingAnim.isPlaying())
         {
-            console.log("PLAY FLASHING!");
             setTimeout(()=>
             {
                 this._image.alpha=1;

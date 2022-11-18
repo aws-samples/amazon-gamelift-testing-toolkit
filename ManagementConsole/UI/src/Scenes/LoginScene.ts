@@ -41,9 +41,6 @@ export class LoginScene extends Phaser.Scene
         Auth.currentSession().then(res=>{
             let accessToken = res.getAccessToken()
             let jwt = accessToken.getJwtToken()
-            //You can print them to see the full objects
-            console.log(`myAccessToken: ${JSON.stringify(accessToken)}`)
-            console.log(`myJwt: ${jwt}`);
             this.doLogin();
         })
     }

@@ -4,6 +4,7 @@
 import 'phaser';
 import DOMElement = Phaser.GameObjects.DOMElement;
 import {EventDispatcher} from "../../Events/EventDispatcher";
+import {PopupClickEvent} from "../../Events/PopupClickEvent";
 
 export abstract class SubPopup
 {
@@ -29,11 +30,6 @@ export abstract class SubPopup
         });
     }
 
-    hideStatusAlert()
-    {
-
-    }
-
     refresh()
     {
 
@@ -47,5 +43,59 @@ export abstract class SubPopup
     removeEventListeners()
     {
 
+    }
+
+    resetElement(selector)
+    {
+        let el = $("<div>" + this._html + "</div>");
+        $('#'+this._parentDomId).find(selector).html(el.find(selector).html());
+    }
+
+    showSuccessAlert = (text) =>
+    {
+        $('#'+this._parentDomId).find("#statusText")[0].className = "alert alert-success";
+        $('#'+this._parentDomId).find("#statusText").html(text);
+    }
+
+    showFailureAlert = (text) =>
+    {
+        $('#'+this._parentDomId).find("#statusText")[0].className = "alert alert-danger";
+        $('#'+this._parentDomId).find("#statusText").html(text);
+    }
+
+    hideStatusAlert()
+    {
+        $('#'+this._parentDomId).find("#statusText")[0].className = "alert hide";
+    }
+
+    activateDataTable(id, config=null) {
+        // @ts-ignore
+        if ( ! $.fn.DataTable.isDataTable( '#'+id ) )
+        {
+            if (config==null)
+            {
+                config = {
+                    scrollY: "400px",
+                    scrollCollapse: true,
+                    columnDefs: [
+                        { width: 200, targets: 0 }
+                    ],
+                    order: [[ 0, "desc" ]],
+
+                };
+            }
+            // @ts-ignore
+            var table = $('#'+this._parentDomId).find("#"+id).DataTable(config);
+            return table;
+        }
+    }
+
+    updateTableOrderValues(table) {
+        for (let i=0; i<table.rows().data().length; i++)
+        {
+            let rowData = table.row(i).data();
+            rowData[0] = i+1;
+            table.row(i).data(rowData).draw();
+        }
     }
 }

@@ -32,8 +32,6 @@ export class SimulateMatchmakingFailedTickets extends Page
 
         if (el.hasClass("viewFailedMatchTicketEvent"))
         {
-            console.log("VIEWING FAILED MATCH TICKET DETAIL!");
-            console.log(event.target.id);
             let ticketEvent = this._ticketEvents.filter(ticketEvent => ticketEvent.id == event.target.id)[0];
             this.showFailedMatchTicketEventDetail(ticketEvent);
         }
@@ -113,8 +111,6 @@ export class SimulateMatchmakingFailedTickets extends Page
                 viewEventsTd +
                 '</tr>';
         });
-
-        console.log(matchData);
 
         this.resetTicketHeadersTable();
 
@@ -202,8 +198,6 @@ export class SimulateMatchmakingFailedTickets extends Page
 
     showEventDetail = (ticketEvent) =>
     {
-        console.log(ticketEvent);
-
         const container = document.getElementById("matchmakingTicketEventJson")
         const options:JSONEditorOptions = {mode:"view", name:"FlexMatch Event"}
 
@@ -227,9 +221,6 @@ export class SimulateMatchmakingFailedTickets extends Page
 
     showFailedMatchTicketEventDetail = (ticketEvent) =>
     {
-        console.log("SHOW FAILED MATCH TICKET??");
-        console.log(ticketEvent);
-
         const container = $('#'+this._domId).find("#failedMatchmakingTicketEventJson")[0];
         const options:JSONEditorOptions = {mode:"view", name:"FlexMatch Event"}
 

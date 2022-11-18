@@ -48,7 +48,6 @@ export class SimulateMatchmakingResults extends Page
         }
         else if (el.hasClass("viewFailedMatchTicket"))
         {
-            console.log("View failed match ticket", event.target.id);
             PageManager.switchPage(Pages.SIMULATE_MATCHMAKING_FAILED_TICKETS, {currentSimulation: this._currentSimulation, ticketId:event.target.id});
 
         }
@@ -76,7 +75,6 @@ export class SimulateMatchmakingResults extends Page
 
     onGetSimulationMatchesResponse = (matchResults) =>
     {
-        console.log("SIMULATION MATCHES RESPONSE", matchResults);
         let successHtml="";
         let failedHtml="";
         this._matches = {};
@@ -205,7 +203,6 @@ export class SimulateMatchmakingResults extends Page
     {
         this.resetMatchInfoPlayersTable();
         let match = this._matches[matchId];
-        console.log(match);
 
         $('#'+this._domId).find("a.viewRuleEvaluationMetrics").attr("data-matchid", matchId);
         $('#'+this._domId).find("a.viewSuccessfulMatchTickets").attr("data-matchid", matchId);
@@ -220,7 +217,6 @@ export class SimulateMatchmakingResults extends Page
 
             match.Players.map(player=>
             {
-                console.log(player);
                 let attributeHtml="";
 
                 Object.keys(player.PlayerData.PlayerAttributes).map(playerAttributeName =>
@@ -259,13 +255,10 @@ export class SimulateMatchmakingResults extends Page
 
             match.Players.map(player=>
             {
-                console.log(player);
                 let attributeHtml="";
                 playerAttributes.map(playerAttributeName =>
                 {
-                    console.log(playerAttributeName);
                     let playerAttribute = player.PlayerData.PlayerAttributes[playerAttributeName];
-                    console.log(playerAttribute);
                     attributeHtml+= "<td>" + Utils.getPlayerAttributeText(playerAttribute) + "</td>";
                     //$('#'+this._domId).find("#matchInfoPlayersTable >thead tr").append("<th>" + playerAttributeName + "</th");
 
@@ -323,7 +316,6 @@ export class SimulateMatchmakingResults extends Page
             $('#'+this._domId).find("div.matchedPlayers div.columnToggle").html(columnToggleHtml);
             $('#'+this._domId).find("div.matchedPlayers div.columnToggle a.toggle-vis").on("click", function (e)  {
                 e.preventDefault();
-                console.log("Toggled", e.target);
                 let column = table.column($(this).attr("data-column"));
 
                 column.visible(!column.visible());
@@ -374,7 +366,6 @@ export class SimulateMatchmakingResults extends Page
 
             this._failedPlayers.map(player=>
             {
-                console.log(player);
                 let attributeHtml="";
 
                 Object.keys(player.PlayerData.PlayerAttributes).map(playerAttributeName =>
@@ -415,13 +406,10 @@ export class SimulateMatchmakingResults extends Page
 
             this._failedPlayers.map(player=>
             {
-                console.log(player);
                 let attributeHtml="";
                 playerAttributes.map(playerAttributeName =>
                 {
-                    console.log(playerAttributeName);
                     let playerAttribute = player.PlayerData.PlayerAttributes[playerAttributeName];
-                    console.log(playerAttribute);
                     attributeHtml+= "<td>" + Utils.getPlayerAttributeText(playerAttribute) + "</td>";
                 });
 
@@ -474,7 +462,6 @@ export class SimulateMatchmakingResults extends Page
             $('#'+this._domId).find("div.unmatchedPlayers div.columnToggle").html(columnToggleHtml);
             $('#'+this._domId).find("div.unmatchedPlayers div.columnToggle a.toggle-vis").on("click", function (e)  {
                 e.preventDefault();
-                console.log("Toggled", e.target);
                 let column = table.column($(this).attr("data-column"));
 
                 column.visible(!column.visible());
@@ -500,7 +487,6 @@ export class SimulateMatchmakingResults extends Page
             });
         }
 
-        console.log(html);
         this.resetRuleEvaluationMetricsTable();
 
         $('#'+this._domId).find("table#ruleEvaluationMetricsTable tbody").html(html);

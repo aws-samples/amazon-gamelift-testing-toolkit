@@ -35,7 +35,6 @@ export class SimulateMatchmakingOutput extends Page
         }
         if (el.attr("id")=="showSimulationResults")
         {
-            console.log("SHOW SIMULATION RESULTS:" + this._currentSimulation.SimulationId);
             PageManager.switchPage(Pages.SIMULATE_MATCHMAKING_RESULTS, this._currentSimulation);
         }
     }

@@ -22,6 +22,7 @@ import {MatchmakingGraphPopup} from "./MatchmakingGraphPopup";
 import {QueueGraphPopup} from "./QueueGraphPopup";
 import {FleetGraphPopup} from "./FleetGraphPopup";
 import {FlexMatchSimulatorPopup} from "./FlexMatchSimulatorPopup";
+import {QueueSettingsPopup} from "./QueueSettingsPopup";
 
 export class PopupHandler
 {
@@ -51,6 +52,7 @@ export class PopupHandler
         PopupHandler.emitter.on(Events.SHOW_LAUNCH_VIRTUAL_PLAYERS_POPUP, PopupHandler.onShowLaunchVirtualPlayersPopup);
         PopupHandler.emitter.on(Events.SHOW_QUEUE_POPUP, PopupHandler.onShowQueuePopup);
         PopupHandler.emitter.on(Events.SHOW_QUEUE_EVENTS_POPUP, PopupHandler.onShowQueueEventsPopup);
+        PopupHandler.emitter.on(Events.SHOW_QUEUE_SETTINGS_POPUP, PopupHandler.onShowQueueSettingsPopup);
         PopupHandler.emitter.on(Events.SHOW_MATCHMAKING_RULESETS_POPUP, PopupHandler.onShowMatchmakingRuleSetsPopup);
         PopupHandler.emitter.on(Events.CLOSE_POPUP, PopupHandler.onClosePopup);
         PopupHandler.emitter.on(Events.SHOW_MATCHMAKING_CONFIG_POPUP, PopupHandler.onShowMatchmakingPopup);
@@ -86,7 +88,6 @@ export class PopupHandler
 
     protected static onShowModifyMatchmakingConfigurationPopup = (event:PopupClickEvent) =>
     {
-        console.log("MODIFY MATCHMAKING CONFIG!");
         if (PopupHandler.popup!=null)
         {
             PopupHandler.onClosePopup();
@@ -102,7 +103,6 @@ export class PopupHandler
 
     protected static onShowMatchmakingGraphPopup = (event:PopupClickEvent) =>
     {
-        console.log("MATCHMAKING GRAPH POPUP!");
         if (PopupHandler.popup!=null)
         {
             PopupHandler.onClosePopup();
@@ -117,8 +117,6 @@ export class PopupHandler
 
     protected static onShowQueueGraphPopup = (event:PopupClickEvent) =>
     {
-        console.log("QUEUE GRAPH POPUP!");
-        console.log(event.gameObject._gameSessionQueue);
         if (PopupHandler.popup!=null)
         {
             PopupHandler.onClosePopup();
@@ -133,8 +131,6 @@ export class PopupHandler
 
     protected static onShowFleetGraphPopup = (event:PopupClickEvent) =>
     {
-        console.log("FLEET GRAPH POPUP!");
-        console.log(event.gameObject.Data);
         if (PopupHandler.popup!=null)
         {
             PopupHandler.onClosePopup();
@@ -211,6 +207,14 @@ export class PopupHandler
         PopupHandler.popup.show(event);
     };
 
+    protected static onShowQueueSettingsPopup = (event:PopupClickEvent) =>
+    {
+        PopupHandler.onClosePopup();
+        PopupHandler.popup = new QueueSettingsPopup(PopupHandler.scene, 0, 0);
+        PopupHandler.scene.add.existing(PopupHandler.popup);
+        PopupHandler.popup.show(event);
+    };
+
     protected static onShowFlexMatchSimulatorPopup = (event:PopupClickEvent) =>
     {
         PopupHandler.onClosePopup();
@@ -269,7 +273,6 @@ export class PopupHandler
 
     static onShowFleetScalingPopup = (event:PopupClickEvent) =>
     {
-        console.log(event);
         if (PopupHandler.popup!=null)
         {
             PopupHandler.onClosePopup();
@@ -284,7 +287,6 @@ export class PopupHandler
 
     static onShowFleetLocationsPopup = (event:PopupClickEvent) =>
     {
-        console.log(event);
         if (PopupHandler.popup!=null)
         {
             PopupHandler.onClosePopup();

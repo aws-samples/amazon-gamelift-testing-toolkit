@@ -33,5 +33,23 @@ export class Locations
             { regionCode: "sa-east-1", regionTitle: "South America (São Paulo)" },
         ];
 
+    public static HomeLocations: Location[] =
+        [
+                { regionCode: "us-east-1", regionTitle: "US East (N. Virginia)"},
+                { regionCode: "us-east-2", regionTitle: "US East (Ohio)" },
+                { regionCode: "us-west-1", regionTitle: "US West (N. California)" },
+                { regionCode: "us-west-2", regionTitle: "US West (Oregon)" },
+                { regionCode: "ap-south-1", regionTitle: "Asia Pacific (Mumbai)" },
+                { regionCode: "ap-northeast-1", regionTitle: "Asia Pacific (Tokyo)" },
+                { regionCode: "ap-northeast-2", regionTitle: "Asia Pacific (Seoul)" },
+                { regionCode: "ap-southeast-1", regionTitle: "Asia Pacific (Singapore)" },
+                { regionCode: "ap-southeast-2", regionTitle: "Asia Pacific (Sydney)" },
+                { regionCode: "ca-central-1", regionTitle: "Canada (Central)" },
+                { regionCode: "eu-west-1", regionTitle: "Europe (Ireland)" },
+                { regionCode: "eu-west-2", regionTitle: "Europe (London)" },
+                { regionCode: "eu-central-1", regionTitle: "Europe (Frankfurt)" },
+                { regionCode: "sa-east-1", regionTitle: "South America (São Paulo)" },
+        ];
+
 
 }

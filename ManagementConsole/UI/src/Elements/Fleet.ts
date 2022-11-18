@@ -87,7 +87,6 @@ export class Fleet extends BaseContainer
 
     resize(width:number, height:number)
     {
-        console.log("RESIZING FLEET TO", width, height);
         this._bg.drawRectangle(width, height);
     }
 
@@ -213,8 +212,7 @@ export class Fleet extends BaseContainer
                 instanceStats[instance.Status.Value]++;
             }
         })
-        //console.log(gameSessionStats);
-        //console.log(instanceStats);
+
         let percentAvailableGameSessions = this._fleet.Metrics["PercentAvailableGameSessions"] != undefined && this._fleet.Metrics["PercentAvailableGameSessions"]!=-1 ? this._fleet.Metrics["PercentAvailableGameSessions"] : "-";
         let availableGameSessions = this._fleet.Metrics["AvailableGameSessions"] != undefined && this._fleet.Metrics["AvailableGameSessions"]!=-1 ? this._fleet.Metrics["AvailableGameSessions"] : "-";
 
@@ -270,8 +268,6 @@ export class Fleet extends BaseContainer
 
     public handleClick(localX, localY)
     {
-
-        console.log("CLICK ON FLEET!");
         if (this._fleetMenu.menuVisible==false)
         {
             this._emitter.emit(Events.CLOSE_MENUS);

@@ -39,12 +39,6 @@ export class SimulateMatchmakingSubPopup extends SubPopup
         this.hideStatusAlert();
     }
 
-    resetElement(selector)
-    {
-        let el = $(this._html);
-        $('#'+this._parentDomId).find(selector).html(el.find(selector).html());
-    }
-
     resetTable()
     {
         this.resetElement(".simulateMatchmakingTableContainer");

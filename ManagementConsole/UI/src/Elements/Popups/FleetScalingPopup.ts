@@ -33,7 +33,6 @@ export class FleetScalingPopup extends Popup
 
     removeEventListeners()
     {
-        console.log("REMOVING EVENT LISTENERS!");
         this._emitter.off(Events.GET_FLEET_SCALING_RESPONSE, this.onGetFleetScalingResponse);
         this._emitter.off(Events.ADJUST_FLEET_SCALING_RESPONSE, this.onFleetScalingResponse);
         this._emitter.off(Events.DELETE_SCALING_POLICY_RESPONSE, this.onDeleteScalingPolicyResponse);
@@ -103,12 +102,9 @@ export class FleetScalingPopup extends Popup
     onGetFleetScalingResponse = (data) =>
     {
         this.resetElement(".fleetScalingPopup");
-        console.log(data);
         this._scalingData = data;
 
         const activeScalingPolicies = data.ScalingPolicies.filter(scalingPolicy=>scalingPolicy.Status.Value=="ACTIVE" && scalingPolicy.PolicyType.Value=="TargetBased")
-
-        console.log(this._fleetData.ScalingPolicies);
 
         this.element.find("p.title").append("Adjust Scaling for Fleet \"" + this._fleetData.FleetAttributes.Name + "\"");
 
@@ -139,8 +135,7 @@ export class FleetScalingPopup extends Popup
     onPopupClick = async (event) => {
 
         event.stopPropagation();
-        console.log(event.target);
-        console.log(event.target.id);
+
         if (event.target.className == "closeButton")
         {
             this._emitter.emit(Events.CLOSE_POPUP);
@@ -148,8 +143,6 @@ export class FleetScalingPopup extends Popup
         }
 
         const activeScalingPolicies = this._scalingData.ScalingPolicies.filter(scalingPolicy=>scalingPolicy.Status.Value=="ACTIVE" && scalingPolicy.PolicyType.Value=="TargetBased")
-
-        console.log("ACTIVE POLICIES", activeScalingPolicies);
 
         if (event.target.id=="setScalingPolicyButton")
         {
@@ -169,7 +162,6 @@ export class FleetScalingPopup extends Popup
             else
             if ((enabled && activeScalingPolicies.length==0) || (activeScalingPolicies.length>0 && activeScalingPolicies[0].TargetConfiguration.TargetValue!=scalingTarget)) // need to put scaling policy
             {
-                console.log("SHOULD UPDATE/SET POLICY!");
                 Network.sendObject({
                     Type:"SetScalingPolicy",
                     FleetId:this._fleetData.FleetId,
@@ -220,7 +212,6 @@ export class FleetScalingPopup extends Popup
                 let changeRequest = {Type:"AdjustFleetCapacity", Changes : changes};
                 Network.sendObject(changeRequest);
             }
-            console.log(changes);
         }
 
     }

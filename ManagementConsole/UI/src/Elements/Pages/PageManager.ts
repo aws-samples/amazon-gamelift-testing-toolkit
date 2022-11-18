@@ -38,8 +38,6 @@ export class PageManager
 
     public static switchPage(pageName:string, pageData:any=null)
     {
-        console.log("SWITCH PAGE", pageName);
-        console.log(this._pages);
         if (this._pages[pageName]!=null)
         {
             this.pages.map(page=>page.hidePage());

@@ -185,7 +185,6 @@ export class QueueEventsPopup extends Popup
     onPopupClick = async (event) => {
 
         event.stopPropagation();
-        console.log(event.target);
         if (event.target.className == "refreshButton")
         {
             this.refresh();
@@ -223,7 +222,6 @@ export class QueueEventsPopup extends Popup
         }
         else if (event.target.className.indexOf("viewMatchmakingTickets") !== -1)
         {
-            console.log(event.target.id);
             Network.sendObject({Type:"GetMatchmakingTicketHeadersByMatchId", MatchId:event.target.id});
         }
     }
@@ -243,8 +241,6 @@ export class QueueEventsPopup extends Popup
 
     showTicketEventDetail = (ticketEvent) =>
     {
-        console.log(ticketEvent);
-
         const container = document.getElementById("matchmakingTicketEventJson")
         const options:JSONEditorOptions = {mode:"view", name:"FlexMatch Event"}
 

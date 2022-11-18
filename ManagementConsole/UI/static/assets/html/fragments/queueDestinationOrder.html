@@ -1,0 +1,37 @@
+<div class="alert hide" id="statusText"></div>
+<div class="queueDestinationOrderContent">
+    <h5 style="margin-top:20px; float:left;">Destinations</h5>
+    <select class="destinationOrder-location" style="float:left; margin-top:20px; margin-left:10px;">
+        <option value="">Choose a Region</option>
+    </select>
+    <select class="destinationOrder-type" style="float:left; margin-top:20px; margin-left:2px;">
+        <option value="">Choose a Type</option>
+        <option value="Alias">Alias</option>
+        <option value="Fleet">Fleet</option>
+    </select>
+    <select class="destinationOrder-name" disabled="disabled" style="float:left; margin-top:20px; margin-left:2px;">
+    </select>
+    <button style="margin-left:2px; float:left; margin-top:17px" class="addDestination btn btn-primary btn-sm" disabled="disabled">Add Destination</button>
+    <p style="clear:both;">An ordered list of fleets and aliases that the queue can use for game session placement.  Click and drag the Order column to modify the destination order.</p>
+
+
+    <div class="queueDestinationOrderTableContainer">
+        <table id="queueDestinationOrderTable" class="table table-bordered table-striped mb-0">
+            <thead>
+            <tr>
+                <th class="no-sort">Order</th>
+                <th class="no-sort">Region</th>
+                <th class="no-sort">Name</th>
+                <th class="no-sort">Type</th>
+                <th class="no-sort">ARN</th>
+                <th class="no-sort">Remove</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div id="updateQueueDestinationsButtonContainer" style="clear:both">
+        <button style="margin-left:0" class="updateQueueDestinations btn btn-primary btn-sm">Save Changes</button>
+    </div>
+</div>

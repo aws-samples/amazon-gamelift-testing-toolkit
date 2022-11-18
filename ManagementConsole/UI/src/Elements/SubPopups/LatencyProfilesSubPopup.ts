@@ -27,12 +27,6 @@ export class LatencyProfilesSubPopup extends SubPopup
         Network.sendObject({Type:"GetLatencyProfiles"});
     }
 
-    resetElement(selector)
-    {
-        let el = $(this._html);
-        $('#'+this._parentDomId).find(selector).html(el.find(selector).html());
-    }
-
     resetTable()
     {
         this.resetElement(".latencyProfilesTableContainer");
@@ -59,7 +53,6 @@ export class LatencyProfilesSubPopup extends SubPopup
 
     onSaveLatencyProfileResponse = (data) =>
     {
-        console.log(data);
         if (data.Errors.length==0)
         {
             this.refresh();
@@ -73,7 +66,6 @@ export class LatencyProfilesSubPopup extends SubPopup
 
     onDeleteLatencyProfileResponse = (data) =>
     {
-        console.log(data);
         if (data.Errors.length==0)
         {
             this.refresh();
@@ -87,14 +79,11 @@ export class LatencyProfilesSubPopup extends SubPopup
 
     onGetLatencyProfilesResponse = (data) =>
     {
-        console.log("GOT LATENCY PROFILES RESPONSE!");
         let html="";
         this._latencyProfiles={};
         data.map(profile =>
         {
             this._latencyProfiles[profile.ProfileId] = profile;
-
-            console.log(profile);
 
             let editProfileTd='<td><a class="editLatencyProfile btn btn-primary btn-sm" id="' + profile.ProfileId +'" href="' + "#" + '">Edit Profile</a></td>';
             let deleteProfileTd='<td><a class="deleteLatencyProfile btn btn-primary btn-sm" id="' + profile.ProfileId +'" href="' + "#" + '">Delete Profile</a></td>';
@@ -109,23 +98,6 @@ export class LatencyProfilesSubPopup extends SubPopup
         this.resetTable();
         $("table#latencyProfilesTable tbody").append( html);
         this.activateDataTable("latencyProfilesTable");
-    }
-
-    showSuccessAlert = (text) =>
-    {
-        $('#'+this._parentDomId).find("#statusText")[0].className = "alert alert-success";
-        $('#'+this._parentDomId).find("#statusText").html(text);
-    }
-
-    showFailureAlert = (text) =>
-    {
-        $('#'+this._parentDomId).find("#statusText")[0].className = "alert alert-danger";
-        $('#'+this._parentDomId).find("#statusText").html(text);
-    }
-
-    hideStatusAlert = () =>
-    {
-        $('#'+this._parentDomId).find("#statusText")[0].className = "alert hide";
     }
 
     constructLatencyProfileObject = () =>
@@ -153,7 +125,6 @@ export class LatencyProfilesSubPopup extends SubPopup
             };
 
             latencyData.push(myObj);
-            //console.log($( this ).html());
         });
 
         latencyProfile.LatencyData = latencyData;
@@ -164,15 +135,12 @@ export class LatencyProfilesSubPopup extends SubPopup
             latencyProfile.ProfileId = profileId;
         }
 
-        console.log(latencyProfile);
-
         return latencyProfile;
     }
 
     onPopupClick = async (event) => {
         event.stopPropagation();
         let el = $(event.target);
-        console.log(el);
 
         if (el.hasClass("deleteRegionLatency"))
         {
@@ -183,9 +151,7 @@ export class LatencyProfilesSubPopup extends SubPopup
         {
             this.hideStatusAlert();
 
-            console.log("CREATE LATENCY PROFILE!");
             let latencyProfile = this.constructLatencyProfileObject();
-            console.log(latencyProfile);
             if (latencyProfile!=null)
             {
                 Network.sendObject({Type:"SaveLatencyProfile", Profile:latencyProfile});
@@ -203,23 +169,14 @@ export class LatencyProfilesSubPopup extends SubPopup
         }
         if (el.attr("id")=="addLatencyProfileAttribute")
         {
-            console.log("ADD LATENCY PROFILE ATTRIBUTE");
             this.addNewLatencyProfileAttribute();
-            /*
-            let addedEl = $('#latencyProfileAttributes').append($('#latencyAttributeTemplate').html());
-            console.log(addedEl);
-
-             */
         }
         if (el.hasClass("addStringDoubleMapValue"))
         {
             el.parent().parent().parent().parent().append(this.getStringDoubleMapValueHtml());
-
-            console.log("ADD STRING DOUBLE MAP VALUE!");
         }
         if (el.hasClass("removeStringDoubleMapValue"))
         {
-            console.log("REMOVE STRING DOUBLE MAP VALUE!");
             el.parent().parent().parent().remove();
         }
         else if (event.target.id=="showCreateLatencyProfileFormButton")
@@ -287,13 +244,11 @@ export class LatencyProfilesSubPopup extends SubPopup
            }
         });
 
-        console.log("LOCATIONS", availableLocations);
         return availableLocations;
     }
 
     updateAvailableLocations()
     {
-        console.log("UPDATE AVAILABLE LOCATIONS!");
         let availableLocations = this.getAvailableLocations();
         $("select.regionLatencyForm-name").each(function ()
         {
@@ -310,10 +265,8 @@ export class LatencyProfilesSubPopup extends SubPopup
     {
         $.get('assets/html/fragments/regionLatencyTemplate.html', (data) => {
 
-            console.log("ADDING LATENCY", regionLatency);
             let addedEl = $(data).appendTo("#latencyProfileAttributes");
             let selectEl = $(data).find("select.regionLatencyForm-name")[0];
-            console.log(selectEl);
 
             addedEl.find("select.regionLatencyForm-name").html('<option type="text" value="' + regionLatency.Region + '" selected="selected">' + regionLatency.Region + '</option>');
             addedEl.find(".regionLatencyForm-minLatency").val(regionLatency.MinLatency);
@@ -336,7 +289,7 @@ export class LatencyProfilesSubPopup extends SubPopup
     showEditLatencyProfileForm(profileId:string)
     {
         let profile = this._latencyProfiles[profileId];
-        console.log(profile);
+
         this.resetLatencyProfileForm();
 
         $('.latencyProfileForm input#latencyProfileId').val(profile.ProfileId);
@@ -359,7 +312,6 @@ export class LatencyProfilesSubPopup extends SubPopup
     }
 
     activateDataTable(id) {
-        console.log($('#'+id).html());
 
         // @ts-ignore
         $('#'+id).DataTable({

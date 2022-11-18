@@ -88,12 +88,10 @@ export class ManageVirtualPlayersPopup extends Popup
     {
         this._gameSessions = data;
 
-        console.log(data);
         let html="";
 
         data.Tasks?.map(task =>
         {
-            console.log(task);
             let playerTerminateTd='<td><a class="terminatePlayer btn btn-primary btn-sm" id="' + task.TaskArn +'" href="' + "#" + '">Terminate Player</a></td>';
 
             html += '<tr>' +
@@ -117,7 +115,7 @@ export class ManageVirtualPlayersPopup extends Popup
     onPopupClick = async (event) => {
 
         event.stopPropagation();
-        console.log(event.target);
+
         if (event.target.className == "closeButton")
         {
             this._emitter.emit(Events.CLOSE_POPUP);
@@ -129,12 +127,10 @@ export class ManageVirtualPlayersPopup extends Popup
         }
         if (event.target.className.indexOf("terminatePlayer") !== -1)
         {
-            console.log("TRYING TO TERMINATE!");
             Network.sendObject({Type:"TerminateVirtualPlayer", TaskArn:event.target.id});
         }
         if (event.target.className.indexOf("terminateAllVirtualPlayers") !== -1)
         {
-            console.log("TRYING TO TERMINATE ALL PLAYERS!");
             Network.sendObject({Type:"TerminateAllVirtualPlayers"});
         }
     };

@@ -97,7 +97,6 @@ export class FleetLocationsPopup extends Popup
     onPopupClick = async (event) => {
 
         event.stopPropagation();
-        console.log(event.target);
         if (event.target.className == "closeButton")
         {
             this._emitter.emit(Events.CLOSE_POPUP);

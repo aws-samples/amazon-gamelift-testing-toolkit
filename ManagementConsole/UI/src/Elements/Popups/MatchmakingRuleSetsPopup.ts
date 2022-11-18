@@ -69,10 +69,8 @@ export class MatchmakingRuleSetsPopup extends Popup
 
     onGetMatchmakingRuleSetsResponse = (data) =>
     {
-        console.log("GOT RULESETS RESPONSE!");
         this._ruleSets = data;
 
-        console.log(this._ruleSets);
         let html="";
         data.map(ruleSet =>
         {
@@ -94,8 +92,6 @@ export class MatchmakingRuleSetsPopup extends Popup
 
     onValidateMatchmakingRuleSetResponse = (data) =>
     {
-        console.log("GOT VALIDATE RESPONSE!");
-        console.log(data);
         if (data.Validated)
         {
             this.showSuccessAlert("Ruleset JSON validated successfully");
@@ -108,8 +104,6 @@ export class MatchmakingRuleSetsPopup extends Popup
 
     onCreateMatchmakingRuleSetResponse = (data) =>
     {
-        console.log("GOT CREATE RESPONSE!");
-        console.log(data);
         if (data.Created)
         {
             this.showSuccessAlert("Ruleset created successfully");
@@ -124,8 +118,6 @@ export class MatchmakingRuleSetsPopup extends Popup
 
     onDeleteMatchmakingRuleSetResponse = (data) =>
     {
-        console.log("GOT DELETE RESPONSE!");
-        console.log(data);
         if (data.Deleted==false)
         {
             this.showFailureAlert("Error: " + data.ErrorMessage)
@@ -156,7 +148,6 @@ export class MatchmakingRuleSetsPopup extends Popup
     onPopupClick = async (event) => {
 
         event.stopPropagation();
-        console.log(event.target);
         if (event.target.className == "closeButton") {
             this._emitter.emit(Events.CLOSE_POPUP);
             this.setVisible(false);
@@ -167,7 +158,6 @@ export class MatchmakingRuleSetsPopup extends Popup
             this.refresh();
         } else if (event.target.className.indexOf("viewDetail") !== -1) {
             this.hideStatusAlert();
-            console.log(event.target.id);
             let ruleSet = this._ruleSets.filter(ruleSet => ruleSet.RuleSetArn == event.target.id)[0];
             this.showRuleSetDetail(ruleSet);
         } else if (event.target.className.indexOf("newRuleset") !== -1) {
@@ -175,18 +165,14 @@ export class MatchmakingRuleSetsPopup extends Popup
             this.newRuleSet();
         } else if (event.target.className.indexOf("deleteRuleSet") !== -1) {
             this.hideStatusAlert();
-            console.log(event.target.id);
             let ruleSet = this._ruleSets.filter(ruleSet => ruleSet.RuleSetArn == event.target.id)[0];
             this.deleteRuleSet(ruleSet);
         } else if (event.target.className.indexOf("cloneEdit") !== -1) {
             this.hideStatusAlert();
-            console.log(event.target.id);
             let ruleSet = this._ruleSets.filter(ruleSet => ruleSet.RuleSetArn == event.target.id)[0];
             this.cloneEditRuleSet(ruleSet);
         } else if (event.target.id == "saveButton") {
             this.hideStatusAlert();
-            console.log("SAVE!!");
-            console.log(this._editor.getText());
             let ruleSet = JSON.parse(this._editor.getText());
             let editorJson = JSON.stringify(ruleSet);
             let ruleSetName = $('#ruleSetName').val();
@@ -195,8 +181,6 @@ export class MatchmakingRuleSetsPopup extends Popup
         }
         else if (event.target.id == "validateButton") {
             this.hideStatusAlert();
-            console.log("VALIDATE!!");
-            console.log(this._editor.getText());
             let editorJson = JSON.stringify(JSON.parse(this._editor.getText()));
             Network.sendObject({Type:"ValidateMatchmakingRuleSet", RuleSetBody:editorJson});
             //this.resetJson();
@@ -206,8 +190,6 @@ export class MatchmakingRuleSetsPopup extends Popup
 
     cloneEditRuleSet = (ruleSet) =>
     {
-        console.log(ruleSet);
-
         const container = document.getElementById("ruleSetJson")
         const options:JSONEditorOptions = {modes:["code", "tree"], name:"Matchmaking RuleSet"}
         $(".rulesetButtons").show();
@@ -249,7 +231,6 @@ export class MatchmakingRuleSetsPopup extends Popup
 
     showRuleSetDetail = (ruleSet) =>
     {
-        console.log(ruleSet);
         $(".rulesetButtons").hide();
         $(".existingRuleSetName").show();
         $(".existingRuleSetName").html(ruleSet.RuleSetName);
@@ -269,8 +250,6 @@ export class MatchmakingRuleSetsPopup extends Popup
     deleteRuleSet = (ruleSet) =>
     {
         Network.sendObject({Type:"DeleteMatchmakingRuleSet", RuleSetName:ruleSet.RuleSetName});
-        console.log("DELETE!");
-        console.log(ruleSet);
     }
 
     resetJson()

@@ -53,7 +53,6 @@ export class ConsoleScene extends Phaser.Scene
         new GameLiftEventHandler();
         new MessageHandler();
         PopupHandler.registerScene(this);
-        console.log(this);
         ConsoleScene.instance = this;
     }
 
@@ -494,7 +493,6 @@ export class ConsoleScene extends Phaser.Scene
                     delay: Math.random()*3000,
                     callback: () => {
                         match.addPlayerToMatch(playerId);
-                        console.log(PlayerMatches.getMatch(matchId).playerIds);
 
                         if (PlayerMatches.getMatch(matchId).playerIds.length == eventPlayerIds.length) // once all the players are added to match, match is full, move to queue
                         {

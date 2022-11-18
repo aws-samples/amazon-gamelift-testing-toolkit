@@ -38,6 +38,10 @@ export class QueueMenu extends SimpleMenu {
                 triggerEvent: Events.SHOW_QUEUE_EVENTS_POPUP,
             },
             {
+                text: "Modify Queue",
+                triggerEvent: Events.SHOW_QUEUE_SETTINGS_POPUP,
+            },
+            {
                 text: "View Metrics",
                 triggerEvent: Events.SHOW_QUEUE_GRAPH_POPUP,
             },
@@ -54,6 +58,9 @@ export class QueueMenu extends SimpleMenu {
         switch (className)
         {
             case Events.SHOW_QUEUE_EVENTS_POPUP:
+                this._globalEmitter.emit(className, new PopupClickEvent(this._queue));
+                break;
+            case Events.SHOW_QUEUE_SETTINGS_POPUP:
                 this._globalEmitter.emit(className, new PopupClickEvent(this._queue));
                 break;
             case Events.SHOW_QUEUE_GRAPH_POPUP:
