@@ -18,6 +18,7 @@ require( 'datatables.net-buttons-bs4' );
 require( 'datatables.net-buttons/js/buttons.colVis.js' );
 require( 'datatables.net-buttons/js/buttons.html5.js' );
 require( 'datatables.net-responsive-bs4' );
+require( 'datatables.net-rowreorder-bs4' );
 
 declare const window: any;
 
