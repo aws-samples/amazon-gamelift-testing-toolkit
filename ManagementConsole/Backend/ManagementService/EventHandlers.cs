@@ -64,6 +64,12 @@ namespace ManagementConsoleBackend.ManagementService
                 item["date"] = queuePlacementEvent.Time.DateTime.ToString("yyyy-MM-dd");
                 item["time-id"] = queuePlacementEvent.Time.DateTime.ToString("yyyy-MM-ddTHH:mm:ss") + "-" + queuePlacementEvent.Id;
                 item["placementId"] = queuePlacementEvent.Detail.PlacementId;
+                
+                if (queuePlacementEvent.Resources.Length > 0)
+                {
+                    item["primaryResource"] = queuePlacementEvent.Resources[0];
+                }
+                
                 item["TimeToLive"] = (Utils.GetUnixTimestamp() + (86400 * 7));
                 await eventLogTable.PutItemAsync(item);
             }
@@ -209,6 +215,11 @@ namespace ManagementConsoleBackend.ManagementService
             try
             {
                 var item = Document.FromJson(eventStr);
+
+                if (flexMatchEvent.Resources.Length > 0)
+                {
+                    item["primaryResource"] = flexMatchEvent.Resources[0];
+                }
                 item["date"] = flexMatchEvent.Time.DateTime.ToString("yyyy-MM-dd");
                 item["time-id"] = flexMatchEvent.Time.DateTime.ToString("s")+"Z" + "-" + flexMatchEvent.Id;
                 item["TimeToLive"] = timeToLive;

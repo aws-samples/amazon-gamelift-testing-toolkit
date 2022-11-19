@@ -265,7 +265,7 @@ namespace ManagementConsoleBackend.ManagementService
                         
                         case "GetQueueEvents":
                             var getQueueEventsRequest = JsonConvert.DeserializeObject<ClientMessageGetQueueEvents>(request.Body);
-                            var queueEvents = await dynamoDbRequestHandler.GetDatabaseQueueEvents();
+                            var queueEvents = await dynamoDbRequestHandler.GetDatabaseQueueEvents(getQueueEventsRequest.QueueArn);
                             await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetQueueEvents { Events = queueEvents});
                             break;
                         

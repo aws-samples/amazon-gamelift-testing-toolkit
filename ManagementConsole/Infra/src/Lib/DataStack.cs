@@ -194,6 +194,21 @@ namespace ManagementConsoleInfra.Lib
                     Type = AttributeType.STRING
                 }
             });
+            
+            EventLogTable.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
+            {
+                IndexName = "PrimaryResource-GSI",
+                PartitionKey = new Attribute
+                {
+                    Name = "primaryResource",
+                    Type = AttributeType.STRING
+                },
+                SortKey = new Attribute
+                {
+                    Name = "time-id",
+                    Type = AttributeType.STRING
+                }
+            });
 
             GameSessionTable = new Table(this, "GameSessionTable", new TableProps
             {

@@ -101,24 +101,25 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             return null;
         }
         
-        public async Task<List<QueuePlacementEventDetail>> GetDatabaseQueueEvents()
+        public async Task<List<QueuePlacementEventDetail>> GetDatabaseQueueEvents(string queueArn)
         {
             var queueEvents = new List<QueuePlacementEventDetail>();
             try
             {
                 var eventLogTable =
                     Table.LoadTable(_client, Environment.GetEnvironmentVariable("EventLogTableName"));
-                
-                var scanFilter = new ScanFilter();
-                scanFilter.AddCondition("detail-type", ScanOperator.Equal, "GameLift Queue Placement Event");
+            
+                var filter = new QueryFilter("primaryResource", QueryOperator.Equal, queueArn);
 
-                var config = new ScanOperationConfig()
+                var queryConfig = new QueryOperationConfig
                 {
-                    Filter = scanFilter,
+                    IndexName = "PrimaryResource-GSI",
+                    Filter = filter,
+                    BackwardSearch = true,
                 };
-
-                var search = eventLogTable.Scan(config);
                 
+                var search = eventLogTable.Query(queryConfig);
+
                 List<Document> documentList = new List<Document>();
                 do
                 {
@@ -130,9 +131,6 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                     }
                 } while (!search.IsDone);
                 
-                queueEvents.Sort((x, y) => String.Compare(x.StartTime, y.StartTime));
-                queueEvents.Reverse();
-                //queueEvents = queueEvents.Take(50).ToList();
                 return queueEvents;
             }
             catch (Exception e)
