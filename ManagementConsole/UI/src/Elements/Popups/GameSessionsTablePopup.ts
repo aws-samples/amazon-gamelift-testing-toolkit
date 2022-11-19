@@ -208,7 +208,7 @@ export class GameSessionsTablePopup extends Popup
             columnDefs: [
                 { width: 200, targets: 0 }
             ],
-            orderable:false,
+            ordering:false,
 
         });
     }
