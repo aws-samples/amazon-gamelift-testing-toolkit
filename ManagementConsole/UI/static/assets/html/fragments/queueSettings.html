@@ -6,11 +6,12 @@
         <input id="timeoutInSeconds" type="number" name="timeoutInSeconds" style="width:60px; margin-top:5px"> seconds<br/>
         <p style="margin-top:5px">Must be 10-600 seconds</p>
 
-        <h5 style="margin-top:20px; float:left;">Player Latency Policies - <i>Optional</i></h5>
-        <button style="margin-left:20px; margin-top:16px;" class="addPlayerLatencyPolicy btn btn-primary btn-sm">Add Policy</button>
-        <p style="margin-top:5px">Add policies to help place players into games with lower latency. Use multiple policies to reduce latency requirements per policy so that each player eventually finds a match.</p>
-        <div id="playerLatencyPolicies" style="margin-top:10px">
-
+        <div id="playerLatencyPoliciesContainer" style="display:none">
+            <h5 style="margin-top:20px; float:left;">Player Latency Policies - <i>Optional</i></h5>
+            <button style="margin-left:20px; margin-top:16px;" class="addPlayerLatencyPolicy btn btn-primary btn-sm">Add Policy</button>
+            <p style="margin-top:5px">Add policies to help place players into games with lower latency. Use multiple policies to reduce latency requirements per policy so that each player eventually finds a match.</p>
+            <div id="playerLatencyPolicies" style="margin-top:10px">
+            </div>
         </div>
         <div id="updateQueueSettingsButtonContainer" style="clear:both">
             <button style="margin-left:0" class="updateQueueSettings btn btn-primary btn-sm">Save Changes</button>

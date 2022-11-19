@@ -428,8 +428,12 @@ namespace ManagementConsoleBackend.ManagementService
                             {
                                 Name = updateQueueSettingsRequest.QueueArn,
                                 TimeoutInSeconds = updateQueueSettingsRequest.TimeoutInSeconds,
-                                PlayerLatencyPolicies = updateQueueSettingsRequest.PlayerLatencyPolicies.ToList(),
                             };
+
+                            if (updateQueueSettingsRequest.PlayerLatencyPolicies!=null)
+                            {
+                                updateQueueSettingsApiRequest.PlayerLatencyPolicies = updateQueueSettingsRequest.PlayerLatencyPolicies.ToList();
+                            }
 
                             LambdaLogger.Log(JsonConvert.SerializeObject(updateQueueSettingsApiRequest));
                             await Utils.SendJsonResponse(_connectionId, stageServiceUrl, await gameLiftRequestHandler.UpdateGameSessionQueue(updateQueueSettingsApiRequest));
