@@ -103,12 +103,14 @@ export class QueueDestinationOrderSubPopup extends SubPopup
     parseDestinationArn = (destinationArn) =>
     {
         let arn = parser(destinationArn);
+        let parts = destinationArn.split("/");
+        var resourceId = parts.pop();
         if (arn.relativeId.indexOf("alias")==0)
         {
-            let result = this._queueAliases.filter(alias => alias.AliasArn == destinationArn);
+            let result = this._queueAliases.filter(alias => alias.AliasId == resourceId);
             if (result.length==0)
             {
-                result = this._otherAliases.filter(alias => alias.AliasArn == destinationArn);
+                result = this._otherAliases.filter(alias => alias.AliasId == resourceId);
             }
             return {
                 DestinationArn: destinationArn,
@@ -120,10 +122,10 @@ export class QueueDestinationOrderSubPopup extends SubPopup
         else
         if (arn.relativeId.indexOf("fleet")==0)
         {
-            let result = this._queueFleets.filter(fleet => fleet.FleetArn == destinationArn);
+            let result = this._queueFleets.filter(fleet => fleet.FleetId == resourceId);
             if (result.length==0)
             {
-                result = this._otherFleets.filter(fleet => fleet.FleetArn == destinationArn);
+                result = this._otherFleets.filter(fleet => fleet.FleetId == resourceId);
             }
             return {
                 DestinationArn: destinationArn,
