@@ -67,24 +67,6 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                         }
                     }
 
-                    var activeGameSessions = await dynamoDbRequestHandler.GetDatabaseGameSessionsByStatus(fleetId, "ACTIVE");
-                    
-                    var gameSessions = new List<GameSession>();
-                    foreach (var gameSession in activeGameSessions)
-                    {
-                        gameSessions.Add(gameSession);
-                    }
-                    
-                    var terminatedGameSessions = await dynamoDbRequestHandler.GetDatabaseGameSessionsByStatus(fleetId, "TERMINATED");
-            
-                    foreach (var gameSession in terminatedGameSessions)
-                    {
-                        if (gameSession.TerminationTime > (DateTime.Now - TimeSpan.FromMinutes(10)))
-                        {
-                            gameSessions.Add(gameSession);
-                        }
-                    }
-                    
                     var instances = new List<Instance>();           
                     var locationCapacities = new List<FleetCapacity>();
                     var locationAttributes = await gameLiftRequestHandler.GetFleetLocationAttributes(fleetId);
@@ -118,7 +100,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                         FleetUtilization = await gameLiftRequestHandler.GetFleetUtilization(fleetId),
                         FleetAttributes = await gameLiftRequestHandler.GetFleetAttributes(fleetId),
                         Instances = instances,
-                        GameSessions = gameSessions,
+                        GameSessions = new List<GameSession>(),
                         Metrics = metricData,
                     };
 
