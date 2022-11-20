@@ -51,8 +51,11 @@ export class PlayerMatches
 
     public static destroyMatch(matchId:string)
     {
-        PlayerMatches._matches[matchId].destroy();
-        delete PlayerMatches._matches[matchId];
+        if (PlayerMatches._matches[matchId])
+        {
+            PlayerMatches._matches[matchId].destroy();
+            delete PlayerMatches._matches[matchId];
+        }
     }
 
     public static findPlayerMatch(playerId:string):PlayerMatch

@@ -131,7 +131,6 @@ export class ConsoleScene extends Phaser.Scene
 
     addPlayer(playerId:string=null)
     {
-        console.log("ADD PLAYER", playerId);
         let fakePlayer:boolean = false;
         if (playerId==null)
         {
@@ -148,7 +147,6 @@ export class ConsoleScene extends Phaser.Scene
 
         if (player.added==false)
         {
-            console.log("CREATE PLAYER", playerId, player);
             Players.addPlayer(player);
             player.playAnimation("down");
             player.stopAnimation();
@@ -177,32 +175,48 @@ export class ConsoleScene extends Phaser.Scene
         return player;
     }
 
-    initializeMatch = (matchId:string, configArn:string=null):PlayerMatch =>
+    initializeMatch = (matchId:string, creatorArn:string):PlayerMatch =>
     {
         let match = PlayerMatches.getMatch(matchId);
 
         // if match doesn't exist yet, then create it
         if (match==undefined)
         {
-            console.log("CREATING MATCH", matchId);
-            match = PlayerMatches.createMatch(this, matchId);
+            match = PlayerMatches.createMatch(this, matchId, creatorArn);
             this.add.existing(match);
-        }
 
-        // if matchmaking config Arn is set, then update match
-        if (configArn!=null)
-        {
-            let matchmakingConfig = this._matchmakingConfigurations.getConfigByArn(configArn);
-            match.x = matchmakingConfig.x + Math.floor(Math.random() * matchmakingConfig.displayWidth);
-            if (ScreenResolution.displayResolution==ScreenResolution.RES_720P)
+            // config Arn is set, then update match
+            if (creatorArn!=null)
             {
-                match.y = 220;
+                if (match.creatorType == PlayerMatch.MATCHMAKING_CREATOR)
+                {
+                    let matchmakingConfig = this._matchmakingConfigurations.getConfigByArn(creatorArn);
+                    match.x = matchmakingConfig.x + Math.floor(Math.random() * matchmakingConfig.displayWidth);
+                    if (ScreenResolution.displayResolution==ScreenResolution.RES_720P)
+                    {
+                        match.y = 220;
+                    }
+                    else
+                    {
+                        match.y = 375;
+                    }
+                }
+                else
+                if (match.creatorType == PlayerMatch.QUEUE_CREATOR)
+                {
+                    let queue = this._queues.getQueueByArn(creatorArn);
+                    match.x = queue.x + Math.floor(Math.random() * queue.displayWidth);
+                    if (ScreenResolution.displayResolution==ScreenResolution.RES_720P)
+                    {
+                        match.y = 320;
+                    }
+                    else
+                    {
+                        match.y = 450;
+                    }
+                }
+                match.creatorArn = creatorArn;
             }
-            else
-            {
-                match.y = 375;
-            }
-            match.configArn = configArn;
         }
 
         return match;
@@ -282,10 +296,8 @@ export class ConsoleScene extends Phaser.Scene
         this._emitter.on(Events.CLOSE_SETTINGS, this.onSettingsClose);
         this._emitter.on(Events.LAUNCH_PLAYERS, this.onLaunchPlayers);
         this._emitter.on(Events.ADD_FAKE_FLEET, this.onAddFakeFleet);
-        this._emitter.on(Events.ADD_BIG_PLAYER, this.onAddBigPlayer);
         this._emitter.on(Events.ADD_FAKE_PLAYER, this.onAddFakePlayer);
         this._emitter.on(Events.ADD_FAKE_INSTANCE, this.onAddFakeInstance);
-        this._emitter.on(Events.ADD_FAKE_GAME_SESSION, this.onAddFakeGameSession);
         this._emitter.on(Events.ADD_FAKE_MATCHMAKING_CONFIG, this.onAddFakeMatchmakingConfig);
         this._emitter.on(Events.ADD_FAKE_QUEUE, this.onAddFakeQueue);
         this._emitter.on(Events.ADD_FAKE_ANIMATIONS, this.onAddFakeAnimations);
@@ -424,7 +436,7 @@ export class ConsoleScene extends Phaser.Scene
 
     onAddFakeMatch = () =>
     {
-        let match = PlayerMatches.createMatch(this, "joetest", "joetest");
+        let match = PlayerMatches.createMatch(this, "dummymatch", "arn:aws:gamelift:eu-west-1:12345678:gamesessionqueue/Dummy-Queue");
         this.add.existing(match);
         match.x = 800;
         match.y = 100;
@@ -433,18 +445,12 @@ export class ConsoleScene extends Phaser.Scene
     onAddFakePlayerToMatch = () =>
     {
         let player = this.addPlayer();
-        PlayerMatches.getMatch("joetest").addPlayerToMatch(player.PlayerId);
+        PlayerMatches.getMatch("dummymatch").addPlayerToMatch(player.PlayerId);
     };
 
     onAddFakePlayer = () =>
     {
         this.addPlayer();
-    };
-
-    onAddBigPlayer = () =>
-    {
-        let player = this.addPlayer();
-        player.scale = 20;
     };
 
     onAddFakeAnimations = async () =>
@@ -566,12 +572,6 @@ export class ConsoleScene extends Phaser.Scene
             fleetId = Object.keys(this._fleets.Fleets)[0];
         }
         this._fleets.Fleets[fleetId].addInstance(Phaser.Utils.String.UUID(), true);
-    };
-
-    onAddFakeGameSession = () =>
-    {
-        let fleetId = Object.keys(this._fleets.Fleets)[0];
-        this._fleets.Fleets[fleetId].addGameSession(Phaser.Utils.String.UUID(), true);
     };
 
     onSceneClick = (pointer, localX, localY, event)  =>

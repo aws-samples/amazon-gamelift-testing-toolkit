@@ -128,7 +128,6 @@ export abstract class Popup extends Phaser.GameObjects.Container
     }
 
     dragElement(elmnt) {
-        console.log("SETTING DRAG", elmnt);
         var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
         if (document.getElementById("popupHeader")) {
             // if present, the header is where you move the DIV from:
@@ -139,7 +138,6 @@ export abstract class Popup extends Phaser.GameObjects.Container
         }
 
         function dragMouseDown(e) {
-            console.log("DRAG MOUSE DOWN!");
             e = e || window.event;
             e.preventDefault();
             // get the mouse cursor position at startup:

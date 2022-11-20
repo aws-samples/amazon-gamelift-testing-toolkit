@@ -164,7 +164,6 @@ export class MatchmakingTicketsPopup extends Popup
         if (event.target.className.indexOf("replayTicketEvent") !== -1)
         {
             let ticketEvent = this._ticketEvents.filter(ticketEvent => ticketEvent.id == event.target.id)[0];
-            console.log("REPLAY TICKET EVENT", ticketEvent);
             this._emitter.emit(Events.REPLAY_FLEXMATCH_EVENT, ticketEvent);
         }
         else

@@ -57,13 +57,11 @@ export class Events
     public static TERMINATE_VIRTUAL_PLAYER_RESPONSE:string = "TerminateVirtualPlayerResponse";
     public static ADD_FAKE_FLEET:string = "AddFakeFleet";
     public static ADD_FAKE_PLAYER:string = "AddFakePlayer";
-    public static ADD_BIG_PLAYER:string = "AddBigPlayer";
     public static ADD_FAKE_INSTANCE:string = "AddFakeInstance";
     public static ADD_FAKE_QUEUE:string = "AddFakeQueue";
     public static ADD_FAKE_ANIMATIONS:string = "AddFakeAnimations";
     public static ADD_FAKE_MATCH:string = "AddFakeMatch";
     public static ADD_FAKE_PLAYER_TO_MATCH:string = "AddFakePlayerToMatch";
-    public static ADD_FAKE_GAME_SESSION:string = "AddFakeGameSession";
     public static ADD_FAKE_MATCHMAKING_CONFIG:string = "AddFakeMatchmakingConfig";
     public static CLOSE_POPUP:string = "ClosePopup";
     public static CLOSE_MENUS:string = "CloseMenus";

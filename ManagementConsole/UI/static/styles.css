@@ -17,6 +17,13 @@ p { margin : 0 }
     display: none;
 }
 
+.testMenu h6
+{
+    margin-left: 15px;
+    color: #ff0000;
+    font-weight: bold;
+}
+
 .center {
     margin-left: auto;
     margin-right: auto;

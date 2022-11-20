@@ -6,6 +6,8 @@ import {DataTypes} from "../Data/DataTypes";
 import {ConsoleScene} from "../Scenes/ConsoleScene";
 import {Events} from "./Events";
 import StateMessage = DataTypes.StateMessage;
+import {ScreenResolution} from "../Data/ScreenResolution";
+import {PlayerMatch} from "../Elements/PlayerMatch";
 
 export class GameLiftEventHandler
 {
@@ -173,6 +175,7 @@ export class GameLiftEventHandler
 
     onQueuePlacementEvent(stateMessage:StateMessage)
     {
+        console.log(stateMessage);
         let queuePlacementEvent = stateMessage.QueuePlacementEventDetail;
         let resources = stateMessage.Resources;
         let consoleScene = ConsoleScene.getInstance();
@@ -187,7 +190,7 @@ export class GameLiftEventHandler
                 if (match)
                 {
                     playerIds = match.playerIds;
-                    let configArn = match.configArn;
+                    let configArn = match.creatorArn;
                     match?.breakUpMatch();
                     let matchmakingConfig = consoleScene.getMatchmakingConfigurations().getConfigByArn(configArn);
                     let destination:SceneDestination = {
@@ -206,6 +209,7 @@ export class GameLiftEventHandler
         }
 
         queuePlacementEvent.placedPlayerSessions.map(playerSession => {
+            consoleScene.addPlayer(playerSession.playerId);
             playerIds.push(playerSession.playerId);
         });
 
@@ -216,30 +220,55 @@ export class GameLiftEventHandler
             switch (queuePlacementEvent.type)
             {
                 case "PlacementFulfilled":
-                    if (match==undefined)
+                    if (match==undefined) // flexmatch events haven't been processed yet, or queues being used without flexmatch
                     {
-                        match = consoleScene.initializeMatch(queuePlacementEvent.placementId);
+                        match = consoleScene.initializeMatch(queuePlacementEvent.placementId, resources[0]);
+                        playerIds.map(playerId => match.addPlayerToMatch(playerId));
                     }
 
+                    if (match.getNextDestination()!=null) // match is already animating
+                    {
+                        return;
+                    }
+
+                    console.log(match);
                     match.placementEvent = queuePlacementEvent;
 
-                    let queue = consoleScene.getQueues().getQueueByArn(resources[0]);
-                    let queueDestination:SceneDestination = {
-                        container: queue,
-                        type: "queue",
-                        delay:1000,
-                        disappearAfter:false,
-                    };
-                    match.addDestination(queueDestination);
+                    if (match.creatorType==PlayerMatch.MATCHMAKING_CREATOR)
+                    {
+                        let queue = consoleScene.getQueues().getQueueByArn(resources[0]);
+                        let queueDestination:SceneDestination = {
+                            container: queue,
+                            type: "queue",
+                            delay:1000,
+                            disappearAfter:false,
+                        };
+                        match.addDestination(queueDestination);
+                    }
 
                     let instance = consoleScene.getFleets().getInstanceByIp(queuePlacementEvent.ipAddress);
-                    let instanceDestination:SceneDestination = {
-                        container: instance,
-                        type: "instance",
-                        disappearAfter: true,
-                        delay:1000,
-                    };
-                    match.addDestination(instanceDestination);
+                    if (instance)
+                    {
+                        let instanceDestination:SceneDestination = {
+                            container: instance,
+                            type: "instance",
+                            disappearAfter: true,
+                            delay:1000,
+                        };
+                        match.addDestination(instanceDestination);
+                    }
+                    else
+                    {
+                        let fallbackDestination:SceneDestination = {
+                            x:300,
+                            y:ScreenResolution.height-50,
+                            type: "fallback",
+                            disappearAfter: true,
+                            delay:1000,
+                        };
+                        match.addDestination(fallbackDestination);
+
+                    }
 
                     break;
             }

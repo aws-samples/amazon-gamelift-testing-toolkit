@@ -30,10 +30,6 @@ export class SettingsPanel extends Phaser.GameObjects.Container
         this._settingsPanel.on('mousedown', this.onSettingsClick);
         this.setVisible(false);
 
-        if (Game.debugMode)
-        {
-            $('.testMenu').show();
-        }
     }
 
     create()
@@ -43,6 +39,14 @@ export class SettingsPanel extends Phaser.GameObjects.Container
 
     show()
     {
+        if (Game.debugMode)
+        {
+            $('.testMenu').show();
+        }
+        else {
+            $('.testMenu').hide();
+        }
+
         this.setVisible(true);
         this.x=-this._settingsPanel.displayWidth
         this.scene.tweens.add({
@@ -113,10 +117,6 @@ export class SettingsPanel extends Phaser.GameObjects.Container
                 this._emitter.emit(Events.ADD_FAKE_PLAYER);
                 break;
 
-            case "addBigPlayer":
-                this._emitter.emit(Events.ADD_BIG_PLAYER);
-                break;
-
             case "addFakeMatch":
                 this._emitter.emit(Events.ADD_FAKE_MATCH);
                 break;
@@ -127,10 +127,6 @@ export class SettingsPanel extends Phaser.GameObjects.Container
 
             case "addFakeInstance":
                 this._emitter.emit(Events.ADD_FAKE_INSTANCE);
-                break;
-
-            case "addFakeGameSession":
-                this._emitter.emit(Events.ADD_FAKE_GAME_SESSION);
                 break;
 
             case "addFakeMatchmakingConfig":

@@ -13,11 +13,14 @@ import {ConsoleScene} from "../Scenes/ConsoleScene";
 import {DataTypes} from "../Data/DataTypes";
 import QueuePlacementEventDetail = DataTypes.QueuePlacementEventDetail;
 
+const parser = require('aws-arn-parser');
+
 export class PlayerMatch extends BaseContainer
 {
     protected _players: Record<string, Player>;
     protected _matchId: string;
-    protected _configArn: string;
+    protected _creatorArn: string;
+    protected _creatorType:string;
     protected _layoutRows = 3;
     protected _moving:boolean = false;
     protected _timeline:Timeline;
@@ -26,12 +29,30 @@ export class PlayerMatch extends BaseContainer
     protected _placementEvent: QueuePlacementEventDetail;
     protected _placementResources: string[];
 
-    constructor (scene:Phaser.Scene, x:number, y:number, matchId:string, configArn:string=null)
+    public static QUEUE_CREATOR="gamesessionqueue";
+    public static MATCHMAKING_CREATOR="matchmakingconfiguration";
+
+    constructor (scene:Phaser.Scene, x:number, y:number, matchId:string, creatorArn:string)
     {
         super(scene, x, y);
         this._destinations = [];
         this._matchId = matchId;
-        this._configArn = configArn;
+        this._creatorArn = creatorArn;
+
+        let arn = parser(creatorArn);
+        if (arn.relativeId.indexOf("matchmakingconfiguration")==0)
+        {
+            this._creatorType = PlayerMatch.MATCHMAKING_CREATOR;
+        }
+        else if (arn.relativeId.indexOf("gamesessionqueue")==0)
+        {
+            this._creatorType = PlayerMatch.QUEUE_CREATOR;
+        }
+        else
+        {
+            this._creatorType="unknown";
+        }
+
         this._players = {};
         this.setSize(16, 16);
         this.draw(16,16);
@@ -130,15 +151,19 @@ export class PlayerMatch extends BaseContainer
         return this._placementResources;
     }
 
-
-    public get configArn():string
+    public get creatorArn():string
     {
-        return this._configArn;
+        return this._creatorArn;
     }
 
-    public set configArn(configArn)
+    public get creatorType():string
     {
-        this._configArn=configArn;
+        return this._creatorType;
+    }
+
+    public set creatorArn(creatorArn)
+    {
+        this._creatorArn=creatorArn;
     }
 
     public get playerIds():string[]
@@ -338,15 +363,14 @@ export class PlayerMatch extends BaseContainer
 
         if (disappearAfter)
         {
-            let playerIds = this.playerIds;
             this._timeline.add({
                 targets: this,
                 alpha: 0,
                 duration: 1000,
                 onComplete: ()=>
                 {
+                    let playerIds = this.playerIds;
                     this.breakUpMatch();
-
                     playerIds.map((playerId)=>
                     {
                         Players.getPlayer(playerId).alpha=0;

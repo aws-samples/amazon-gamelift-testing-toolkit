@@ -168,7 +168,6 @@ export class QueueEventsPopup extends Popup
 
     onGetQueueEventsResponse = (data) =>
     {
-        console.log("QUEUE EVENTS RESPONSE", data);
         this._queueEvents = data;
 
         let html="";
