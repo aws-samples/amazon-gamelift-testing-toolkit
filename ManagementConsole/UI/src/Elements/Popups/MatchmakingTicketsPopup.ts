@@ -86,6 +86,11 @@ export class MatchmakingTicketsPopup extends Popup
         this._ticketEvents.map(ticketEvent => {
             let viewEventDetailTd='<td><a class="viewTicketEvent btn btn-primary btn-sm" id="' + ticketEvent.id +'" href="' + "#" + '">View Detail</a></td>';
             let replayEventTd='<td><a class="replayTicketEvent btn btn-primary btn-sm" id="' + ticketEvent.id +'" href="' + "#" + '">Replay</a></td>';
+            if (ticketEvent["detail-type"]=="GameLift Queue Placement Event")
+            {
+                replayEventTd='<td><a class="replayQueueEvent btn btn-primary btn-sm" id="' + ticketEvent.id +'" href="' + "#" + '">Replay</a></td>';
+            }
+
             html += '<tr>' +
                 '<td>' + ticketEvent.time + '</td>'+
                 '<td>' + ticketEvent.detail.type + '</td>'+
@@ -155,6 +160,12 @@ export class MatchmakingTicketsPopup extends Popup
         {
             let ticketEvent = this._ticketEvents.filter(ticketEvent => ticketEvent.id == event.target.id)[0];
             this._emitter.emit(Events.REPLAY_FLEXMATCH_EVENT, ticketEvent);
+        }
+        else
+        if (event.target.className.indexOf("replayQueueEvent") !== -1)
+        {
+            let ticketEvent = this._ticketEvents.filter(ticketEvent => ticketEvent.id == event.target.id)[0];
+            this._emitter.emit(Events.REPLAY_QUEUE_PLACEMENT_EVENT, ticketEvent);
         }
         else
         if (event.target.className.indexOf("viewTicketEvent") !== -1)
