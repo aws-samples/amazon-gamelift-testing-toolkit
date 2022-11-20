@@ -512,7 +512,7 @@ namespace ManagementConsoleBackend.ManagementService
                         case "GetMatchmakingTicket":
                             var getMatchmakingTicketRequest = JsonConvert.DeserializeObject<ClientMessageGetMatchmakingTicket>(request.Body);
                             var matchmakingTickets = await dynamoDbRequestHandler.GetDatabaseMatchmakingTicket(getMatchmakingTicketRequest.TicketId);
-                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetMatchmakingTicket { Ticket = matchmakingTickets});
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, matchmakingTickets);
                             break;
 
                         case "GetCloudWatchGraph":

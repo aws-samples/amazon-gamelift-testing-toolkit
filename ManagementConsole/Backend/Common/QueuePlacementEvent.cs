@@ -8,7 +8,7 @@ namespace ManagementConsoleBackend.Common
 {
     public class QueuePlacementEvent : BaseEvent
     {
-        [JsonProperty(Required = Required.Always, PropertyName = "detail")]
+        [JsonProperty(Required = Required.Default, PropertyName = "detail")]
         public QueuePlacementEventDetail Detail { get; set; }
     }
     

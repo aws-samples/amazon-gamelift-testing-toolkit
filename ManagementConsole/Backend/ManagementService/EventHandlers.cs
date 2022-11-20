@@ -144,9 +144,12 @@ namespace ManagementConsoleBackend.ManagementService
         {
             var dynamoDbClient = new AmazonDynamoDBClient();
             var timeToLive = (Utils.GetUnixTimestamp() + (86400 * 7));
+            var ticketIds = new List<string>();
             
             foreach (var ticket in flexMatchEvent.Detail.Tickets)
             {
+                ticketIds.Add(ticket.TicketId);
+                
                 // add event id to ticket log table
                 var updateRequest = new UpdateItemRequest
                 {
@@ -207,10 +210,34 @@ namespace ManagementConsoleBackend.ManagementService
                     LambdaLogger.Log(e.Message);
                 }
             }
+
+            // add match to matchlog table
+            if (flexMatchEvent.Detail.Type == "PotentialMatchCreated" && flexMatchEvent.Detail.MatchId!=null)
+            {
+                var matchLogTable =  Table.LoadTable(dynamoDbClient, Environment.GetEnvironmentVariable("MatchLogTableName"));
+                try
+                {
+                    var item = new Document();
+                    item["MatchId"] = flexMatchEvent.Detail.MatchId;
+                    item["TicketIds"] = ticketIds;
+                    if (flexMatchEvent.Resources.Length > 0)
+                    {
+                        item["primaryResource"] = flexMatchEvent.Resources[0];
+                    }
+
+                    item["TimeToLive"] = timeToLive;
+                    LambdaLogger.Log("SAVING:" + JsonConvert.SerializeObject(item));
+                    await matchLogTable.PutItemAsync(item);
+                    LambdaLogger.Log("SAVED!");
+                }
+                catch (Exception e)
+                {
+                    LambdaLogger.Log(e.Message);
+                }
+            }
             
             // add event to eventlog table
-            var eventLogTable =
-                Table.LoadTable(dynamoDbClient, Environment.GetEnvironmentVariable("EventLogTableName"));
+            var eventLogTable = Table.LoadTable(dynamoDbClient, Environment.GetEnvironmentVariable("EventLogTableName"));
             
             try
             {

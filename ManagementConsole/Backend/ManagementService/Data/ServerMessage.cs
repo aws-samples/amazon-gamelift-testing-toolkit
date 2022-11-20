@@ -202,6 +202,7 @@ namespace ManagementConsoleBackend.ManagementService.Data
     {
         public new string Type = "GetMatchmakingTicket";
         public FlexMatchTicket Ticket;
+        public List<QueuePlacementEvent> QueuePlacementEvents;
     }
     
     public class ServerMessageGetCloudWatchGraph : ServerMessage

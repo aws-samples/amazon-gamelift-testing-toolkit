@@ -36,6 +36,7 @@ namespace ManagementConsoleInfra.Lib
         public Table GameSessionTable;
         public Table StateLogTable;
         public Table TicketLogTable;
+        public Table MatchLogTable;
         public Table PlayerProfileTable;
         public Table LatencyProfileTable;
         public Table MatchmakingSimulationTable;
@@ -710,6 +711,7 @@ namespace ManagementConsoleInfra.Lib
                     ["PlayerProfileTableName"] = props.PlayerProfileTable.TableName,
                     ["LatencyProfileTableName"] = props.LatencyProfileTable.TableName,
                     ["TicketLogTableName"] = props.TicketLogTable.TableName,
+                    ["MatchLogTableName"] = props.MatchLogTable.TableName,
                     ["SimulationResultsTableName"] = props.SimulationResultsTable.TableName,
                     ["SimulationPlayersTableName"] = props.SimulationPlayersTable.TableName,
                     ["GameSessionTableName"] = props.GameSessionTable.TableName,
@@ -815,6 +817,7 @@ namespace ManagementConsoleInfra.Lib
             props.PlayerProfileTable.GrantReadWriteData(ManagementServiceFunction);
             props.LatencyProfileTable.GrantReadWriteData(ManagementServiceFunction);
             props.TicketLogTable.GrantReadData(ManagementServiceFunction);
+            props.MatchLogTable.GrantReadData(ManagementServiceFunction);
             props.SimulationResultsTable.GrantReadData(ManagementServiceFunction);
             props.GameSessionTable.GrantReadWriteData(ManagementServiceFunction);
             props.StateLogTable.GrantReadData(ManagementServiceFunction);
@@ -971,6 +974,7 @@ namespace ManagementConsoleInfra.Lib
                 {
                     ["ConfigTableName"] = props.ManagementConfigTable.TableName,
                     ["TicketLogTableName"] = props.TicketLogTable.TableName,
+                    ["MatchLogTableName"] = props.MatchLogTable.TableName,
                     ["MatchmakingSimulationTableName"] = props.MatchmakingSimulationTable.TableName,
                     ["SimulationResultsTableName"] = props.SimulationResultsTable.TableName,
                     ["SimulationPlayersTableName"] = props.SimulationPlayersTable.TableName,
@@ -993,6 +997,7 @@ namespace ManagementConsoleInfra.Lib
             
             props.EventLogTable.GrantReadWriteData(FlexMatchEventFunction);
             props.ManagementConfigTable.GrantReadData(FlexMatchEventFunction);
+            props.MatchLogTable.GrantReadWriteData(FlexMatchEventFunction);
             props.TicketLogTable.GrantReadWriteData(FlexMatchEventFunction);
             props.ManagementConnectionsTable.GrantReadWriteData(FlexMatchEventFunction);
             props.MatchmakingSimulationTable.GrantReadWriteData(FlexMatchEventFunction);

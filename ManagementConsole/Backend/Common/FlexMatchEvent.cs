@@ -42,6 +42,15 @@ namespace ManagementConsoleBackend.Common
         public string MatchId { get; set; }
     }
 
+    public class MatchTableDocument
+    {
+        [DynamoDBHashKey]
+        public string MatchId { get; set; }
+
+        [DynamoDBProperty("TicketIds")]
+        public List<string> TicketIds { get; set; }
+    }
+
     public class ConfigTableDocument
     {
         [DynamoDBHashKey]

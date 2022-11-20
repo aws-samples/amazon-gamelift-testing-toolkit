@@ -201,7 +201,7 @@ export class GameLiftEventHandler
                     };
                     playerIds.map((playerId)=> // make players go back to the matchmaking config
                     {
-                        Players.getPlayer(playerId).addDestination(destination);
+                        Players.getPlayer(playerId).moveToInitialPosition();
                     });
                 }
             }

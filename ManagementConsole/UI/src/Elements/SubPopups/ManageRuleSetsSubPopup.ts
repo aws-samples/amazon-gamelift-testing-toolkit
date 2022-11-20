@@ -224,6 +224,7 @@ export class ManageRuleSetsSubPopup extends SubPopup
         $(".rulesetButtons").hide();
 
         this._editor.set(JSON.parse(ruleSet.RuleSetBody));
+        this._editor.expandAll();
 
         $('#'+this._parentDomId).find(".ruleSetsContent")[0].className="ruleSetsContent hide";
         $('#'+this._parentDomId).find("#saveButton")[0].className="btn btn-primary btn-sm hide";

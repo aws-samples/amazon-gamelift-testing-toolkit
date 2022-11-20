@@ -36,6 +36,7 @@ namespace ManagementConsoleInfra.Lib
                 GameSessionTable = DataStack.GameSessionTable,
                 StateLogTable  = DataStack.StateLogTable,
                 TicketLogTable  = DataStack.TicketLogTable,
+                MatchLogTable  = DataStack.MatchLogTable,
                 PlayerProfileTable  = DataStack.PlayerProfileTable,
                 LatencyProfileTable  = DataStack.LatencyProfileTable,
                 MatchmakingSimulationTable  = DataStack.MatchmakingSimulationTable,

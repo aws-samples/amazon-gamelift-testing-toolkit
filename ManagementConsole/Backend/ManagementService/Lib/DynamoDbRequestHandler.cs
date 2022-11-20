@@ -223,29 +223,35 @@ namespace ManagementConsoleBackend.ManagementService.Lib
         {
             try
             {
+                var matchLogTable = Table.LoadTable(_client, Environment.GetEnvironmentVariable("MatchLogTableName"));
+                var matchLogItem = await matchLogTable.GetItemAsync(matchId);
+                var context = new DynamoDBContext(_client);
+                var matchTableDocument = context.FromDocument<MatchTableDocument>(matchLogItem);
+                
                 var ticketLogTable =
                     Table.LoadTable(_client, Environment.GetEnvironmentVariable("TicketLogTableName"));
 
-                var filter = new QueryFilter("matchId", QueryOperator.Equal, matchId);
+                var batchGet = ticketLogTable.CreateBatchGet();
+                foreach(string ticketId in matchTableDocument.TicketIds)
+                {
+                    LambdaLogger.Log("Searching for:" + ticketId);
+                    batchGet.AddKey(ticketId);
+                }
 
-                var queryConfig = new QueryOperationConfig
+                try
                 {
-                    IndexName = "MatchId-GSI",
-                    Filter = filter,
-                };
-                
-                var search = ticketLogTable.Query(queryConfig);
+                    await batchGet.ExecuteAsync();
+                }
+                catch (Exception e)
+                {
+                    LambdaLogger.Log(e.ToString());
+                }
+
                 var tickets = new List<TicketTableDocument>();
-                var context = new DynamoDBContext(_client);
-                List<Document> documentList = new List<Document>();
-                do
+                foreach (var document in batchGet.Results)
                 {
-                    documentList = await search.GetNextSetAsync();
-                    foreach (var document in documentList)
-                    {
-                        tickets.Add(context.FromDocument<TicketTableDocument>(document));
-                    }
-                } while (!search.IsDone);
+                    tickets.Add(context.FromDocument<TicketTableDocument>(document));
+                }
 
                 return tickets;
             }
@@ -590,9 +596,11 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             return simulation;
         }
 
-        public async Task<FlexMatchTicket> GetDatabaseMatchmakingTicket(string ticketId)
+        public async Task<ServerMessageGetMatchmakingTicket> GetDatabaseMatchmakingTicket(string ticketId)
         {
-            var matchmakingEvents = new List<FlexMatchEventDetail>();
+            var response = new ServerMessageGetMatchmakingTicket();
+            var queueEvents = new List<QueuePlacementEvent>();
+
             try
             {
                 var ticketLogTable =
@@ -611,7 +619,6 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                 var batchGet = eventLogTable.CreateBatchGet();
                 foreach(string ticketEventId in ticketDocument.Events)
                 {
-                    LambdaLogger.Log("Searching for:" + ticketEventId);
                     batchGet.AddKey(ticketEventId);
                 }
 
@@ -630,14 +637,30 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                     Date = ticketDocument.Time,
                     Events = new List<FlexMatchEvent>()
                 };
-                var ticketEvents = new List<FlexMatchEvent>();
+                
+                var matchIds = new List<string>();
                 foreach (var result in batchGet.Results)
                 {
-                    //ticketEvents.Add(context.FromDocument<FlexMatchEvent>(result));
-                    ticket.Events.Add(JsonConvert.DeserializeObject<FlexMatchEvent>(result.ToJson()));
+                    var ticketEvent = JsonConvert.DeserializeObject<FlexMatchEvent>(result.ToJson());
+                    ticket.Events.Add(ticketEvent);
+                    if (ticketEvent.Detail.MatchId != null)
+                    {
+                        if (matchIds.Contains(ticketEvent.Detail.MatchId) == false)
+                        {
+                            matchIds.Add(ticketEvent.Detail.MatchId);
+                            var queueEvent = await GetDatabaseQueueEventByPlacementId(ticketEvent.Detail.MatchId);
+                            if (queueEvent != null)
+                            {
+                                queueEvents.Add(queueEvent);
+                            }
+                        }
+                    }
                 }
 
-                return ticket;
+                response.Ticket = ticket;
+                response.QueuePlacementEvents = queueEvents;
+
+                return response;
             }
             catch (Exception e)
             {

@@ -32,14 +32,6 @@ export class MatchmakingTicketsPopup extends Popup
 
         data.TicketHeaders?.map(header =>
         {
-            let viewEventsTd='<td><a class="viewTicket btn btn-primary btn-sm" id="' + header.TicketId +'" href="' + "#" + '">View Events</a></td>';
-            let viewQueueEventsTd='<td><a class="viewQueueEvent btn btn-primary btn-sm" id="' + header.MatchId +'" href="' + "#" + '">View Queue Event</a></td>';
-
-            if (header.MatchId==undefined)
-            {
-                viewQueueEventsTd='<td></td>';
-            }
-
             if (header.LastEventType==null)
             {
                 header.LastEventType="-";
@@ -48,9 +40,7 @@ export class MatchmakingTicketsPopup extends Popup
                 '<td>' + header.Time + '</td>'+
                 '<td>' + header.TicketId + '</td>'+
                 '<td>' + header.LastEventType + '</td>'+
-                '<td>' + header.Events.length + '</td>'+
-                viewEventsTd +
-                viewQueueEventsTd +
+                '<td><a class="viewTicket btn btn-primary btn-sm" id="' + header.TicketId +'" href="' + "#" + '">View Events</a></td>' +
                 '</tr>';
         });
 
@@ -62,7 +52,7 @@ export class MatchmakingTicketsPopup extends Popup
     showEventDetail = (ticketEvent) =>
     {
         const container = this.element.find("#matchmakingTicketEventJson")[0];
-        const options:JSONEditorOptions = {mode:"view", name:"FlexMatch Event"}
+        const options:JSONEditorOptions = {mode:"view", name:ticketEvent["detail-type"]}
 
         const editor = new JSONEditor(container, options);
         editor.set(ticketEvent);
@@ -91,7 +81,7 @@ export class MatchmakingTicketsPopup extends Popup
     {
         let html="";
 
-        this._ticketEvents = ticket.Ticket.Events;
+        this._ticketEvents = ticket.Ticket.Events.concat(ticket.QueuePlacementEvents);
 
         this._ticketEvents.map(ticketEvent => {
             let viewEventDetailTd='<td><a class="viewTicketEvent btn btn-primary btn-sm" id="' + ticketEvent.id +'" href="' + "#" + '">View Detail</a></td>';

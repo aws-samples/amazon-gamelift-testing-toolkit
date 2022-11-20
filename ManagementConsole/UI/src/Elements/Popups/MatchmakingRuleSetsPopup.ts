@@ -240,6 +240,7 @@ export class MatchmakingRuleSetsPopup extends Popup
         this._editor = new JSONEditor(container, options);
 
         this._editor.set(JSON.parse(ruleSet.RuleSetBody));
+        this._editor.expandAll();
 
         this.element.find(".ruleSetsContent").attr("class", "ruleSetsContent hide");
         this.element.find("#saveButton").attr("class", "btn btn-primary btn-sm hide");

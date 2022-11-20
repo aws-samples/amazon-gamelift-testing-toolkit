@@ -17,6 +17,7 @@ namespace ManagementConsoleInfra.Lib
         public Table ManagementConfigTable;
         public Table EventLogTable;
         public Table GameSessionTable;
+        public Table MatchLogTable;
         public Table TicketLogTable;
         public Table StateLogTable;
         public Table MatchmakingSimulationTable;
@@ -41,6 +42,20 @@ namespace ManagementConsoleInfra.Lib
                 PointInTimeRecovery = true,
             });
 
+            MatchLogTable = new Table(this, "MatchLogTable", new TableProps
+            {
+                PartitionKey = new Attribute
+                {
+                    Name = "MatchId",
+                    Type = AttributeType.STRING
+                },
+                BillingMode = BillingMode.PAY_PER_REQUEST,
+                Encryption = TableEncryption.AWS_MANAGED,
+                RemovalPolicy = RemovalPolicy.DESTROY,
+                TimeToLiveAttribute = "TimeToLive",
+                PointInTimeRecovery = true,
+            });
+            
             TicketLogTable = new Table(this, "TicketLogTable", new TableProps
             {
                 PartitionKey = new Attribute
