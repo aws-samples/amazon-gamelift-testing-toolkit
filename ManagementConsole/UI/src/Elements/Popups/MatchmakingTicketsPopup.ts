@@ -46,7 +46,14 @@ export class MatchmakingTicketsPopup extends Popup
 
         this.resetTable();
         this.element.find("table#matchmakingTicketHeadersTable tbody").append(html);
-        this.activateDataTable("matchmakingTicketHeadersTable");
+        this.activateDataTable("matchmakingTicketHeadersTable", {
+            scrollY: "400px",
+            scrollCollapse: true,
+            columnDefs: [
+                { width: 250, targets: 0 },
+            ],
+            order: [[ 0, "desc" ]],
+        });
     }
 
     showEventDetail = (ticketEvent) =>
@@ -107,12 +114,14 @@ export class MatchmakingTicketsPopup extends Popup
             scrollY: "400px",
             scrollCollapse: true,
             columnDefs: [
+
             ],
             order: [[ 0, "desc" ]],
         };
+        config.columnDefs.push({ width: 200, targets: 0, visible:true });
         if (Game.debugMode==false)
         {
-            config.columnDefs.push({target:3, visible:false});
+            config.columnDefs.push({ targets:3, visible:false });
         }
         this.activateDataTable("matchmakingTicketEventsTable", config);
     };
