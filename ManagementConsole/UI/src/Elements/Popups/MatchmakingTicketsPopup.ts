@@ -100,6 +100,7 @@ export class MatchmakingTicketsPopup extends Popup
 
             html += '<tr>' +
                 '<td>' + ticketEvent.time + '</td>'+
+                '<td>' + ticketEvent["detail-type"] + '</td>'+
                 '<td>' + ticketEvent.detail.type + '</td>'+
                 viewEventDetailTd +
                 replayEventTd +
@@ -121,7 +122,7 @@ export class MatchmakingTicketsPopup extends Popup
         config.columnDefs.push({ width: 200, targets: 0, visible:true });
         if (Game.debugMode==false)
         {
-            config.columnDefs.push({ targets:3, visible:false });
+            config.columnDefs.push({ targets:4, visible:false });
         }
         this.activateDataTable("matchmakingTicketEventsTable", config);
     };
