@@ -109,16 +109,4 @@ export class MatchmakingConfigPopup extends Popup
             this.refresh();
         }
     };
-
-    activateDataTable(id) {
-        // @ts-ignore
-        $('#'+id).DataTable({
-            scrollY: "400px",
-            scrollCollapse: true,
-            columnDefs: [
-                { width: 200, targets: 0 }
-            ],
-            order: [[ 0, "desc" ]]
-        });
-    }
 }

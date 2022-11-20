@@ -6,6 +6,7 @@ import {Network} from "../../Network/Network";
 import {Events} from "../../Events/Events";
 import {Popup} from "../Abstract/Popup";
 import JSONEditor, {JSONEditorOptions} from "jsoneditor";
+import {Game} from "../../Game";
 
 export class MatchmakingTicketsPopup extends Popup
 {
@@ -94,10 +95,12 @@ export class MatchmakingTicketsPopup extends Popup
 
         this._ticketEvents.map(ticketEvent => {
             let viewEventDetailTd='<td><a class="viewTicketEvent btn btn-primary btn-sm" id="' + ticketEvent.id +'" href="' + "#" + '">View Detail</a></td>';
+            let replayEventTd='<td><a class="replayTicketEvent btn btn-primary btn-sm" id="' + ticketEvent.id +'" href="' + "#" + '">Replay</a></td>';
             html += '<tr>' +
                 '<td>' + ticketEvent.time + '</td>'+
                 '<td>' + ticketEvent.detail.type + '</td>'+
                 viewEventDetailTd +
+                replayEventTd +
                 '</tr>'
         });
 
@@ -105,7 +108,18 @@ export class MatchmakingTicketsPopup extends Popup
         this.hideMatchmakingTicketsList();
         this.showMatchmakingTicketEventList();
         this.hideRefreshButton();
-        this.activateDataTable("matchmakingTicketEventsTable");
+        let config = {
+            scrollY: "400px",
+            scrollCollapse: true,
+            columnDefs: [
+            ],
+            order: [[ 0, "desc" ]],
+        };
+        if (Game.debugMode==false)
+        {
+            config.columnDefs.push({target:3, visible:false});
+        }
+        this.activateDataTable("matchmakingTicketEventsTable", config);
     };
 
     resetTable()
@@ -147,6 +161,13 @@ export class MatchmakingTicketsPopup extends Popup
             this.refresh();
         }
 
+        if (event.target.className.indexOf("replayTicketEvent") !== -1)
+        {
+            let ticketEvent = this._ticketEvents.filter(ticketEvent => ticketEvent.id == event.target.id)[0];
+            console.log("REPLAY TICKET EVENT", ticketEvent);
+            this._emitter.emit(Events.REPLAY_FLEXMATCH_EVENT, ticketEvent);
+        }
+        else
         if (event.target.className.indexOf("viewTicketEvent") !== -1)
         {
             let ticketEvent = this._ticketEvents.filter(ticketEvent => ticketEvent.id == event.target.id)[0];
@@ -265,17 +286,5 @@ export class MatchmakingTicketsPopup extends Popup
         this.resetQueueEventJson();
         this.hideQueueEventJson();
         this.showRefreshButton();
-    }
-
-    activateDataTable(id) {
-        // @ts-ignore
-        $('#'+id).DataTable({
-            scrollY: "400px",
-            scrollCollapse: true,
-            columnDefs: [
-                { width: 200, targets: 0 }
-            ],
-            order: [[ 0, "desc" ]]
-        });
     }
 }

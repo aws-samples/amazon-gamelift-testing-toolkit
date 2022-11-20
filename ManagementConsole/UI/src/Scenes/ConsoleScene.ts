@@ -131,6 +131,7 @@ export class ConsoleScene extends Phaser.Scene
 
     addPlayer(playerId:string=null)
     {
+        console.log("ADD PLAYER", playerId);
         let fakePlayer:boolean = false;
         if (playerId==null)
         {
@@ -147,6 +148,7 @@ export class ConsoleScene extends Phaser.Scene
 
         if (player.added==false)
         {
+            console.log("CREATE PLAYER", playerId, player);
             Players.addPlayer(player);
             player.playAnimation("down");
             player.stopAnimation();

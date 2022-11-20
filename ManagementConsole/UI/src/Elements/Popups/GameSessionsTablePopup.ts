@@ -272,26 +272,4 @@ export class GameSessionsTablePopup extends Popup
             Network.sendObject({Type:"GetPlayerSessions", GameSessionId:session.GameSessionId});
         }
     };
-
-    activateDataTable(id, config=null) {
-        // @ts-ignore
-        if ( ! $.fn.DataTable.isDataTable( '#'+id ) )
-        {
-            if (config==null)
-            {
-                config = {
-                    scrollY: "400px",
-                    scrollCollapse: true,
-                    columnDefs: [
-                        { width: 200, targets: 0 }
-                    ],
-                    order: [[ 0, "desc" ]],
-
-                };
-            }
-            // @ts-ignore
-            var table = $("#"+id).DataTable(config);
-            return table;
-        }
-    }
 }

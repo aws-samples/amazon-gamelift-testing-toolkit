@@ -272,7 +272,7 @@ namespace ManagementConsoleBackend.ManagementService
                         case "GetQueueEventByPlacementId":
                             var getQueueEventByPlacementIdRequest = JsonConvert.DeserializeObject<ClientMessageGetQueueEventByPlacementId>(request.Body);
                             var queueEvent = await dynamoDbRequestHandler.GetDatabaseQueueEventByPlacementId(getQueueEventByPlacementIdRequest.PlacementId);
-                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetQueueEventByPlacementId { Event = queueEvent.Detail});
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetQueueEventByPlacementId { Event = queueEvent});
                             break;
                         
                         case "RunMatchmakingSimulation":

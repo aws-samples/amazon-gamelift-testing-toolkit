@@ -9,6 +9,7 @@ import Rectangle = Phaser.GameObjects.Rectangle;
 import {PopupClickEvent} from "../../Events/PopupClickEvent";
 import {SubPopup} from "./SubPopup";
 import {ScreenResolution} from "../../Data/ScreenResolution";
+import {Game} from "../../Game";
 
 export abstract class Popup extends Phaser.GameObjects.Container
 {
@@ -34,6 +35,11 @@ export abstract class Popup extends Phaser.GameObjects.Container
         this._popup= null;
 
         this._popup = this.scene.add.dom(0, 0).createFromCache(this._htmlName);
+        if (Game.debugMode)
+        {
+            $(this._popup.node).prepend('<div id="popupHeader" style="width:100%; background-color: #ff0000; color:#fff">DEBUG MODE</div>');
+            this.dragElement(this._popup.node);
+        }
         this.add(this._popup);
         this._html = this._popup.node.outerHTML;
 
@@ -119,5 +125,70 @@ export abstract class Popup extends Phaser.GameObjects.Container
         this._currentSubPopup=null;
         this.removeEventListeners();
         super.destroy();
+    }
+
+    dragElement(elmnt) {
+        console.log("SETTING DRAG", elmnt);
+        var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+        if (document.getElementById("popupHeader")) {
+            // if present, the header is where you move the DIV from:
+            document.getElementById("popupHeader").onmousedown = dragMouseDown;
+        } else {
+            // otherwise, move the DIV from anywhere inside the DIV:
+            elmnt.onmousedown = dragMouseDown;
+        }
+
+        function dragMouseDown(e) {
+            console.log("DRAG MOUSE DOWN!");
+            e = e || window.event;
+            e.preventDefault();
+            // get the mouse cursor position at startup:
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            document.onmouseup = closeDragElement;
+            // call a function whenever the cursor moves:
+            document.onmousemove = elementDrag;
+        }
+
+        function elementDrag(e) {
+            e = e || window.event;
+            e.preventDefault();
+            // calculate the new cursor position:
+            pos1 = pos3 - e.clientX;
+            pos2 = pos4 - e.clientY;
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            // set the element's new position:
+            elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+            elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+        }
+
+        function closeDragElement() {
+            // stop moving when mouse button is released:
+            document.onmouseup = null;
+            document.onmousemove = null;
+        }
+    }
+
+    activateDataTable(id, config=null) {
+        // @ts-ignore
+        if ( ! $.fn.DataTable.isDataTable( '#'+id ) )
+        {
+            if (config==null)
+            {
+                config = {
+                    scrollY: "400px",
+                    scrollCollapse: true,
+                    columnDefs: [
+                        { width: 200, targets: 0 }
+                    ],
+                    order: [[ 0, "desc" ]],
+
+                };
+            }
+            // @ts-ignore
+            var table = $("#"+id).DataTable(config);
+            return table;
+        }
     }
 }

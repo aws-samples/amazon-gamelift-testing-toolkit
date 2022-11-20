@@ -18,14 +18,40 @@ export class GameLiftEventHandler
     setupEventListeners()
     {
         this._emitter.on(Events.FLEXMATCH_EVENT, this.onFlexMatchEvent);
+        this._emitter.on(Events.REPLAY_FLEXMATCH_EVENT, this.onReplayFlexMatchEvent);
         this._emitter.on(Events.QUEUE_PLACEMENT_EVENT, this.onQueuePlacementEvent);
+        this._emitter.on(Events.REPLAY_QUEUE_PLACEMENT_EVENT, this.onReplayQueuePlacementEvent);
     }
 
     removeEventListeners()
     {
         this._emitter.off(Events.FLEXMATCH_EVENT, this.onFlexMatchEvent);
+        this._emitter.off(Events.REPLAY_FLEXMATCH_EVENT, this.onReplayFlexMatchEvent);
         this._emitter.off(Events.QUEUE_PLACEMENT_EVENT, this.onQueuePlacementEvent);
+        this._emitter.off(Events.REPLAY_QUEUE_PLACEMENT_EVENT, this.onReplayQueuePlacementEvent);
     }
+
+    onReplayFlexMatchEvent = (data)=>
+    {
+        this.onFlexMatchEvent({
+            FlexMatchEventDetail: data.detail,
+            Resources: data.resources,
+            Type: "FlexMatchEvent",
+            QueuePlacementEventDetail:null,
+            State:null,
+        });
+    };
+
+    onReplayQueuePlacementEvent = (data) =>
+    {
+        this.onQueuePlacementEvent({
+            FlexMatchEventDetail: null,
+            Resources: data.resources,
+            Type: "QueuePlacementEvent",
+            QueuePlacementEventDetail:data.detail,
+            State:null,
+        });
+    };
 
     onFlexMatchEvent(stateMessage:StateMessage)
     {

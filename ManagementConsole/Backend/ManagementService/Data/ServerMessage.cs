@@ -88,13 +88,13 @@ namespace ManagementConsoleBackend.ManagementService.Data
     public class ServerMessageGetQueueEvents : ServerMessage
     {
         public new string Type = "GetQueueEvents";
-        public List<QueuePlacementEventDetail> Events;
+        public List<QueuePlacementEvent> Events;
     }
     
     public class ServerMessageGetQueueEventByPlacementId : ServerMessage
     {
         public new string Type = "GetQueueEventByPlacementId";
-        public QueuePlacementEventDetail Event;
+        public QueuePlacementEvent Event;
     }
     
     public class ServerMessageGetTaskDefinitions : ServerMessage

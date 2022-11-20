@@ -7,7 +7,9 @@ export class Events
     public static SOCKET_MESSAGE:string = "SocketMessage";
     public static STATE_UPDATE:string = "StateUpdate";
     public static FLEXMATCH_EVENT:string = "FlexMatchEvent";
+    public static REPLAY_FLEXMATCH_EVENT:string = "ReplayFlexMatchEvent";
     public static QUEUE_PLACEMENT_EVENT:string = "QueuePlacementEvent";
+    public static REPLAY_QUEUE_PLACEMENT_EVENT:string = "ReplayQueuePlacementEvent";
     public static OPEN_SETTINGS:string = "OpenSettings";
     public static CLOSE_SETTINGS:string = "CloseSettings";
     public static ENABLE_ANIMATIONS:string = "EnableAnimations";

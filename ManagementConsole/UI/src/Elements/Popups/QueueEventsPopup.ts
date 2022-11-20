@@ -10,10 +10,11 @@ import GameSessionQueue = DataTypes.GameSessionQueue;
 import QueuePlacementEventDetail = DataTypes.QueuePlacementEventDetail;
 import {Utils} from "../../Utils/Utils";
 import JSONEditor, {JSONEditorOptions} from 'jsoneditor';
+import {Game} from "../../Game";
 
 export class QueueEventsPopup extends Popup
 {
-    protected _queueEvents: QueuePlacementEventDetail[];
+    protected _queueEvents: any;
     protected _queue:GameSessionQueue;
     protected _ticketEvents: any[];
 
@@ -120,10 +121,12 @@ export class QueueEventsPopup extends Popup
 
         this._ticketEvents.map(ticketEvent => {
             let viewEventDetailTd='<td><a class="viewTicketEvent btn btn-primary btn-sm" id="' + ticketEvent.id +'" href="' + "#" + '">View Detail</a></td>';
+            let replayEventTd='<td><a class="replayTicketEvent btn btn-primary btn-sm" id="' + ticketEvent.id +'" href="' + "#" + '">Replay</a></td>';
             html += '<tr>' +
                 '<td>' + ticketEvent.time + '</td>'+
                 '<td>' + ticketEvent.detail.type + '</td>'+
                 viewEventDetailTd +
+                replayEventTd +
                 '</tr>'
         });
 
@@ -132,7 +135,21 @@ export class QueueEventsPopup extends Popup
         this.hideMatchmakingTicketsList();
         this.showMatchmakingTicketEventList();
         this.hideRefreshButton();
-        this.activateDataTable("matchmakingTicketEventsTable");
+
+        let config = {
+            scrollY: "400px",
+            scrollCollapse: true,
+            columnDefs: [
+            ],
+            order: [[ 0, "desc" ]],
+        };
+
+        if (Game.debugMode==false)
+        {
+            config.columnDefs.push({target:3, visible:false});
+        }
+
+        this.activateDataTable("matchmakingTicketEventsTable", config);
     };
 
     setupEventListeners()
@@ -149,15 +166,18 @@ export class QueueEventsPopup extends Popup
         this._emitter.off(Events.GET_MATCHMAKING_TICKET_RESPONSE, this.onGetMatchmakingTicketResponse);
     }
 
-    onGetQueueEventsResponse = (data:QueuePlacementEventDetail[]) =>
+    onGetQueueEventsResponse = (data) =>
     {
+        console.log("QUEUE EVENTS RESPONSE", data);
         this._queueEvents = data;
 
         let html="";
-        data.map(queueEvent =>
+        data.map(event =>
         {
+            const queueEvent = event.detail;
             let queueDetailLinkTd='<td><a class="viewDetail btn btn-primary btn-sm" id="' + queueEvent.placementId +'" href="' + "#" + '">View Detail</a></td>';
-            let matchmakingTicketsTd='<td><a class="viewMatchmakingTickets btn btn-primary btn-sm" id="' + queueEvent.placementId +'" href="' + "#" + '">View Matchmaking Tickets</a></td>';
+            let matchmakingTicketsTd='<td><a class="viewMatchmakingTickets btn btn-primary btn-sm" id="' + queueEvent.placementId +'" href="' + "#" + '">View Tickets</a></td>';
+            let replayEventTd='<td><a class="replayQueueEvent btn btn-primary btn-sm" id="' + queueEvent.placementId +'" href="' + "#" + '">Replay</a></td>';
             let placementDuration = "-";
             if (queueEvent.startTime!=null && queueEvent.endTime>queueEvent.startTime)
             {
@@ -169,17 +189,33 @@ export class QueueEventsPopup extends Popup
 
             html += '<tr>' +
                 '<td>' + queueEvent.startTime + '</td>'+
+                '<td>' + queueEvent.placementId + '</td>'+
                 '<td>' + queueEvent.type + '</td>'+
                 '<td>' + placementDuration + '</td>'+
                 queueDetailLinkTd +
                 matchmakingTicketsTd +
+                replayEventTd +
                 '</tr>';
         });
 
         this.resetTable();
 
         this.element.find("table#queueEventsTable tbody").append(html);
-        this.activateDataTable("queueEventsTable");
+
+        let config = {
+            scrollY: "400px",
+            scrollCollapse: true,
+            columnDefs: [
+            ],
+            order: [[ 0, "desc" ]],
+        };
+
+        if (Game.debugMode==false)
+        {
+            config.columnDefs.push({target:6, visible:false});
+        }
+
+        this.activateDataTable("queueEventsTable", config);
     }
 
     onPopupClick = async (event) => {
@@ -206,8 +242,18 @@ export class QueueEventsPopup extends Popup
         {
             this.backToMatchmakingTicketEventList();
         }
+        else if (event.target.className.indexOf("replayQueueEvent") !== -1)
+        {
+            let queueEvent = this._queueEvents.filter(queueEvent => queueEvent.detail.placementId == event.target.id)[0];
+            this._emitter.emit(Events.REPLAY_QUEUE_PLACEMENT_EVENT, queueEvent);
+        }
+        else if (event.target.className.indexOf("replayTicketEvent") !== -1)
+        {
+            let ticketEvent = this._ticketEvents.filter(ticketEvent => ticketEvent.id == event.target.id)[0];
+            this._emitter.emit(Events.REPLAY_FLEXMATCH_EVENT, ticketEvent);
+        }
         else if (event.target.className.indexOf("viewDetail") !== -1) {
-            let queueEvent = this._queueEvents.filter(queueEvent => queueEvent.placementId == event.target.id)[0];
+            let queueEvent = this._queueEvents.filter(queueEvent => queueEvent.detail.placementId == event.target.id)[0];
             this.showEventDetail(queueEvent);
             this.hideRefreshButton();
         }
@@ -234,6 +280,7 @@ export class QueueEventsPopup extends Popup
         const editor = new JSONEditor(container, options);
 
         editor.set(queueEvent);
+        editor.expandAll();
 
         this.hideQueueEventsList();
         this.showQueueEventJson();
@@ -347,15 +394,5 @@ export class QueueEventsPopup extends Popup
         this.element.find(".matchmakingTicketEventsContent").attr("class","matchmakingTicketEventsContent hide");
     }
 
-    activateDataTable(id) {
-        // @ts-ignore
-        $('#'+id).DataTable({
-            scrollY: "400px",
-            scrollCollapse: true,
-            columnDefs: [
-                { width: 200, targets: 0 }
-            ],
-            order: [[ 0, "desc" ]]
-        });
-    }
+
 }

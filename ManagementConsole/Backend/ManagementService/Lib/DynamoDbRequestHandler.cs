@@ -101,9 +101,9 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             return null;
         }
         
-        public async Task<List<QueuePlacementEventDetail>> GetDatabaseQueueEvents(string queueArn)
+        public async Task<List<QueuePlacementEvent>> GetDatabaseQueueEvents(string queueArn)
         {
-            var queueEvents = new List<QueuePlacementEventDetail>();
+            var queueEvents = new List<QueuePlacementEvent>();
             try
             {
                 var eventLogTable =
@@ -127,7 +127,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                     foreach (var document in documentList)
                     {
                         var queueEvent = JsonConvert.DeserializeObject<QueuePlacementEvent>(document.ToJson());
-                        queueEvents.Add(queueEvent.Detail);
+                        queueEvents.Add(queueEvent);
                     }
                 } while (!search.IsDone);
                 
