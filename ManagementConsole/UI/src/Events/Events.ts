@@ -53,6 +53,7 @@ export class Events
     public static DELETE_LATENCY_PROFILE_RESPONSE:string = "DeleteLatencyProfileResponse";
     public static GET_PLAYER_SESSIONS_RESPONSE:string = "GetPlayerSessionsResponse";
     public static GET_VIRTUAL_PLAYERS_RESPONSE:string = "GetVirtualPlayersResponse";
+    public static GET_CLOUDWATCH_LOGS_RESPONSE:string = "GetCloudWatchLogsResponse";
     public static LAUNCH_VIRTUAL_PLAYERS_RESPONSE:string = "LaunchVirtualPlayersResponse";
     public static TERMINATE_VIRTUAL_PLAYER_RESPONSE:string = "TerminateVirtualPlayerResponse";
     public static ADD_FAKE_FLEET:string = "AddFakeFleet";

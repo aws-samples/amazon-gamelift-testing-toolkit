@@ -40,6 +40,10 @@ export class MessageHandler
                 this._emitter.emit(Events.QUEUE_PLACEMENT_EVENT, data as StateMessage);
                 break;
 
+            case "GetCloudWatchLogs":
+                this._emitter.emit(Events.GET_CLOUDWATCH_LOGS_RESPONSE, data);
+                break;
+
             case "FlexMatchEvent":
                 this._emitter.emit(Events.FLEXMATCH_EVENT, data as StateMessage);
                 break;

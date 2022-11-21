@@ -70,11 +70,11 @@ export class LaunchVirtualPlayersPopup extends Popup
     {
         if (data.Result)
         {
-            this.showSuccessAlert(data.NumPlayers + " players launched");
+            this.showSuccessAlert(data.NumPlayers + " task(s) launched");
         }
         else
         {
-            this.showFailureAlert("Error launching players!");
+            this.showFailureAlert("Error launching task(s)!");
         }
     }
 

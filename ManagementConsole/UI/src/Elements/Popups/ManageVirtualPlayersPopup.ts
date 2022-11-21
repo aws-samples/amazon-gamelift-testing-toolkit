@@ -7,6 +7,8 @@ import {Network} from "../../Network/Network";
 import {Events} from "../../Events/Events";
 import {Popup} from "../Abstract/Popup";
 import GameSession = DataTypes.GameSession;
+const jp = require('jsonpath');
+const parser = require('aws-arn-parser');
 
 export class ManageVirtualPlayersPopup extends Popup
 {
@@ -34,12 +36,14 @@ export class ManageVirtualPlayersPopup extends Popup
     setupEventListeners()
     {
         this._emitter.on(Events.GET_VIRTUAL_PLAYERS_RESPONSE, this.onGetVirtualPlayersResponse);
+        this._emitter.on(Events.GET_CLOUDWATCH_LOGS_RESPONSE, this.onGetCloudWatchLogsResponse);
         this._emitter.on(Events.TERMINATE_VIRTUAL_PLAYER_RESPONSE, this.onTerminateVirtualPlayerResponse);
     }
 
     removeEventListeners()
     {
         this._emitter.off(Events.GET_VIRTUAL_PLAYERS_RESPONSE, this.onGetVirtualPlayersResponse);
+        this._emitter.off(Events.GET_CLOUDWATCH_LOGS_RESPONSE, this.onGetCloudWatchLogsResponse);
         this._emitter.off(Events.TERMINATE_VIRTUAL_PLAYER_RESPONSE, this.onTerminateVirtualPlayerResponse);
     }
 
@@ -72,6 +76,31 @@ export class ManageVirtualPlayersPopup extends Popup
         }
     };
 
+    onGetCloudWatchLogsResponse = (data) =>
+    {
+        this.resetElement("virtualPlayersLogsTable");
+        if (data.ErrorMessage!=null)
+        {
+            this.showFailureAlert(data.ErrorMessage);
+        }
+        else
+        {
+            let html="";
+            data.LogEvents.map((event)=>
+            {
+                html+='<tr><td>' + event.Timestamp + '</td><td>' + event.Message + '</td></tr>';
+            });
+
+            console.log(html);
+            $('#virtualPlayersLogsTable tbody').html(html);
+            $('.virtualPlayersContent').hide();
+            $('.virtualPlayersLogsContent').show();
+
+            this.activateDataTable("virtualPlayersLogsTable");
+            //this.refresh();
+        }
+    };
+
     resetVirtualPlayersTable()
     {
         let parser = new DOMParser();
@@ -92,7 +121,41 @@ export class ManageVirtualPlayersPopup extends Popup
 
         data.Tasks?.map(task =>
         {
-            let playerTerminateTd='<td><a class="terminatePlayer btn btn-primary btn-sm" id="' + task.TaskArn +'" href="' + "#" + '">Terminate Player</a></td>';
+            let playerTerminateTd='<td><a class="terminatePlayer btn btn-primary btn-sm" id="' + task.TaskArn +'" href="' + "#" + '">Terminate</a></td>';
+
+            let taskDef=null;
+            let logOptions=null;
+            let logGroup=null;
+            let logStream=null;
+            if (data.TaskDefinitions!=null)
+            {
+                taskDef = data.TaskDefinitions.find(taskDefinition => taskDefinition.TaskDefinitionArn == task.TaskDefinitionArn);
+
+                if (taskDef)
+                {
+                    console.log("FOUND TASK DEF");
+                    let logOptionsSearch = jp.query(taskDef, "$.ContainerDefinitions[0].LogConfiguration.Options");
+                    let containerSearch = jp.query(taskDef, "$.ContainerDefinitions[0]");
+
+                    if (logOptionsSearch.length && containerSearch.length)
+                    {
+                        console.log("FOUND OPTIONS");
+                        logOptions = logOptionsSearch[0];
+                        logGroup = logOptions["awslogs-group"];
+                        const parts = task.TaskArn.split("/");
+                        const taskId = parts.pop();
+                        logStream = logOptions["awslogs-stream-prefix"] + "/" + containerSearch[0].Name + "/" + taskId;
+                    }
+                }
+
+            }
+
+
+            let playerLogsTd='<td></td>';
+            if (logStream!=null && logGroup!=null)
+            {
+                playerLogsTd='<td><a class="viewLogs btn btn-primary btn-sm" data-loggroup="' + logGroup +'" data-logstream="' + logStream + '" href="' + "#" + '">Logs</a></td>';
+            }
 
             html += '<tr>' +
                 '<td>' + task.CreatedAt + '</td>'+
@@ -102,12 +165,13 @@ export class ManageVirtualPlayersPopup extends Popup
                 '<td>' + task.Cpu + '</td>'+
                 '<td>' + task.Memory + '</td>'+
                 playerTerminateTd +
+                playerLogsTd +
                 '</tr>';
         });
 
         this.resetVirtualPlayersTable();
 
-        this.element.find("table#virtualPlayersTable tbody").append(html);
+        $("table#virtualPlayersTable tbody").html(html);
         this.activateDataTable("virtualPlayersTable");
     };
 
@@ -115,23 +179,39 @@ export class ManageVirtualPlayersPopup extends Popup
     onPopupClick = async (event) => {
 
         event.stopPropagation();
+        let el = $(event.target);
 
-        if (event.target.className == "closeButton")
+        if (el.hasClass("closeButton"))
         {
             this._emitter.emit(Events.CLOSE_POPUP);
             this.setVisible(false);
         }
-        if (event.target.className == "refreshButton")
+        if (el.hasClass("refreshButton"))
         {
             this.refresh();
         }
-        if (event.target.className.indexOf("terminatePlayer") !== -1)
+        if (el.hasClass("terminatePlayer"))
         {
             Network.sendObject({Type:"TerminateVirtualPlayer", TaskArn:event.target.id});
         }
-        if (event.target.className.indexOf("terminateAllVirtualPlayers") !== -1)
+        if (el.hasClass("terminateAllVirtualPlayers"))
         {
             Network.sendObject({Type:"TerminateAllVirtualPlayers"});
+        }
+
+        if (el.attr("id") == "backButton")
+        {
+            $('.virtualPlayersContent').show();
+            $('.virtualPlayersLogsContent').hide();
+        }
+
+        if (el.hasClass("viewLogs"))
+        {
+            console.log(el);
+            console.log(el.data("loggroup"));
+            console.log(el.data("logstream"));
+
+            Network.sendObject({Type:"GetCloudWatchLogs", LogGroup:el.data("loggroup"), LogStream: el.data("logstream")});
         }
     };
 }

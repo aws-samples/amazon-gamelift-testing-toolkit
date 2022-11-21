@@ -250,7 +250,12 @@ namespace ManagementConsoleBackend.ManagementService
                             LambdaLogger.Log("FLEET LOCATION CAPACITIES:" + JsonConvert.SerializeObject(fleetLocationCapacities));
                             await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetFleetScaling { FleetCapacities = fleetLocationCapacities, ScalingPolicies = fleetScalingPolicies});
                             break;
-                        
+
+                        case "GetCloudWatchLogs":
+                            var getCloudWatchLogsRequest = JsonConvert.DeserializeObject<ClientMessageGetCloudWatchLogs>(request.Body);
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, await cloudWatchRequestHandler.GetCloudWatchLogs(getCloudWatchLogsRequest.LogGroup, getCloudWatchLogsRequest.LogStream));
+                            break;
+
                         case "GetPlayerSessions":
                             var getPlayerSessionsRequest = JsonConvert.DeserializeObject<ClientMessageGetPlayerSessions>(request.Body);
                             var playerSessions = await gameLiftRequestHandler.GetPlayerSessions(getPlayerSessionsRequest.GameSessionId);
@@ -556,7 +561,7 @@ namespace ManagementConsoleBackend.ManagementService
                         case "GetVirtualPlayers":
                             var getVirtualPlayersRequest = JsonConvert.DeserializeObject<ClientMessageGetVirtualPlayers>(request.Body);
                             var virtualPlayers = await virtualPlayersHandler.GetVirtualPlayers();
-                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetVirtualPlayers { Tasks = virtualPlayers});
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetVirtualPlayers { Tasks = virtualPlayers, TaskDefinitions = await virtualPlayersHandler.GetTaskDefinitions()});
                             break;
                         
                         case "GetGameSessionLogs":

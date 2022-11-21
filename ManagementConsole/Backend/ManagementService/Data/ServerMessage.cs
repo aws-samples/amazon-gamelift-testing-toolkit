@@ -59,6 +59,13 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public List<ScalingPolicy> ScalingPolicies;
     }
     
+    public class ServerMessageGetCloudWatchLogs : ServerMessage
+    {
+        public new string Type = "GetCloudWatchLogs";
+        public List<OutputLogEvent> LogEvents;
+        public string ErrorMessage = null;
+    }
+    
     public class ServerMessageGetGameSessions : ServerMessage
     {
         public new string Type = "GetGameSessions";
@@ -83,6 +90,7 @@ namespace ManagementConsoleBackend.ManagementService.Data
     {
         public new string Type = "GetVirtualPlayers";
         public List<Amazon.ECS.Model.Task> Tasks;
+        public List<TaskDefinition> TaskDefinitions;
     }
     
     public class ServerMessageGetQueueEvents : ServerMessage

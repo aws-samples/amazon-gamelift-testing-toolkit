@@ -217,6 +217,13 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public string FleetId;
     }
     
+    public class ClientMessageGetCloudWatchLogs : ClientMessage
+    {
+        public new string Type = "GetCloudWatchLogs";
+        public string LogGroup;
+        public string LogStream;
+    }
+    
     public class ClientMessageGetGameSessionLogs : ClientMessage
     {
         public new string Type = "GetGameSessionLogs";

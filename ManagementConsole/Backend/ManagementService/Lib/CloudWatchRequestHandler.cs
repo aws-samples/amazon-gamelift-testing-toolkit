@@ -7,7 +7,11 @@ using System.IO;
 using System.Threading.Tasks;
 using Amazon.CloudWatch;
 using Amazon.CloudWatch.Model;
+using Amazon.CloudWatchLogs;
+using Amazon.CloudWatchLogs.Model;
 using Amazon.Lambda.Core;
+using ManagementConsoleBackend.ManagementService.Data;
+using Newtonsoft.Json;
 
 namespace ManagementConsoleBackend.ManagementService.Lib
 {
@@ -17,6 +21,33 @@ namespace ManagementConsoleBackend.ManagementService.Lib
         public CloudWatchRequestHandler(AmazonCloudWatchClient client)
         {
             _client = client;
+        }
+        
+        
+        public async Task<ServerMessageGetCloudWatchLogs> GetCloudWatchLogs(string logGroup, string logStream)
+        {
+            var response = new ServerMessageGetCloudWatchLogs();
+            
+            var events = new List<OutputLogEvent>();
+            var request = new GetLogEventsRequest
+            {
+                LogGroupName = logGroup,
+                LogStreamName = logStream,
+            };
+            
+            try
+            {
+                var logsClient = new AmazonCloudWatchLogsClient();
+                var eventResponse = await logsClient.GetLogEventsAsync(request);
+                response.LogEvents = eventResponse.Events;
+                return response;
+            }
+            catch (Exception e)
+            {
+                LambdaLogger.Log(e.ToString());
+                response.ErrorMessage = e.Message;
+                return response;
+            }
         }
 
         public async Task<MemoryStream> GetWidgetImage(string metricWidgetJson)

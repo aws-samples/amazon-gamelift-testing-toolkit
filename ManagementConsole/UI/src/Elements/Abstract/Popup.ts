@@ -189,4 +189,10 @@ export abstract class Popup extends Phaser.GameObjects.Container
             return table;
         }
     }
+
+    resetElement(selector)
+    {
+        let el = $(this._html);
+        $(selector).html(el.find(selector).html());
+    }
 }

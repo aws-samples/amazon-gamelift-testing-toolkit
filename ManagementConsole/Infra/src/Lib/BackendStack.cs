@@ -741,7 +741,7 @@ namespace ManagementConsoleInfra.Lib
                         "ecs:ListTagsForResource",
                         "ecs:DescribeTaskDefinition",
                         "cloudwatch:GetMetricWidgetImage",
-                        "cloudwatch:GetLogEvents",
+                        "logs:GetLogEvents",
                         "cloudwatch:ListMetrics",
                         "cloudwatch:GetMetricData",
                         "states:ListExecutions",
