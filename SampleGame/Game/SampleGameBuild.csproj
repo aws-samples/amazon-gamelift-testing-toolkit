@@ -7,7 +7,7 @@
 
     <ItemGroup>
       <PackageReference Include="AWSSDK.CloudWatchLogs" Version="3.7.101.9" />
-      <PackageReference Include="AWSSDK.CognitoIdentity" Version="3.7.100.16" />
+      <PackageReference Include="AWSSDK.CognitoIdentity" Version="3.7.100.21" />
       <PackageReference Include="AWSSDK.GameLift" Version="3.7.100.16" />
       <PackageReference Include="AWSSDK.SecurityToken" Version="3.7.100.16" />
       <PackageReference Include="CommandLineParser" Version="2.9.1" />
