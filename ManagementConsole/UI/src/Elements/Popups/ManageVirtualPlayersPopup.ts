@@ -133,13 +133,11 @@ export class ManageVirtualPlayersPopup extends Popup
 
                 if (taskDef)
                 {
-                    console.log("FOUND TASK DEF");
                     let logOptionsSearch = jp.query(taskDef, "$.ContainerDefinitions[0].LogConfiguration.Options");
                     let containerSearch = jp.query(taskDef, "$.ContainerDefinitions[0]");
 
                     if (logOptionsSearch.length && containerSearch.length)
                     {
-                        console.log("FOUND OPTIONS");
                         logOptions = logOptionsSearch[0];
                         logGroup = logOptions["awslogs-group"];
                         const parts = task.TaskArn.split("/");
