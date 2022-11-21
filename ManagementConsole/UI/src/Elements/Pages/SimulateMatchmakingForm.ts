@@ -130,6 +130,10 @@ export class SimulateMatchmakingForm extends Page
     onGetPlayerProfilesResponse = (data) =>
     {
         this._playerProfiles = data;
+        if (this._playerProfiles.length==0)
+        {
+            $('#' + this._domId).find(".simulateMatchmakingFormContent").html('<div style="margin-top:20px" class="alert alert-danger">No player profiles found - please create a player profile before simulating matchmaking.</div>');
+        }
     }
 
     onGetLatencyProfilesResponse = (data) =>
