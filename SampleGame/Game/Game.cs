@@ -5,6 +5,7 @@ using System;
 using System.Threading.Tasks;
 using Amazon;
 using Amazon.CognitoIdentity;
+using Newtonsoft.Json;
 using SampleGameBuild.GameLiftIntegration.Client;
 using SampleGameBuild.Network.Client;
 using SampleGameBuild.Network.Server;
@@ -37,42 +38,55 @@ namespace SampleGameBuild
 
             if (_isServer)
             {
+                Console.WriteLine("Running server");
                 RunServer();
             }
             else
             {
+                Console.WriteLine("Running client");
                 RunClient();
             }
 
             Console.WriteLine("loop broken");
         }
 
-        public async void RunClient()
+        public void RunClient()
         {
             // Initialize the Amazon Cognito credentials provider
-            CognitoAWSCredentials credentials = new CognitoAWSCredentials(
+            var credentials = new CognitoAWSCredentials(
                 _options.IdentityPoolId, // Identity pool ID
                 RegionEndpoint.GetBySystemName(_options.IdentityPoolRegion) // Region
             );
             
-            var creds = credentials.GetCredentials();
-            var identityId = await credentials.GetIdentityIdAsync();
-            var apiGatewayRequestSigner = new APIGatewayRequestSigner(_options.IdentityPoolRegion);
-            
-            _playerId = Guid.NewGuid().ToString();
+            Console.WriteLine(JsonConvert.SerializeObject(credentials));
 
-            if (_wsUrl != null)
+            try
             {
-                var signedWebSocketUrl = apiGatewayRequestSigner.GenerateSignedUrl(_options.WSUrl, creds);
-                var client = new WSClient(signedWebSocketUrl, _playerId);
-                RunClient(client);
+                var creds = credentials.GetCredentials();
+
+                var apiGatewayRequestSigner = new APIGatewayRequestSigner(_options.IdentityPoolRegion);
+                
+                _playerId = Guid.NewGuid().ToString();
+
+                if (_wsUrl != null)
+                {
+                    var signedWebSocketUrl = apiGatewayRequestSigner.GenerateSignedUrl(_options.WSUrl, creds);
+                    var client = new WSClient(signedWebSocketUrl, _playerId);
+                    RunClient(client);
+                }
+                else
+                {
+                    using var quizClient = new QuizClient(_playerId, Guid.NewGuid().ToString());
+                    using var client = new Client(_options.ServerHost, _options.Port, quizClient);
+                    RunClient(client);
+                }
             }
-            else
+            catch (Exception e)
             {
-                using var quizClient = new QuizClient(_playerId, Guid.NewGuid().ToString());
-                using var client = new Client(_options.ServerHost, _options.Port, quizClient);
-                RunClient(client);
+                Console.WriteLine(e);
+                throw;
             }
+
         }
 
         public void RunServer()

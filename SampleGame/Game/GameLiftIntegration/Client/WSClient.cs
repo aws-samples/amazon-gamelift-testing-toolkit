@@ -25,7 +25,7 @@ namespace SampleGameBuild.GameLiftIntegration.Client
         public WSClient(string webSocketUrl, string playerId)
         {
             _playerId = playerId;
-            
+
             var factory = new Func<ClientWebSocket>(() =>
             {
                 var client = new ClientWebSocket
@@ -38,7 +38,7 @@ namespace SampleGameBuild.GameLiftIntegration.Client
                 return client;
             });
             
-            Console.WriteLine("Trying to connect to " + webSocketUrl);
+            Console.WriteLine("Trying to connect");
             _webSocket = new WebsocketClient(new Uri(webSocketUrl), factory);
 
             _webSocket.IsReconnectionEnabled = false;
@@ -51,6 +51,7 @@ namespace SampleGameBuild.GameLiftIntegration.Client
             _webSocket.MessageReceived.Subscribe(msg =>
             {
                 var rawJson = msg.Text;
+                Console.WriteLine("RECEIVED:" + rawJson);
                 var message = JsonConvert.DeserializeObject <WSMessageFromServer>(rawJson);
                 if (message.Type == "MatchmakingSucceeded")
                 {
@@ -60,7 +61,7 @@ namespace SampleGameBuild.GameLiftIntegration.Client
                     _matchmakingInProgress = false;
                 }
 
-                if (message.Type == "MatchmakingTimedOut")
+                if (message.Type == "MatchmakingTimedOut" || message.Type == "MatchmakingFailed")
                 {
                     RequestMatch();
                 }
@@ -100,6 +101,7 @@ namespace SampleGameBuild.GameLiftIntegration.Client
             var msg = new WSMessageFromClient();
             msg.Type = "StartMatchmaking";
             msg.PlayerId = _playerId;
+            Console.WriteLine("SENT:" + JsonConvert.SerializeObject(msg));
             Task.Run(() => _webSocket.Send(JsonConvert.SerializeObject(msg)));
         }
         
