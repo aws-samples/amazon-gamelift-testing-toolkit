@@ -77,6 +77,7 @@ export class PlayerMatch extends BaseContainer
 
         this._elementGroup.add(player);
         player.resetDestinations();
+        player.destroyTimeline();
 
         player.x = this._bg.x;
         player.y = this._bg.y;

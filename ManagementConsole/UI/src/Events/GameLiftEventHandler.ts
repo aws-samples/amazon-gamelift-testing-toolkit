@@ -93,28 +93,31 @@ export class GameLiftEventHandler
 
             eventPlayerIds.map((playerId)=> // make players move to match destination and then get added to the match
             {
-                let matchDestination:SceneDestination = {
-                    type: "match",
-                    container:match,
-                    callback: () =>
-                    {
-                        match.addPlayerToMatch(playerId);
+                if (Players.getPlayer(playerId).playerState!=PlayerState.IN_MATCH)
+                {
+                    let matchDestination:SceneDestination = {
+                        type: "match",
+                        container:match,
+                        callback: () =>
+                        {
+                            match.addPlayerToMatch(playerId);
 
-                        if (PlayerMatches.getMatch(flexMatchEvent.matchId).playerIds.length == eventPlayerIds.length) // once all the players are added to match, move to queue
-                        {
-                            Players.getPlayer(playerId).storeEvent("MATCH IS FULL");
-                            PlayerMatches.getMatch(flexMatchEvent.matchId).moveToNextDestination();
-                        }
-                        else
-                        {
-                            Players.getPlayer(playerId).storeEvent("MATCH NOT FULL YET - EXPECTING " + PlayerMatches.getMatch(flexMatchEvent.matchId).playerIds.length + " BUT GOT " + eventPlayerIds.length);
+                            if (PlayerMatches.getMatch(flexMatchEvent.matchId).playerIds.length == eventPlayerIds.length) // once all the players are added to match, move to queue
+                            {
+                                Players.getPlayer(playerId).storeEvent("MATCH IS FULL");
+                                PlayerMatches.getMatch(flexMatchEvent.matchId).moveToNextDestination();
+                            }
+                            else
+                            {
+                                Players.getPlayer(playerId).storeEvent("MATCH NOT FULL YET - EXPECTING " + PlayerMatches.getMatch(flexMatchEvent.matchId).playerIds.length + " BUT GOT " + eventPlayerIds.length);
+                            }
                         }
                     }
+                    Players.getPlayer(playerId).storeEvent(flexMatchEvent);
+                    Players.getPlayer(playerId).storeEvent(matchDestination);
+                    Players.getPlayer(playerId).playerState = PlayerState.WALKING_TO_MATCH;
+                    Players.getPlayer(playerId).addDestination(matchDestination);
                 }
-                Players.getPlayer(playerId).storeEvent(flexMatchEvent);
-                Players.getPlayer(playerId).storeEvent(matchDestination);
-                Players.getPlayer(playerId).playerState = PlayerState.WALKING_TO_MATCH;
-                Players.getPlayer(playerId).addDestination(matchDestination);
             });
 
             return;
