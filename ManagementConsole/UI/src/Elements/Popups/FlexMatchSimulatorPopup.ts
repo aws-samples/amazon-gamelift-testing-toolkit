@@ -18,12 +18,12 @@ export class FlexMatchSimulatorPopup extends Popup
         this._htmlName="flexMatchSimulatorPopup";
         this.setupEventListeners();
 
-        this.registerSubPopup("simulateMatchmaking", new SimulateMatchmakingSubPopup("assets/html/fragments/simulateMatchmaking.html", "simulateMatchmaking"));
-        this.registerSubPopup("configurePlayerProfiles", new PlayerProfilesSubPopup("assets/html/fragments/playerProfiles.html", "playerProfiles"));
-        this.registerSubPopup("configureLatencyProfiles", new LatencyProfilesSubPopup("assets/html/fragments/latencyProfiles.html", "latencyProfiles"));
-        //this.registerSubPopup("ruleSetBuilder", new RuleSetBuilderSubPopup("assets/html/fragments/simulateMatchmaking.html", "ruleSetBuilder"));
-        this.registerSubPopup("ruleSetBuilder", new RuleSetBuilderSubPopup("assets/html/fragments/ruleSetBuilder.html", "ruleSetBuilder"));
-        this.registerSubPopup("manageRuleSets", new ManageRuleSetsSubPopup("assets/html/fragments/ruleSets.html", "ruleSets"));
+        this.registerSubPopup("simulateMatchmaking", new SimulateMatchmakingSubPopup("simulateMatchmakingSubPopup", "simulateMatchmaking"));
+        this.registerSubPopup("configurePlayerProfiles", new PlayerProfilesSubPopup("playerProfilesSubPopup", "playerProfiles"));
+        this.registerSubPopup("configureLatencyProfiles", new LatencyProfilesSubPopup("latencyProfilesSubPopup", "latencyProfiles"));
+        //this.registerSubPopup("ruleSetBuilder", new RuleSetBuilderSubPopup("ruleSetBuilderSubPopup", "ruleSetBuilder"));
+        this.registerSubPopup("ruleSetBuilder", new RuleSetBuilderSubPopup("ruleSetBuilderSubPopup", "ruleSetBuilder"));
+        this.registerSubPopup("manageRuleSets", new ManageRuleSetsSubPopup("ruleSetsSubPopup", "ruleSets"));
     }
 
     setPopupData(data:any)

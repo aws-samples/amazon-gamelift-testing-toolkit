@@ -5,29 +5,28 @@ import 'phaser';
 import DOMElement = Phaser.GameObjects.DOMElement;
 import {EventDispatcher} from "../../Events/EventDispatcher";
 import {PopupClickEvent} from "../../Events/PopupClickEvent";
+import {Game} from "../../Game";
 
 export abstract class SubPopup
 {
     protected _parentPopup: DOMElement;
     protected _emitter: EventDispatcher;
-    protected _url: string;
+    protected _cacheKey: string;
     protected _parentDomId: string;
     protected _html:string;
 
-    protected constructor (url:string, parentDomId:string)
+    protected constructor (cacheKey:string, parentDomId:string)
     {
-        this._url = url;
+        this._cacheKey = cacheKey;
         this._parentDomId = parentDomId;
         this._emitter = EventDispatcher.getInstance();
     }
 
     loadContent()
     {
-        $('#'+this._parentDomId).load(this._url, ()=>
-        {
-            this._html = $('#'+this._parentDomId).html();
-            this.refresh();
-        });
+        $('#'+this._parentDomId).html(Game.game.cache.html.get(this._cacheKey));
+        this._html = $('#'+this._parentDomId).html();
+        this.refresh();
     }
 
     refresh()

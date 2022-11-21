@@ -22,9 +22,9 @@ export class QueueDestinationOrderSubPopup extends SubPopup
     protected _destinationsDataTable: any;
     protected _types: any = ["Alias", "Fleet"];
 
-    public constructor (url:string, parentDomId:string, gameSessionQueue:GameSessionQueue)
+    public constructor (cacheKey:string, parentDomId:string, gameSessionQueue:GameSessionQueue)
     {
-        super(url, parentDomId);
+        super(cacheKey, parentDomId);
         this._queue = gameSessionQueue;
     }
 

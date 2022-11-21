@@ -17,14 +17,14 @@ import {Pages} from "./Pages";
 export class SimulateMatchmakingFailedTickets extends Page
 {
     public static id = Pages.SIMULATE_MATCHMAKING_FAILED_TICKETS;
-    public static url = "assets/html/fragments/simulateMatchmakingFailedTickets.html";
+    public static cacheKey = "simulateMatchmakingFailedTickets";
     protected _ticketEvents: any[];
     protected _currentSimulation;
     protected _ticketId: string;
 
     public constructor (parentPage:Page=null)
     {
-        super( SimulateMatchmakingFailedTickets.url,  parentPage, SimulateMatchmakingFailedTickets.id);
+        super( SimulateMatchmakingFailedTickets.cacheKey,  parentPage, SimulateMatchmakingFailedTickets.id);
     }
 
     public onPopupClick(event) {

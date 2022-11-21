@@ -27,9 +27,9 @@ export class ManageRuleSetsSubPopup extends SubPopup
     protected _ruleSets: MatchmakingRuleSet[];
     protected _editor;
 
-    public constructor (url:string, parentDomId:string)
+    public constructor (cacheKey:string, parentDomId:string)
     {
-        super(url, parentDomId);
+        super(cacheKey, parentDomId);
     }
 
     refresh = () =>

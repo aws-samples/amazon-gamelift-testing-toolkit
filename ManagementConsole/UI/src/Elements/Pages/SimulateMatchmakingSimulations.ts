@@ -11,11 +11,11 @@ import {Pages} from "./Pages";
 export class SimulateMatchmakingSimulations extends Page
 {
     public static id = Pages.SIMULATE_MATCHMAKING_SIMULATIONS;
-    public static url = "assets/html/fragments/simulateMatchmakingTable.html";
+    public static cacheKey = "simulateMatchmakingTable";
 
     public constructor (parentPage:Page=null)
     {
-        super( SimulateMatchmakingSimulations.url,  parentPage, SimulateMatchmakingSimulations.id);
+        super( SimulateMatchmakingSimulations.cacheKey,  parentPage, SimulateMatchmakingSimulations.id);
     }
 
     public onPopupClick(event) {

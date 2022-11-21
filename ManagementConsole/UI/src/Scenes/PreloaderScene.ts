@@ -45,6 +45,26 @@ export  class PreloaderScene extends Phaser.Scene {
         this.load.html('queueEventsPopup', 'assets/html/queueEventsPopup.html');
         this.load.html('settings', 'assets/html/settings.html');
         this.load.html('launchPlayers', 'assets/html/launchPlayers.html');
+
+        this.load.html('latencyProfilesSubPopup', 'assets/html/fragments/latencyProfiles.html');
+        this.load.html('playerAttributeTemplate', 'assets/html/fragments/playerAttributeTemplate.html');
+        this.load.html('playerLatencyPolicyTemplate', 'assets/html/fragments/playerLatencyPolicyTemplate.html');
+        this.load.html('playerProfileTemplate', 'assets/html/fragments/playerProfileTemplate.html');
+        this.load.html('playerProfilesSubPopup', 'assets/html/fragments/playerProfiles.html');
+        this.load.html('queueDestinationOrderSubPopup', 'assets/html/fragments/queueDestinationOrder.html');
+        this.load.html('queuePlacementPrioritySubPopup', 'assets/html/fragments/queuePlacementPriority.html');
+        this.load.html('queueSettingsSubPopup', 'assets/html/fragments/queueSettings.html');
+        this.load.html('regionLatencyTemplate', 'assets/html/fragments/regionLatencyTemplate.html');
+        this.load.html('ruleSetBuilderSubPopup', 'assets/html/fragments/ruleSetBuilder.html');
+        this.load.html('ruleSetsSubPopup', 'assets/html/fragments/ruleSets.html');
+        this.load.html('simulateMatchmakingSubPopup', 'assets/html/fragments/simulateMatchmaking.html');
+        this.load.html('simulateMatchmakingFailedTickets', 'assets/html/fragments/simulateMatchmakingFailedTickets.html');
+        this.load.html('simulateMatchmakingForm', 'assets/html/fragments/simulateMatchmakingForm.html');
+        this.load.html('simulateMatchmakingMatchInfo', 'assets/html/fragments/simulateMatchmakingMatchInfo.html');
+        this.load.html('simulateMatchmakingOutput', 'assets/html/fragments/simulateMatchmakingOutput.html');
+        this.load.html('simulateMatchmakingResults', 'assets/html/fragments/simulateMatchmakingResults.html');
+        this.load.html('simulateMatchmakingTable', 'assets/html/fragments/simulateMatchmakingTable.html');
+        this.load.html('simulateMatchmakingTickets', 'assets/html/fragments/simulateMatchmakingTickets.html');
     }
 
     preload ()

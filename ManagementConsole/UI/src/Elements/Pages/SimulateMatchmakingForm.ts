@@ -11,18 +11,19 @@ import {DataTypes} from "../../Data/DataTypes";
 import PlayerProfile = DataTypes.PlayerProfile;
 import LatencyProfile = DataTypes.LatencyProfile;
 import MatchmakingRuleSet = DataTypes.MatchmakingRuleSet;
+import {Game} from "../../Game";
 
 export class SimulateMatchmakingForm extends Page
 {
     public static id = Pages.SIMULATE_MATCHMAKING_FORM;
-    public static url = "assets/html/fragments/simulateMatchmakingForm.html";
+    public static cacheKey = "simulateMatchmakingForm";
     protected _playerProfiles: PlayerProfile[];
     protected _latencyProfiles: LatencyProfile[];
     protected _ruleSets: MatchmakingRuleSet[];
 
     public constructor (parentPage:Page=null)
     {
-        super(SimulateMatchmakingForm.url, parentPage, SimulateMatchmakingForm.id);
+        super(SimulateMatchmakingForm.cacheKey, parentPage, SimulateMatchmakingForm.id);
         this._playerProfiles=[];
         this._latencyProfiles=[];
     }
@@ -109,22 +110,21 @@ export class SimulateMatchmakingForm extends Page
     addPlayerProfile = () =>
     {
         this.hideStatusAlert();
-        $.get('assets/html/fragments/playerProfileTemplate.html', (data) => {
-            let template = $(data);
-            if (this._playerProfiles.length)
-            {
-                this._playerProfiles.map(profile => {
-                    template.find("select#playerProfile").append('<option value="' + profile.ProfileId + '">' + profile.Name + '</option>');
-                });
-            }
-            if (this._latencyProfiles.length)
-            {
-                this._latencyProfiles.map(profile => {
-                    template.find("select#latencyProfile").append('<option value="' + profile.ProfileId + '">' + profile.Name + '</option>');
-                });
-            }
-            template.appendTo($('#'+this._domId).find("#simulationPlayerProfiles"));
-        });
+        const html = Game.game.cache.html.get("playerProfileTemplate");
+        let template = $(html);
+        if (this._playerProfiles.length)
+        {
+            this._playerProfiles.map(profile => {
+                template.find("select#playerProfile").append('<option value="' + profile.ProfileId + '">' + profile.Name + '</option>');
+            });
+        }
+        if (this._latencyProfiles.length)
+        {
+            this._latencyProfiles.map(profile => {
+                template.find("select#latencyProfile").append('<option value="' + profile.ProfileId + '">' + profile.Name + '</option>');
+            });
+        }
+        template.appendTo($('#'+this._domId).find("#simulationPlayerProfiles"));
     }
 
     onGetPlayerProfilesResponse = (data) =>

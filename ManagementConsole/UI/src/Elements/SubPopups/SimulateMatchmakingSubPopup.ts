@@ -15,9 +15,9 @@ import {SimulateMatchmakingFailedTickets} from "../Pages/SimulateMatchmakingFail
 
 export class SimulateMatchmakingSubPopup extends SubPopup
 {
-    public constructor (url:string, parentDomId:string)
+    public constructor (cacheKey:string, parentDomId:string)
     {
-        super(url, parentDomId);
+        super(cacheKey, parentDomId);
     }
 
     refresh = ()=>

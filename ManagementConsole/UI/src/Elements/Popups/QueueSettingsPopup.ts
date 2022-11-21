@@ -25,9 +25,9 @@ export class QueueSettingsPopup extends Popup
     {
         this._queueData = data.gameObject.Data as GameSessionQueue;
 
-        this.registerSubPopup("queueSettings", new QueueSettingsSubPopup("assets/html/fragments/queueSettings.html", "queueSettings", this._queueData));
-        this.registerSubPopup("placementPriority", new QueuePlacementPrioritySubPopup("assets/html/fragments/queuePlacementPriority.html", "placementPriority", this._queueData));
-        this.registerSubPopup("destinationOrder", new QueueDestinationOrderSubPopup("assets/html/fragments/queueDestinationOrder.html", "destinationOrder", this._queueData));
+        this.registerSubPopup("queueSettings", new QueueSettingsSubPopup("queueSettingsSubPopup", "queueSettings", this._queueData));
+        this.registerSubPopup("placementPriority", new QueuePlacementPrioritySubPopup("queuePlacementPrioritySubPopup", "placementPriority", this._queueData));
+        this.registerSubPopup("destinationOrder", new QueueDestinationOrderSubPopup("queueDestinationOrderSubPopup", "destinationOrder", this._queueData));
 
         $('#queueSettingsName').html(this._queueData.Name);
 

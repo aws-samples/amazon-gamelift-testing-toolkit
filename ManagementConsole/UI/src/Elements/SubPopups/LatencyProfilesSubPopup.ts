@@ -9,15 +9,16 @@ import {SubPopup} from "../Abstract/SubPopup";
 import LatencyProfile = DataTypes.LatencyProfile;
 import RegionLatency = DataTypes.RegionLatency;
 import {Locations} from "../../Data/Locations";
+import {Game} from "../../Game";
 
 export class LatencyProfilesSubPopup extends SubPopup
 {
     protected _latencyProfiles: Record<string, LatencyProfile>;
     protected _editor;
 
-    public constructor (url:string, parentDomId:string)
+    public constructor (cacheKey:string, parentDomId:string)
     {
-        super(url, parentDomId);
+        super(cacheKey, parentDomId);
         this._latencyProfiles={};
     }
 
@@ -208,23 +209,22 @@ export class LatencyProfilesSubPopup extends SubPopup
 
     addNewLatencyProfileAttribute()
     {
-        $.get('assets/html/fragments/regionLatencyTemplate.html', (data) => {
+        const html = Game.game.cache.html.get("regionLatencyTemplate");
 
-            let addedEl = $(data).appendTo("#latencyProfileAttributes");
+        let addedEl = $(html).appendTo("#latencyProfileAttributes");
 
-            addedEl.find("select.regionLatencyForm-name").on("change", ()=>
-            {
-                this.updateAvailableLocations();
-            });
-
-            let locations = this.getAvailableLocations();
-            locations.map (location=>
-            {
-                addedEl.find('.regionLatencyForm-name').append("<option>" + location + "</option>");
-            });
-
+        addedEl.find("select.regionLatencyForm-name").on("change", ()=>
+        {
             this.updateAvailableLocations();
         });
+
+        let locations = this.getAvailableLocations();
+        locations.map (location=>
+        {
+            addedEl.find('.regionLatencyForm-name').append("<option>" + location + "</option>");
+        });
+
+        this.updateAvailableLocations();
     }
 
     getAvailableLocations()
@@ -263,21 +263,19 @@ export class LatencyProfilesSubPopup extends SubPopup
 
     addLatencyProfileAttribute(regionLatency:RegionLatency)
     {
-        $.get('assets/html/fragments/regionLatencyTemplate.html', (data) => {
+        const html = Game.game.cache.html.get("regionLatencyTemplate");
 
-            let addedEl = $(data).appendTo("#latencyProfileAttributes");
-            let selectEl = $(data).find("select.regionLatencyForm-name")[0];
+        let addedEl = $(html).appendTo("#latencyProfileAttributes");
 
-            addedEl.find("select.regionLatencyForm-name").html('<option type="text" value="' + regionLatency.Region + '" selected="selected">' + regionLatency.Region + '</option>');
-            addedEl.find(".regionLatencyForm-minLatency").val(regionLatency.MinLatency);
-            addedEl.find(".regionLatencyForm-maxLatency").val(regionLatency.MaxLatency);
-            addedEl.find("select.regionLatencyForm-name").on("change", ()=>
-            {
-                this.updateAvailableLocations();
-            });
-
+        addedEl.find("select.regionLatencyForm-name").html('<option type="text" value="' + regionLatency.Region + '" selected="selected">' + regionLatency.Region + '</option>');
+        addedEl.find(".regionLatencyForm-minLatency").val(regionLatency.MinLatency);
+        addedEl.find(".regionLatencyForm-maxLatency").val(regionLatency.MaxLatency);
+        addedEl.find("select.regionLatencyForm-name").on("change", ()=>
+        {
             this.updateAvailableLocations();
         });
+
+        this.updateAvailableLocations();
     }
 
     showCreateLatencyProfileForm()

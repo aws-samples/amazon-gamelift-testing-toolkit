@@ -29,9 +29,9 @@ export class QueuePlacementPrioritySubPopup extends SubPopup
         "LOCATION"
     ];
 
-    public constructor (url:string, parentDomId:string, gameSessionQueue:GameSessionQueue)
+    public constructor (cacheKey:string, parentDomId:string, gameSessionQueue:GameSessionQueue)
     {
-        super(url, parentDomId);
+        super(cacheKey, parentDomId);
         this._queue = gameSessionQueue;
     }
 

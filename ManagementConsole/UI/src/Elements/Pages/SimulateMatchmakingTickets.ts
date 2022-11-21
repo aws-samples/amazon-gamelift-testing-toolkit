@@ -11,13 +11,13 @@ import {Pages} from "./Pages";
 export class SimulateMatchmakingTickets extends Page
 {
     public static id = Pages.SIMULATE_MATCHMAKING_TICKETS;
-    public static url = "assets/html/fragments/simulateMatchmakingTickets.html";
+    public static cacheKey = "simulateMatchmakingTickets";
     protected _currentSimulation;
     protected _ticketEvents: any[];
 
     public constructor (parentPage:Page=null)
     {
-        super( SimulateMatchmakingTickets.url,  parentPage, SimulateMatchmakingTickets.id);
+        super( SimulateMatchmakingTickets.cacheKey,  parentPage, SimulateMatchmakingTickets.id);
     }
 
     public onPopupClick(event) {

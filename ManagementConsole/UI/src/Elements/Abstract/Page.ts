@@ -6,19 +6,20 @@ import DOMElement = Phaser.GameObjects.DOMElement;
 import {EventDispatcher} from "../../Events/EventDispatcher";
 import UUID = Phaser.Utils.String.UUID;
 import {PageManager} from "../Pages/PageManager";
+import {Game} from "../../Game";
 
 export abstract class Page
 {
     protected _parentPage: Page;
     protected _emitter: EventDispatcher;
-    protected _url: string;
+    protected _cacheKey: string;
     protected _domId: string;
     protected _html:string;
     protected _pageData:any = {};
 
-    protected constructor (url:string, parentPage:Page, domId:string=null)
+    protected constructor (cacheKey:string, parentPage:Page, domId:string=null)
     {
-        this._url = url;
+        this._cacheKey = cacheKey;
         this._parentPage = parentPage;
         this._emitter = EventDispatcher.getInstance();
         this._domId = domId;
@@ -27,11 +28,10 @@ export abstract class Page
 
     loadContent()
     {
-        $('#'+this._domId).load(this._url, (response, status, error)=>
-        {
-            this._html = $('#'+this._domId).html();
-            this.refresh();
-        });
+        let html = Game.game.cache.html.get(this._cacheKey);
+        $('#'+this._domId).html(html);
+        this._html = $('#'+this._domId).html();
+        this.refresh();
     }
 
     hideStatusAlert()

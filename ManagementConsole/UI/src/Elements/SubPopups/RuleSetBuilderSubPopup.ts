@@ -23,9 +23,9 @@ import {SubPopup} from "../Abstract/SubPopup";
 
 export class RuleSetBuilderSubPopup extends SubPopup
 {
-    public constructor (url:string, parentDomId:string)
+    public constructor (cacheKey:string, parentDomId:string)
     {
-        super(url, parentDomId);
+        super(cacheKey, parentDomId);
     }
 
     refresh = ()=>

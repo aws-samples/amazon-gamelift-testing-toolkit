@@ -26,9 +26,12 @@ export class Game extends Phaser.Game {
 
     public network : Network;
     public static debugMode: boolean = false;
+    public static game:Phaser.Game;
 
     constructor () {
         super(config);
+
+        Game.game = this;
 
         this.network = new Network();
 

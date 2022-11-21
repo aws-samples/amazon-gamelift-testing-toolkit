@@ -8,15 +8,16 @@ import {Events} from "../../Events/Events";
 import PlayerProfileAttribute = DataTypes.PlayerProfileAttribute;
 import {SubPopup} from "../Abstract/SubPopup";
 import PlayerProfile = DataTypes.PlayerProfile;
+import {Game} from "../../Game";
 
 export class PlayerProfilesSubPopup extends SubPopup
 {
     protected _playerProfiles: Record<string, PlayerProfile>;
     protected _editor;
 
-    public constructor (url:string, parentDomId:string)
+    public constructor (cacheKey:string, parentDomId:string)
     {
-        super(url, parentDomId);
+        super(cacheKey, parentDomId);
         this._playerProfiles={};
     }
 
@@ -436,119 +437,117 @@ export class PlayerProfilesSubPopup extends SubPopup
 
     addNewPlayerProfileAttribute()
     {
-        $.get('assets/html/fragments/playerAttributeTemplate.html', (data) => {
+        const html = Game.game.cache.html.get("playerAttributeTemplate");
 
-            let addedEl = $(data).appendTo("#playerProfileAttributes");
-            addedEl.find('.playerAttributeForm-S').show();
-            addedEl.find('.playerAttributeForm-N').hide();
-            addedEl.find('.playerAttributeForm-SL').hide();
-            addedEl.find('.playerAttributeForm-SDM').hide();
+        let addedEl = $(html).appendTo("#playerProfileAttributes");
+        addedEl.find('.playerAttributeForm-S').show();
+        addedEl.find('.playerAttributeForm-N').hide();
+        addedEl.find('.playerAttributeForm-SL').hide();
+        addedEl.find('.playerAttributeForm-SDM').hide();
 
-            $('.attributeType').off("change", this.onAttributeTypeChange);
-            $('.attributeType').on("change", this.onAttributeTypeChange);
-            $('.valueType').off("change", this.onValueTypeChange);
-            $('.valueType').on("change", this.onValueTypeChange);
-        });
+        $('.attributeType').off("change", this.onAttributeTypeChange);
+        $('.attributeType').on("change", this.onAttributeTypeChange);
+        $('.valueType').off("change", this.onValueTypeChange);
+        $('.valueType').on("change", this.onValueTypeChange);
     }
 
     addPlayerProfileAttribute(attribute:PlayerProfileAttribute)
     {
-        $.get('assets/html/fragments/playerAttributeTemplate.html', (data) => {
+        const html = Game.game.cache.html.get("playerAttributeTemplate");
 
-            let addedEl = $(data).appendTo("#playerProfileAttributes");
-            addedEl.find('.playerAttributeForm-S').hide();
-            addedEl.find('.playerAttributeForm-N').hide();
-            addedEl.find('.playerAttributeForm-SL').hide();
-            addedEl.find('.playerAttributeForm-M').hide();
-            addedEl.find('.playerAttributeForm-SDM').hide();
+        let addedEl = $(html).appendTo("#playerProfileAttributes");
+        addedEl.find('.playerAttributeForm-S').hide();
+        addedEl.find('.playerAttributeForm-N').hide();
+        addedEl.find('.playerAttributeForm-SL').hide();
+        addedEl.find('.playerAttributeForm-M').hide();
+        addedEl.find('.playerAttributeForm-SDM').hide();
 
-            addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-value").hide();
-            addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-values").hide();
-            addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-randomInteger").hide();
+        addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-value").hide();
+        addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-values").hide();
+        addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-randomInteger").hide();
 
-            addedEl.find('input.playerAttributeForm-name').val(attribute.AttributeName);
-            addedEl.find("select.attributeType").val(attribute.AttributeType);
+        addedEl.find('input.playerAttributeForm-name').val(attribute.AttributeName);
+        addedEl.find("select.attributeType").val(attribute.AttributeType);
 
-            addedEl.find('.playerAttributeForm-' + attribute.AttributeType + ' select.valueType').val(attribute.ValueType);
+        addedEl.find('.playerAttributeForm-' + attribute.AttributeType + ' select.valueType').val(attribute.ValueType);
 
-            if (attribute.ValueType=="randomInteger" || attribute.ValueType=="randomDouble")
+        if (attribute.ValueType=="randomInteger" || attribute.ValueType=="randomDouble")
+        {
+            addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-value-min").val(attribute.Min);
+            addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-value-max").val(attribute.Max);
+        }
+        else
+        if (attribute.AttributeType=="SL")
+        {
+            let valueArray = attribute.Value as string[];
+            let stringList="";
+            for (let i=0; i<valueArray.length; i++)
             {
-                addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-value-min").val(attribute.Min);
-                addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-value-max").val(attribute.Max);
+                stringList += valueArray[i] + "\n";
+                /*                        if (i==0)
+                                        {
+                                        }
+                                        else
+                                        {
+                                            let newEl = $(this.getStringListValueHtml());
+                                            newEl.find(".playerAttributeForm-" + attribute.AttributeType + "-value-value").val(valueArray[i]);
+                                            newEl.appendTo(addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-value"));
+                                        }
+
+                 */
+            }
+            if (attribute.ValueType=="randomStringList")
+            {
+                addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-" + attribute.ValueType + "-min").val(attribute.Min);
+                addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-" + attribute.ValueType + "-max").val(attribute.Max);
+                addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-" + attribute.ValueType+ "-value").html(stringList);
             }
             else
-            if (attribute.AttributeType=="SL")
+            if (attribute.ValueType=="value")
             {
-                let valueArray = attribute.Value as string[];
-                let stringList="";
-                for (let i=0; i<valueArray.length; i++)
-                {
-                    stringList += valueArray[i] + "\n";
-                    /*                        if (i==0)
-                                            {
-                                            }
-                                            else
-                                            {
-                                                let newEl = $(this.getStringListValueHtml());
-                                                newEl.find(".playerAttributeForm-" + attribute.AttributeType + "-value-value").val(valueArray[i]);
-                                                newEl.appendTo(addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-value"));
-                                            }
-
-                     */
-                }
-                if (attribute.ValueType=="randomStringList")
-                {
-                    addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-" + attribute.ValueType + "-min").val(attribute.Min);
-                    addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-" + attribute.ValueType + "-max").val(attribute.Max);
-                    addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-" + attribute.ValueType+ "-value").html(stringList);
-                }
-                else
-                if (attribute.ValueType=="value")
-                {
-                    addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-" + attribute.ValueType+ "-value").html(stringList);
-                }
+                addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-" + attribute.ValueType+ "-value").html(stringList);
             }
-            else if (attribute.ValueType=="value")
+        }
+        else if (attribute.ValueType=="value")
+        {
+            if (attribute.AttributeType=="N" || attribute.AttributeType=="S")
             {
-                if (attribute.AttributeType=="N" || attribute.AttributeType=="S")
+                addedEl.find(".playerAttributeForm-"+ attribute.AttributeType + "-value-value").val(attribute.Value);
+            }
+            else
+            if (attribute.AttributeType=="SDM")
+            {
+                let valueMap = attribute.ValueMap as Record<string, number>;
+                let i=0;
+                Object.keys(valueMap).map(key=>
                 {
-                    addedEl.find(".playerAttributeForm-"+ attribute.AttributeType + "-value-value").val(attribute.Value);
-                }
-                else
-                if (attribute.AttributeType=="SDM")
-                {
-                    let valueMap = attribute.ValueMap as Record<string, number>;
-                    let i=0;
-                    Object.keys(valueMap).map(key=>
+                    if (i==0)
                     {
-                        if (i==0)
-                        {
-                            addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-value-key").val(key);
-                            addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-value-value").val(valueMap[key]);
-                        }
-                        else
-                        {
-                            let newEl = $(this.getStringDoubleMapValueHtml());
-                            newEl.find(".playerAttributeForm-" + attribute.AttributeType + "-value-key").val(key);
-                            newEl.find(".playerAttributeForm-" + attribute.AttributeType + "-value-value").val(valueMap[key]);
-                            newEl.appendTo(addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-value"));
-                        }
-                        i++;
-                    });
-                }
+                        addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-value-key").val(key);
+                        addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-value-value").val(valueMap[key]);
+                    }
+                    else
+                    {
+                        let newEl = $(this.getStringDoubleMapValueHtml());
+                        newEl.find(".playerAttributeForm-" + attribute.AttributeType + "-value-key").val(key);
+                        newEl.find(".playerAttributeForm-" + attribute.AttributeType + "-value-value").val(valueMap[key]);
+                        newEl.appendTo(addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-value"));
+                    }
+                    i++;
+                });
             }
+        }
 
 
-            addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-"+attribute.ValueType).show();
+        addedEl.find(".playerAttributeForm-" + attribute.AttributeType + "-"+attribute.ValueType).show();
 
-            addedEl.find('.playerAttributeForm-' + attribute.AttributeType).show();
-            addedEl.find('.playerAttributeForm-' + attribute.AttributeType).show();
+        addedEl.find('.playerAttributeForm-' + attribute.AttributeType).show();
+        addedEl.find('.playerAttributeForm-' + attribute.AttributeType).show();
 
-            $('.attributeType').off("change", this.onAttributeTypeChange);
-            $('.attributeType').on("change", this.onAttributeTypeChange);
-            $('.valueType').off("change", this.onValueTypeChange);
-            $('.valueType').on("change", this.onValueTypeChange);
-        });
+        $('.attributeType').off("change", this.onAttributeTypeChange);
+        $('.attributeType').on("change", this.onAttributeTypeChange);
+        $('.valueType').off("change", this.onValueTypeChange);
+        $('.valueType').on("change", this.onValueTypeChange);
     }
 
     showCreatePlayerProfileForm()

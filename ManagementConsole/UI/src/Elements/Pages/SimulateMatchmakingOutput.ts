@@ -11,13 +11,13 @@ import {Pages} from "./Pages";
 export class SimulateMatchmakingOutput extends Page
 {
     public static id = Pages.SIMULATE_MATCHMAKING_OUTPUT;
-    public static url = "assets/html/fragments/simulateMatchmakingOutput.html";
+    public static cacheKey = "simulateMatchmakingOutput";
     protected _currentSimulation;
     protected _intervalId;
 
     public constructor (parentPage:Page=null)
     {
-        super( SimulateMatchmakingOutput.url,  parentPage, SimulateMatchmakingOutput.id);
+        super( SimulateMatchmakingOutput.cacheKey,  parentPage, SimulateMatchmakingOutput.id);
         this.getSimulationData = this.getSimulationData.bind(this);
     }
 

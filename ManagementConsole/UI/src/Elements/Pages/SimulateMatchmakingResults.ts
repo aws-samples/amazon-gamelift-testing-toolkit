@@ -13,14 +13,14 @@ import {Utils} from "../../Utils/Utils";
 export class SimulateMatchmakingResults extends Page
 {
     public static id = Pages.SIMULATE_MATCHMAKING_RESULTS;
-    public static url = "assets/html/fragments/simulateMatchmakingResults.html";
+    public static cacheKey = "simulateMatchmakingResults";
     protected _currentSimulation;
     protected _matches: Record<string, any>;
     protected _failedPlayers: any[]=[];
 
     public constructor (parentPage:Page=null)
     {
-        super( SimulateMatchmakingResults.url,  parentPage, SimulateMatchmakingResults.id);
+        super( SimulateMatchmakingResults.cacheKey,  parentPage, SimulateMatchmakingResults.id);
     }
 
     public onPopupClick(event) {

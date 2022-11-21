@@ -7,14 +7,15 @@ import {Network} from "../../Network/Network";
 import {Events} from "../../Events/Events";
 import {SubPopup} from "../Abstract/SubPopup";
 import GameSessionQueue = DataTypes.GameSessionQueue;
+import {Game} from "../../Game";
 
 export class QueueSettingsSubPopup extends SubPopup
 {
     protected _queue:GameSessionQueue;
 
-    public constructor (url:string, parentDomId:string, gameSessionQueue:GameSessionQueue)
+    public constructor (cacheKey:string, parentDomId:string, gameSessionQueue:GameSessionQueue)
     {
-        super(url, parentDomId);
+        super(cacheKey, parentDomId);
         this._queue = gameSessionQueue;
     }
 
@@ -89,12 +90,11 @@ export class QueueSettingsSubPopup extends SubPopup
 
     addNewPlayerLatencyPolicy()
     {
-        $.get('assets/html/fragments/playerLatencyPolicyTemplate.html', (data) => {
+        const html = Game.game.cache.html.get("playerLatencyPolicyTemplate");
 
-            let addedEl = $(data).appendTo("#playerLatencyPolicies");
-            addedEl.find('.periodEnd').on("input", this.onChange);
-            this.updatePlayerLatencyPolicyValues();
-        });
+        let addedEl = $(html).appendTo("#playerLatencyPolicies");
+        addedEl.find('.periodEnd').on("input", this.onChange);
+        this.updatePlayerLatencyPolicyValues();
     }
 
     onChange = () =>
@@ -135,17 +135,17 @@ export class QueueSettingsSubPopup extends SubPopup
 
     addPlayerLatencyPolicies(policies)
     {
-        $.get('assets/html/fragments/playerLatencyPolicyTemplate.html', (templateHtml) => {
-            let periodStart=0;
-            policies.map(policy =>
-            {
-                let addedEl = $(templateHtml).appendTo("#playerLatencyPolicies");
-                addedEl.find('.periodStart').val(periodStart);
-                addedEl.find('.periodEnd').val(policy.PolicyDurationSeconds);
-                addedEl.find('.maxLatency').val(policy.MaximumIndividualPlayerLatencyMilliseconds);
-                periodStart+=policy.PolicyDurationSeconds;
-                addedEl.find('.periodEnd').on("input", this.onChange);
-            });
+        const html = Game.game.cache.html.get("playerLatencyPolicyTemplate");
+        let periodStart=0;
+        policies.map(policy =>
+        {
+            let addedEl = $(html).appendTo("#playerLatencyPolicies");
+            addedEl.find('.periodStart').val(periodStart);
+            addedEl.find('.periodEnd').val(policy.PolicyDurationSeconds);
+            addedEl.find('.maxLatency').val(policy.MaximumIndividualPlayerLatencyMilliseconds);
+            periodStart+=policy.PolicyDurationSeconds;
+            addedEl.find('.periodEnd').on("input", this.onChange);
         });
+
     }
 }

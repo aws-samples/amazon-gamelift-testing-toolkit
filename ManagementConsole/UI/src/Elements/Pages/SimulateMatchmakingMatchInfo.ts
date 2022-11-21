@@ -12,7 +12,7 @@ import {Utils} from "../../Utils/Utils";
 export class SimulateMatchmakingMatchInfo extends Page
 {
     public static id = Pages.SIMULATE_MATCHMAKING_MATCH_INFO;
-    public static url = "assets/html/fragments/simulateMatchmakingMatchInfo.html";
+    public static cacheKey = "simulateMatchmakingMatchInfo";
     protected _currentSimulation: any;
     protected _currentMatchId : string;
     protected _matches: Record<string, any>;
@@ -21,7 +21,7 @@ export class SimulateMatchmakingMatchInfo extends Page
 
     public constructor (parentPage:Page=null)
     {
-        super( SimulateMatchmakingMatchInfo.url,  parentPage, SimulateMatchmakingMatchInfo.id);
+        super( SimulateMatchmakingMatchInfo.cacheKey,  parentPage, SimulateMatchmakingMatchInfo.id);
     }
 
     public onPopupClick(event) {
