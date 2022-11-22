@@ -207,6 +207,7 @@ export class Player extends Container
         {
             this._timeline?.stop();
             this._timeline?.destroy();
+            this._moving=false;
         }
     }
 

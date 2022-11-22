@@ -76,26 +76,32 @@ export class PlayerMatch extends BaseContainer
             return false;
         }
 
-        let player = Players.getPlayer(playerId);
-        player.scale=0.75;
-        player.playerState=PlayerState.IN_MATCH;
-        this.add(player);
-
-        this._elementGroup.add(player);
-        player.resetDestinations();
-        player.destroyTimeline();
-
-        player.x = this._bg.x;
-        player.y = this._bg.y;
-        this.layoutContainer(0);
-        this._players[playerId] = player;
-
-        if (this._placementEvent!=undefined && this._placementEvent.placedPlayerSessions.length == Object.values(this._players).length)
+        if (this._players[playerId]==undefined)
         {
-            this.moveToNextDestination();
+            let player = Players.getPlayer(playerId);
+            player.scale=0.75;
+            player.playerState=PlayerState.IN_MATCH;
+            this.add(player);
+
+            this._elementGroup.add(player);
+            player.resetDestinations();
+            player.destroyTimeline();
+
+            player.x = this._bg.x;
+            player.y = this._bg.y;
+            this.layoutContainer(0);
+            this._players[playerId] = player;
+
+            if (this._placementEvent!=undefined && this._placementEvent.placedPlayerSessions.length == Object.values(this._players).length)
+            {
+                this.moveToNextDestination();
+            }
+
+            return true;
         }
 
-        return true;
+        return false;
+
     }
 
     public breakUpMatch()

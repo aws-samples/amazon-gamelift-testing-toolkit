@@ -123,6 +123,7 @@ export class GameLiftEventHandler
                             }
                         }
                     }
+                    Players.getPlayer(playerId).destroyTimeline();
                     Players.getPlayer(playerId).storeEvent(flexMatchEvent);
                     Players.getPlayer(playerId).storeEvent(matchDestination);
                     Players.getPlayer(playerId).playerState = PlayerState.WALKING_TO_MATCH;
