@@ -83,7 +83,7 @@ namespace SampleGameInfra.Lib
                 DesiredEc2Instances = 0,
                 MinSize = 0,
                 InstanceRoleArn = instanceRole.RoleArn,
-            }, 5);
+            }, 10);
             
             var alias = CreateAlias( "SampleGameOnDemandAlias", fleet);
             
@@ -97,7 +97,7 @@ namespace SampleGameInfra.Lib
                 DesiredEc2Instances = 0,
                 MinSize = 0,
                 InstanceRoleArn = instanceRole.RoleArn,
-            }, 5);
+            }, 10);
             
             var spotAlias = CreateAlias( "SampleGameSpotAlias", spotFleet);
             var aliases = new[] {spotAlias, alias};

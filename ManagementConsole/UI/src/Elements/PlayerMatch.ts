@@ -70,6 +70,12 @@ export class PlayerMatch extends BaseContainer
 
     public addPlayerToMatch(playerId)
     {
+        if (PlayerMatches.getMatch(this.matchId)==undefined)
+        {
+            // this match has already been broken up!
+            return false;
+        }
+
         let player = Players.getPlayer(playerId);
         player.scale=0.75;
         player.playerState=PlayerState.IN_MATCH;
@@ -88,6 +94,8 @@ export class PlayerMatch extends BaseContainer
         {
             this.moveToNextDestination();
         }
+
+        return true;
     }
 
     public breakUpMatch()
@@ -397,6 +405,10 @@ export class PlayerMatch extends BaseContainer
 
     public moveToNextDestination()
     {
+        if (this._moving)
+        {
+            return;
+        }
         let nextDestination = this.getNextDestination();
         if (nextDestination!=null)
         {

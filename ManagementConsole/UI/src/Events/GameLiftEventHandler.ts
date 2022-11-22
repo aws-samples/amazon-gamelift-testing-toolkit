@@ -60,6 +60,11 @@ export class GameLiftEventHandler
         let flexMatchEvent = stateMessage.FlexMatchEventDetail;
         let resources = stateMessage.Resources;
 
+        if (flexMatchEvent.matchId && flexMatchEvent.type == "MatchmakingSucceded")
+        {
+            return;
+        }
+
         let eventPlayerIds:string[] = [];
 
         let consoleScene = ConsoleScene.getInstance();
@@ -100,16 +105,21 @@ export class GameLiftEventHandler
                         container:match,
                         callback: () =>
                         {
-                            match.addPlayerToMatch(playerId);
-
-                            if (PlayerMatches.getMatch(flexMatchEvent.matchId).playerIds.length == eventPlayerIds.length) // once all the players are added to match, move to queue
+                            if (match.addPlayerToMatch(playerId))
                             {
-                                Players.getPlayer(playerId).storeEvent("MATCH IS FULL");
-                                PlayerMatches.getMatch(flexMatchEvent.matchId).moveToNextDestination();
+                                if (PlayerMatches.getMatch(flexMatchEvent.matchId).playerIds.length == eventPlayerIds.length) // once all the players are added to match, move to queue
+                                {
+                                    Players.getPlayer(playerId).storeEvent("MATCH IS FULL");
+                                    PlayerMatches.getMatch(flexMatchEvent.matchId).moveToNextDestination();
+                                }
+                                else
+                                {
+                                    Players.getPlayer(playerId).storeEvent("MATCH NOT FULL YET - EXPECTING " + PlayerMatches.getMatch(flexMatchEvent.matchId).playerIds.length + " BUT GOT " + eventPlayerIds.length);
+                                }
                             }
                             else
                             {
-                                Players.getPlayer(playerId).storeEvent("MATCH NOT FULL YET - EXPECTING " + PlayerMatches.getMatch(flexMatchEvent.matchId).playerIds.length + " BUT GOT " + eventPlayerIds.length);
+                                Players.getPlayer(playerId).resetPlayer();
                             }
                         }
                     }
@@ -154,6 +164,8 @@ export class GameLiftEventHandler
                         disappearAfter:false,
                         delay:0,
                     };
+                    Players.getPlayer(playerId).storeEvent(flexMatchEvent);
+                    Players.getPlayer(playerId).storeEvent(destination);
                     Players.getPlayer(playerId).playerState = PlayerState.WAITING_FOR_MATCH;
                     Players.getPlayer(playerId).addDestination(destination);
                 }
@@ -193,18 +205,11 @@ export class GameLiftEventHandler
                 if (match)
                 {
                     playerIds = match.playerIds;
-                    let configArn = match.creatorArn;
                     match?.breakUpMatch();
-                    let matchmakingConfig = consoleScene.getMatchmakingConfigurations().getConfigByArn(configArn);
-                    let destination:SceneDestination = {
-                        container: matchmakingConfig,
-                        type: "matchmakingConfig",
-                        disappearAfter:false,
-                        delay:0,
-                    };
+
                     playerIds.map((playerId)=> // make players go back to the matchmaking config
                     {
-                        Players.getPlayer(playerId).moveToInitialPosition();
+                        Players.getPlayer(playerId).resetPlayer();
                     });
                 }
             }

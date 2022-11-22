@@ -153,7 +153,7 @@ export class ConsoleScene extends Phaser.Scene
             player.x = 400;
             player.y = 30;
 
-            Players.setClearXPos(player, 400, 1000);
+            Players.setClearXPos(player, 200, 1000);
             player.initialX = player.x;
             player.initialY = player.y;
             this.add.existing(player);
