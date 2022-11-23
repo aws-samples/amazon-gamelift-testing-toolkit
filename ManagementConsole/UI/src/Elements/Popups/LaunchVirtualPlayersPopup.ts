@@ -34,12 +34,14 @@ export class LaunchVirtualPlayersPopup extends Popup
     {
         this._emitter.on(Events.GET_TASK_DEFINITIONS_RESPONSE, this.onGetTaskDefinitionsResponse);
         this._emitter.on(Events.LAUNCH_VIRTUAL_PLAYERS_RESPONSE, this.onLaunchVirtualPlayersResponse);
+        this._emitter.on(Events.LAUNCH_VIRTUAL_PLAYERS_PROGRESS_RESPONSE, this.onLaunchVirtualPlayersProgressResponse);
     }
 
     removeEventListeners()
     {
         this._emitter.off(Events.GET_TASK_DEFINITIONS_RESPONSE, this.onGetTaskDefinitionsResponse);
         this._emitter.off(Events.LAUNCH_VIRTUAL_PLAYERS_RESPONSE, this.onLaunchVirtualPlayersResponse);
+        this._emitter.off(Events.LAUNCH_VIRTUAL_PLAYERS_PROGRESS_RESPONSE, this.onLaunchVirtualPlayersProgressResponse);
     }
 
     resetVirtualPlayersTable()
@@ -66,8 +68,15 @@ export class LaunchVirtualPlayersPopup extends Popup
         this.element.find("#statusText").html(text);
     }
 
+    setLaunchProgressText(html)
+    {
+        $('.launchPlayersProgressText').html(html);
+    }
+
     onLaunchVirtualPlayersResponse = (data) =>
     {
+        this.setLaunchProgressText("");
+        $("button#launchPlayers").prop("disabled", false);
         if (data.Result)
         {
             this.showSuccessAlert(data.NumPlayers + " task(s) launched");
@@ -76,6 +85,11 @@ export class LaunchVirtualPlayersPopup extends Popup
         {
             this.showFailureAlert("Error launching task(s)!");
         }
+    }
+
+    onLaunchVirtualPlayersProgressResponse = (data) =>
+    {
+        this.setLaunchProgressText(data.NumLaunched + " of " + data.TotalToLaunch + " player tasks launched");
     }
 
     onGetTaskDefinitionsResponse = (data) =>
@@ -118,8 +132,10 @@ export class LaunchVirtualPlayersPopup extends Popup
             }
             else
             {
+                $("button#launchPlayers").prop("disabled", true);
                 this.element.find("#errorText").attr("class", "errorText hide");
-                this._emitter.emit(Events.LAUNCH_PLAYERS, {numPlayers:numPlayers, taskDefinitionArn: taskDefinitionArn, capacityProvider:fargateCapacityProvider});
+                this.setLaunchProgressText("Launching Virtual Player Tasks...");
+                Network.sendObject({"Type":"LaunchPlayers", "NumPlayers":numPlayers, "TaskDefinitionArn":taskDefinitionArn, "CapacityProvider":fargateCapacityProvider});
             }
         }
         if (event.target.className == "refreshButton")

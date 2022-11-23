@@ -14,7 +14,6 @@ export class Events
     public static CLOSE_SETTINGS:string = "CloseSettings";
     public static ENABLE_ANIMATIONS:string = "EnableAnimations";
     public static DISABLE_ANIMATIONS:string = "DisableAnimations";
-    public static LAUNCH_PLAYERS:string = "LaunchPlayers";
     public static ADJUST_FLEET_SCALING_RESPONSE:string = "AdjustFleetScalingResponse";
     public static SET_SCALING_POLICY_RESPONSE:string = "SetScalingPolicyResponse";
     public static DELETE_SCALING_POLICY_RESPONSE:string = "DeleteScalingPolicyResponse";
@@ -55,6 +54,7 @@ export class Events
     public static GET_VIRTUAL_PLAYERS_RESPONSE:string = "GetVirtualPlayersResponse";
     public static GET_CLOUDWATCH_LOGS_RESPONSE:string = "GetCloudWatchLogsResponse";
     public static LAUNCH_VIRTUAL_PLAYERS_RESPONSE:string = "LaunchVirtualPlayersResponse";
+    public static LAUNCH_VIRTUAL_PLAYERS_PROGRESS_RESPONSE:string = "LaunchVirtualPlayersProgressResponse";
     public static TERMINATE_VIRTUAL_PLAYER_RESPONSE:string = "TerminateVirtualPlayerResponse";
     public static ADD_FAKE_FLEET:string = "AddFakeFleet";
     public static ADD_FAKE_PLAYER:string = "AddFakePlayer";

@@ -45,6 +45,13 @@ h6 { margin-top: 10px;}
     margin-top: 40px;
 }
 
+button#launchPlayers  { margin-left:0; float:left; margin-top:10px; }
+
+.launchPlayersProgress {
+    margin-top:5px;
+    float:left;
+}
+
 .closeButton {
     float: right;
     margin-right: 5px;

@@ -294,7 +294,6 @@ export class ConsoleScene extends Phaser.Scene
         this._emitter.on(Events.ENABLE_ANIMATIONS, this.onEnableAnimations);
         this._emitter.on(Events.DISABLE_ANIMATIONS, this.onDisableAnimations);
         this._emitter.on(Events.CLOSE_SETTINGS, this.onSettingsClose);
-        this._emitter.on(Events.LAUNCH_PLAYERS, this.onLaunchPlayers);
         this._emitter.on(Events.ADD_FAKE_FLEET, this.onAddFakeFleet);
         this._emitter.on(Events.ADD_FAKE_PLAYER, this.onAddFakePlayer);
         this._emitter.on(Events.ADD_FAKE_INSTANCE, this.onAddFakeInstance);
@@ -532,11 +531,6 @@ export class ConsoleScene extends Phaser.Scene
 
             await new Promise(r => setTimeout(r, Math.ceil(Math.random()*500)+200));
         }
-    };
-
-    onLaunchPlayers = (event) =>
-    {
-        Network.sendObject({"Type":"LaunchPlayers", "NumPlayers":parseInt(event.numPlayers), "TaskDefinitionArn":event.taskDefinitionArn, "CapacityProvider":event.capacityProvider});
     };
 
     onAddFakeFleet = (numInstances=10) =>

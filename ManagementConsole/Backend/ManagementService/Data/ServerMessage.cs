@@ -309,4 +309,11 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public bool Result;
         public int NumPlayers;
     }
+    public class ServerMessageLaunchPlayersProgress : ServerMessage
+    {
+        public new string Type = "LaunchPlayersProgress";
+        public int NumLaunched;
+        public int TotalToLaunch;
+    }
+
 }

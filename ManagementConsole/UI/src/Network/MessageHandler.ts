@@ -208,6 +208,10 @@ export class MessageHandler
                 this._emitter.emit(Events.LAUNCH_VIRTUAL_PLAYERS_RESPONSE, data);
                 break;
 
+            case "LaunchPlayersProgress":
+                this._emitter.emit(Events.LAUNCH_VIRTUAL_PLAYERS_PROGRESS_RESPONSE, data);
+                break;
+
         }
     };
 }

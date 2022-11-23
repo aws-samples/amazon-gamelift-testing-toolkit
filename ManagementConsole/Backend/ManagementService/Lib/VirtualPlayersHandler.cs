@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using Amazon.ECS;
 using Amazon.ECS.Model;
 using Amazon.Lambda.Core;
+using ManagementConsoleBackend.Common;
+using ManagementConsoleBackend.ManagementService.Data;
 using Newtonsoft.Json;
 
 namespace ManagementConsoleBackend.ManagementService.Lib
@@ -21,7 +23,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
         }
         
         // Launches a number of virtual players via Fargate
-        public async Task<bool> LaunchPlayers(int numPlayers, string taskDefinitionArn, string capacityProvider)
+        public async Task<bool> LaunchPlayers(int numPlayers, string taskDefinitionArn, string capacityProvider, string connectionId, string stageServiceUrl)
         {
             var maxTasksPerRequest = 10;
             var remainingPlayersToLaunch = numPlayers;
@@ -78,7 +80,13 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                     LambdaLogger.Log(JsonConvert.SerializeObject(request));
                     var response = await _client.RunTaskAsync(request);
                     LambdaLogger.Log(JsonConvert.SerializeObject(response));
-                    
+
+                    await Utils.SendJsonResponse(connectionId, stageServiceUrl, new ServerMessageLaunchPlayersProgress
+                    {
+                        NumLaunched = numPlayers - remainingPlayersToLaunch,
+                        TotalToLaunch = numPlayers,
+                    });
+
                 } while (remainingPlayersToLaunch > 0);
 
                 return true;
