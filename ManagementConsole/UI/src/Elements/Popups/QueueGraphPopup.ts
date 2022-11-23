@@ -7,6 +7,7 @@ import {Network} from "../../Network/Network";
 import {Events} from "../../Events/Events";
 import {Popup} from "../Abstract/Popup";
 import GameSessionQueue = DataTypes.GameSessionQueue;
+import {Game} from "../../Game";
 
 export class QueueGraphPopup extends Popup
 {
@@ -78,13 +79,15 @@ export class QueueGraphPopup extends Popup
 
     refresh()
     {
+        let configObj = Game.game.cache.json.get("configJson");
+
         var image = {
             "view": "timeSeries",
             "stacked": false,
             "metrics": [
                 [ "AWS/GameLift", (this.element.find("#metric")[0] as HTMLInputElement).value, "QueueName", this._queueConfigData.Name ]
             ],
-            "region": "eu-west-1",
+            "region": configObj.Region,
             "start" : (this.element.find("#timeperiod")[0] as HTMLInputElement).value
         }
 
