@@ -153,7 +153,14 @@ export class ConsoleScene extends Phaser.Scene
             player.x = 400;
             player.y = 30;
 
-            Players.setClearXPos(player, 200, 1000);
+            if (ScreenResolution.displayResolution==ScreenResolution.RES_720P)
+            {
+                Players.setClearXPos(player, 200, 1000);
+            }
+            else
+            {
+                Players.setClearXPos(player, 200, 1720);
+            }
             player.initialX = player.x;
             player.initialY = player.y;
             this.add.existing(player);
