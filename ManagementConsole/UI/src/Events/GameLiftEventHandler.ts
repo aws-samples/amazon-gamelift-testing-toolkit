@@ -8,6 +8,8 @@ import {Events} from "./Events";
 import StateMessage = DataTypes.StateMessage;
 import {ScreenResolution} from "../Data/ScreenResolution";
 import {PlayerMatch} from "../Elements/PlayerMatch";
+import {FlexMatchEventType} from "../Data/FlexMatchEventType";
+import {QueuePlacementEventType} from "../Data/QueuePlacementEventType";
 
 export class GameLiftEventHandler
 {
@@ -60,7 +62,7 @@ export class GameLiftEventHandler
         let flexMatchEvent = stateMessage.FlexMatchEventDetail;
         let resources = stateMessage.Resources;
 
-        if (flexMatchEvent.matchId && flexMatchEvent.type == "MatchmakingSucceded")
+        if (flexMatchEvent.matchId && flexMatchEvent.type == FlexMatchEventType.MATCHMAKING_SUCCEEDED)
         {
             return;
         }
@@ -91,7 +93,7 @@ export class GameLiftEventHandler
             return;
         }
 
-        if (flexMatchEvent.matchId && flexMatchEvent.type == "PotentialMatchCreated") // we have a match
+        if (flexMatchEvent.matchId && flexMatchEvent.type == FlexMatchEventType.POTENTIAL_MATCH_CREATED) // we have a match
         {
             // construct match
             let match = consoleScene.initializeMatch(flexMatchEvent.matchId, resources[0]);
@@ -134,7 +136,7 @@ export class GameLiftEventHandler
             return;
         }
         else
-        if (flexMatchEvent.type=="MatchmakingSearching") // MatchmakingSearching is the start of a matchmaking cycle, so set player's active ticketId so we can ignore old ticket events
+        if (flexMatchEvent.type==FlexMatchEventType.MATCHMAKING_SEARCHING) // MatchmakingSearching is the start of a matchmaking cycle, so set player's active ticketId so we can ignore old ticket events
         {
             flexMatchEvent.tickets.map((ticket)=>
             {
@@ -175,7 +177,7 @@ export class GameLiftEventHandler
             return;
         }
 
-        if (flexMatchEvent.type == "MatchmakingTimedOut" || flexMatchEvent.type == "MatchmakingCancelled")
+        if (FlexMatchEventType.isFailureEvent(flexMatchEvent.type))
         {
             eventPlayerIds.map((playerId)=>
             {
@@ -198,7 +200,7 @@ export class GameLiftEventHandler
 
         let playerIds:string[] = [];
 
-        if (queuePlacementEvent.placedPlayerSessions==null) // the queue placement has failed for some reason
+        if (QueuePlacementEventType.isFailureEvent(queuePlacementEvent.type)) // the queue placement has failed for some reason
         {
             if (queuePlacementEvent.placementId)
             {
@@ -228,7 +230,7 @@ export class GameLiftEventHandler
 
             switch (queuePlacementEvent.type)
             {
-                case "PlacementFulfilled":
+                case QueuePlacementEventType.PLACEMENT_FULFILLED:
                     if (match==undefined) // flexmatch events haven't been processed yet, or queues being used without flexmatch
                     {
                         match = consoleScene.initializeMatch(queuePlacementEvent.placementId, resources[0]);
