@@ -62,7 +62,6 @@ export class Instance extends Container
 
     updateInstance(instance:DataTypes.Instance)
     {
-        //console.log("UPDATE INSTANCE", instance);
         this._instance = instance;
         if (this._instance.Status?.Value=="PENDING")
         {
