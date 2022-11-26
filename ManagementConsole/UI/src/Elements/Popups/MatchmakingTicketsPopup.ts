@@ -98,13 +98,16 @@ export class MatchmakingTicketsPopup extends Popup
                 replayEventTd='<td><a class="replayQueueEvent btn btn-primary btn-sm" id="' + ticketEvent.id +'" href="' + "#" + '">Replay</a></td>';
             }
 
-            html += '<tr>' +
-                '<td>' + ticketEvent.time + '</td>'+
-                '<td>' + ticketEvent["detail-type"] + '</td>'+
-                '<td>' + ticketEvent.detail.type + '</td>'+
-                viewEventDetailTd +
-                replayEventTd +
-                '</tr>'
+            if (ticketEvent.detail!=null)
+            {
+                html += '<tr>' +
+                    '<td>' + ticketEvent.time + '</td>'+
+                    '<td>' + ticketEvent["detail-type"] + '</td>'+
+                    '<td>' + ticketEvent.detail.type + '</td>'+
+                    viewEventDetailTd +
+                    replayEventTd +
+                    '</tr>';
+            }
         });
 
         this.element.find("table#matchmakingTicketEventsTable tbody").append(html);

@@ -6,12 +6,20 @@ import {Player, PlayerState, SceneDestination} from "./Player";
 import {Players} from "./Players";
 import {BaseContainer} from "./Abstract/BaseContainer";
 import {RoundedRectangle} from "./RoundedRectangle";
-import {Events} from "../Events/Events";
 import Timeline = Phaser.Tweens.Timeline;
 import {PlayerMatches} from "./PlayerMatches";
 import {ConsoleScene} from "../Scenes/ConsoleScene";
 import {DataTypes} from "../Data/DataTypes";
 import QueuePlacementEventDetail = DataTypes.QueuePlacementEventDetail;
+
+export class PlayerMatchState {
+
+    public static CREATED:string = "Created";
+    public static WAITING_FOR_PLAYERS:string = "WaitingForPlayers";
+    public static MOVING_TO_QUEUE:string = "MovingToQueue";
+    public static READY_FOR_PLACEMENT:string = "ReadyForPlacement";
+    public static MOVING_TO_INSTANCE:string = "MovingToInstance";
+}
 
 const parser = require('aws-arn-parser');
 
@@ -28,9 +36,13 @@ export class PlayerMatch extends BaseContainer
     protected _destinationIndex = 0;
     protected _placementEvent: QueuePlacementEventDetail;
     protected _placementResources: string[];
+    protected _state:string = PlayerMatchState.WAITING_FOR_PLAYERS;
 
     public static QUEUE_CREATOR="gamesessionqueue";
     public static MATCHMAKING_CREATOR="matchmakingconfiguration";
+
+    protected _queueDestination: SceneDestination = null;
+    protected _instanceDestination: SceneDestination = null;
 
     constructor (scene:Phaser.Scene, x:number, y:number, matchId:string, creatorArn:string)
     {
@@ -57,6 +69,43 @@ export class PlayerMatch extends BaseContainer
         this.setSize(16, 16);
         this.draw(16,16);
         this._bg.setVisible(false);
+    }
+
+    public set matchState(val:string)
+    {
+        this._state = val;
+    }
+
+    public get instanceDestination()
+    {
+        return this._instanceDestination;
+    }
+
+    public set instanceDestination(val:SceneDestination)
+    {
+        this._instanceDestination = val;
+        if (this._state == PlayerMatchState.READY_FOR_PLACEMENT)
+        {
+            this._state = PlayerMatchState.MOVING_TO_INSTANCE;
+            this.moveToDestination(this._instanceDestination);
+        }
+    }
+
+    public set queueDestination(val:SceneDestination)
+    {
+        this._state = PlayerMatchState.MOVING_TO_QUEUE;
+        this._queueDestination = val;
+        this.moveToDestination(this._queueDestination);
+    }
+
+    public get queueDestination()
+    {
+        return this._queueDestination;
+    }
+
+    public get matchState()
+    {
+        return this._state;
     }
 
     handleOver = () =>
@@ -92,11 +141,6 @@ export class PlayerMatch extends BaseContainer
             this.layoutContainer(0);
             this._players[playerId] = player;
 
-            if (this._placementEvent!=undefined && this._placementEvent.placedPlayerSessions.length == Object.values(this._players).length)
-            {
-                this.moveToNextDestination();
-            }
-
             return true;
         }
 
@@ -129,6 +173,7 @@ export class PlayerMatch extends BaseContainer
             this._players[playerId].storeEvent("REMOVING PLAYER FROM MATCH " + this._matchId);
             Players.getPlayer(playerId).scale=1;
             Players.getPlayer(playerId).unparentInPlace();
+            Players.getPlayer(playerId).playerState = PlayerState.WAITING_FOR_MATCH;
             delete this._players[playerId];
         }
     }
@@ -291,7 +336,6 @@ export class PlayerMatch extends BaseContainer
             {
                 destination.callback();
             }
-            this.moveToNextDestination();
         });
     }
 
@@ -304,7 +348,6 @@ export class PlayerMatch extends BaseContainer
     {
         this.visible=false;
     }
-
 
     public moveToCoordinates(destinationX:number, destinationY:number, disappearAfter:boolean=false, delay:number=0, callback:Function=null)
     {
@@ -389,7 +432,7 @@ export class PlayerMatch extends BaseContainer
                     playerIds.map((playerId)=>
                     {
                         Players.getPlayer(playerId).alpha=0;
-                        this._emitter.emit(Events.PLAYER_ADDED_TO_GAME_SESSION, playerId);
+                        Players.removePlayer(playerId);
                     });
                 }
             });
@@ -399,37 +442,9 @@ export class PlayerMatch extends BaseContainer
         this._moving=true;
     }
 
-    public addDestination(destination: SceneDestination)
+    public resetDestinations()
     {
-        this._destinations.push(destination);
-
-        if (!this._moving && this._placementEvent!=undefined && this._placementEvent.placedPlayerSessions.length == Object.values(this._players).length)
-        {
-            this.moveToNextDestination();
-        }
-    }
-
-    public moveToNextDestination()
-    {
-        if (this._moving)
-        {
-            return;
-        }
-        let nextDestination = this.getNextDestination();
-        if (nextDestination!=null)
-        {
-            this._destinationIndex++;
-            this.moveToDestination(nextDestination);
-        }
-    }
-
-    public getNextDestination():SceneDestination
-    {
-        if (this._destinations.length >= this._destinationIndex + 1)
-        {
-            return this._destinations[this._destinationIndex];
-        }
-
-        return null;
+        this._destinations=[];
+        this._destinationIndex = 0;
     }
 }

@@ -110,35 +110,35 @@ export class SettingsPanel extends Phaser.GameObjects.Container
                 break;
 
             case "addFakeFleet":
-                this._emitter.emit(Events.ADD_FAKE_FLEET);
+                this._emitter.emit(Events.ADD_DUMMY_FLEET);
                 break;
 
             case "addFakePlayer":
-                this._emitter.emit(Events.ADD_FAKE_PLAYER);
+                this._emitter.emit(Events.ADD_DUMMY_PLAYER);
                 break;
 
             case "addFakeMatch":
-                this._emitter.emit(Events.ADD_FAKE_MATCH);
+                this._emitter.emit(Events.ADD_DUMMY_MATCH);
                 break;
 
             case "addFakePlayerToMatch":
-                this._emitter.emit(Events.ADD_FAKE_PLAYER_TO_MATCH);
+                this._emitter.emit(Events.ADD_DUMMY_PLAYER_TO_MATCH);
                 break;
 
             case "addFakeInstance":
-                this._emitter.emit(Events.ADD_FAKE_INSTANCE);
+                this._emitter.emit(Events.ADD_DUMMY_INSTANCE);
                 break;
 
             case "addFakeMatchmakingConfig":
-                this._emitter.emit(Events.ADD_FAKE_MATCHMAKING_CONFIG);
+                this._emitter.emit(Events.ADD_DUMMY_MATCHMAKING_CONFIG);
                 break;
 
             case "addFakeQueue":
-                this._emitter.emit(Events.ADD_FAKE_QUEUE);
+                this._emitter.emit(Events.ADD_DUMMY_QUEUE);
                 break;
 
             case "addFakeAnimations":
-                this._emitter.emit(Events.ADD_FAKE_ANIMATIONS);
+                this._emitter.emit(Events.ADD_DUMMY_ANIMATIONS);
                 break;
         }
     }

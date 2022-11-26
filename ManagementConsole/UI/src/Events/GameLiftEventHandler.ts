@@ -7,7 +7,7 @@ import {ConsoleScene} from "../Scenes/ConsoleScene";
 import {Events} from "./Events";
 import StateMessage = DataTypes.StateMessage;
 import {ScreenResolution} from "../Data/ScreenResolution";
-import {PlayerMatch} from "../Elements/PlayerMatch";
+import {PlayerMatchState} from "../Elements/PlayerMatch";
 import {FlexMatchEventType} from "../Data/FlexMatchEventType";
 import {QueuePlacementEventType} from "../Data/QueuePlacementEventType";
 
@@ -95,6 +95,20 @@ export class GameLiftEventHandler
 
         if (flexMatchEvent.matchId && flexMatchEvent.type == FlexMatchEventType.POTENTIAL_MATCH_CREATED) // we have a match
         {
+            eventPlayerIds.map((playerId)=>
+            {
+                // break up any match involving these players, if one exists
+                let match = PlayerMatches.findPlayerMatch(playerId);
+                if (match)
+                {
+                    if (match.matchState!=PlayerMatchState.MOVING_TO_INSTANCE)
+                    {
+                        match?.breakUpMatch();
+                    }
+                }
+
+            });
+
             // construct match
             let match = consoleScene.initializeMatch(flexMatchEvent.matchId, resources[0]);
 
@@ -112,7 +126,29 @@ export class GameLiftEventHandler
                                 if (PlayerMatches.getMatch(flexMatchEvent.matchId).playerIds.length == eventPlayerIds.length) // once all the players are added to match, move to queue
                                 {
                                     Players.getPlayer(playerId).storeEvent("MATCH IS FULL");
-                                    PlayerMatches.getMatch(flexMatchEvent.matchId).moveToNextDestination();
+                                    let matchConfig = consoleScene.getMatchmakingConfigurations().getConfigByArn(resources[0]);
+                                    if (matchConfig && matchConfig.Data && matchConfig.Data.GameSessionQueueArns.length)
+                                    {
+                                        let queue = consoleScene.getQueues().getQueueByArn(matchConfig.Data.GameSessionQueueArns[0]);
+                                        if (queue)
+                                        {
+                                            let queueDestination:SceneDestination = {
+                                                container: queue,
+                                                type: "queue",
+                                                delay: 0,
+                                                disappearAfter:false,
+                                                callback: ()=>
+                                                {
+                                                    match.matchState = PlayerMatchState.READY_FOR_PLACEMENT;
+                                                    if (match.instanceDestination)
+                                                    {
+                                                        match.moveToDestination(match.instanceDestination);
+                                                    }
+                                                },
+                                            };
+                                            match.queueDestination = queueDestination;
+                                        }
+                                    }
                                 }
                                 else
                                 {
@@ -193,7 +229,6 @@ export class GameLiftEventHandler
 
     onQueuePlacementEvent(stateMessage:StateMessage)
     {
-        console.log(stateMessage);
         let queuePlacementEvent = stateMessage.QueuePlacementEventDetail;
         let resources = stateMessage.Resources;
         let consoleScene = ConsoleScene.getInstance();
@@ -234,28 +269,11 @@ export class GameLiftEventHandler
                     if (match==undefined) // flexmatch events haven't been processed yet, or queues being used without flexmatch
                     {
                         match = consoleScene.initializeMatch(queuePlacementEvent.placementId, resources[0]);
+                        match.matchState = PlayerMatchState.READY_FOR_PLACEMENT;
                         playerIds.map(playerId => match.addPlayerToMatch(playerId));
                     }
 
-                    if (match.getNextDestination()!=null) // match is already animating
-                    {
-                        return;
-                    }
-
-                    console.log(match);
                     match.placementEvent = queuePlacementEvent;
-
-                    if (match.creatorType==PlayerMatch.MATCHMAKING_CREATOR)
-                    {
-                        let queue = consoleScene.getQueues().getQueueByArn(resources[0]);
-                        let queueDestination:SceneDestination = {
-                            container: queue,
-                            type: "queue",
-                            delay:1000,
-                            disappearAfter:false,
-                        };
-                        match.addDestination(queueDestination);
-                    }
 
                     let instance = consoleScene.getFleets().getInstanceByIp(queuePlacementEvent.ipAddress);
                     if (instance)
@@ -266,7 +284,7 @@ export class GameLiftEventHandler
                             disappearAfter: true,
                             delay:1000,
                         };
-                        match.addDestination(instanceDestination);
+                        match.instanceDestination = instanceDestination;
                     }
                     else
                     {
@@ -277,8 +295,7 @@ export class GameLiftEventHandler
                             disappearAfter: true,
                             delay:1000,
                         };
-                        match.addDestination(fallbackDestination);
-
+                        match.instanceDestination = fallbackDestination;
                     }
 
                     break;

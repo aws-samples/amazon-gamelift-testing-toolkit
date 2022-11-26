@@ -60,15 +60,17 @@ export class PlayerMatches
 
     public static findPlayerMatch(playerId:string):PlayerMatch
     {
+        let foundMatch=null;
+
         this.getMatches().map(playerMatch =>
         {
             if (playerMatch.playerIds.indexOf(playerId)!==-1)
             {
-                return playerMatch;
+                foundMatch=playerMatch;
             }
         });
 
-        return null;
+        return foundMatch;
     }
 
     public static getMatches():PlayerMatch[]

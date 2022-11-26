@@ -3,7 +3,6 @@
 
 import {Player, PlayerState, SceneDestination} from "../Elements/Player";
 import {Fleets} from "../Elements/Fleets";
-import {Network} from "../Network/Network"
 import {DataTypes} from "../Data/DataTypes";
 import State = DataTypes.State;
 import {SettingsPanel} from "../Elements/Settings/SettingsPanel";
@@ -26,6 +25,7 @@ import {ScreenResolution} from "../Data/ScreenResolution";
 import {PlayerMatch} from "../Elements/PlayerMatch";
 import {MessageHandler} from "../Network/MessageHandler";
 import {GameLiftEventHandler} from "../Events/GameLiftEventHandler";
+import {DummyEventHandler} from "../Events/DummyEventHandler";
 
 export class ConsoleScene extends Phaser.Scene
 {
@@ -49,11 +49,13 @@ export class ConsoleScene extends Phaser.Scene
     constructor ()
     {
         super("Console");
+        ConsoleScene.instance = this;
         this._emitter = EventDispatcher.getInstance();
         new GameLiftEventHandler();
         new MessageHandler();
+        new DummyEventHandler();
         PopupHandler.registerScene(this);
-        ConsoleScene.instance = this;
+
     }
 
     static getInstance() {
@@ -301,14 +303,6 @@ export class ConsoleScene extends Phaser.Scene
         this._emitter.on(Events.ENABLE_ANIMATIONS, this.onEnableAnimations);
         this._emitter.on(Events.DISABLE_ANIMATIONS, this.onDisableAnimations);
         this._emitter.on(Events.CLOSE_SETTINGS, this.onSettingsClose);
-        this._emitter.on(Events.ADD_FAKE_FLEET, this.onAddFakeFleet);
-        this._emitter.on(Events.ADD_FAKE_PLAYER, this.onAddFakePlayer);
-        this._emitter.on(Events.ADD_FAKE_INSTANCE, this.onAddFakeInstance);
-        this._emitter.on(Events.ADD_FAKE_MATCHMAKING_CONFIG, this.onAddFakeMatchmakingConfig);
-        this._emitter.on(Events.ADD_FAKE_QUEUE, this.onAddFakeQueue);
-        this._emitter.on(Events.ADD_FAKE_ANIMATIONS, this.onAddFakeAnimations);
-        this._emitter.on(Events.ADD_FAKE_MATCH, this.onAddFakeMatch);
-        this._emitter.on(Events.ADD_FAKE_PLAYER_TO_MATCH, this.onAddFakePlayerToMatch);
         this._emitter.on(Events.SHOW_MATCHMAKING_CONFIG_QUEUES, this.onShowMatchmakingConfigQueues);
         this._emitter.on(Events.HIDE_MATCHMAKING_CONFIG_QUEUES, this.onHideLines);
         this._emitter.on(Events.SHOW_QUEUE_FLEETS, this.onShowQueueFleets);
@@ -322,6 +316,11 @@ export class ConsoleScene extends Phaser.Scene
         {
             this.processState(stateMessage.State);
         }
+    }
+
+    public set disableUpdates(val:boolean)
+    {
+        this._disableUpdates=val;
     }
 
     onPlayerAddedToGameSession = (playerId) =>
@@ -438,141 +437,6 @@ export class ConsoleScene extends Phaser.Scene
     {
         this._settingsPanel.hide();
         this._settingsButton.enable();
-    };
-
-    onAddFakeMatch = () =>
-    {
-        let match = PlayerMatches.createMatch(this, "dummymatch", "arn:aws:gamelift:eu-west-1:12345678:gamesessionqueue/Dummy-Queue");
-        this.add.existing(match);
-        match.x = 800;
-        match.y = 100;
-    };
-
-    onAddFakePlayerToMatch = () =>
-    {
-        let player = this.addPlayer();
-        PlayerMatches.getMatch("dummymatch").addPlayerToMatch(player.PlayerId);
-    };
-
-    onAddFakePlayer = () =>
-    {
-        this.addPlayer();
-    };
-
-    onAddFakeAnimations = async () =>
-    {
-        while(1)
-        {
-            let player = this.addPlayer(UUID());
-            let player2 = this.addPlayer(UUID());
-            let eventPlayerIds=[player.PlayerId, player2.PlayerId];
-
-            let numMatchmakers = this._matchmakingConfigurations.ChildElements.length;
-            let matchmakingConfig = this._matchmakingConfigurations.ChildElements[Math.floor(Math.random()*numMatchmakers)];
-            let matchmakerDestination:SceneDestination = {
-                container: matchmakingConfig,
-                type: "queue",
-                delay:1000,
-                disappearAfter:false,
-            };
-            player.addDestination(matchmakerDestination);
-            player2.addDestination(matchmakerDestination);
-
-            let matchId=UUID();
-
-            let match = PlayerMatches.createMatch(this, matchId, matchmakingConfig.Data.ConfigurationArn);
-            match.x = matchmakingConfig.x + Math.floor(Math.random() * matchmakingConfig.displayWidth);
-            if (ScreenResolution.displayResolution==ScreenResolution.RES_1080P)
-            {
-                match.y = this._queues.y - 15;
-            }
-            else
-            {
-                match.y = this._queues.y - 15;
-            }
-            this.add.existing(match);
-
-            let numFleets = this._fleets.ChildElements.length;
-            let numQueues = this._queues.ChildElements.length;
-            let queue = this._queues.ChildElements[Math.floor(Math.random()*numQueues)];
-            let fleet = this._fleets.ChildElements[Math.floor(Math.random()*numFleets)];
-            let numInstances = fleet.ChildElements.length;
-            let instance = fleet.ChildElements[Math.floor(Math.random()*numInstances)];
-
-            eventPlayerIds.map((playerId)=> // make players move to match destination and then get added to the match
-            {
-                let matchDestination: SceneDestination = {
-                    type: "match",
-                    container: match,
-                    delay: Math.random()*3000,
-                    callback: () => {
-                        match.addPlayerToMatch(playerId);
-
-                        if (PlayerMatches.getMatch(matchId).playerIds.length == eventPlayerIds.length) // once all the players are added to match, match is full, move to queue
-                        {
-                            Players.getPlayer(playerId).storeEvent("MATCH IS FULL");
-                            PlayerMatches.getMatch(matchId).moveToNextDestination();
-                        } else {
-                            Players.getPlayer(playerId).storeEvent("MATCH NOT FULL YET - EXPECTING " + PlayerMatches.getMatch(matchId).playerIds.length + " BUT GOT " + eventPlayerIds.length);
-                        }
-
-                        let queueDestination:SceneDestination = {
-                            container: queue,
-                            type: "queue",
-                            delay:1000,
-                            disappearAfter:false,
-                        };
-                        match.addDestination(queueDestination);
-
-                        let instanceDestination:SceneDestination = {
-                            container: instance,
-                            type: "instance",
-                            disappearAfter: true,
-                            delay:1000,
-                        };
-                        match.addDestination(instanceDestination);
-                    }
-                }
-                Players.getPlayer(playerId).addDestination(matchDestination);
-            });
-
-            await new Promise(r => setTimeout(r, Math.ceil(Math.random()*500)+200));
-        }
-    };
-
-    onAddFakeFleet = (numInstances=10) =>
-    {
-        numInstances = Math.ceil(Math.random()*20);
-        if (numInstances<5)
-        {
-            numInstances=3;
-        }
-        this._disableUpdates=true;
-        let fleetId = Phaser.Utils.String.UUID();
-        this._fleets.addFleet(fleetId, true);
-        for (let i=0;i<numInstances;i++)
-        {
-            this.onAddFakeInstance(fleetId);
-        }
-    };
-
-    onAddFakeMatchmakingConfig = () =>
-    {
-        this._matchmakingConfigurations.addConfig(Phaser.Utils.String.UUID(), true);
-    };
-
-    onAddFakeQueue = () =>
-    {
-        this._queues.addGameSessionQueue(Phaser.Utils.String.UUID(), true);
-    };
-
-    onAddFakeInstance = (fleetId=null) =>
-    {
-        if (fleetId==null)
-        {
-            fleetId = Object.keys(this._fleets.Fleets)[0];
-        }
-        this._fleets.Fleets[fleetId].addInstance(Phaser.Utils.String.UUID(), true);
     };
 
     onSceneClick = (pointer, localX, localY, event)  =>
