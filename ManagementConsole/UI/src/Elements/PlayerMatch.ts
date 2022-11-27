@@ -3,14 +3,16 @@
 
 import 'phaser';
 import {Player, PlayerState, SceneDestination} from "./Player";
-import {Players} from "./Players";
+import {PlayerManager} from "../Managers/PlayerManager";
 import {BaseContainer} from "./Abstract/BaseContainer";
 import {RoundedRectangle} from "./RoundedRectangle";
 import Timeline = Phaser.Tweens.Timeline;
-import {PlayerMatches} from "./PlayerMatches";
+import {MatchManager} from "../Managers/MatchManager";
 import {ConsoleScene} from "../Scenes/ConsoleScene";
 import {DataTypes} from "../Data/DataTypes";
 import QueuePlacementEventDetail = DataTypes.QueuePlacementEventDetail;
+import {GameSessionQueue} from "./GameSessionQueue";
+import Rectangle = Phaser.Geom.Rectangle;
 
 export class PlayerMatchState {
 
@@ -37,6 +39,7 @@ export class PlayerMatch extends BaseContainer
     protected _placementEvent: QueuePlacementEventDetail;
     protected _placementResources: string[];
     protected _state:string = PlayerMatchState.WAITING_FOR_PLAYERS;
+    protected _padding:number = 0;
 
     public static QUEUE_CREATOR="gamesessionqueue";
     public static MATCHMAKING_CREATOR="matchmakingconfiguration";
@@ -52,11 +55,11 @@ export class PlayerMatch extends BaseContainer
         this._creatorArn = creatorArn;
 
         let arn = parser(creatorArn);
-        if (arn.relativeId.indexOf("matchmakingconfiguration")==0)
+        if (arn.relativeId.indexOf(PlayerMatch.MATCHMAKING_CREATOR)==0)
         {
             this._creatorType = PlayerMatch.MATCHMAKING_CREATOR;
         }
-        else if (arn.relativeId.indexOf("gamesessionqueue")==0)
+        else if (arn.relativeId.indexOf(PlayerMatch.QUEUE_CREATOR)==0)
         {
             this._creatorType = PlayerMatch.QUEUE_CREATOR;
         }
@@ -87,6 +90,7 @@ export class PlayerMatch extends BaseContainer
         if (this._state == PlayerMatchState.READY_FOR_PLACEMENT)
         {
             this._state = PlayerMatchState.MOVING_TO_INSTANCE;
+            MatchManager.deleteMatchPosition(this.matchId);
             this.moveToDestination(this._instanceDestination);
         }
     }
@@ -94,6 +98,15 @@ export class PlayerMatch extends BaseContainer
     public set queueDestination(val:SceneDestination)
     {
         this._state = PlayerMatchState.MOVING_TO_QUEUE;
+
+        let queue = val.container as GameSessionQueue;
+        let d = queue.getWorldTranslation();
+        let containerPosition:Rectangle = new Rectangle(d["translateX"], d["translateY"], queue.displayWidth, queue.displayHeight);
+
+        const matchPos = MatchManager.createMatchPosition(this, containerPosition, this.creatorArn, this.playerIds.length);
+        val.x = matchPos.x;
+        val.y = matchPos.y;
+
         this._queueDestination = val;
         this.moveToDestination(this._queueDestination);
     }
@@ -113,13 +126,13 @@ export class PlayerMatch extends BaseContainer
         console.log("OVER MATCH!", this.matchId, this.playerIds);
         this.playerIds.map(playerId =>
         {
-            Players.getPlayer(playerId).handleOver();
+            PlayerManager.getPlayer(playerId).handleOver();
         });
     };
 
     public addPlayerToMatch(playerId)
     {
-        if (PlayerMatches.getMatch(this.matchId)==undefined)
+        if (MatchManager.getMatch(this.matchId)==undefined)
         {
             // this match has already been broken up!
             return false;
@@ -127,7 +140,7 @@ export class PlayerMatch extends BaseContainer
 
         if (this._players[playerId]==undefined)
         {
-            let player = Players.getPlayer(playerId);
+            let player = PlayerManager.getPlayer(playerId);
             player.scale=0.75;
             player.playerState=PlayerState.IN_MATCH;
             this.add(player);
@@ -138,7 +151,7 @@ export class PlayerMatch extends BaseContainer
 
             player.x = this._bg.x;
             player.y = this._bg.y;
-            this.layoutContainer(0);
+            this.layoutContainer();
             this._players[playerId] = player;
 
             return true;
@@ -155,7 +168,7 @@ export class PlayerMatch extends BaseContainer
             this.removePlayerFromMatch(playerId);
         });
 
-        PlayerMatches.destroyMatch(this._matchId);
+        MatchManager.destroyMatch(this._matchId);
     }
 
     public addPlayersToMatch(playerIds)
@@ -171,9 +184,9 @@ export class PlayerMatch extends BaseContainer
         if (this._players[playerId])
         {
             this._players[playerId].storeEvent("REMOVING PLAYER FROM MATCH " + this._matchId);
-            Players.getPlayer(playerId).scale=1;
-            Players.getPlayer(playerId).unparentInPlace();
-            Players.getPlayer(playerId).playerState = PlayerState.WAITING_FOR_MATCH;
+            PlayerManager.getPlayer(playerId).scale=1;
+            PlayerManager.getPlayer(playerId).unparentInPlace();
+            PlayerManager.getPlayer(playerId).playerState = PlayerState.WAITING_FOR_MATCH;
             delete this._players[playerId];
         }
     }
@@ -251,20 +264,34 @@ export class PlayerMatch extends BaseContainer
 
     public handleClick(localX, localY)
     {
-        /*
-        if (this._fleetMenu.menuVisible==false)
-        {
-            this._emitter.emit(Events.CLOSE_MENUS);
-            this._emitter.emit(Events.SHOW_FLEET_POPUP, new PopupClickEvent(this, localX, localY));
-        }
-        else
-        {
-            this._emitter.emit(Events.CLOSE_MENUS);
-        }
-         */
     }
 
-    layoutContainer(padding:number=2)
+    public getLayoutOptions(player:Player, numChildren:number)
+    {
+        let columns = Math.ceil(Math.sqrt(numChildren));
+        let rows = Math.ceil(numChildren / columns);
+
+        return {
+            width: columns,
+            height: rows,
+            position: Phaser.Display.Align.CENTER,
+            cellWidth: player.displayWidth+this._padding,
+            cellHeight: player.displayHeight+this._padding-2,
+            x: this._groupOffsetX,
+            y: this._groupOffsetY,
+        };
+    }
+
+    public getExpectedMatchDims(player:Player, numPlayers:number)
+    {
+        const layoutOptions = this.getLayoutOptions(player, numPlayers);
+        return {
+            width: layoutOptions.width * layoutOptions.cellWidth,
+            height: layoutOptions.height * layoutOptions.cellHeight + 2,
+        }
+    }
+
+    layoutContainer()
     {
         this.setupEventListeners();
 
@@ -279,23 +306,11 @@ export class PlayerMatch extends BaseContainer
         {
             return;
         }
-        let firstElement = this.ChildElements[0];
 
+        let firstElement = this.ChildElements[0];
         let groupChildren = this._elementGroup.getChildren();
 
-        //let columns = Math.floor(this._bg.displayWidth/(firstElement.displayWidth+padding));
-        let columns = Math.ceil(Math.sqrt(groupChildren.length));
-        this._layoutRows = Math.ceil(Math.sqrt(groupChildren.length));
-
-        let layoutOptions = {
-            width: columns,
-            height: this._layoutRows,
-            position: Phaser.Display.Align.CENTER,
-            cellWidth: firstElement.displayWidth+padding,
-            cellHeight: firstElement.displayHeight+padding-2    ,
-            x: this._groupOffsetX,
-            y: this._groupOffsetY,
-        };
+        let layoutOptions = this.getLayoutOptions(firstElement, groupChildren.length);
 
         Phaser.Actions.GridAlign(groupChildren, layoutOptions);
 
@@ -314,7 +329,7 @@ export class PlayerMatch extends BaseContainer
     {
         let destinationX = 0, destinationY = 0;
 
-        if (destination.container!=null)
+        if (destination.container!=null && destination.type!="queue")
         {
             let tempMatrix = new Phaser.GameObjects.Components.TransformMatrix();
             let tempParentMatrix = new Phaser.GameObjects.Components.TransformMatrix();
@@ -375,11 +390,11 @@ export class PlayerMatch extends BaseContainer
                 {
                     if (destinationX > this.x)
                     {
-                        Players.getPlayer(playerId).playAnimation("right");
+                        PlayerManager.getPlayer(playerId).playAnimation("right");
                     }
                     else
                     {
-                        Players.getPlayer(playerId).playAnimation("left");
+                        PlayerManager.getPlayer(playerId).playAnimation("left");
                     }
                 })
             },
@@ -389,11 +404,11 @@ export class PlayerMatch extends BaseContainer
                 {
                     if (destinationY > this.y)
                     {
-                        Players.getPlayer(playerId).playAnimation("down");
+                        PlayerManager.getPlayer(playerId).playAnimation("down");
                     }
                     else
                     {
-                        Players.getPlayer(playerId).playAnimation("up");
+                        PlayerManager.getPlayer(playerId).playAnimation("up");
                     }
                 })
             }
@@ -408,8 +423,8 @@ export class PlayerMatch extends BaseContainer
                 this._moving=false;
                 this.playerIds.map((playerId)=>
                 {
-                    Players.getPlayer(playerId).playAnimation("down");
-                    Players.getPlayer(playerId).stopAnimation();
+                    PlayerManager.getPlayer(playerId).playAnimation("down");
+                    PlayerManager.getPlayer(playerId).stopAnimation();
                 })
 
                 if (callback)
@@ -431,8 +446,8 @@ export class PlayerMatch extends BaseContainer
                     this.breakUpMatch();
                     playerIds.map((playerId)=>
                     {
-                        Players.getPlayer(playerId).alpha=0;
-                        Players.removePlayer(playerId);
+                        PlayerManager.getPlayer(playerId).alpha=0;
+                        PlayerManager.removePlayer(playerId);
                     });
                 }
             });

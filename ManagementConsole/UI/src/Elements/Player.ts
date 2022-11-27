@@ -9,7 +9,7 @@ import Container = Phaser.GameObjects.Container;
 import Timeline = Phaser.Tweens.Timeline;
 import {ConsoleScene} from "../Scenes/ConsoleScene";
 import {PlayerSprite} from "./PlayerSprite";
-import {Players} from "./Players";
+import {PlayerManager} from "../Managers/PlayerManager";
 
 export class SceneDestination
 {

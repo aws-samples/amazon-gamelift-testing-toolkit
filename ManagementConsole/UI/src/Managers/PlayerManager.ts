@@ -2,54 +2,54 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import 'phaser';
-import {Player} from "./Player";
+import {Player} from "../Elements/Player";
 
-export class Players
+export class PlayerManager
 {
     protected static _players: Record<string, Player>;
 
     public static hidePlayers()
     {
-        Players.getPlayers()?.map(player => player.hidePlayer());
+        PlayerManager.getPlayers()?.map(player => player.hidePlayer());
     }
 
     public static showPlayers()
     {
-        Players.getPlayers()?.map(player => player.showPlayer());
+        PlayerManager.getPlayers()?.map(player => player.showPlayer());
     }
 
     public static addPlayer(player:Player)
     {
-        if (Players._players==null)
+        if (PlayerManager._players==null)
         {
-            Players._players = {};
+            PlayerManager._players = {};
         }
 
-        Players._players[player.PlayerId] = player;
+        PlayerManager._players[player.PlayerId] = player;
     }
 
     public static removePlayer(playerId:string)
     {
-        if (Players._players==null)
+        if (PlayerManager._players==null)
         {
-            Players._players = {};
+            PlayerManager._players = {};
         }
 
-        if (Players._players[playerId])
+        if (PlayerManager._players[playerId])
         {
-            Players._players[playerId].destroyTimeline();
-            Players._players[playerId].destroy();
-            delete Players._players[playerId];
+            PlayerManager._players[playerId].destroyTimeline();
+            PlayerManager._players[playerId].destroy();
+            delete PlayerManager._players[playerId];
         }
     }
 
     public static getPlayer(playerId):Player
     {
-        if (Players._players==null)
+        if (PlayerManager._players==null)
         {
-            Players._players = {};
+            PlayerManager._players = {};
         }
-        return Players._players[playerId];
+        return PlayerManager._players[playerId];
     }
 
     public static getPlayers():Player[]
@@ -62,13 +62,13 @@ export class Players
 
     public static getAddedPlayers():Player[]
     {
-        return Players.getPlayers().filter(player=>player.added);
+        return PlayerManager.getPlayers().filter(player=>player.added);
     }
 
     public static playerOverlaps(player:Player)
     {
         let overlaps:boolean = false;
-        Players.getAddedPlayers().map((currentPlayer)=>
+        PlayerManager.getAddedPlayers().map((currentPlayer)=>
         {
             if (Phaser.Geom.Intersects.RectangleToRectangle(player.getBounds(), currentPlayer.getBounds()))
             {
@@ -87,7 +87,7 @@ export class Players
     {
         let maxAttempts=20;
         let attempts=0;
-        while (Players.playerOverlaps(player))
+        while (PlayerManager.playerOverlaps(player))
         {
             let xPos = Phaser.Math.Between(min, max);
             player.x = xPos;

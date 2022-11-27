@@ -1,7 +1,7 @@
-import {PlayerMatches} from "../Elements/PlayerMatches";
-import {SceneDestination} from "../Elements/Player";
+import {MatchManager} from "../Managers/MatchManager";
+import {Player, SceneDestination} from "../Elements/Player";
 import {ScreenResolution} from "../Data/ScreenResolution";
-import {Players} from "../Elements/Players";
+import {PlayerManager} from "../Managers/PlayerManager";
 import {PlayerMatchState} from "../Elements/PlayerMatch";
 import {EventDispatcher} from "./EventDispatcher";
 import {Events} from "./Events";
@@ -44,7 +44,7 @@ export class DummyEventHandler
 
     onAddDummyMatch = () =>
     {
-        let match = PlayerMatches.createMatch(this._consoleScene, "dummymatch", "arn:aws:gamelift:eu-west-1:12345678:gamesessionqueue/Dummy-Queue");
+        let match = MatchManager.createMatch(this._consoleScene, "dummymatch", "arn:aws:gamelift:eu-west-1:12345678:gamesessionqueue/Dummy-Queue");
         this._consoleScene.add.existing(match);
         match.x = 800;
         match.y = 100;
@@ -53,7 +53,7 @@ export class DummyEventHandler
     onAddDummyPlayerToMatch = () =>
     {
         let player = this._consoleScene.addPlayer();
-        PlayerMatches.getMatch("dummymatch").addPlayerToMatch(player.PlayerId);
+        MatchManager.getMatch("dummymatch").addPlayerToMatch(player.PlayerId);
     };
 
     onAddDummyPlayer = () =>
@@ -63,11 +63,17 @@ export class DummyEventHandler
 
     onAddDummyAnimations = async () =>
     {
-        while(1)
+        for (let numMatches=0; numMatches<300; numMatches++)
         {
-            let player = this._consoleScene.addPlayer(UUID());
-            let player2 = this._consoleScene.addPlayer(UUID());
-            let eventPlayerIds=[player.PlayerId, player2.PlayerId];
+            let players:Player[] = [];
+            let eventPlayerIds:string[] = [];
+
+            let numPlayers = Phaser.Math.Between(4, 4);
+            for (let i=0; i<numPlayers; i++)
+            {
+                players[i] = this._consoleScene.addPlayer(UUID());
+                eventPlayerIds.push(players[i].PlayerId);
+            }
 
             let numMatchmakers = this._consoleScene.getMatchmakingConfigurations().ChildElements.length;
             let matchmakingConfig = this._consoleScene.getMatchmakingConfigurations().ChildElements[Math.floor(Math.random()*numMatchmakers)];
@@ -77,11 +83,14 @@ export class DummyEventHandler
                 delay:1000,
                 disappearAfter:false,
             };
-            player.addDestination(matchmakerDestination);
-            player2.addDestination(matchmakerDestination);
+
+            for (let i=0; i<numPlayers; i++)
+            {
+                players[i].addDestination(matchmakerDestination);
+            }
 
             let matchId=UUID();
-            let match = this._consoleScene.initializeMatch(matchId, matchmakingConfig.Data.ConfigurationArn);
+            let match = MatchManager.initializeMatch(matchId, matchmakingConfig.Data.ConfigurationArn, players.length);
 
             let numQueues = this._consoleScene.getQueues().ChildElements.length;
             let queue = this._consoleScene.getQueues().ChildElements[Math.floor(Math.random()*numQueues)];
@@ -93,11 +102,11 @@ export class DummyEventHandler
                     container: match,
                     delay: Math.random()*3000,
                     callback: () => {
-                        match.addPlayerToMatch(playerId);
 
-                        if (PlayerMatches.getMatch(matchId).playerIds.length == eventPlayerIds.length) // once all the players are added to match, match is full, move to queue
+                        match.addPlayerToMatch(playerId);
+                        if (MatchManager.getMatch(matchId).playerIds.length == eventPlayerIds.length) // once all the players are added to match, match is full, move to queue
                         {
-                            Players.getPlayer(playerId).storeEvent("MATCH IS FULL");
+                            PlayerManager.getPlayer(playerId).storeEvent("MATCH IS FULL");
                             let queueDestination:SceneDestination = {
                                 container: queue,
                                 type: "queue",
@@ -105,7 +114,7 @@ export class DummyEventHandler
                                 disappearAfter:false,
                                 callback: () =>
                                 {
-                                    PlayerMatches.getMatch(matchId).matchState = PlayerMatchState.READY_FOR_PLACEMENT;
+                                    MatchManager.getMatch(matchId).matchState = PlayerMatchState.READY_FOR_PLACEMENT;
 
                                     let instanceDestination:SceneDestination = null;
                                     let instances=[];
@@ -137,21 +146,20 @@ export class DummyEventHandler
                                             delay:1000,
                                         };
                                     }
+
                                     match.instanceDestination=instanceDestination;
-                                    match.moveToDestination(match.instanceDestination);
                                 },
                             };
 
                             match.queueDestination=queueDestination;
 
                         } else {
-                            Players.getPlayer(playerId).storeEvent("MATCH NOT FULL YET - EXPECTING " + PlayerMatches.getMatch(matchId).playerIds.length + " BUT GOT " + eventPlayerIds.length);
+                            PlayerManager.getPlayer(playerId).storeEvent("MATCH NOT FULL YET - EXPECTING " + MatchManager.getMatch(matchId).playerIds.length + " BUT GOT " + eventPlayerIds.length);
                         }
                     }
                 }
-                Players.getPlayer(playerId).addDestination(matchDestination);
+                PlayerManager.getPlayer(playerId).addDestination(matchDestination);
             });
-
 
             await new Promise(r => setTimeout(r, Math.ceil(Math.random()*500)+200));
         }

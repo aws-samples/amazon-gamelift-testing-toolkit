@@ -12,13 +12,13 @@ import {SettingsButton} from "../Elements/Buttons/SettingsButton";
 import UUID = Phaser.Utils.String.UUID;
 import {MatchmakingConfigs} from "../Elements/MatchmakingConfigs";
 import {GameSessionQueues} from "../Elements/GameSessionQueues";
-import {Players} from "../Elements/Players";
+import {PlayerManager} from "../Managers/PlayerManager";
 import {PopupHandler} from "../Elements/Popups/PopupHandler";
 import {MatchmakingConfig} from "../Elements/MatchmakingConfig";
 import {GameSessionQueue} from "../Elements/GameSessionQueue";
 import Alias = DataTypes.Alias;
 import {ToggleAnimationButton} from "../Elements/Buttons/ToggleAnimationButton";
-import {PlayerMatches} from "../Elements/PlayerMatches";
+import {MatchManager} from "../Managers/MatchManager";
 import Sprite = Phaser.GameObjects.Sprite;
 import {Fleet} from "../Elements/Fleet";
 import {ScreenResolution} from "../Data/ScreenResolution";
@@ -26,6 +26,7 @@ import {PlayerMatch} from "../Elements/PlayerMatch";
 import {MessageHandler} from "../Network/MessageHandler";
 import {GameLiftEventHandler} from "../Events/GameLiftEventHandler";
 import {DummyEventHandler} from "../Events/DummyEventHandler";
+import Rectangle = Phaser.Geom.Rectangle;
 
 export class ConsoleScene extends Phaser.Scene
 {
@@ -87,7 +88,7 @@ export class ConsoleScene extends Phaser.Scene
 
         window.setInterval(()=>
         {
-            let players= Players.getPlayers();
+            let players= PlayerManager.getPlayers();
 
             let now = Date.now();
 
@@ -96,12 +97,12 @@ export class ConsoleScene extends Phaser.Scene
                 let secondsSinceLastSeen = (now- player.lastSeen) / 1000;
                 if (secondsSinceLastSeen>=30 && (player.playerState==PlayerState.RESET || player.playerState==PlayerState.CREATED))
                 {
-                    Players.removePlayer(player.PlayerId);
+                    PlayerManager.removePlayer(player.PlayerId);
                 }
                 else
                 if (secondsSinceLastSeen>=300 && player.playerState==PlayerState.WAITING_FOR_MATCH)
                 {
-                    Players.removePlayer(player.PlayerId);
+                    PlayerManager.removePlayer(player.PlayerId);
                 }
             });
         }, 5000);
@@ -131,7 +132,7 @@ export class ConsoleScene extends Phaser.Scene
         return this._fleets;
     }
 
-    addPlayer(playerId:string=null)
+    addPlayer(playerId:string=null):Player
     {
         let fakePlayer:boolean = false;
         if (playerId==null)
@@ -139,7 +140,7 @@ export class ConsoleScene extends Phaser.Scene
             playerId = UUID();
             fakePlayer=true;
         }
-        let player = Players.getPlayer(playerId);
+        let player = PlayerManager.getPlayer(playerId);
         if (player==undefined)
         {
             player = new Player(this, 0, 0, playerId);
@@ -149,7 +150,7 @@ export class ConsoleScene extends Phaser.Scene
 
         if (player.added==false)
         {
-            Players.addPlayer(player);
+            PlayerManager.addPlayer(player);
             player.playAnimation("down");
             player.stopAnimation();
             player.x = 400;
@@ -157,11 +158,11 @@ export class ConsoleScene extends Phaser.Scene
 
             if (ScreenResolution.displayResolution==ScreenResolution.RES_720P)
             {
-                Players.setClearXPos(player, 200, 1000);
+                PlayerManager.setClearXPos(player, 200, 1000);
             }
             else
             {
-                Players.setClearXPos(player, 200, 1720);
+                PlayerManager.setClearXPos(player, 200, 1720);
             }
             player.initialX = player.x;
             player.initialY = player.y;
@@ -182,53 +183,6 @@ export class ConsoleScene extends Phaser.Scene
         }
 
         return player;
-    }
-
-    initializeMatch = (matchId:string, creatorArn:string):PlayerMatch =>
-    {
-        let match = PlayerMatches.getMatch(matchId);
-
-        // if match doesn't exist yet, then create it
-        if (match==undefined)
-        {
-            match = PlayerMatches.createMatch(this, matchId, creatorArn);
-            this.add.existing(match);
-
-            // config Arn is set, then update match
-            if (creatorArn!=null)
-            {
-                if (match.creatorType == PlayerMatch.MATCHMAKING_CREATOR)
-                {
-                    let matchmakingConfig = this._matchmakingConfigurations.getConfigByArn(creatorArn);
-                    match.x = matchmakingConfig.x + Math.floor(Math.random() * matchmakingConfig.displayWidth);
-                    if (ScreenResolution.displayResolution==ScreenResolution.RES_720P)
-                    {
-                        match.y = 220;
-                    }
-                    else
-                    {
-                        match.y = 375;
-                    }
-                }
-                else
-                if (match.creatorType == PlayerMatch.QUEUE_CREATOR)
-                {
-                    let queue = this._queues.getQueueByArn(creatorArn);
-                    match.x = queue.x + Math.floor(Math.random() * queue.displayWidth);
-                    if (ScreenResolution.displayResolution==ScreenResolution.RES_720P)
-                    {
-                        match.y = 320;
-                    }
-                    else
-                    {
-                        match.y = 450;
-                    }
-                }
-                match.creatorArn = creatorArn;
-            }
-        }
-
-        return match;
     }
 
     processState(state:State)
@@ -325,22 +279,22 @@ export class ConsoleScene extends Phaser.Scene
 
     onPlayerAddedToGameSession = (playerId) =>
     {
-        Players.removePlayer(playerId);
+        PlayerManager.removePlayer(playerId);
     }
 
     onEnableAnimations = () =>
     {
         ConsoleScene.animationsEnabled=true;
-        Players.showPlayers();
-        PlayerMatches.showMatches();
+        PlayerManager.showPlayers();
+        MatchManager.showMatches();
         this._fleets.redrawFleets();
     }
 
     onDisableAnimations = () =>
     {
         ConsoleScene.animationsEnabled=false;
-        Players.hidePlayers();
-        PlayerMatches.hideMatches();
+        PlayerManager.hidePlayers();
+        MatchManager.hideMatches();
         this._fleets.redrawFleets();
     }
 

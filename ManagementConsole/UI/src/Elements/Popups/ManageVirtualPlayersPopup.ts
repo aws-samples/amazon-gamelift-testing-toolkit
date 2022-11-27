@@ -91,7 +91,6 @@ export class ManageVirtualPlayersPopup extends Popup
                 html+='<tr><td>' + event.Timestamp + '</td><td>' + event.Message + '</td></tr>';
             });
 
-            console.log(html);
             $('#virtualPlayersLogsTable tbody').html(html);
             $('.virtualPlayersContent').hide();
             $('.virtualPlayersLogsContent').show();
@@ -205,10 +204,6 @@ export class ManageVirtualPlayersPopup extends Popup
 
         if (el.hasClass("viewLogs"))
         {
-            console.log(el);
-            console.log(el.data("loggroup"));
-            console.log(el.data("logstream"));
-
             Network.sendObject({Type:"GetCloudWatchLogs", LogGroup:el.data("loggroup"), LogStream: el.data("logstream")});
         }
     };

@@ -1,7 +1,7 @@
 import {EventDispatcher} from "./EventDispatcher";
 import {PlayerState, SceneDestination} from "../Elements/Player";
-import {PlayerMatches} from "../Elements/PlayerMatches";
-import {Players} from "../Elements/Players";
+import {MatchManager} from "../Managers/MatchManager";
+import {PlayerManager} from "../Managers/PlayerManager";
 import {DataTypes} from "../Data/DataTypes";
 import {ConsoleScene} from "../Scenes/ConsoleScene";
 import {Events} from "./Events";
@@ -98,7 +98,7 @@ export class GameLiftEventHandler
             eventPlayerIds.map((playerId)=>
             {
                 // break up any match involving these players, if one exists
-                let match = PlayerMatches.findPlayerMatch(playerId);
+                let match = MatchManager.findPlayerMatch(playerId);
                 if (match)
                 {
                     if (match.matchState!=PlayerMatchState.MOVING_TO_INSTANCE)
@@ -110,11 +110,11 @@ export class GameLiftEventHandler
             });
 
             // construct match
-            let match = consoleScene.initializeMatch(flexMatchEvent.matchId, resources[0]);
+            let match = MatchManager.initializeMatch(flexMatchEvent.matchId, resources[0], eventPlayerIds.length);
 
             eventPlayerIds.map((playerId)=> // make players move to match destination and then get added to the match
             {
-                if (Players.getPlayer(playerId).playerState!=PlayerState.IN_MATCH)
+                if (PlayerManager.getPlayer(playerId).playerState!=PlayerState.IN_MATCH)
                 {
                     let matchDestination:SceneDestination = {
                         type: "match",
@@ -123,9 +123,9 @@ export class GameLiftEventHandler
                         {
                             if (match.addPlayerToMatch(playerId))
                             {
-                                if (PlayerMatches.getMatch(flexMatchEvent.matchId).playerIds.length == eventPlayerIds.length) // once all the players are added to match, move to queue
+                                if (MatchManager.getMatch(flexMatchEvent.matchId).playerIds.length == eventPlayerIds.length) // once all the players are added to match, move to queue
                                 {
-                                    Players.getPlayer(playerId).storeEvent("MATCH IS FULL");
+                                    PlayerManager.getPlayer(playerId).storeEvent("MATCH IS FULL");
                                     let matchConfig = consoleScene.getMatchmakingConfigurations().getConfigByArn(resources[0]);
                                     if (matchConfig && matchConfig.Data && matchConfig.Data.GameSessionQueueArns.length)
                                     {
@@ -135,7 +135,7 @@ export class GameLiftEventHandler
                                             let queueDestination:SceneDestination = {
                                                 container: queue,
                                                 type: "queue",
-                                                delay: 0,
+                                                delay: 1000,
                                                 disappearAfter:false,
                                                 callback: ()=>
                                                 {
@@ -152,20 +152,20 @@ export class GameLiftEventHandler
                                 }
                                 else
                                 {
-                                    Players.getPlayer(playerId).storeEvent("MATCH NOT FULL YET - EXPECTING " + PlayerMatches.getMatch(flexMatchEvent.matchId).playerIds.length + " BUT GOT " + eventPlayerIds.length);
+                                    PlayerManager.getPlayer(playerId).storeEvent("MATCH NOT FULL YET - EXPECTING " + MatchManager.getMatch(flexMatchEvent.matchId).playerIds.length + " BUT GOT " + eventPlayerIds.length);
                                 }
                             }
                             else
                             {
-                                Players.getPlayer(playerId).resetPlayer();
+                                PlayerManager.getPlayer(playerId).resetPlayer();
                             }
                         }
                     }
-                    Players.getPlayer(playerId).destroyTimeline();
-                    Players.getPlayer(playerId).storeEvent(flexMatchEvent);
-                    Players.getPlayer(playerId).storeEvent(matchDestination);
-                    Players.getPlayer(playerId).playerState = PlayerState.WALKING_TO_MATCH;
-                    Players.getPlayer(playerId).addDestination(matchDestination);
+                    PlayerManager.getPlayer(playerId).destroyTimeline();
+                    PlayerManager.getPlayer(playerId).storeEvent(flexMatchEvent);
+                    PlayerManager.getPlayer(playerId).storeEvent(matchDestination);
+                    PlayerManager.getPlayer(playerId).playerState = PlayerState.WALKING_TO_MATCH;
+                    PlayerManager.getPlayer(playerId).addDestination(matchDestination);
                 }
             });
 
@@ -180,17 +180,17 @@ export class GameLiftEventHandler
                 {
                     ticket.players.map((player)=>
                     {
-                        Players.getPlayer(player.playerId).activeTicketId = ticket.ticketId;
+                        PlayerManager.getPlayer(player.playerId).activeTicketId = ticket.ticketId;
                     });
                 }
             });
 
             eventPlayerIds.map((playerId)=>
             {
-                if (Players.getPlayer(playerId).playerState!=PlayerState.WALKING_TO_MATCH && Players.getPlayer(playerId).playerState!=PlayerState.IN_MATCH) // in case events arrive out of order
+                if (PlayerManager.getPlayer(playerId).playerState!=PlayerState.WALKING_TO_MATCH && PlayerManager.getPlayer(playerId).playerState!=PlayerState.IN_MATCH) // in case events arrive out of order
                 {
                     // break up any match involving these players, if one exists
-                    let match = PlayerMatches.findPlayerMatch(playerId);
+                    let match = MatchManager.findPlayerMatch(playerId);
                     if (match)
                     {
                         match?.breakUpMatch();
@@ -203,10 +203,10 @@ export class GameLiftEventHandler
                         disappearAfter:false,
                         delay:0,
                     };
-                    Players.getPlayer(playerId).storeEvent(flexMatchEvent);
-                    Players.getPlayer(playerId).storeEvent(destination);
-                    Players.getPlayer(playerId).playerState = PlayerState.WAITING_FOR_MATCH;
-                    Players.getPlayer(playerId).addDestination(destination);
+                    PlayerManager.getPlayer(playerId).storeEvent(flexMatchEvent);
+                    PlayerManager.getPlayer(playerId).storeEvent(destination);
+                    PlayerManager.getPlayer(playerId).playerState = PlayerState.WAITING_FOR_MATCH;
+                    PlayerManager.getPlayer(playerId).addDestination(destination);
                 }
             });
 
@@ -217,9 +217,9 @@ export class GameLiftEventHandler
         {
             eventPlayerIds.map((playerId)=>
             {
-                if (Players.getPlayer(playerId).activeTicketId == playerTicketMap[playerId]) // if we have a different type of event, make players go back to the start
+                if (PlayerManager.getPlayer(playerId).activeTicketId == playerTicketMap[playerId]) // if we have a different type of event, make players go back to the start
                 {
-                    Players.getPlayer(playerId).resetPlayer();
+                    PlayerManager.getPlayer(playerId).resetPlayer();
                 }
             });
 
@@ -239,7 +239,7 @@ export class GameLiftEventHandler
         {
             if (queuePlacementEvent.placementId)
             {
-                let match = PlayerMatches.getMatch(queuePlacementEvent.placementId); // look up the corresponding match and break it up
+                let match = MatchManager.getMatch(queuePlacementEvent.placementId); // look up the corresponding match and break it up
                 if (match)
                 {
                     playerIds = match.playerIds;
@@ -247,7 +247,7 @@ export class GameLiftEventHandler
 
                     playerIds.map((playerId)=> // make players go back to the matchmaking config
                     {
-                        Players.getPlayer(playerId).resetPlayer();
+                        PlayerManager.getPlayer(playerId).resetPlayer();
                     });
                 }
             }
@@ -261,14 +261,14 @@ export class GameLiftEventHandler
 
         if (queuePlacementEvent.placementId)
         {
-            let match = PlayerMatches.getMatch(queuePlacementEvent.placementId);
+            let match = MatchManager.getMatch(queuePlacementEvent.placementId);
 
             switch (queuePlacementEvent.type)
             {
                 case QueuePlacementEventType.PLACEMENT_FULFILLED:
                     if (match==undefined) // flexmatch events haven't been processed yet, or queues being used without flexmatch
                     {
-                        match = consoleScene.initializeMatch(queuePlacementEvent.placementId, resources[0]);
+                        match = MatchManager.initializeMatch(queuePlacementEvent.placementId, resources[0], playerIds.length);
                         match.matchState = PlayerMatchState.READY_FOR_PLACEMENT;
                         playerIds.map(playerId => match.addPlayerToMatch(playerId));
                     }
