@@ -15,6 +15,7 @@ namespace SampleGameBuild.Network.Server
         void OnMessage(TcpClient client, string message);
         void OnDisconnection(TcpClient client);
         void OnLoop();
+        void OnAllClientsDisconnected();
         void OnShutdown();
     }
 }

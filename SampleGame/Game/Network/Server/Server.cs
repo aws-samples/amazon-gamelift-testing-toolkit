@@ -91,7 +91,11 @@ namespace SampleGameBuild.Network.Server
         {
             _gameServer.OnDisconnection(client);
             _clients.Remove(client);
-            Console.WriteLine(_clients.Count);
+            Console.WriteLine(_clients.Count + " connected clients remaining");
+            if (_clients.Count == 0)
+            {
+                _gameServer.OnAllClientsDisconnected();
+            }
         }
 
         //public void Shutdown()

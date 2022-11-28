@@ -65,6 +65,12 @@ namespace SampleGameBuild.NumbersQuiz.Server
             GameLogger.Log("New Client!");
         }
 
+        public void OnAllClientsDisconnected()
+        {
+            GameLogger.Log("All clients disconnected, so terminating session");
+            _gameLiftHandler.TerminateGameSession();
+        }
+
         public void OnMessage(TcpClient client, string message)
         {
             GameLogger.Log("MESSAGE RECEIVED:" + message);
@@ -146,7 +152,7 @@ namespace SampleGameBuild.NumbersQuiz.Server
                 _connectionTimer.Stop();
                 _connectionTimer.Reset();
                 _players.DisconnectAll();
-                _gameLiftHandler.TerminateGameSession(false);
+                _gameLiftHandler.TerminateGameSession();
                 return;
             }
 
@@ -154,7 +160,7 @@ namespace SampleGameBuild.NumbersQuiz.Server
             {
                 GameLogger.Log(_gameState.GameCounter + " games completed, terminating session");
                 _players.DisconnectAll();
-                _gameLiftHandler.TerminateGameSession(false);
+                _gameLiftHandler.TerminateGameSession();
                 return;
             }
             
