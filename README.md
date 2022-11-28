@@ -49,7 +49,7 @@ If you have configured the AWS CLI with multiple profiles you can pass in a name
 yarn deploy-toolkit [--profile <profileName>]
 ```
 
-When the deployment succeeds succesfully the terminal will display a number of output variables. Make a note of the value of the `AmazonGameLiftTestingToolkit.CloudfrontDomainName ` variable and the `AmazonGameLiftTestingToolkit.userPoolId` variable, which you will use in the next stage.
+When the deployment succeeds successfully the terminal will display a number of output variables. Make a note of the value of the `AmazonGameLiftTestingToolkit.CloudfrontDomainName ` variable and the `AmazonGameLiftTestingToolkit.userPoolId` variable, which you will use in the next stage.
 
 ## Sample Game
 
