@@ -76,6 +76,17 @@ Once you've created a user, you can login by navigating to the URL previously no
 * `yarn delete-toolkit` Remove the toolkit from your AWS account
 * `yarn delete-sample-game` Remove the sample game from your AWS account
 
+## Supported Regions for Deployment
+
+The toolkit and sample game can currently be deployed into any of the following regions which support placing a FlexMatch matchmaker.  Once deployed, you can add additional locations to your multi-location fleets from any region that GameLift supports.
+
+* US East (N. Virginia)
+* US West (Oregon)
+* EU Central (Frankfurt)
+* EU West (Ireland)
+* Asia Pacific Southeast (Sydney)
+* Asia Pacific Northeast (Seoul and Tokyo)
+
 ## Credits
 
 * [MkDocs](https://www.mkdocs.org/)
