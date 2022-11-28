@@ -22,14 +22,7 @@ Additionally, if you intend to deploy the sample game or create virtual players 
 
 * [Docker](https://www.docker.com/) installed and you should be logged in to Docker Hub.
 
-## Bootstrap
-
-```bash
-yarn bootstrap
-```
-
-
-## Build
+## Toolkit Build
 
 ```bash
 dotnet tool install -g Amazon.Lambda.Tools
@@ -38,13 +31,17 @@ yarn
 yarn build-toolkit
 ```
 
-Optionally, if you want to deploy the sample game you should run: 
+
+## Bootstrap
+
+Before deploying the toolkit, but after building it, you will need to bootstrap the CDK environment as follows:
 
 ```bash
-yarn build-sample-game
+yarn bootstrap
 ```
 
-## Deployment
+
+## Toolkit Deployment
 
 If you have configured the AWS CLI with multiple profiles you can pass in a name to choose which profile to target. 
 
@@ -54,9 +51,12 @@ yarn deploy-toolkit [--profile <profileName>]
 
 When the deployment succeeds succesfully the terminal will display a number of output variables. Make a note of the value of the `AmazonGameLiftTestingToolkit.CloudfrontDomainName ` variable and the `AmazonGameLiftTestingToolkit.userPoolId` variable, which you will use in the next stage.
 
-Optionally, if you want to deploy the sample game you should run the following command: 
+## Sample Game
+
+Optionally, if you want to build and deploy the sample game you should run the following commands: 
 
 ```bash
+yarn build-sample-game
 yarn deploy-sample-game [--profile <profileName>]
 ```
 
