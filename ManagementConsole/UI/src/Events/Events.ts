@@ -51,11 +51,11 @@ export class Events
     public static SAVE_LATENCY_PROFILE_RESPONSE:string = "SaveLatencyProfileResponse";
     public static DELETE_LATENCY_PROFILE_RESPONSE:string = "DeleteLatencyProfileResponse";
     public static GET_PLAYER_SESSIONS_RESPONSE:string = "GetPlayerSessionsResponse";
-    public static GET_VIRTUAL_PLAYERS_RESPONSE:string = "GetVirtualPlayersResponse";
+    public static GET_VIRTUAL_PLAYER_TASKS_RESPONSE:string = "GetVirtualPlayerTasksResponse";
     public static GET_CLOUDWATCH_LOGS_RESPONSE:string = "GetCloudWatchLogsResponse";
     public static LAUNCH_VIRTUAL_PLAYERS_RESPONSE:string = "LaunchVirtualPlayersResponse";
     public static LAUNCH_VIRTUAL_PLAYERS_PROGRESS_RESPONSE:string = "LaunchVirtualPlayersProgressResponse";
-    public static TERMINATE_VIRTUAL_PLAYER_RESPONSE:string = "TerminateVirtualPlayerResponse";
+    public static TERMINATE_VIRTUAL_PLAYER_TASKS_RESPONSE:string = "TerminateVirtualPlayerTasksResponse";
     public static ADD_DUMMY_FLEET:string = "AddFakeFleet";
     public static ADD_DUMMY_PLAYER:string = "AddFakePlayer";
     public static ADD_DUMMY_INSTANCE:string = "AddFakeInstance";

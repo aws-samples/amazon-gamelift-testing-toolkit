@@ -86,11 +86,10 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public List<Alias> Aliases;
     }
     
-    public class ServerMessageGetVirtualPlayers : ServerMessage
+    public class ServerMessageGetVirtualPlayerTasks : ServerMessage
     {
-        public new string Type = "GetVirtualPlayers";
-        public List<Amazon.ECS.Model.Task> Tasks;
-        public List<TaskDefinition> TaskDefinitions;
+        public new string Type = "GetVirtualPlayerTasks";
+        public List<VirtualPlayerTask> Tasks;
     }
     
     public class ServerMessageGetQueueEvents : ServerMessage
@@ -133,18 +132,12 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public bool IsDb = false;
     }
     
-    public class ServerMessageTerminateVirtualPlayer : ServerMessage
+    public class ServerMessageTerminateVirtualPlayerTasks : ServerMessage
     {
-        public new string Type = "TerminateVirtualPlayer";
+        public new string Type = "TerminateVirtualPlayerTasks";
         public List<string> Errors;
     }
-    
-    public class ServerMessageTerminateAllVirtualPlayers : ServerMessage
-    {
-        public new string Type = "TerminateAllVirtualPlayers";
-        public List<string> Errors;
-    }
-    
+
     public class ServerMessageSetScalingPolicy : ServerMessage
     {
         public new string Type = "SetScalingPolicy";

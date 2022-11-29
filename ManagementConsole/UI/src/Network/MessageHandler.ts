@@ -64,8 +64,8 @@ export class MessageHandler
                 this._emitter.emit(Events.UPDATE_FLEET_LOCATIONS_RESPONSE, data as SimpleResult);
                 break;
 
-            case "TerminateVirtualPlayer":
-                this._emitter.emit(Events.TERMINATE_VIRTUAL_PLAYER_RESPONSE, data as SimpleResult);
+            case "TerminateVirtualPlayerTasks":
+                this._emitter.emit(Events.TERMINATE_VIRTUAL_PLAYER_TASKS_RESPONSE, data as SimpleResult);
                 break;
 
             case "GetGameSessions":
@@ -164,8 +164,8 @@ export class MessageHandler
                 this._emitter.emit(Events.GET_LATENCY_PROFILES_RESPONSE, data.Profiles);
                 break;
 
-            case "GetVirtualPlayers":
-                this._emitter.emit(Events.GET_VIRTUAL_PLAYERS_RESPONSE, data);
+            case "GetVirtualPlayerTasks":
+                this._emitter.emit(Events.GET_VIRTUAL_PLAYER_TASKS_RESPONSE, data);
                 break;
 
             case "GetMatchmakingTicketHeaders":

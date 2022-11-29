@@ -42,6 +42,8 @@ namespace ManagementConsoleInfra.Lib
         public Table MatchmakingSimulationTable;
         public Table SimulationResultsTable;
         public Table SimulationPlayersTable;
+        public Table VirtualPlayerTaskLaunchTable;
+        public Table VirtualPlayerTaskScheduleTable;
         public Key EncryptionKey;
     }
     public class BackendStack : Stack
@@ -317,6 +319,8 @@ namespace ManagementConsoleInfra.Lib
                     ["ConfigTableName"] = props.ManagementConfigTable.TableName,
                     ["StateLogTableName"] = props.StateLogTable.TableName,
                     ["GameSessionTableName"] = props.GameSessionTable.TableName,
+                    ["VirtualPlayerTaskScheduleTableName"] = props.VirtualPlayerTaskScheduleTable.TableName,
+                    ["VirtualPlayerTaskLaunchTableName"] = props.VirtualPlayerTaskLaunchTable.TableName,
                 },
                 Timeout = Duration.Seconds(30),
                 MemorySize = 1024,
@@ -359,6 +363,8 @@ namespace ManagementConsoleInfra.Lib
             
             props.ManagementConfigTable.GrantReadData(SfnPollerFunction);
             props.StateLogTable.GrantReadWriteData(SfnPollerFunction);
+            props.VirtualPlayerTaskLaunchTable.GrantReadWriteData(SfnPollerFunction);
+            props.VirtualPlayerTaskScheduleTable.GrantReadWriteData(SfnPollerFunction);
             props.GameSessionTable.GrantReadData(SfnPollerFunction);
 
             var sfnIteratorFunctionRole = new Role(this, "SfnIteratorFunctionRole", new RoleProps
@@ -714,6 +720,8 @@ namespace ManagementConsoleInfra.Lib
                     ["MatchLogTableName"] = props.MatchLogTable.TableName,
                     ["SimulationResultsTableName"] = props.SimulationResultsTable.TableName,
                     ["SimulationPlayersTableName"] = props.SimulationPlayersTable.TableName,
+                    ["VirtualPlayerTaskScheduleTableName"] = props.VirtualPlayerTaskScheduleTable.TableName,
+                    ["VirtualPlayerTaskLaunchTableName"] = props.VirtualPlayerTaskLaunchTable.TableName,
                     ["GameSessionTableName"] = props.GameSessionTable.TableName,
                     ["StateLogTableName"] = props.StateLogTable.TableName,
                     ["ConfigTableName"] = props.ManagementConfigTable.TableName,
@@ -822,6 +830,8 @@ namespace ManagementConsoleInfra.Lib
             props.GameSessionTable.GrantReadWriteData(ManagementServiceFunction);
             props.StateLogTable.GrantReadData(ManagementServiceFunction);
             props.ManagementConfigTable.GrantReadData(ManagementServiceFunction);
+            props.VirtualPlayerTaskLaunchTable.GrantReadWriteData(ManagementServiceFunction);
+            props.VirtualPlayerTaskScheduleTable.GrantReadWriteData(ManagementServiceFunction);
             
             // Adding specific CDK-Nag Suppressions
             NagSuppressions.AddResourceSuppressions(managementServiceFunctionRole, new INagPackSuppression[]

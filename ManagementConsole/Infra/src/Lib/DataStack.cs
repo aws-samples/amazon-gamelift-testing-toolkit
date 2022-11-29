@@ -25,6 +25,8 @@ namespace ManagementConsoleInfra.Lib
         public Table SimulationPlayersTable;
         public Table PlayerProfileTable;
         public Table LatencyProfileTable;
+        public Table VirtualPlayerTaskLaunchTable;
+        public Table VirtualPlayerTaskScheduleTable;
         
         internal DataStack(Construct scope, string id, DataProps props = null) : base(scope, id, props)
         {
@@ -164,6 +166,62 @@ namespace ManagementConsoleInfra.Lib
                 Encryption = TableEncryption.AWS_MANAGED,
                 RemovalPolicy = RemovalPolicy.DESTROY,
                 PointInTimeRecovery = true,
+            });
+            
+            VirtualPlayerTaskLaunchTable = new Table(this, "VirtualPlayerTaskLaunchTable", new TableProps
+            {
+                PartitionKey = new Attribute
+                {
+                    Name = "LaunchId",
+                    Type = AttributeType.STRING
+                },
+                BillingMode = BillingMode.PAY_PER_REQUEST,
+                Encryption = TableEncryption.AWS_MANAGED,
+                RemovalPolicy = RemovalPolicy.DESTROY,
+                PointInTimeRecovery = true,
+            });
+            
+            VirtualPlayerTaskLaunchTable.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
+            {
+                IndexName = "Schedule-GSI",
+                PartitionKey = new Attribute
+                {
+                    Name = "ScheduleId",
+                    Type = AttributeType.STRING
+                },
+                SortKey = new Attribute
+                {
+                    Name = "Time",
+                    Type = AttributeType.STRING
+                }
+            });
+            
+            VirtualPlayerTaskScheduleTable = new Table(this, "VirtualPlayerTaskScheduleTable", new TableProps
+            {
+                PartitionKey = new Attribute
+                {
+                    Name = "ScheduleId",
+                    Type = AttributeType.STRING
+                },
+                BillingMode = BillingMode.PAY_PER_REQUEST,
+                Encryption = TableEncryption.AWS_MANAGED,
+                RemovalPolicy = RemovalPolicy.DESTROY,
+                PointInTimeRecovery = true,
+            });
+            
+            VirtualPlayerTaskScheduleTable.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
+            {
+                IndexName = "Status-GSI",
+                PartitionKey = new Attribute
+                {
+                    Name = "Status",
+                    Type = AttributeType.STRING
+                },
+                SortKey = new Attribute
+                {
+                    Name = "Time",
+                    Type = AttributeType.STRING
+                }
             });
 
             EventLogTable = new Table(this, "EventLogTable", new TableProps
@@ -375,6 +433,22 @@ namespace ManagementConsoleInfra.Lib
             
             new CfnOutput(this, "latencyProfileTableArn",  new CfnOutputProps {
                 Value = LatencyProfileTable.TableArn
+            });
+            
+            new CfnOutput(this, "virtualPlayerTaskLaunchTableName",  new CfnOutputProps {
+                Value = VirtualPlayerTaskLaunchTable.TableName
+            });
+
+            new CfnOutput(this, "virtualPlayerTaskLaunchTableArn",  new CfnOutputProps {
+                Value = VirtualPlayerTaskLaunchTable.TableArn
+            });
+            
+            new CfnOutput(this, "virtualPlayerTaskLaunchScheduleName",  new CfnOutputProps {
+                Value = VirtualPlayerTaskScheduleTable.TableName
+            });
+            
+            new CfnOutput(this, "virtualPlayerTaskScheduleLaunchTableArn",  new CfnOutputProps {
+                Value = VirtualPlayerTaskScheduleTable.TableArn
             });
             
             new CfnOutput(this, "eventLogTableName",  new CfnOutputProps {

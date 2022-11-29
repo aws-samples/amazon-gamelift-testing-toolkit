@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Amazon.DynamoDBv2;
 using Amazon.ECS;
 using Amazon.ECS.Model;
 using Amazon.Lambda.Core;
@@ -25,11 +26,22 @@ namespace ManagementConsoleBackend.ManagementService.Lib
         // Launches a number of virtual players via Fargate
         public async Task<bool> LaunchPlayers(int numPlayers, string taskDefinitionArn, string capacityProvider, string connectionId, string stageServiceUrl)
         {
+            var dynamoDbClient = new AmazonDynamoDBClient();
+            var dynamoDbRequestHandler = new DynamoDbRequestHandler(dynamoDbClient);
             var maxTasksPerRequest = 10;
             var remainingPlayersToLaunch = numPlayers;
             var playersToLaunch = remainingPlayersToLaunch;
-            
+            var launchTaskRequest = new LaunchTaskRequest
+            {
+                LaunchId = Guid.NewGuid().ToString(),
+                TaskDefinitionArn = taskDefinitionArn,
+                Time = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                Tasks = new List<VirtualPlayerTask>(),
+                ScheduleId = "",
+            };
+
             var responses = new List<RunTaskResponse>();
+            var taskDefinitions = await GetTaskDefinitions();
             try
             {
                 do
@@ -76,10 +88,42 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                         },
                         Tags = tags, 
                     };
-
+                    
                     LambdaLogger.Log(JsonConvert.SerializeObject(request));
                     var response = await _client.RunTaskAsync(request);
-                    LambdaLogger.Log(JsonConvert.SerializeObject(response));
+                    
+                    foreach (var task in response.Tasks)
+                    {
+                        var virtualPlayerTask = new VirtualPlayerTask
+                        {
+                            CreatedAt = task.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                            CapacityProviderName = task.CapacityProviderName,
+                            Cpu = task.Cpu,
+                            Memory = task.Memory,
+                            TaskArn = task.TaskArn,
+                            LastStatus = task.LastStatus,
+                        };
+
+                        var taskDef = taskDefinitions.Find(x => x.TaskDefinitionArn == task.TaskDefinitionArn);
+
+                        if (taskDef!=null && taskDef.ContainerDefinitions.Count > 0)
+                        {
+                            var logOptions = taskDef.ContainerDefinitions[0].LogConfiguration.Options;
+                            if (logOptions["awslogs-group"] != null)
+                            {
+                                var taskId = virtualPlayerTask.TaskArn.Split("/").Last();
+                                virtualPlayerTask.LogGroup = logOptions["awslogs-group"];
+                                virtualPlayerTask.LogStream = logOptions["awslogs-stream-prefix"] + "/" + taskDef.ContainerDefinitions[0].Name + "/" + taskId;
+                            }
+                        }
+                        
+                        if (task.Containers.Count > 0)
+                        {
+                            virtualPlayerTask.ContainerArn = task.Containers[0].ContainerArn;
+                        }
+                        
+                        launchTaskRequest.Tasks.Add(virtualPlayerTask);
+                    }
 
                     await Utils.SendJsonResponse(connectionId, stageServiceUrl, new ServerMessageLaunchPlayersProgress
                     {
@@ -89,8 +133,8 @@ namespace ManagementConsoleBackend.ManagementService.Lib
 
                 } while (remainingPlayersToLaunch > 0);
 
+                await dynamoDbRequestHandler.SaveLaunchTaskRequest(launchTaskRequest);
                 return true;
-                
             }
             catch (Exception e)
             {
@@ -139,10 +183,11 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             }
         }
         
-        public async Task<List<Amazon.ECS.Model.Task>> GetVirtualPlayers()
+        public async Task<List<VirtualPlayerTask>> GetVirtualPlayerTasks()
         {
             var taskArns = new List<string>();
-            var tasks = new List<Amazon.ECS.Model.Task>();
+            var tasks = new List<VirtualPlayerTask>();
+            var taskDefinitions = await GetTaskDefinitions();
             try
             {
                 var request = new ListTasksRequest()
@@ -171,7 +216,38 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                             Cluster = Environment.GetEnvironmentVariable("VirtualPlayersClusterArn")
                         });
 
-                    tasks = tasks.Concat(describeTasksResponse.Tasks).ToList();
+                    foreach (var task in describeTasksResponse.Tasks)
+                    {
+                        var virtualPlayerTask = new VirtualPlayerTask
+                        {
+                            CreatedAt = task.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                            CapacityProviderName = task.CapacityProviderName,
+                            Cpu = task.Cpu,
+                            Memory = task.Memory,
+                            TaskArn = task.TaskArn,
+                            LastStatus = task.LastStatus,
+                        };
+
+                        var taskDef = taskDefinitions.Find(x => x.TaskDefinitionArn == task.TaskDefinitionArn);
+
+                        if (taskDef!=null && taskDef.ContainerDefinitions.Count > 0)
+                        {
+                            var logOptions = taskDef.ContainerDefinitions[0].LogConfiguration.Options;
+                            if (logOptions["awslogs-group"] != null)
+                            {
+                                var taskId = virtualPlayerTask.TaskArn.Split("/").Last();
+                                virtualPlayerTask.LogGroup = logOptions["awslogs-group"];
+                                virtualPlayerTask.LogStream = logOptions["awslogs-stream-prefix"] + "/" + taskDef.ContainerDefinitions[0].Name + "/" + taskId;
+                            }
+                        }
+                        
+                        if (task.Containers.Count > 0)
+                        {
+                            virtualPlayerTask.ContainerArn = task.Containers[0].ContainerArn;
+                        }
+                        
+                        tasks.Add(virtualPlayerTask);
+                    }
                 }
 
                 return tasks;
@@ -183,7 +259,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             }
         }
 
-        public async Task<List<string>> TerminateAllVirtualPlayers()
+        public async Task<List<string>> TerminateAllVirtualPlayerTasks()
         {
             var errors = new List<string>();
             try
@@ -199,7 +275,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                 {
                     try
                     {
-                        errors.AddRange(await TerminateVirtualPlayer(taskArn));
+                        errors.AddRange(await TerminateVirtualPlayerTask(taskArn));
                     }
                     catch (Exception e)
                     {
@@ -215,7 +291,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             return errors;
         }
         
-        public async Task<List<string>> TerminateVirtualPlayer(string TaskArn)
+        public async Task<List<string>> TerminateVirtualPlayerTask(string TaskArn)
         {
             var errors = new List<string>();
             try

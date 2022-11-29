@@ -30,21 +30,21 @@ export class ManageVirtualPlayersPopup extends Popup
     refresh()
     {
         this.hideStatusAlert();
-        Network.sendObject({Type:"GetVirtualPlayers"});
+        Network.sendObject({Type:"GetVirtualPlayerTasks"});
     }
 
     setupEventListeners()
     {
-        this._emitter.on(Events.GET_VIRTUAL_PLAYERS_RESPONSE, this.onGetVirtualPlayersResponse);
+        this._emitter.on(Events.GET_VIRTUAL_PLAYER_TASKS_RESPONSE, this.onGetVirtualPlayerTasksResponse);
         this._emitter.on(Events.GET_CLOUDWATCH_LOGS_RESPONSE, this.onGetCloudWatchLogsResponse);
-        this._emitter.on(Events.TERMINATE_VIRTUAL_PLAYER_RESPONSE, this.onTerminateVirtualPlayerResponse);
+        this._emitter.on(Events.TERMINATE_VIRTUAL_PLAYER_TASKS_RESPONSE, this.onTerminateVirtualPlayerTasksResponse);
     }
 
     removeEventListeners()
     {
-        this._emitter.off(Events.GET_VIRTUAL_PLAYERS_RESPONSE, this.onGetVirtualPlayersResponse);
+        this._emitter.off(Events.GET_VIRTUAL_PLAYER_TASKS_RESPONSE, this.onGetVirtualPlayerTasksResponse);
         this._emitter.off(Events.GET_CLOUDWATCH_LOGS_RESPONSE, this.onGetCloudWatchLogsResponse);
-        this._emitter.off(Events.TERMINATE_VIRTUAL_PLAYER_RESPONSE, this.onTerminateVirtualPlayerResponse);
+        this._emitter.off(Events.TERMINATE_VIRTUAL_PLAYER_TASKS_RESPONSE, this.onTerminateVirtualPlayerTasksResponse);
     }
 
     showSuccessAlert = (text) =>
@@ -64,7 +64,7 @@ export class ManageVirtualPlayersPopup extends Popup
         this.element.find("#statusText").attr("class", "alert hide");
     }
 
-    onTerminateVirtualPlayerResponse = (data) =>
+    onTerminateVirtualPlayerTasksResponse = (data) =>
     {
         if (data.Errors && data.Errors.length)
         {
@@ -112,7 +112,7 @@ export class ManageVirtualPlayersPopup extends Popup
         }
     }
 
-    onGetVirtualPlayersResponse = (data) =>
+    onGetVirtualPlayerTasksResponse = (data) =>
     {
         this._gameSessions = data;
 
@@ -120,38 +120,12 @@ export class ManageVirtualPlayersPopup extends Popup
 
         data.Tasks?.map(task =>
         {
-            let playerTerminateTd='<td><a class="terminatePlayer btn btn-primary btn-sm" id="' + task.TaskArn +'" href="' + "#" + '">Terminate</a></td>';
-
-            let taskDef=null;
-            let logOptions=null;
-            let logGroup=null;
-            let logStream=null;
-            if (data.TaskDefinitions!=null)
-            {
-                taskDef = data.TaskDefinitions.find(taskDefinition => taskDefinition.TaskDefinitionArn == task.TaskDefinitionArn);
-
-                if (taskDef)
-                {
-                    let logOptionsSearch = jp.query(taskDef, "$.ContainerDefinitions[0].LogConfiguration.Options");
-                    let containerSearch = jp.query(taskDef, "$.ContainerDefinitions[0]");
-
-                    if (logOptionsSearch.length && containerSearch.length)
-                    {
-                        logOptions = logOptionsSearch[0];
-                        logGroup = logOptions["awslogs-group"];
-                        const parts = task.TaskArn.split("/");
-                        const taskId = parts.pop();
-                        logStream = logOptions["awslogs-stream-prefix"] + "/" + containerSearch[0].Name + "/" + taskId;
-                    }
-                }
-
-            }
-
+            let playerTerminateTd='<td><a class="terminateVirtualPlayerTask btn btn-primary btn-sm" id="' + task.TaskArn +'" href="' + "#" + '">Terminate</a></td>';
 
             let playerLogsTd='<td></td>';
-            if (logStream!=null && logGroup!=null)
+            if (task.LogStream!=null && task.LogGroup!=null)
             {
-                playerLogsTd='<td><a class="viewLogs btn btn-primary btn-sm" data-loggroup="' + logGroup +'" data-logstream="' + logStream + '" href="' + "#" + '">Logs</a></td>';
+                playerLogsTd='<td><a class="viewLogs btn btn-primary btn-sm" data-loggroup="' + task.LogGroup +'" data-logstream="' + task.LogStream + '" href="' + "#" + '">Logs</a></td>';
             }
 
             html += '<tr>' +
@@ -187,13 +161,13 @@ export class ManageVirtualPlayersPopup extends Popup
         {
             this.refresh();
         }
-        if (el.hasClass("terminatePlayer"))
+        if (el.hasClass("terminateVirtualPlayerTask"))
         {
-            Network.sendObject({Type:"TerminateVirtualPlayer", TaskArn:event.target.id});
+            Network.sendObject({Type:"TerminateVirtualPlayerTask", TaskArn:event.target.id});
         }
-        if (el.hasClass("terminateAllVirtualPlayers"))
+        if (el.hasClass("terminateAllVirtualPlayerTasks"))
         {
-            Network.sendObject({Type:"TerminateAllVirtualPlayers"});
+            Network.sendObject({Type:"TerminateAllVirtualPlayerTasks"});
         }
 
         if (el.attr("id") == "backButton")

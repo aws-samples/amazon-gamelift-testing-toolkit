@@ -558,10 +558,10 @@ namespace ManagementConsoleBackend.ManagementService
                             await Utils.SendJsonResponse(_connectionId, stageServiceUrl, deletionResponse);
                             break;
 
-                        case "GetVirtualPlayers":
+                        case "GetVirtualPlayerTasks":
                             var getVirtualPlayersRequest = JsonConvert.DeserializeObject<ClientMessageGetVirtualPlayers>(request.Body);
-                            var virtualPlayers = await virtualPlayersHandler.GetVirtualPlayers();
-                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetVirtualPlayers { Tasks = virtualPlayers, TaskDefinitions = await virtualPlayersHandler.GetTaskDefinitions()});
+                            var virtualPlayers = await virtualPlayersHandler.GetVirtualPlayerTasks();
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetVirtualPlayerTasks { Tasks = virtualPlayers });
                             break;
                         
                         case "GetGameSessionLogs":
@@ -583,15 +583,15 @@ namespace ManagementConsoleBackend.ManagementService
                             await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageLaunchPlayers { Result = result, NumPlayers = launchPlayersRequest.NumPlayers});
                             break;
                         
-                        case "TerminateVirtualPlayer":
+                        case "TerminateVirtualPlayerTask":
                             var terminateVirtualPlayerRequest = JsonConvert.DeserializeObject<ClientMessageTerminateVirtualPlayer>(request.Body);
-                            var terminateVirtualPlayerErrors = await virtualPlayersHandler.TerminateVirtualPlayer(terminateVirtualPlayerRequest.TaskArn);
-                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageTerminateVirtualPlayer { Errors = terminateVirtualPlayerErrors});
+                            var terminateVirtualPlayerErrors = await virtualPlayersHandler.TerminateVirtualPlayerTask(terminateVirtualPlayerRequest.TaskArn);
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageTerminateVirtualPlayerTasks { Errors = terminateVirtualPlayerErrors});
                             break;
                         
-                        case "TerminateAllVirtualPlayers":
-                            var terminateAllVirtualPlayerErrors = await virtualPlayersHandler.TerminateAllVirtualPlayers();
-                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageTerminateVirtualPlayer { Errors = terminateAllVirtualPlayerErrors});
+                        case "TerminateAllVirtualPlayerTasks":
+                            var terminateAllVirtualPlayerErrors = await virtualPlayersHandler.TerminateAllVirtualPlayerTasks();
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageTerminateVirtualPlayerTasks { Errors = terminateAllVirtualPlayerErrors});
                             break;
                         
                         case "AdjustFleetCapacity":

@@ -482,6 +482,23 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             }
         }
         
+        public async Task SaveLaunchTaskRequest(LaunchTaskRequest taskRequest)
+        {
+            var launchTaskTable =
+                Table.LoadTable(_client, Environment.GetEnvironmentVariable("VirtualPlayerTaskLaunchTableName"));
+
+            var item = Document.FromJson(JsonConvert.SerializeObject(taskRequest));
+
+            try
+            {
+                await launchTaskTable.PutItemAsync(item);
+            }
+            catch (Exception e)
+            {
+                LambdaLogger.Log(e.ToString());
+            }
+        }
+        
         public async Task SaveLatencyProfile(LatencyProfile profile)
         {
             var latencyProfileTable =
