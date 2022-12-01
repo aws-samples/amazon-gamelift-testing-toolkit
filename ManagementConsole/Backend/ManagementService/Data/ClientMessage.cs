@@ -101,6 +101,11 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public new string Type = "GetVirtualPlayers";
     }
     
+    public class ClientMessageGetVirtualPlayerTaskHistory : ClientMessage
+    {
+        public new string Type = "GetVirtualPlayerTaskHistory";
+    }
+    
     public class ClientMessageGetPlayerProfiles : ClientMessage
     {
         public new string Type = "GetPlayerProfiles";

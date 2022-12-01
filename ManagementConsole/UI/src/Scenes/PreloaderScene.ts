@@ -35,16 +35,14 @@ export  class PreloaderScene extends Phaser.Scene {
         this.load.html('fleetLocationsPopup', 'assets/html/fleetLocationsPopup.html');
         this.load.html('fleetEventsPopup', 'assets/html/fleetEventsPopup.html');
         this.load.html('gameSessionsTablePopup', 'assets/html/gameSessionsTablePopup.html');
-        this.load.html('launchVirtualPlayersPopup', 'assets/html/launchVirtualPlayersPopup.html');
-        this.load.html('virtualPlayersTablePopup', 'assets/html/virtualPlayersTablePopup.html');
         this.load.html('matchmakingTicketHeadersTablePopup', 'assets/html/matchmakingTicketHeadersTablePopup.html');
         this.load.html('ruleSetsPopup', 'assets/html/ruleSetsPopup.html');
         this.load.html('flexMatchSimulatorPopup', 'assets/html/flexMatchSimulatorPopup.html');
         this.load.html('queueSettingsPopup', 'assets/html/queueSettingsPopup.html');
+        this.load.html('virtualPlayerTasksPopup', 'assets/html/virtualPlayerTasksPopup.html');
         this.load.html('matchmakingConfigPopup', 'assets/html/matchmakingConfigPopup.html');
         this.load.html('queueEventsPopup', 'assets/html/queueEventsPopup.html');
         this.load.html('settings', 'assets/html/settings.html');
-        this.load.html('launchPlayers', 'assets/html/launchPlayers.html');
 
         this.load.html('latencyProfilesSubPopup', 'assets/html/fragments/latencyProfiles.html');
         this.load.html('playerAttributeTemplate', 'assets/html/fragments/playerAttributeTemplate.html');
@@ -65,6 +63,13 @@ export  class PreloaderScene extends Phaser.Scene {
         this.load.html('simulateMatchmakingResults', 'assets/html/fragments/simulateMatchmakingResults.html');
         this.load.html('simulateMatchmakingTable', 'assets/html/fragments/simulateMatchmakingTable.html');
         this.load.html('simulateMatchmakingTickets', 'assets/html/fragments/simulateMatchmakingTickets.html');
+        this.load.html('virtualPlayerTasksLaunchSubPopup', 'assets/html/fragments/virtualPlayerTasksLaunch.html');
+        this.load.html('virtualPlayerTasksSchedulesSubPopup', 'assets/html/fragments/virtualPlayerTasksSchedules.html');
+        this.load.html('virtualPlayerTasksRunningSubPopup', 'assets/html/fragments/virtualPlayerTasksRunning.html');
+        this.load.html('virtualPlayerTaskLaunchRequestsSubPopup', 'assets/html/fragments/virtualPlayerTaskLaunchRequests.html');
+        this.load.html('virtualPlayerLaunchRequests', 'assets/html/fragments/virtualPlayerLaunchRequests.html');
+        this.load.html('virtualPlayerLaunchRequestTasks', 'assets/html/fragments/virtualPlayerLaunchRequestTasks.html');
+        this.load.html('virtualPlayerLaunchRequestTaskLogs', 'assets/html/fragments/virtualPlayerLaunchRequestTaskLogs.html');
     }
 
     preload ()

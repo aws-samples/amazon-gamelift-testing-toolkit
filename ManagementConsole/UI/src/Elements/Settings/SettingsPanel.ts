@@ -80,9 +80,9 @@ export class SettingsPanel extends Phaser.GameObjects.Container
                 this._emitter.emit(Events.CLOSE_SETTINGS);
                 break;
 
-            case "launchPlayers":
+            case "virtualPlayerTasks":
                 this._emitter.emit(Events.CLOSE_SETTINGS);
-                this._emitter.emit(Events.SHOW_LAUNCH_VIRTUAL_PLAYERS_POPUP);
+                this._emitter.emit(Events.SHOW_VIRTUAL_PLAYER_TASKS_POPUP);
                 break;
 
             case "flexmatchSimulator":
@@ -92,11 +92,6 @@ export class SettingsPanel extends Phaser.GameObjects.Container
 
             case "socketClose":
                 Network.disconnect();
-                break;
-
-            case "manageVirtualPlayers":
-                this._emitter.emit(Events.SHOW_MANAGE_VIRTUAL_PLAYERS_POPUP);
-                this._emitter.emit(Events.CLOSE_SETTINGS);
                 break;
 
             case "manageMatchmakingRulesets":

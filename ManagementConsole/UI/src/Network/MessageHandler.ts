@@ -168,6 +168,10 @@ export class MessageHandler
                 this._emitter.emit(Events.GET_VIRTUAL_PLAYER_TASKS_RESPONSE, data);
                 break;
 
+            case "GetVirtualPlayerLaunchTaskRequests":
+                this._emitter.emit(Events.GET_VIRTUAL_PLAYER_LAUNCH_TASK_REQUESTS_RESPONSE, data);
+                break;
+
             case "GetMatchmakingTicketHeaders":
                 this._emitter.emit(Events.GET_MATCHMAKING_TICKET_HEADERS_RESPONSE, data);
                 break;

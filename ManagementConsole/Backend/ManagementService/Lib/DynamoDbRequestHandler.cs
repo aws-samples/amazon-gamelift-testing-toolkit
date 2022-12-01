@@ -482,6 +482,27 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             }
         }
         
+        public async Task<List<LaunchTaskRequest>> GetLaunchTaskRequests()
+        {
+            var launchTasks = new List<LaunchTaskRequest>();
+            var launchTaskTable =
+                Table.LoadTable(_client, Environment.GetEnvironmentVariable("VirtualPlayerTaskLaunchTableName"));
+
+            var search = launchTaskTable.Scan(new ScanOperationConfig());
+            
+            var documentList = new List<Document>();
+            do
+            {
+                documentList = await search.GetNextSetAsync();
+                foreach (var document in documentList)
+                {
+                    launchTasks.Add(JsonConvert.DeserializeObject<LaunchTaskRequest>(document.ToJson()));
+                }
+            } while (!search.IsDone);
+
+            return launchTasks;
+        }
+        
         public async Task SaveLaunchTaskRequest(LaunchTaskRequest taskRequest)
         {
             var launchTaskTable =

@@ -258,6 +258,82 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                 return null;
             }
         }
+        
+        public async Task<List<VirtualPlayerTask>> GetVirtualPlayerTaskHistory()
+        {
+            var taskArns = new List<string>();
+            var tasks = new List<VirtualPlayerTask>();
+            var taskDefinitions = await GetTaskDefinitions();
+            try
+            {
+                var request = new ListTasksRequest()
+                {
+                    Cluster = Environment.GetEnvironmentVariable("VirtualPlayersClusterArn"),
+                };
+                
+                LambdaLogger.Log(JsonConvert.SerializeObject(request));
+                
+                var listTasksPaginator = _client.Paginators.ListTasks(request);
+                
+                await foreach (var taskArn in listTasksPaginator.TaskArns)
+                {
+                    taskArns.Add(taskArn);
+                }
+                
+                var maxTasksPerRequest = 100;
+
+                for (var i = 0; i < taskArns.Count; i += maxTasksPerRequest)
+                {
+                    List<string> items = taskArns.GetRange(i, Math.Min(maxTasksPerRequest, taskArns.Count - i));
+                    var describeTasksResponse = await _client.DescribeTasksAsync(
+                        new DescribeTasksRequest
+                        {
+                            Tasks = items,
+                            Cluster = Environment.GetEnvironmentVariable("VirtualPlayersClusterArn")
+                        });
+
+                    foreach (var task in describeTasksResponse.Tasks)
+                    {
+                        var virtualPlayerTask = new VirtualPlayerTask
+                        {
+                            CreatedAt = task.CreatedAt.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                            CapacityProviderName = task.CapacityProviderName,
+                            Cpu = task.Cpu,
+                            Memory = task.Memory,
+                            TaskArn = task.TaskArn,
+                            LastStatus = task.LastStatus,
+                        };
+
+                        var taskDef = taskDefinitions.Find(x => x.TaskDefinitionArn == task.TaskDefinitionArn);
+
+                        if (taskDef!=null && taskDef.ContainerDefinitions.Count > 0)
+                        {
+                            var logOptions = taskDef.ContainerDefinitions[0].LogConfiguration.Options;
+                            if (logOptions["awslogs-group"] != null)
+                            {
+                                var taskId = virtualPlayerTask.TaskArn.Split("/").Last();
+                                virtualPlayerTask.LogGroup = logOptions["awslogs-group"];
+                                virtualPlayerTask.LogStream = logOptions["awslogs-stream-prefix"] + "/" + taskDef.ContainerDefinitions[0].Name + "/" + taskId;
+                            }
+                        }
+                        
+                        if (task.Containers.Count > 0)
+                        {
+                            virtualPlayerTask.ContainerArn = task.Containers[0].ContainerArn;
+                        }
+                        
+                        tasks.Add(virtualPlayerTask);
+                    }
+                }
+
+                return tasks;
+            }
+            catch (Exception e)
+            {
+                LambdaLogger.Log(e.ToString());
+                return null;
+            }
+        }
 
         public async Task<List<string>> TerminateAllVirtualPlayerTasks()
         {

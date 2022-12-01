@@ -10,4 +10,7 @@ export class Pages
     public static SIMULATE_MATCHMAKING_TICKETS: string = "simulateMatchmakingTickets";
     public static SIMULATE_MATCHMAKING_FAILED_TICKETS: string = "simulateMatchmakingFailedTickets";
     public static SIMULATE_MATCHMAKING_MATCH_INFO: string = "simulateMatchmakingMatchInfo";
+    public static VIRTUAL_PLAYER_LAUNCH_REQUESTS: string = "virtualPlayerLaunchRequests";
+    public static VIRTUAL_PLAYER_LAUNCH_REQUEST_TASKS: string = "virtualPlayerLaunchRequestTasks";
+    public static VIRTUAL_PLAYER_LAUNCH_REQUEST_TASK_LOGS: string = "virtualPlayerLaunchRequestTaskLogs";
 }

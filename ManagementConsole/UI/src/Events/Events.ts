@@ -52,6 +52,7 @@ export class Events
     public static DELETE_LATENCY_PROFILE_RESPONSE:string = "DeleteLatencyProfileResponse";
     public static GET_PLAYER_SESSIONS_RESPONSE:string = "GetPlayerSessionsResponse";
     public static GET_VIRTUAL_PLAYER_TASKS_RESPONSE:string = "GetVirtualPlayerTasksResponse";
+    public static GET_VIRTUAL_PLAYER_LAUNCH_TASK_REQUESTS_RESPONSE:string = "GetVirtualPlayerLaunchTaskRequests";
     public static GET_CLOUDWATCH_LOGS_RESPONSE:string = "GetCloudWatchLogsResponse";
     public static LAUNCH_VIRTUAL_PLAYERS_RESPONSE:string = "LaunchVirtualPlayersResponse";
     public static LAUNCH_VIRTUAL_PLAYERS_PROGRESS_RESPONSE:string = "LaunchVirtualPlayersProgressResponse";
@@ -70,12 +71,9 @@ export class Events
     public static SHOW_FLEET_GRAPH_POPUP:string = "ShowFleetGraphPopup";
     public static SHOW_FLEET_SCALING_POPUP:string = "ShowFleetScalingPopup";
     public static SHOW_FLEET_LOCATIONS_POPUP:string = "ShowFleetLocationsPopup";
-    public static SHOW_MANAGE_VIRTUAL_PLAYERS_POPUP:string = "ShowManageVirtualPlayersPopup";
-    public static SHOW_LAUNCH_VIRTUAL_PLAYERS_POPUP:string = "ShowLaunchVirtualPlayersPopup";
     public static SHOW_FLEET_EVENTS_POPUP:string = "ShowFleetEventsPopup";
     public static SHOW_GAME_SESSIONS_TABLE_POPUP:string = "ShowGameSessionsTablePopup";
     public static SHOW_GAME_SESSION_LOGS_POPUP:string = "ShowGameSessionLogsPopup";
-    public static SET_QUEUE_DATA:string = "SetQueueData";
     public static SHOW_QUEUE_EVENTS_POPUP:string = "ShowQueueEventsPopup";
     public static SHOW_QUEUE_SETTINGS_POPUP:string = "ShowQueueSettingsPopup";
     public static SHOW_FLEXMATCH_SIMULATOR_POPUP:string = "ShowFlexMatchSimulatorPopup";
@@ -86,6 +84,7 @@ export class Events
     public static OVER_PLAYER:string = "OverPlayer";
     public static SHOW_QUEUE_POPUP:string = "ShowQueuePopup";
     public static SHOW_QUEUE_GRAPH_POPUP:string = "ShowQueueGraphPopup";
+    public static SHOW_VIRTUAL_PLAYER_TASKS_POPUP:string = "ShowVirtualPlayerTasksPopup";
     public static SHOW_MATCHMAKING_CONFIG_POPUP:string = "ShowMatchmakingConfigPopup";
     public static SHOW_MATCHMAKING_GRAPH_POPUP:string = "ShowMatchmakingConfigGraphPopup";
     public static SHOW_MATCHMAKING_CONFIG_QUEUES:string = "ShowMatchmakingConfigQueues";

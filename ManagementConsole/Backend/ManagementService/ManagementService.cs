@@ -559,9 +559,13 @@ namespace ManagementConsoleBackend.ManagementService
                             break;
 
                         case "GetVirtualPlayerTasks":
-                            var getVirtualPlayersRequest = JsonConvert.DeserializeObject<ClientMessageGetVirtualPlayers>(request.Body);
                             var virtualPlayers = await virtualPlayersHandler.GetVirtualPlayerTasks();
                             await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetVirtualPlayerTasks { Tasks = virtualPlayers });
+                            break;
+                        
+                        case "GetVirtualPlayerLaunchTaskRequests":
+                            var launchTaskRequests = await dynamoDbRequestHandler.GetLaunchTaskRequests();
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetVirtualPlayerLaunchTaskRequests { LaunchTaskRequests = launchTaskRequests });
                             break;
                         
                         case "GetGameSessionLogs":

@@ -92,6 +92,12 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public List<VirtualPlayerTask> Tasks;
     }
     
+    public class ServerMessageGetVirtualPlayerLaunchTaskRequests : ServerMessage
+    {
+        public new string Type = "GetVirtualPlayerLaunchTaskRequests";
+        public List<LaunchTaskRequest> LaunchTaskRequests;
+    }
+    
     public class ServerMessageGetQueueEvents : ServerMessage
     {
         public new string Type = "GetQueueEvents";
