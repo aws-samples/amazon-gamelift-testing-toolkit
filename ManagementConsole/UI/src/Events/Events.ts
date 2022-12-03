@@ -53,6 +53,10 @@ export class Events
     public static GET_PLAYER_SESSIONS_RESPONSE:string = "GetPlayerSessionsResponse";
     public static GET_VIRTUAL_PLAYER_TASKS_RESPONSE:string = "GetVirtualPlayerTasksResponse";
     public static GET_VIRTUAL_PLAYER_LAUNCH_TASK_REQUESTS_RESPONSE:string = "GetVirtualPlayerLaunchTaskRequests";
+    public static GET_VIRTUAL_PLAYER_TASK_SCHEDULES_RESPONSE:string = "GetVirtualPlayerTaskSchedules";
+    public static CREATE_VIRTUAL_PLAYER_TASK_SCHEDULE_RESPONSE:string = "CreateVirtualPlayerTaskSchedule";
+    public static DELETE_VIRTUAL_PLAYER_TASK_SCHEDULE_RESPONSE:string = "DeleteVirtualPlayerTaskSchedule";
+    public static GET_VIRTUAL_PLAYER_TASK_QUOTAS_RESPONSE:string = "GetVirtualPlayerTaskQuotas";
     public static GET_CLOUDWATCH_LOGS_RESPONSE:string = "GetCloudWatchLogsResponse";
     public static LAUNCH_VIRTUAL_PLAYERS_RESPONSE:string = "LaunchVirtualPlayersResponse";
     public static LAUNCH_VIRTUAL_PLAYERS_PROGRESS_RESPONSE:string = "LaunchVirtualPlayersProgressResponse";

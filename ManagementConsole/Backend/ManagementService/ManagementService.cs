@@ -563,6 +563,21 @@ namespace ManagementConsoleBackend.ManagementService
                             await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetVirtualPlayerTasks { Tasks = virtualPlayers });
                             break;
                         
+                        case "GetVirtualPlayerTaskQuotas":
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetVirtualPlayerTaskQuotas() { Quotas = await virtualPlayersHandler.GetVirtualPlayerTaskQuotas() });
+                            break;
+                        
+                        case "GetVirtualPlayerTaskSchedules":
+                            var schedules = await dynamoDbRequestHandler.GetVirtualPlayerTaskSchedules();
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetVirtualPlayerTaskSchedules { Schedules = schedules });
+                            break;
+                        
+                        case "CreateVirtualPlayerTaskSchedule":
+                            var createVirtualPlayerTaskScheduleRequest = JsonConvert.DeserializeObject<ClientMessageCreateVirtualPlayerTaskSchedule>(request.Body);
+                            var createVirtualPlayerTaskScheduleResponse = await dynamoDbRequestHandler.CreateVirtualPlayerTaskSchedule(createVirtualPlayerTaskScheduleRequest.Schedule);
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, createVirtualPlayerTaskScheduleResponse);
+                            break;
+                        
                         case "GetVirtualPlayerLaunchTaskRequests":
                             var launchTaskRequests = await dynamoDbRequestHandler.GetLaunchTaskRequests();
                             await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetVirtualPlayerLaunchTaskRequests { LaunchTaskRequests = launchTaskRequests });
@@ -591,6 +606,24 @@ namespace ManagementConsoleBackend.ManagementService
                             var terminateVirtualPlayerRequest = JsonConvert.DeserializeObject<ClientMessageTerminateVirtualPlayer>(request.Body);
                             var terminateVirtualPlayerErrors = await virtualPlayersHandler.TerminateVirtualPlayerTask(terminateVirtualPlayerRequest.TaskArn);
                             await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageTerminateVirtualPlayerTasks { Errors = terminateVirtualPlayerErrors});
+                            break;
+                        
+                        case "DeleteVirtualPlayerTaskSchedule":
+                            try
+                            {
+                                var deleteScheduleRequest = JsonConvert.DeserializeObject<ClientMessageDeleteVirtualPlayerTaskSchedule>(request.Body);
+                                await dynamoDbRequestHandler.DeleteVirtualPlayerTaskSchedule(deleteScheduleRequest.ScheduleId);
+                                await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageDeleteVirtualPlayerTaskSchedule { Errors = new List<string>() });
+                            }
+                            catch (Exception e)
+                            {
+                                LambdaLogger.Log(e.ToString());
+                                await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageDeleteVirtualPlayerTaskSchedule { Errors = new List<string>
+                                {
+                                    e.Message
+                                } });
+                                throw;
+                            }
                             break;
                         
                         case "TerminateAllVirtualPlayerTasks":

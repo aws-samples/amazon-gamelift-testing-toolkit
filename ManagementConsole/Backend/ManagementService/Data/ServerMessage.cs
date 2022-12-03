@@ -92,6 +92,26 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public List<VirtualPlayerTask> Tasks;
     }
     
+    public class ServerMessageGetVirtualPlayerTaskQuotas : ServerMessage
+    {
+        public new string Type = "GetVirtualPlayerTaskQuotas";
+        public VirtualPlayerTaskQuotas Quotas;
+    }
+    
+    public class ServerMessageCreateVirtualPlayerTaskSchedule : ServerMessage
+    {
+        public new string Type = "CreateVirtualPlayerTaskSchedule";
+        public VirtualPlayerTaskSchedule Schedule;
+        public bool Created;
+        public string ErrorMessage = "";
+    }
+    
+    public class ServerMessageGetVirtualPlayerTaskSchedules : ServerMessage
+    {
+        public new string Type = "GetVirtualPlayerTaskSchedules";
+        public List<VirtualPlayerTaskSchedule> Schedules;
+    }
+    
     public class ServerMessageGetVirtualPlayerLaunchTaskRequests : ServerMessage
     {
         public new string Type = "GetVirtualPlayerLaunchTaskRequests";
@@ -260,6 +280,12 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public new string Type = "DeleteMatchmakingRuleSet";
         public bool Deleted;
         public string ErrorMessage = "";
+    }
+    
+    public class ServerMessageDeleteVirtualPlayerTaskSchedule : ServerMessage
+    {
+        public new string Type = "DeleteVirtualPlayerTaskSchedule";
+        public List<string> Errors;
     }
 
     public class ServerMessageDeleteScalingPolicy : ServerMessage

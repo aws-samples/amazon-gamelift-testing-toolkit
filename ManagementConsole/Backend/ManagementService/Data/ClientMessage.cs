@@ -20,6 +20,12 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public MatchmakingSimulationPlayerConfig[] PlayerProfileConfigs;
     }
     
+    public class ClientMessageDeleteVirtualPlayerTaskSchedule : ClientMessage
+    {
+        public new string Type = "DeleteVirtualPlayerTaskSchedule";
+        public string ScheduleId;
+    }
+    
     public class ClientMessageDeletePlayerProfile : ClientMessage
     {
         public new string Type = "DeletePlayerProfile";
@@ -99,6 +105,12 @@ namespace ManagementConsoleBackend.ManagementService.Data
     public class ClientMessageGetVirtualPlayers : ClientMessage
     {
         public new string Type = "GetVirtualPlayers";
+    }
+    
+    public class ClientMessageCreateVirtualPlayerTaskSchedule : ClientMessage
+    {
+        public new string Type = "CreateVirtualPlayerTaskSchedule";
+        public VirtualPlayerTaskSchedule Schedule;
     }
     
     public class ClientMessageGetVirtualPlayerTaskHistory : ClientMessage

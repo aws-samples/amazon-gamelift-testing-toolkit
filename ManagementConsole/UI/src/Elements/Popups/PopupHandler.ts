@@ -13,8 +13,6 @@ import {FleetEventsPopup} from "./FleetEventsPopup";
 import {GameSessionsTablePopup} from "./GameSessionsTablePopup";
 import {QueueEventsPopup} from "./QueueEventsPopup";
 import {MatchmakingTicketsPopup} from "./MatchmakingTicketsPopup";
-import {ManageVirtualPlayersPopup} from "./ManageVirtualPlayersPopup";
-import {LaunchVirtualPlayersPopup} from "./LaunchVirtualPlayersPopup";
 import {SimpleJsonPopup} from "./SimpleJsonPopup";
 import {MatchmakingRuleSetsPopup} from "./MatchmakingRuleSetsPopup";
 import {MatchmakingConfigPopup} from "./MatchmakingConfigPopup";
@@ -24,6 +22,7 @@ import {FleetGraphPopup} from "./FleetGraphPopup";
 import {FlexMatchSimulatorPopup} from "./FlexMatchSimulatorPopup";
 import {QueueSettingsPopup} from "./QueueSettingsPopup";
 import {VirtualPlayerTasksPopup} from "./VirtualPlayerTasksPopup";
+import {PageManager} from "../Pages/PageManager";
 
 export class PopupHandler
 {
@@ -310,5 +309,6 @@ export class PopupHandler
         PopupHandler.popup?.hide();
         PopupHandler.popup?.destroy();
         PopupHandler.popup = null;
+        PageManager.resetPages();
     };
 }

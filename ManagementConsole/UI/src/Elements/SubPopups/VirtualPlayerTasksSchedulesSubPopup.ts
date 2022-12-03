@@ -2,8 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import 'phaser';
-import {DataTypes} from "../../Data/DataTypes";
 import {SubPopup} from "../Abstract/SubPopup";
+import {PageManager} from "../Pages/PageManager";
+import {VirtualPlayerTaskSchedulesTable} from "../Pages/VirtualPlayerTaskSchedulesTable";
+import {VirtualPlayerTaskSchedulesForm} from "../Pages/VirtualPlayerTaskSchedulesForm";
 
 export class VirtualPlayerTasksSchedulesSubPopup extends SubPopup
 {
@@ -14,15 +16,19 @@ export class VirtualPlayerTasksSchedulesSubPopup extends SubPopup
 
     refresh = ()=>
     {
+        PageManager.resetPages();
+
+        let schedulesTablePage = PageManager.registerPage(new VirtualPlayerTaskSchedulesTable());
+        let schedulesFormPage = PageManager.registerPage(new VirtualPlayerTaskSchedulesForm(schedulesTablePage));
+
+        PageManager.switchPage(VirtualPlayerTaskSchedulesTable.id);
+
         this.hideStatusAlert();
-        //Network.sendObject({Type:"GetLatencyProfiles"});
     }
 
-    setupEventListeners()
-    {
-    }
-
-    removeEventListeners()
-    {
+    onPopupClick = async (event) => {
+        event.stopPropagation();
+        let el = $(event.target);
+        PageManager.getCurrentPage().onPopupClick(event);
     }
 }

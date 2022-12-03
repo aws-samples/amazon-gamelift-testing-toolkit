@@ -13,4 +13,6 @@ export class Pages
     public static VIRTUAL_PLAYER_LAUNCH_REQUESTS: string = "virtualPlayerLaunchRequests";
     public static VIRTUAL_PLAYER_LAUNCH_REQUEST_TASKS: string = "virtualPlayerLaunchRequestTasks";
     public static VIRTUAL_PLAYER_LAUNCH_REQUEST_TASK_LOGS: string = "virtualPlayerLaunchRequestTaskLogs";
+    public static VIRTUAL_PLAYER_TASK_SCHEDULES_TABLE: string = "virtualPlayerTaskSchedulesTablePage";
+    public static VIRTUAL_PLAYER_TASK_SCHEDULES_FORM: string = "virtualPlayerTaskSchedulesFormPage";
 }

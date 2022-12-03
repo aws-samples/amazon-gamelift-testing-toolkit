@@ -57,8 +57,6 @@ export class VirtualPlayerLaunchRequests extends Page
         let html="";
         this._taskHistory = data.LaunchTaskRequests;
 
-        console.log(this._taskHistory);
-
         this._taskHistory.map(launchRequest =>
         {
             let scheduleId="-";

@@ -37,7 +37,6 @@ export class VirtualPlayerLaunchRequestTaskLogs extends Page
 
     public setPageData(data:any)
     {
-        console.log(data);
         this._launchRequest = data.LaunchRequest;
         this._logGroup = data.LogGroup;
         this._logStream = data.LogStream;

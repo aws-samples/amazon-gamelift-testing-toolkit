@@ -9,9 +9,13 @@ using Amazon.DynamoDBv2;
 using Amazon.ECS;
 using Amazon.ECS.Model;
 using Amazon.Lambda.Core;
+using Amazon.ServiceQuotas;
+using Amazon.ServiceQuotas.Model;
 using ManagementConsoleBackend.Common;
 using ManagementConsoleBackend.ManagementService.Data;
 using Newtonsoft.Json;
+using ListTagsForResourceRequest = Amazon.ECS.Model.ListTagsForResourceRequest;
+using Tag = Amazon.ECS.Model.Tag;
 
 namespace ManagementConsoleBackend.ManagementService.Lib
 {
@@ -251,6 +255,46 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                 }
 
                 return tasks;
+            }
+            catch (Exception e)
+            {
+                LambdaLogger.Log(e.ToString());
+                return null;
+            }
+        }
+        
+        public async Task<VirtualPlayerTaskQuotas> GetVirtualPlayerTaskQuotas()
+        {
+            var quotasClient = new AmazonServiceQuotasClient();
+            var quotaResult = new VirtualPlayerTaskQuotas();
+
+            try
+            {
+                var getDefaultQuotaResponse = await quotasClient.GetAWSDefaultServiceQuotaAsync(new GetAWSDefaultServiceQuotaRequest
+                {
+                    ServiceCode = "ecs",
+                    QuotaCode = "L-D3FB61D9",
+                });
+
+                quotaResult.RatePerMinute = getDefaultQuotaResponse.Quota.Value;
+
+                var getOnDemandQuotaResponse = await quotasClient.GetServiceQuotaAsync(new GetServiceQuotaRequest
+                {
+                    ServiceCode = "fargate",
+                    QuotaCode = "L-3032A538",
+                });
+
+                quotaResult.RunningFargateOnDemandVcpu = getOnDemandQuotaResponse.Quota.Value;
+
+                var getSpotQuotaResponse = await quotasClient.GetServiceQuotaAsync(new GetServiceQuotaRequest
+                {
+                    ServiceCode = "fargate",
+                    QuotaCode = "L-36FBB829",
+                });
+
+                quotaResult.RunningFargateSpotVcpu = getSpotQuotaResponse.Quota.Value;
+                
+                return quotaResult;
             }
             catch (Exception e)
             {

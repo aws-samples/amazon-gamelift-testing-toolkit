@@ -172,6 +172,22 @@ export class MessageHandler
                 this._emitter.emit(Events.GET_VIRTUAL_PLAYER_LAUNCH_TASK_REQUESTS_RESPONSE, data);
                 break;
 
+            case "GetVirtualPlayerTaskSchedules":
+                this._emitter.emit(Events.GET_VIRTUAL_PLAYER_TASK_SCHEDULES_RESPONSE, data);
+                break;
+
+            case "CreateVirtualPlayerTaskSchedule":
+                this._emitter.emit(Events.CREATE_VIRTUAL_PLAYER_TASK_SCHEDULE_RESPONSE, data);
+                break;
+
+            case "DeleteVirtualPlayerTaskSchedule":
+                this._emitter.emit(Events.DELETE_VIRTUAL_PLAYER_TASK_SCHEDULE_RESPONSE, data);
+                break;
+
+            case "GetVirtualPlayerTaskQuotas":
+                this._emitter.emit(Events.GET_VIRTUAL_PLAYER_TASK_QUOTAS_RESPONSE, data);
+                break;
+
             case "GetMatchmakingTicketHeaders":
                 this._emitter.emit(Events.GET_MATCHMAKING_TICKET_HEADERS_RESPONSE, data);
                 break;

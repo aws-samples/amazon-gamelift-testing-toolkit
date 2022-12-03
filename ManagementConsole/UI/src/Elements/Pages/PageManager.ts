@@ -8,6 +8,7 @@ export class PageManager
 
     public static resetPages()
     {
+        Object.values(this._pages).map(page=>page.hidePage());
         this._pages = {};
     }
 

@@ -372,5 +372,31 @@ export namespace DataTypes
         MaxLatency: number;
     }
 
+    export interface VirtualPlayerTaskSchedule
+    {
+        ScheduleId?: string;
+        ScheduleName?: string;
+        LaunchTime?: number;
+        TerminationTime?: number;
+        NumTasks?: number;
+        PercentageIncrease?: number;
+        SchedulePeriodMinutes?: number;
+        Actions?: VirtualPlayerTaskScheduleAction[];
+    }
+
+    export interface VirtualPlayerTaskScheduleAction
+    {
+        Type: string;
+        Minutes: number;
+        NumTasks: number;
+    }
+
+    export interface VirtualPlayerTasksQuotas
+    {
+        RatePerMinute?: number;
+        RunningFargateOnDemandVcpu?: number;
+        RunningFargateSpotVcpu?: number;
+    }
+
 }
 

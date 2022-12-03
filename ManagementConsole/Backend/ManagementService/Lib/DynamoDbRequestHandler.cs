@@ -482,6 +482,51 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             }
         }
         
+        public async Task<ServerMessageCreateVirtualPlayerTaskSchedule> CreateVirtualPlayerTaskSchedule(VirtualPlayerTaskSchedule schedule)
+        {
+            var response = new ServerMessageCreateVirtualPlayerTaskSchedule();
+            
+            var taskSchedulesTable =
+                Table.LoadTable(_client, Environment.GetEnvironmentVariable("VirtualPlayerTaskScheduleTableName"));
+            
+            schedule.ScheduleId = Guid.NewGuid().ToString();
+            
+            var item = Document.FromJson(JsonConvert.SerializeObject(schedule));
+
+            response.Created = false;
+            try
+            {
+                await taskSchedulesTable.PutItemAsync(item);
+                response.Created = true;
+                response.Schedule = schedule;
+            }
+            catch (Exception e)
+            {
+                response.ErrorMessage = e.Message;
+                LambdaLogger.Log(e.ToString());
+            }
+
+            return response;
+        }
+        
+        public async Task DeleteVirtualPlayerTaskSchedule(string scheduleId)
+        {
+            var virtualPlayerTaskScheduleTable =
+                Table.LoadTable(_client, Environment.GetEnvironmentVariable("VirtualPlayerTaskScheduleTableName"));
+            
+            var item = new Document();
+            item["ScheduleId"] = scheduleId;
+            
+            try
+            {
+                await virtualPlayerTaskScheduleTable.DeleteItemAsync(item);
+            }
+            catch (Exception e)
+            {
+                LambdaLogger.Log(e.ToString());
+            }
+        }
+        
         public async Task<List<LaunchTaskRequest>> GetLaunchTaskRequests()
         {
             var launchTasks = new List<LaunchTaskRequest>();
@@ -501,6 +546,27 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             } while (!search.IsDone);
 
             return launchTasks;
+        }
+
+        public async Task<List<VirtualPlayerTaskSchedule>> GetVirtualPlayerTaskSchedules()
+        {
+            var schedules = new List<VirtualPlayerTaskSchedule>();
+            var schedulesTable =
+                Table.LoadTable(_client, Environment.GetEnvironmentVariable("VirtualPlayerTaskScheduleTableName"));
+
+            var search = schedulesTable.Scan(new ScanOperationConfig());
+            
+            var documentList = new List<Document>();
+            do
+            {
+                documentList = await search.GetNextSetAsync();
+                foreach (var document in documentList)
+                {
+                    schedules.Add(JsonConvert.DeserializeObject<VirtualPlayerTaskSchedule>(document.ToJson()));
+                }
+            } while (!search.IsDone);
+
+            return schedules;
         }
         
         public async Task SaveLaunchTaskRequest(LaunchTaskRequest taskRequest)

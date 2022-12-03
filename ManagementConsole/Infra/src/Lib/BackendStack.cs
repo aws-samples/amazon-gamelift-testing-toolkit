@@ -754,6 +754,8 @@ namespace ManagementConsoleInfra.Lib
                         "cloudwatch:GetMetricData",
                         "states:ListExecutions",
                         "iam:PassRole",
+                        "servicequotas:GetServiceQuota",
+                        "servicequotas:GetAWSDefaultServiceQuota",
                         "gamelift:DescribeFleetCapacity",
                         "gamelift:DescribePlayerSessions",
                         "gamelift:UpdateMatchmakingConfiguration",

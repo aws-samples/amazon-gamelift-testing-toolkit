@@ -65,6 +65,8 @@ export  class PreloaderScene extends Phaser.Scene {
         this.load.html('simulateMatchmakingTickets', 'assets/html/fragments/simulateMatchmakingTickets.html');
         this.load.html('virtualPlayerTasksLaunchSubPopup', 'assets/html/fragments/virtualPlayerTasksLaunch.html');
         this.load.html('virtualPlayerTasksSchedulesSubPopup', 'assets/html/fragments/virtualPlayerTasksSchedules.html');
+        this.load.html('virtualPlayerTaskSchedulesTable', 'assets/html/fragments/virtualPlayerTaskSchedulesTable.html');
+        this.load.html('virtualPlayerTaskSchedulesForm', 'assets/html/fragments/virtualPlayerTaskSchedulesForm.html');
         this.load.html('virtualPlayerTasksRunningSubPopup', 'assets/html/fragments/virtualPlayerTasksRunning.html');
         this.load.html('virtualPlayerTaskLaunchRequestsSubPopup', 'assets/html/fragments/virtualPlayerTaskLaunchRequests.html');
         this.load.html('virtualPlayerLaunchRequests', 'assets/html/fragments/virtualPlayerLaunchRequests.html');

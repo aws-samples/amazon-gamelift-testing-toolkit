@@ -7,6 +7,34 @@ using Newtonsoft.Json;
 
 namespace ManagementConsoleBackend.ManagementService.Data
 {
+
+    public class VirtualPlayerTaskSchedule
+    {
+        public string ScheduleId;
+        public string ScheduleName;
+        public int LaunchTime;
+        public int TerminationTime;
+        public int NumTasks;
+        public double PercentageIncrease;
+        public int SchedulePeriodMinutes;
+        public List<VirtualPlayerTaskScheduleAction> Actions;
+    }
+
+    public class VirtualPlayerTaskScheduleAction
+    {
+        public string Type;
+        public int Minutes;
+        public int NumTasks;
+    }
+    
+    public class VirtualPlayerTaskQuotas
+    {
+        public double RatePerMinute;
+        public double RunningFargateOnDemandVcpu;
+        public double RunningFargateSpotVcpu;
+        
+    }
+    
     public class LaunchTaskRequest
     {
         [DynamoDBHashKey]

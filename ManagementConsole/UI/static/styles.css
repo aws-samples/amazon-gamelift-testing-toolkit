@@ -42,7 +42,7 @@ h6 { margin-top: 10px;}
 
 .launchPlayersForm, .matchmakingConfigForm {
     margin-left: 10px;
-    margin-top: 40px;
+    margin-top: 30px;
 }
 
 button#launchPlayers  { margin-left:0; float:left; margin-top:10px; }
@@ -53,14 +53,23 @@ button#launchPlayers  { margin-left:0; float:left; margin-top:10px; }
 }
 
 .closeButton {
-    float: right;
-    margin-right: 5px;
-    margin-top: 5px;
     background-image: url(assets/closebutton.png);
     background-size: 30px;
     width: 30px;
     height: 30px;
     cursor: pointer;
+/*
+    float: right;
+    margin-right: 5px;
+    margin-top: 5px;
+    position: relative;
+    z-index: 999;
+
+ */
+    position: absolute;
+    right: 10px;
+    top:10px;
+    z-index:99;
 }
 
 .refreshButton, .refreshLogsButton {
@@ -106,11 +115,11 @@ button#launchPlayers  { margin-left:0; float:left; margin-top:10px; }
 }
 
 .matchmakingTicketHeadersContent, .queueEventsContent, .gameSessionsContent, .fleetEventsContent {
-    margin-top: 40px;
+    margin-top: 25px;
 }
 
 #simulateMatchmakingTickets .matchmakingTicketHeadersContent {
-    margin-top: 0px;
+    margin-top: 25px;
 }
 
 .existingRuleSetName { margin-top:10px; margin-bottom:20px}
@@ -128,13 +137,13 @@ button#launchPlayers  { margin-left:0; float:left; margin-top:10px; }
 
 .flexMatchSimulatorContainer
 {
-    margin-top: 40px;
+    margin-top: 10px;
     min-width: 1240px;
 }
 
 .queueSettingsContainer
 {
-    margin-top: 40px;
+    margin-top: 10px;
     min-width: 1240px;
 }
 
@@ -658,6 +667,7 @@ a.terminateAllVirtualPlayerTasks { margin-left:10px; margin-top:4px}
 .ruleEvaluationMetrics h4 { margin-top:35px}
 .successfulMatchTicketHeadersContent h4 { margin-top: 35px }
 .successfulMatchTicketEventsContent h4 { margin-top: 35px }
+button#createSchedule { margin-top: -4px }
 
 .no-sort::after { display: none!important; }
 
