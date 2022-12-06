@@ -309,6 +309,5 @@ export class PopupHandler
         PopupHandler.popup?.hide();
         PopupHandler.popup?.destroy();
         PopupHandler.popup = null;
-        PageManager.resetPages();
     };
 }

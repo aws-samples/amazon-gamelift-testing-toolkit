@@ -27,6 +27,7 @@ import {MessageHandler} from "../Network/MessageHandler";
 import {GameLiftEventHandler} from "../Events/GameLiftEventHandler";
 import {DummyEventHandler} from "../Events/DummyEventHandler";
 import Rectangle = Phaser.Geom.Rectangle;
+import DOMElement = Phaser.GameObjects.DOMElement;
 
 export class ConsoleScene extends Phaser.Scene
 {
@@ -46,6 +47,7 @@ export class ConsoleScene extends Phaser.Scene
     public static moveSpeed:number = 3;
     protected _currentState: State;
     protected static instance:ConsoleScene;
+    protected _scheduleProgressBanner: DOMElement;
 
     constructor ()
     {
@@ -56,7 +58,6 @@ export class ConsoleScene extends Phaser.Scene
         new MessageHandler();
         new DummyEventHandler();
         PopupHandler.registerScene(this);
-
     }
 
     static getInstance() {
@@ -69,6 +70,10 @@ export class ConsoleScene extends Phaser.Scene
     init(state:State)
     {
         ScreenResolution.updateUserResolution(this.scale.width, this.scale.height);
+
+        this._scheduleProgressBanner = this.add.dom(ScreenResolution.width/2, 30).createFromCache('scheduleProgress');
+        this.add.existing(this._scheduleProgressBanner);
+        $("div#scheduleProgress").hide();
 
         this._settingsPanel = new SettingsPanel(this, 0, 0);
         this.add.existing(this._settingsPanel);
@@ -254,6 +259,7 @@ export class ConsoleScene extends Phaser.Scene
     {
         this._emitter.on(Events.STATE_UPDATE, this.onStateMessage);
         this._emitter.on(Events.OPEN_SETTINGS, this.onSettingsOpen);
+        this._emitter.on(Events.SCHEDULE_PROGRESS, this.onScheduleProgress);
         this._emitter.on(Events.ENABLE_ANIMATIONS, this.onEnableAnimations);
         this._emitter.on(Events.DISABLE_ANIMATIONS, this.onDisableAnimations);
         this._emitter.on(Events.CLOSE_SETTINGS, this.onSettingsClose);
@@ -380,6 +386,49 @@ export class ConsoleScene extends Phaser.Scene
         this._lines=[];
     };
 
+    onScheduleProgress = (data) =>
+    {
+        if (data.ActionIndex!=null)
+        {
+            const action = data.Schedule.Actions[data.ActionIndex];
+
+            let progressText="";
+            if (action.Type=="Launch")
+            {
+                if (action.Status=="Completed")
+                {
+                    $("div#scheduleProgress").attr("class", "alert alert-success");
+                    progressText = action.NumTasks + " task(s) launched!";
+                }
+                else
+                {
+                    $("div#scheduleProgress").attr("class", "alert alert-danger");
+                    progressText = action.NumTasks + " task(s) failed to launch!";
+                }
+            }
+            else
+            {
+                if (action.Status=="Completed")
+                {
+                    $("div#scheduleProgress").attr("class", "alert alert-success");
+                    progressText = action.NumTasks + " task(s) terminated!";
+                }
+                else
+                {
+                    $("div#scheduleProgress").attr("class", "alert alert-danger");
+                    progressText = action.NumTasks + " task(s) failed to terminate!";
+                }
+            }
+
+            $("div#scheduleProgress").html(progressText);
+            $("div#scheduleProgress").show();
+            setTimeout(()=>
+            {
+                $("div#scheduleProgress").hide();
+            }, 6000);
+        }
+
+    };
 
     onSettingsOpen = () =>
     {

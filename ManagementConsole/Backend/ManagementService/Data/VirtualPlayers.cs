@@ -25,6 +25,10 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public string Type;
         public int Minutes;
         public int NumTasks;
+        public string Status;
+        public string ScheduledTime;
+        public string ExecutedTime;
+        public string LaunchId;
     }
     
     public class VirtualPlayerTaskQuotas
@@ -35,7 +39,7 @@ namespace ManagementConsoleBackend.ManagementService.Data
         
     }
     
-    public class LaunchTaskRequest
+    public class VirtualPlayerLaunchRequest
     {
         [DynamoDBHashKey]
         public string LaunchId;
@@ -43,6 +47,9 @@ namespace ManagementConsoleBackend.ManagementService.Data
         [DynamoDBProperty("ScheduleId")]
         public string ScheduleId;
         
+        [DynamoDBProperty("Type")]
+        public string Type;
+
         [DynamoDBProperty("Time")]
         public string Time;
 
@@ -52,6 +59,14 @@ namespace ManagementConsoleBackend.ManagementService.Data
         [DynamoDBProperty("Tasks")]
         public List<VirtualPlayerTask> Tasks;
 
+        [DynamoDBProperty("Schedule")]
+        public VirtualPlayerTaskSchedule Schedule;
+        
+        [DynamoDBProperty("ScheduleName")]
+        public string ScheduleName;
+        
+        [DynamoDBProperty("CapacityProvider")]
+        public string CapacityProvider;
     }
 
     public class VirtualPlayerTask

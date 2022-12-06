@@ -8,15 +8,15 @@ import {PageManager} from "./PageManager";
 import {Network} from "../../Network/Network";
 import {Events} from "../../Events/Events";
 
-export class VirtualPlayerLaunchRequests extends Page
+export class VirtualPlayerLaunchRequestsPage extends Page
 {
     public static id = Pages.VIRTUAL_PLAYER_LAUNCH_REQUESTS;
-    public static cacheKey = "virtualPlayerLaunchRequests";
+    public static cacheKey = this.id;
     protected _taskHistory:any[];
 
     public constructor (parentPage:Page=null)
     {
-        super(VirtualPlayerLaunchRequests.cacheKey, parentPage, VirtualPlayerLaunchRequests.id);
+        super(VirtualPlayerLaunchRequestsPage.cacheKey, parentPage, VirtualPlayerLaunchRequestsPage.id);
     }
 
     public onPopupClick(event) {
@@ -59,15 +59,11 @@ export class VirtualPlayerLaunchRequests extends Page
 
         this._taskHistory.map(launchRequest =>
         {
-            let scheduleId="-";
-            if (launchRequest.ScheduleId!=null)
-            {
-
-            }
+            let scheduleName= (launchRequest.ScheduleName!=null) ? launchRequest.ScheduleName : "-";
 
             html += '<tr>' +
                 '<td>' + launchRequest.Time + '</td>'+
-                '<td>' + scheduleId + '</td>'+
+                '<td>' + scheduleName + '</td>'+
                 '<td>' + launchRequest.Tasks.length + '</td>'+
                 '<td><a class="viewTasks btn btn-primary btn-sm" data-launchid="' + launchRequest.LaunchId +'" href="' + "#" + '">View Tasks</a></td>' +
                 '</tr>';

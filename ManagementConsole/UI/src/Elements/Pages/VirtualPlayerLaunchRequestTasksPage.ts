@@ -6,16 +6,16 @@ import {Page} from "../Abstract/Page";
 import {Pages} from "./Pages";
 import {PageManager} from "./PageManager";
 
-export class VirtualPlayerLaunchRequestTasks extends Page
+export class VirtualPlayerLaunchRequestTasksPage extends Page
 {
     public static id = Pages.VIRTUAL_PLAYER_LAUNCH_REQUEST_TASKS;
-    public static cacheKey = "virtualPlayerLaunchRequestTasks";
+    public static cacheKey = this.id;
 
     protected _launchRequest:any = {};
 
     public constructor (parentPage:Page=null)
     {
-        super(VirtualPlayerLaunchRequestTasks.cacheKey, parentPage, VirtualPlayerLaunchRequestTasks.id);
+        super(VirtualPlayerLaunchRequestTasksPage.cacheKey, parentPage, VirtualPlayerLaunchRequestTasksPage.id);
     }
 
     public onPopupClick(event) {

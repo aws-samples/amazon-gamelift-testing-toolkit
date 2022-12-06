@@ -6,14 +6,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="AWSSDK.CloudWatchLogs" Version="3.7.101.15" />
-      <PackageReference Include="AWSSDK.CognitoIdentity" Version="3.7.100.22" />
-      <PackageReference Include="AWSSDK.GameLift" Version="3.7.100.22" />
-      <PackageReference Include="AWSSDK.SecurityToken" Version="3.7.100.22" />
+      <PackageReference Include="AWSSDK.CloudWatchLogs" Version="3.7.102.5" />
+      <PackageReference Include="AWSSDK.CognitoIdentity" Version="3.7.100.28" />
+      <PackageReference Include="AWSSDK.GameLift" Version="3.7.101.1" />
+      <PackageReference Include="AWSSDK.SecurityToken" Version="3.7.100.28" />
       <PackageReference Include="CommandLineParser" Version="2.9.1" />
       <PackageReference Include="JetBrains.Annotations" Version="2022.3.1" />
       <PackageReference Include="log4net" Version="2.0.15" />
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
       <PackageReference Include="Websocket.Client" Version="4.4.43" />
     </ItemGroup>
 

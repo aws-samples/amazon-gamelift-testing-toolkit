@@ -58,6 +58,7 @@ namespace ManagementConsoleInfra.Lib
         public Function ManagementServiceFunction;
         public Function FlexMatchSimulatorFunction;
         public Function StateEventHandlerFunction;
+        public Function VirtualPlayerTaskScheduledActionFunction;
         public Function FlexMatchEventFunction;
         public Function QueuePlacementEventFunction;
         public Function ConfigPopulatorFunction;
@@ -182,6 +183,7 @@ namespace ManagementConsoleInfra.Lib
             
             ManagementServiceFunction.AddEnvironment("StageServiceUrl", serviceUrl);
             StateEventHandlerFunction.AddEnvironment("StageServiceUrl", serviceUrl);
+            VirtualPlayerTaskScheduledActionFunction.AddEnvironment("StageServiceUrl", serviceUrl);
             QueuePlacementEventFunction.AddEnvironment("StageServiceUrl", serviceUrl);
             FlexMatchEventFunction.AddEnvironment("StageServiceUrl", serviceUrl);
             
@@ -190,6 +192,7 @@ namespace ManagementConsoleInfra.Lib
             ProdStage.GrantManagementApiAccess(StateEventHandlerFunction);
             ProdStage.GrantManagementApiAccess(QueuePlacementEventFunction);
             ProdStage.GrantManagementApiAccess(FlexMatchEventFunction);
+            ProdStage.GrantManagementApiAccess(VirtualPlayerTaskScheduledActionFunction);
             
             var apiGwInvokePolicy = new PolicyStatement(new PolicyStatementProps
             {
@@ -786,6 +789,31 @@ namespace ManagementConsoleInfra.Lib
                         "gamelift:DescribeScalingPolicies"
                     }
                 }));
+            
+            managementServiceFunctionRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
+            {
+                Actions = new[]
+                {
+                    "scheduler:GetScheduleGroup",
+                    "scheduler:CreateScheduleGroup",
+                    "scheduler:DeleteScheduleGroup",
+                },
+                Effect = Effect.ALLOW,
+                Resources = new[] {"arn:aws:scheduler:*:*:schedule-group/Amazon-GameLift-Testing-Toolkit-Schedule-Group"},
+            }));
+            
+            managementServiceFunctionRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
+            {
+                Actions = new[]
+                {
+                    "scheduler:GetSchedule",
+                    "scheduler:CreateSchedule",
+                    "scheduler:UpdateSchedule",
+                    "scheduler:DeleteSchedule",
+                },
+                Effect = Effect.ALLOW,
+                Resources = new[] {"arn:aws:scheduler:*:*:schedule/Amazon-GameLift-Testing-Toolkit-Schedule-Group/*"},
+            }));
 
             managementServiceFunctionRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
                 {
@@ -837,6 +865,128 @@ namespace ManagementConsoleInfra.Lib
             
             // Adding specific CDK-Nag Suppressions
             NagSuppressions.AddResourceSuppressions(managementServiceFunctionRole, new INagPackSuppression[]
+            {
+                new NagPackSuppression
+                {
+                    Id = "AwsSolutions-IAM5",
+                    Reason = "Suppress wildcard finding to give permission to access CloudWatch and GameLift generic components"
+                }
+            }, true);
+            
+            // SETUP VIRTUAL PLAYER SCHEDULED ACTION FUNCTION
+            var virtualPlayerScheduledActionFunctionRole = new Role(this, "VirtualPlayerScheduleActionFunctionRole", new RoleProps
+            {
+                AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
+            });
+            virtualPlayerScheduledActionFunctionRole.AddToPrincipalPolicy(DefaultLambdaPolicy);
+            
+            var virtualPlayerEventBridgeSchedulerRole = new Role(this, "VirtualPlayerEventBridgeSchedulerRole", new RoleProps
+            {
+                AssumedBy = new ServicePrincipal("scheduler.amazonaws.com")
+            });
+            
+            VirtualPlayerTaskScheduledActionFunction = new Function(this, "VirtualPlayerTaskScheduledActionLambdaFunction", new FunctionProps
+            {
+                Runtime = Program.DotNetRuntime,
+                Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.VirtualPlayerTaskScheduledAction::ScheduledActionHandler",
+                Environment = new Dictionary<string, string>
+                {
+                    ["ConnectionsTableName"] = props.ManagementConnectionsTable.TableName,
+                    ["VirtualPlayerTaskScheduleTableName"] = props.VirtualPlayerTaskScheduleTable.TableName,
+                    ["VirtualPlayerTaskLaunchTableName"] = props.VirtualPlayerTaskLaunchTable.TableName,
+                    ["VirtualPlayersClusterArn"] = VirtualPlayersRunnerCluster.ClusterArn,
+                    ["VirtualPlayersSecurityGroupId"] = VirtualPlayersRunnerSecurityGroup.SecurityGroupId,
+                    ["VirtualPlayersSubnetIds"] = JsonConvert.SerializeObject(subnetIds),
+                },
+                Timeout = Duration.Minutes(15),
+                MemorySize = 512,
+                Role = virtualPlayerScheduledActionFunctionRole
+            });
+
+            VirtualPlayerTaskScheduledActionFunction.GrantInvoke(virtualPlayerEventBridgeSchedulerRole);
+
+            virtualPlayerScheduledActionFunctionRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
+            {
+                Actions = new[]
+                {
+                    "scheduler:GetScheduleGroup",
+                    "scheduler:CreateScheduleGroup",
+                    "scheduler:DeleteScheduleGroup",
+                },
+                Effect = Effect.ALLOW,
+                Resources = new[] {"arn:aws:scheduler:*:*:schedule-group/Amazon-GameLift-Testing-Toolkit-Schedule-Group"},
+            }));
+            
+            virtualPlayerScheduledActionFunctionRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
+            {
+                Actions = new[]
+                {
+                    "scheduler:GetSchedule",
+                    "scheduler:CreateSchedule",
+                    "scheduler:UpdateSchedule",
+                    "scheduler:DeleteSchedule",
+                },
+                Effect = Effect.ALLOW,
+                Resources = new[] {"arn:aws:scheduler:*:*:schedule/Amazon-GameLift-Testing-Toolkit-Schedule-Group/*"},
+            }));
+            
+            virtualPlayerScheduledActionFunctionRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
+                {
+                    Actions = new[]
+                    {
+                        "ecs:DescribeTasks",
+                        "ecs:ListTasks",
+                        
+                    },
+                    Effect = Effect.ALLOW,
+                    Resources = new[] {"*"},
+                    Conditions = new Dictionary<string, object>
+                    {
+                        { "ArnEquals", new Dictionary<string, string> { { "ecs:Cluster", VirtualPlayersRunnerCluster.ClusterArn } } }
+                    },
+                    
+                }));
+            
+            virtualPlayerScheduledActionFunctionRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
+            {
+                Actions = new[]
+                {
+                    "ecs:ListTaskDefinitions",
+                    "ecs:ListTagsForResource",
+                    "ecs:DescribeTaskDefinition",
+                    "iam:PassRole",
+                },
+                Effect = Effect.ALLOW,
+                Resources = new[] {"*"},
+            }));
+            
+            virtualPlayerScheduledActionFunctionRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
+            {
+                Actions = new[]
+                {
+                    "ecs:StopTask",
+                    "ecs:RunTask",
+                },
+                Effect = Effect.ALLOW,
+                Resources = new[] {"*"},
+                Conditions = new Dictionary<string, object>
+                {
+                    { "ArnEquals", new Dictionary<string, string> { { "ecs:Cluster", VirtualPlayersRunnerCluster.ClusterArn } } },
+                    { "StringEquals", new Dictionary<string, string> { { "ecs:ResourceTag/AmazonGameLiftTestingToolkit-VirtualPlayers", "true" } } },
+                },
+                    
+            }));
+
+            ManagementServiceFunction.AddEnvironment("VirtualPlayerScheduleActionFunctionArn", VirtualPlayerTaskScheduledActionFunction.FunctionArn);
+            ManagementServiceFunction.AddEnvironment("VirtualPlayerSchedulerRole", virtualPlayerEventBridgeSchedulerRole.RoleArn);
+
+            props.ManagementConnectionsTable.GrantReadWriteData(VirtualPlayerTaskScheduledActionFunction);
+            props.VirtualPlayerTaskLaunchTable.GrantReadWriteData(VirtualPlayerTaskScheduledActionFunction);
+            props.VirtualPlayerTaskScheduleTable.GrantReadWriteData(VirtualPlayerTaskScheduledActionFunction);
+            
+            // Adding specific CDK-Nag Suppressions
+            NagSuppressions.AddResourceSuppressions(virtualPlayerScheduledActionFunctionRole, new INagPackSuppression[]
             {
                 new NagPackSuppression
                 {

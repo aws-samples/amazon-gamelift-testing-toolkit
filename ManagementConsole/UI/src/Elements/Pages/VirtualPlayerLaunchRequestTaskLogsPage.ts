@@ -7,17 +7,17 @@ import {Pages} from "./Pages";
 import {Network} from "../../Network/Network";
 import {Events} from "../../Events/Events";
 
-export class VirtualPlayerLaunchRequestTaskLogs extends Page
+export class VirtualPlayerLaunchRequestTaskLogsPage extends Page
 {
     public static id = Pages.VIRTUAL_PLAYER_LAUNCH_REQUEST_TASK_LOGS;
-    public static cacheKey = "virtualPlayerLaunchRequestTaskLogs";
+    public static cacheKey = this.id;
     protected _launchRequest:any = {};
     protected _logGroup:string = null;
     protected _logStream:string = null;
 
     public constructor (parentPage:Page=null)
     {
-        super(VirtualPlayerLaunchRequestTaskLogs.cacheKey, parentPage, VirtualPlayerLaunchRequestTaskLogs.id);
+        super(VirtualPlayerLaunchRequestTaskLogsPage.cacheKey, parentPage, VirtualPlayerLaunchRequestTaskLogsPage.id);
     }
 
     public onPopupClick(event) {

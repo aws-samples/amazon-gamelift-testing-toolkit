@@ -8,6 +8,8 @@ import {VirtualPlayerTasksLaunchSubPopup} from "../SubPopups/VirtualPlayerTasksL
 import {VirtualPlayerTasksSchedulesSubPopup} from "../SubPopups/VirtualPlayerTasksSchedulesSubPopup";
 import {VirtualPlayerTasksRunningSubPopup} from "../SubPopups/VirtualPlayerTasksRunningSubPopup";
 import {VirtualPlayerLaunchRequestsSubPopup} from "../SubPopups/VirtualPlayerLaunchRequestsSubPopup";
+import {VirtualPlayerTasksOverviewSubPopup} from "../SubPopups/VirtualPlayerTasksOverviewSubPopup";
+import {SubPopups} from "../SubPopups/SubPopups";
 
 export class VirtualPlayerTasksPopup extends Popup
 {
@@ -20,25 +22,17 @@ export class VirtualPlayerTasksPopup extends Popup
 
     setPopupData(data:any)
     {
-        this.registerSubPopup("virtualPlayerTasksLaunch", new VirtualPlayerTasksLaunchSubPopup("virtualPlayerTasksLaunchSubPopup", "virtualPlayerTasksLaunch"));
-        this.registerSubPopup("virtualPlayerTasksSchedules", new VirtualPlayerTasksSchedulesSubPopup("virtualPlayerTasksSchedulesSubPopup", "virtualPlayerTasksSchedules"));
-        this.registerSubPopup("virtualPlayerTasksRunning", new VirtualPlayerTasksRunningSubPopup("virtualPlayerTasksRunningSubPopup", "virtualPlayerTasksRunning"));
-        this.registerSubPopup("virtualPlayerTaskLaunchRequests", new VirtualPlayerLaunchRequestsSubPopup("virtualPlayerTaskLaunchRequestsSubPopup", "virtualPlayerTaskLaunchRequests"));
+        this.registerSubPopup(new VirtualPlayerTasksOverviewSubPopup());
+        this.registerSubPopup(new VirtualPlayerTasksLaunchSubPopup());
+        this.registerSubPopup(new VirtualPlayerTasksSchedulesSubPopup());
+        this.registerSubPopup(new VirtualPlayerTasksRunningSubPopup());
+        this.registerSubPopup(new VirtualPlayerLaunchRequestsSubPopup());
         this.refresh();
     }
 
     refresh()
     {
-        this.switchSubPopup("virtualPlayerTasksLaunch");
-    }
-
-
-    setupEventListeners()
-    {
-    }
-
-    removeEventListeners()
-    {
+        this.switchSubPopup(SubPopups.VIRTUAL_PLAYER_TASKS_OVERVIEW_SUB_POPUP);
     }
 
     onPopupClick = async (event) => {
@@ -49,28 +43,31 @@ export class VirtualPlayerTasksPopup extends Popup
         {
             $('.virtualPlayerTasksMenu a').removeClass("active");
             $('.' + event.target.className).addClass("active");
-            $('.tab-pane').hide();
 
-            if (el.hasClass("virtualPlayerTasksLaunch"))
+            if (el.hasClass(SubPopups.VIRTUAL_PLAYER_TASKS_OVERVIEW_SUB_POPUP))
             {
-                this.switchSubPopup("virtualPlayerTasksLaunch");
+                this.switchSubPopup(SubPopups.VIRTUAL_PLAYER_TASKS_OVERVIEW_SUB_POPUP);
             }
             else
-            if (el.hasClass("virtualPlayerTasksSchedules"))
+            if (el.hasClass(SubPopups.VIRTUAL_PLAYER_TASKS_LAUNCH_SUB_POPUP))
             {
-                this.switchSubPopup("virtualPlayerTasksSchedules");
+                this.switchSubPopup(SubPopups.VIRTUAL_PLAYER_TASKS_LAUNCH_SUB_POPUP);
             }
             else
-            if (el.hasClass("virtualPlayerTasksRunning"))
+            if (el.hasClass(SubPopups.VIRTUAL_PLAYER_TASKS_SCHEDULES_SUB_POPUP))
             {
-                this.switchSubPopup("virtualPlayerTasksRunning");
+                this.switchSubPopup(SubPopups.VIRTUAL_PLAYER_TASKS_SCHEDULES_SUB_POPUP);
             }
             else
-            if (el.hasClass("virtualPlayerTaskLaunchRequests"))
+            if (el.hasClass(SubPopups.VIRTUAL_PLAYER_TASKS_RUNNING_SUB_POPUP))
             {
-                this.switchSubPopup("virtualPlayerTaskLaunchRequests");
+                this.switchSubPopup(SubPopups.VIRTUAL_PLAYER_TASKS_RUNNING_SUB_POPUP);
             }
-            $(el.attr("data-tab")).show();
+            else
+            if (el.hasClass(SubPopups.VIRTUAL_PLAYER_TASKS_LAUNCH_REQUESTS_SUB_POPUP))
+            {
+                this.switchSubPopup(SubPopups.VIRTUAL_PLAYER_TASKS_LAUNCH_REQUESTS_SUB_POPUP);
+            }
         }
         else
         if (event.target.className == "closeButton") {

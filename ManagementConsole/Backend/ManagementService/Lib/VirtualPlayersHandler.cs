@@ -9,12 +9,18 @@ using Amazon.DynamoDBv2;
 using Amazon.ECS;
 using Amazon.ECS.Model;
 using Amazon.Lambda.Core;
+using Amazon.Runtime.Internal;
+using Amazon.Scheduler;
+using Amazon.Scheduler.Model;
 using Amazon.ServiceQuotas;
 using Amazon.ServiceQuotas.Model;
 using ManagementConsoleBackend.Common;
 using ManagementConsoleBackend.ManagementService.Data;
 using Newtonsoft.Json;
+using AssignPublicIp = Amazon.ECS.AssignPublicIp;
+using CapacityProviderStrategyItem = Amazon.ECS.Model.CapacityProviderStrategyItem;
 using ListTagsForResourceRequest = Amazon.ECS.Model.ListTagsForResourceRequest;
+using ResourceNotFoundException = Amazon.Scheduler.Model.ResourceNotFoundException;
 using Tag = Amazon.ECS.Model.Tag;
 
 namespace ManagementConsoleBackend.ManagementService.Lib
@@ -22,26 +28,125 @@ namespace ManagementConsoleBackend.ManagementService.Lib
     public class VirtualPlayersHandler
     {
         private AmazonECSClient _client;
+
         public VirtualPlayersHandler(AmazonECSClient client)
         {
             _client = client;
         }
-        
+
+        public async Task<ServerMessageLaunchSchedule> LaunchSchedule(ClientMessageLaunchVirtualPlayerTaskSchedule scheduleRequest)
+        {
+            var dynamoDbClient = new AmazonDynamoDBClient();
+            var dynamoDbRequestHandler = new DynamoDbRequestHandler(dynamoDbClient);
+
+            var response = new ServerMessageLaunchSchedule();
+            var schedulerHandler = new SchedulerHandler(new AmazonSchedulerClient());
+            var initialisedSchedules = await schedulerHandler.GetSchedules();
+            if (initialisedSchedules == null)
+            {
+                response.Result = false;
+                response.Errors = new List<string>
+                {
+                    "Couldn't initialise scheduler"
+                };
+                return response;
+            }
+
+            if (initialisedSchedules.LaunchSchedule.State.Value != "DISABLED" || initialisedSchedules.TerminateSchedule.State.Value != "DISABLED")
+            {
+                LambdaLogger.Log("ONE OR MORE SCHEDULES IS NOT DISABLED!  EXITING");
+                response.Result = false;
+                response.Errors = new List<string>
+                {
+                    "Schedule still active"
+                };
+                return response;
+            }
+            
+            LambdaLogger.Log("INITIALISED SCHEDULES:" + JsonConvert.SerializeObject(initialisedSchedules));
+
+            LambdaLogger.Log("SETTING UP: " + JsonConvert.SerializeObject(scheduleRequest));
+
+            var schedule = await dynamoDbRequestHandler.GetVirtualPlayerTaskSchedule(scheduleRequest.ScheduleId);
+            LambdaLogger.Log(JsonConvert.SerializeObject(schedule));
+            
+            if (schedule == null)
+            {
+                response.Result = false;
+                response.Errors = new List<string>
+                {
+                    "Schedule not found"
+                };
+                return response;
+            }
+            
+            var scheduleLaunchRequest = new VirtualPlayerLaunchRequest
+            {
+                LaunchId = Guid.NewGuid().ToString(),
+                Type = "ScheduleLaunch",
+                TaskDefinitionArn = scheduleRequest.TaskDefinitionArn,
+                Time = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
+                Tasks = new List<VirtualPlayerTask>(),
+                ScheduleId = scheduleRequest.ScheduleId,
+                Schedule = schedule,
+                ScheduleName = schedule.ScheduleName,
+                CapacityProvider = scheduleRequest.CapacityProvider,
+            };
+            
+            var scheduleTimes = await schedulerHandler.UpdateSchedules(initialisedSchedules, scheduleLaunchRequest);
+
+            if (scheduleTimes != null)
+            {
+                for (var i = 0; i < schedule.Actions.Count; i++)
+                {
+                    if (schedule.Actions[i].Type == "Launch")
+                    {
+                        schedule.Actions[i].ScheduledTime = scheduleTimes.LaunchScheduleStart.AddMinutes(schedule.Actions[i].Minutes).ToString("yyyy-MM-ddTHH:mm:ss");
+                    }
+                    else
+                    if (schedule.Actions[i].Type == "Terminate")
+                    {
+                        schedule.Actions[i].ScheduledTime = scheduleTimes.TerminateScheduleStart.ToString("yyyy-MM-ddTHH:mm:ss");
+                    }
+                }
+                LambdaLogger.Log(JsonConvert.SerializeObject(scheduleLaunchRequest));
+                var saved = await dynamoDbRequestHandler.SaveLaunchRequest(scheduleLaunchRequest);
+                if (!saved)
+                {
+                    LambdaLogger.Log("Couldn't save launch request");
+                    return response;
+                }
+            }
+            
+            response.Result = true;
+            return response;
+        }
+
         // Launches a number of virtual players via Fargate
-        public async Task<bool> LaunchPlayers(int numPlayers, string taskDefinitionArn, string capacityProvider, string connectionId, string stageServiceUrl)
+        public async Task<VirtualPlayerLaunchRequest> LaunchPlayers(int numPlayers, string taskDefinitionArn, string capacityProvider, string connectionId=null, string stageServiceUrl=null, VirtualPlayerLaunchRequest scheduleLaunchRequest=null)
         {
             var dynamoDbClient = new AmazonDynamoDBClient();
             var dynamoDbRequestHandler = new DynamoDbRequestHandler(dynamoDbClient);
             var maxTasksPerRequest = 10;
             var remainingPlayersToLaunch = numPlayers;
             var playersToLaunch = remainingPlayersToLaunch;
-            var launchTaskRequest = new LaunchTaskRequest
+            var scheduleName = "-";
+            var scheduleId = "-";
+            if (scheduleLaunchRequest != null)
+            {
+                scheduleId = scheduleLaunchRequest.Schedule.ScheduleId;
+                scheduleName = scheduleLaunchRequest.Schedule.ScheduleName;
+            }
+            var launchTaskRequest = new VirtualPlayerLaunchRequest
             {
                 LaunchId = Guid.NewGuid().ToString(),
+                Type = "TaskLaunch",
                 TaskDefinitionArn = taskDefinitionArn,
                 Time = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss.fffZ"),
                 Tasks = new List<VirtualPlayerTask>(),
-                ScheduleId = "",
+                ScheduleId = scheduleId,
+                ScheduleName = scheduleName,
+                CapacityProvider = capacityProvider,
             };
 
             var responses = new List<RunTaskResponse>();
@@ -66,6 +171,15 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                         Key = "AmazonGameLiftTestingToolkit-VirtualPlayers",
                         Value = "true",
                     });
+
+                    if (scheduleLaunchRequest != null)
+                    {
+                        tags.Add(new Tag
+                        {
+                            Key = "ScheduleLaunchId",
+                            Value = scheduleLaunchRequest.LaunchId,
+                        });
+                    }
 
                     var strategies = new List<CapacityProviderStrategyItem>();
                     strategies.Add(new CapacityProviderStrategyItem
@@ -129,21 +243,24 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                         launchTaskRequest.Tasks.Add(virtualPlayerTask);
                     }
 
-                    await Utils.SendJsonResponse(connectionId, stageServiceUrl, new ServerMessageLaunchPlayersProgress
+                    if (connectionId != null && stageServiceUrl != null)
                     {
-                        NumLaunched = numPlayers - remainingPlayersToLaunch,
-                        TotalToLaunch = numPlayers,
-                    });
+                        await Utils.SendJsonResponse(connectionId, stageServiceUrl, new ServerMessageLaunchVirtualPlayerTasksProgress
+                        {
+                            NumLaunched = numPlayers - remainingPlayersToLaunch,
+                            TotalToLaunch = numPlayers,
+                        });
+                    }
 
                 } while (remainingPlayersToLaunch > 0);
 
-                await dynamoDbRequestHandler.SaveLaunchTaskRequest(launchTaskRequest);
-                return true;
+                await dynamoDbRequestHandler.SaveLaunchRequest(launchTaskRequest);
+                return launchTaskRequest;
             }
             catch (Exception e)
             {
                 LambdaLogger.Log(e.ToString());
-                return false;
+                return null;
             }
         }
 
@@ -377,6 +494,49 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                 LambdaLogger.Log(e.ToString());
                 return null;
             }
+        }
+
+        public async Task<List<string>> TerminateVirtualPlayerTasksByLaunchIdTag(string LaunchId)
+        {
+            var errors = new List<string>();
+            try
+            {
+                var request = new ListTasksRequest()
+                {
+                    Cluster = Environment.GetEnvironmentVariable("VirtualPlayersClusterArn"),
+                };
+                
+                var listTasksPaginator = _client.Paginators.ListTasks(request);
+                
+                await foreach (var taskArn in listTasksPaginator.TaskArns)
+                {
+                    try
+                    {
+                        var listTagsForResourceResponse = await _client.ListTagsForResourceAsync(new ListTagsForResourceRequest
+                        {
+                            ResourceArn = taskArn
+                        });
+                        
+                        LambdaLogger.Log("CHECKING TAGS FOR " +taskArn + ":" + JsonConvert.SerializeObject(listTagsForResourceResponse));
+                        
+                        if (listTagsForResourceResponse.Tags.Exists(t => t.Key == "ScheduleLaunchId" && t.Value == LaunchId))
+                        {
+                            // Skip task definitions missing a VirtualPlayers=true tag
+                            errors.AddRange(await TerminateVirtualPlayerTask(taskArn));
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        errors.Add(e.Message);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                errors.Add(e.Message);
+            }
+
+            return errors;
         }
 
         public async Task<List<string>> TerminateAllVirtualPlayerTasks()

@@ -10,6 +10,7 @@ import {PopupClickEvent} from "../../Events/PopupClickEvent";
 import {SubPopup} from "./SubPopup";
 import {ScreenResolution} from "../../Data/ScreenResolution";
 import {Game} from "../../Game";
+import {PageManager} from "../Pages/PageManager";
 
 export abstract class Popup extends Phaser.GameObjects.Container
 {
@@ -37,7 +38,7 @@ export abstract class Popup extends Phaser.GameObjects.Container
         this._popup = this.scene.add.dom(0, 0).createFromCache(this._htmlName);
         if (Game.debugMode)
         {
-            $(this._popup.node).prepend('<div id="popupHeader" style="width:100%; background-color: #ff0000; color:#fff">DEBUG MODE</div>');
+            $(this._popup.node).prepend('<div id="popupHeader" style="width:100%; background-color: #ff0000; color:#ffffff">DEBUG MODE</div>');
             this.dragElement(this._popup.node);
         }
         this.add(this._popup);
@@ -52,17 +53,19 @@ export abstract class Popup extends Phaser.GameObjects.Container
         this.setVisible(false);
     }
 
-    registerSubPopup(subPopupName:string, subPopup: SubPopup)
+    registerSubPopup(subPopup: SubPopup)
     {
-        this._subPopups[subPopupName] = subPopup;
+        this._subPopups[subPopup.domId] = subPopup;
     }
 
     switchSubPopup(subPopupName:string)
     {
+        $('.tab-pane').hide();
         this._currentSubPopup?.removeEventListeners();
         this._subPopups[subPopupName].setupEventListeners();
         this._subPopups[subPopupName].loadContent();
         this._currentSubPopup = this._subPopups[subPopupName];
+        $("#" + subPopupName).show();
     }
 
     drawComplete()
@@ -112,9 +115,33 @@ export abstract class Popup extends Phaser.GameObjects.Container
         this.setVisible(false);
     }
 
+    setupEventListeners()
+    {
+        this._emitter.on(Events.SWITCH_SUB_POPUP, this.onSwitchSubPopup);
+    }
+
     removeEventListeners()
     {
+        this._emitter.off(Events.SWITCH_SUB_POPUP, this.onSwitchSubPopup);
+    }
 
+    onSwitchSubPopup = (data) =>
+    {
+        if (data.SubPopup!=undefined)
+        {
+            this.switchSubPopup(data.SubPopup);
+            if (data.Page!=undefined)
+            {
+                if (data.PageData!=undefined)
+                {
+                    PageManager.switchPage(data.Page, data.PageData);
+                }
+                else
+                {
+                    PageManager.switchPage(data.Page);
+                }
+            }
+        }
     }
 
     public destroy() {

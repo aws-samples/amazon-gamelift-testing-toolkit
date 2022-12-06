@@ -9,10 +9,10 @@ import {Page} from "../Abstract/Page";
 import {Pages} from "./Pages";
 import {Utils} from "../../Utils/Utils";
 
-export class SimulateMatchmakingMatchInfo extends Page
+export class SimulateMatchmakingMatchInfoPage extends Page
 {
     public static id = Pages.SIMULATE_MATCHMAKING_MATCH_INFO;
-    public static cacheKey = "simulateMatchmakingMatchInfo";
+    public static cacheKey = this.id;
     protected _currentSimulation: any;
     protected _currentMatchId : string;
     protected _matches: Record<string, any>;
@@ -21,7 +21,7 @@ export class SimulateMatchmakingMatchInfo extends Page
 
     public constructor (parentPage:Page=null)
     {
-        super( SimulateMatchmakingMatchInfo.cacheKey,  parentPage, SimulateMatchmakingMatchInfo.id);
+        super( SimulateMatchmakingMatchInfoPage.cacheKey,  parentPage, SimulateMatchmakingMatchInfoPage.id);
     }
 
     public onPopupClick(event) {

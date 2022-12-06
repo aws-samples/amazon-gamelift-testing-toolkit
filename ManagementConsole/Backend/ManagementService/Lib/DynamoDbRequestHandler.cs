@@ -527,13 +527,45 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             }
         }
         
-        public async Task<List<LaunchTaskRequest>> GetLaunchTaskRequests()
+        public async Task<VirtualPlayerTaskSchedule> GetVirtualPlayerTaskSchedule(string scheduleId)
         {
-            var launchTasks = new List<LaunchTaskRequest>();
+            var context = new DynamoDBContext(_client);
+            
+            var virtualPlayerTaskScheduleTable =
+                Table.LoadTable(_client, Environment.GetEnvironmentVariable("VirtualPlayerTaskScheduleTableName"));
+            
+            var item = new Document();
+            item["ScheduleId"] = scheduleId;
+            
+            try
+            {
+                var scheduleDocument = await virtualPlayerTaskScheduleTable.GetItemAsync(item);
+                var schedule = context.FromDocument<VirtualPlayerTaskSchedule>(scheduleDocument);
+                return schedule;
+            }
+            catch (Exception e)
+            {
+                LambdaLogger.Log(e.ToString());
+                return null;
+            }
+        }
+        
+        public async Task<List<VirtualPlayerLaunchRequest>> GetLaunchRequests(string requestType)
+        {
+            var launchTasks = new List<VirtualPlayerLaunchRequest>();
             var launchTaskTable =
                 Table.LoadTable(_client, Environment.GetEnvironmentVariable("VirtualPlayerTaskLaunchTableName"));
 
-            var search = launchTaskTable.Scan(new ScanOperationConfig());
+            var filter = new QueryFilter("Type", QueryOperator.Equal, requestType);
+
+            var queryConfig = new QueryOperationConfig
+            {
+                IndexName = "Type-ScheduleId-GSI",
+                Filter = filter,
+                BackwardSearch = true,
+            };
+            
+            var search = launchTaskTable.Query(queryConfig);
             
             var documentList = new List<Document>();
             do
@@ -541,12 +573,36 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                 documentList = await search.GetNextSetAsync();
                 foreach (var document in documentList)
                 {
-                    launchTasks.Add(JsonConvert.DeserializeObject<LaunchTaskRequest>(document.ToJson()));
+                    launchTasks.Add(JsonConvert.DeserializeObject<VirtualPlayerLaunchRequest>(document.ToJson()));
                 }
             } while (!search.IsDone);
 
             return launchTasks;
         }
+        
+        public async Task<VirtualPlayerLaunchRequest> GetLaunchRequest(string launchId)
+        {
+            var context = new DynamoDBContext(_client);
+            
+            var virtualPlayerTaskScheduleTable =
+                Table.LoadTable(_client, Environment.GetEnvironmentVariable("VirtualPlayerTaskLaunchTableName"));
+            
+            var item = new Document();
+            item["LaunchId"] = launchId;
+            
+            try
+            {
+                var launchRequestDocument = await virtualPlayerTaskScheduleTable.GetItemAsync(item);
+                var launchRequest = context.FromDocument<VirtualPlayerLaunchRequest>(launchRequestDocument);
+                return launchRequest;
+            }
+            catch (Exception e)
+            {
+                LambdaLogger.Log(e.ToString());
+                return null;
+            }
+        }
+
 
         public async Task<List<VirtualPlayerTaskSchedule>> GetVirtualPlayerTaskSchedules()
         {
@@ -569,21 +625,24 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             return schedules;
         }
         
-        public async Task SaveLaunchTaskRequest(LaunchTaskRequest taskRequest)
+        public async Task<bool> SaveLaunchRequest(VirtualPlayerLaunchRequest launchRequest)
         {
             var launchTaskTable =
                 Table.LoadTable(_client, Environment.GetEnvironmentVariable("VirtualPlayerTaskLaunchTableName"));
 
-            var item = Document.FromJson(JsonConvert.SerializeObject(taskRequest));
+            var item = Document.FromJson(JsonConvert.SerializeObject(launchRequest));
 
             try
             {
                 await launchTaskTable.PutItemAsync(item);
+                return true;
             }
             catch (Exception e)
             {
                 LambdaLogger.Log(e.ToString());
             }
+
+            return false;
         }
         
         public async Task SaveLatencyProfile(LatencyProfile profile)

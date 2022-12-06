@@ -35,12 +35,14 @@ export class MatchmakingConfigPopup extends Popup
 
     setupEventListeners()
     {
+        super.setupEventListeners();
         this._emitter.on(Events.GET_MATCHMAKING_RULESETS_RESPONSE, this.onGetMatchmakingRulesetsResponse);
         this._emitter.on(Events.UPDATE_MATCHMAKING_CONFIGURATION_RESPONSE, this.onUpdateMatchmakingConfigurationResponse);
     }
 
     removeEventListeners()
     {
+        super.removeEventListeners();
         this._emitter.off(Events.GET_MATCHMAKING_RULESETS_RESPONSE, this.onGetMatchmakingRulesetsResponse);
         this._emitter.off(Events.UPDATE_MATCHMAKING_CONFIGURATION_RESPONSE, this.onUpdateMatchmakingConfigurationResponse);
     }

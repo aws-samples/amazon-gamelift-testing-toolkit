@@ -672,3 +672,49 @@ button#createSchedule { margin-top: -4px }
 .no-sort::after { display: none!important; }
 
 .no-sort { pointer-events: none!important; cursor: default!important; }
+
+@-webkit-keyframes successFlash {
+    from { background-color: forestgreen; }
+    to { background-color: inherit; }
+}
+@-moz-keyframes successFlash {
+    from { background-color: forestgreen; }
+    to { background-color: inherit; }
+}
+@-o-keyframes successFlash {
+    from { background-color: forestgreen; }
+    to { background-color: inherit; }
+}
+@keyframes successFlash {
+    from { background-color: forestgreen; }
+    to { background-color: inherit; }
+}
+.successFlash {
+    -webkit-animation: successFlash 1s 1s; /* Safari 4+ */
+    -moz-animation:    successFlash 1s 1s; /* Fx 5+ */
+    -o-animation:      successFlash 1s 1s; /* Opera 12+ */
+    animation:         successFlash 1s 1s; /* IE 10+ */
+}
+
+@-webkit-keyframes failureFlash {
+    from { background-color: red; }
+    to { background-color: inherit; }
+}
+@-moz-keyframes failureFlash {
+    from { background-color: red; }
+    to { background-color: inherit; }
+}
+@-o-keyframes failureFlash {
+    from { background-color: red; }
+    to { background-color: inherit; }
+}
+@keyframes failureFlash {
+    from { background-color: red; }
+    to { background-color: inherit; }
+}
+.failureFlash {
+    -webkit-animation: failureFlash 1s 1s; /* Safari 4+ */
+    -moz-animation:    failureFlash 1s 1s; /* Fx 5+ */
+    -o-animation:      failureFlash 1s 1s; /* Opera 12+ */
+    animation:         failureFlash 1s 1s; /* IE 10+ */
+}

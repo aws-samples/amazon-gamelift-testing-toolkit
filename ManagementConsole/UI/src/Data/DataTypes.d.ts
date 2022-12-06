@@ -389,6 +389,10 @@ export namespace DataTypes
         Type: string;
         Minutes: number;
         NumTasks: number;
+        LaunchId:string;
+        ScheduledTime:string;
+        ExecutedTime:string;
+        Status:string;
     }
 
     export interface VirtualPlayerTasksQuotas

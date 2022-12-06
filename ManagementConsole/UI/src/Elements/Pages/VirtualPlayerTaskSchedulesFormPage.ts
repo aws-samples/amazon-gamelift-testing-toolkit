@@ -13,16 +13,16 @@ import VirtualPlayerTasksQuotas = DataTypes.VirtualPlayerTasksQuotas;
 import VirtualPlayerTaskScheduleAction = DataTypes.VirtualPlayerTaskScheduleAction;
 import {PageManager} from "./PageManager";
 
-export class VirtualPlayerTaskSchedulesForm extends Page
+export class VirtualPlayerTaskSchedulesFormPage extends Page
 {
     public static id = Pages.VIRTUAL_PLAYER_TASK_SCHEDULES_FORM;
-    public static cacheKey = "virtualPlayerTaskSchedulesForm";
+    public static cacheKey = this.id;
     protected _schedule: VirtualPlayerTaskSchedule = {};
     protected _quotaInfo: VirtualPlayerTasksQuotas = {};
 
     public constructor (parentPage:Page=null)
     {
-        super(VirtualPlayerTaskSchedulesForm.cacheKey, parentPage, VirtualPlayerTaskSchedulesForm.id);
+        super(VirtualPlayerTaskSchedulesFormPage.cacheKey, parentPage, VirtualPlayerTaskSchedulesFormPage.id);
     }
 
     public onPopupClick(event) {
@@ -68,10 +68,10 @@ export class VirtualPlayerTaskSchedulesForm extends Page
 
         const launchTime = parseInt($("#taskLaunchTime").val() as string);
         $("#taskLaunchTime").val(launchTime);
-        if (launchTime<5 || launchTime>60)
+        if (launchTime<2 || launchTime>60)
         {
             errorsFound++;
-            errors.push("Task launch time must be 5-60 minutes");
+            errors.push("Task launch time must be 2-60 minutes");
         }
         else
         {
@@ -81,10 +81,10 @@ export class VirtualPlayerTaskSchedulesForm extends Page
 
         const terminationTime = parseInt($("#taskTerminationTime").val() as string);
         $("#taskTerminationTime").val(terminationTime);
-        if (terminationTime<5 || terminationTime>60)
+        if (terminationTime<1 || terminationTime>60)
         {
             errorsFound++;
-            errors.push("Task termination time must be 5-60 minutes");
+            errors.push("Task termination time must be 1-60 minutes");
         }
         else
         {
@@ -94,10 +94,10 @@ export class VirtualPlayerTaskSchedulesForm extends Page
 
         const numTasks = parseInt($("#numTasks").val() as string);
         $("#numTasks").val(numTasks);
-        if (numTasks<2 || numTasks>1000)
+        if (numTasks<1 || numTasks>500)
         {
             errorsFound++;
-            errors.push("Must launch 2-1000 tasks per schedule");
+            errors.push("Must launch 1-500 tasks per period");
         }
         else
         {
@@ -180,7 +180,11 @@ export class VirtualPlayerTaskSchedulesForm extends Page
                 const action:VirtualPlayerTaskScheduleAction = {
                     Type: "Launch",
                     Minutes: taskNum * this._schedule.SchedulePeriodMinutes,
-                    NumTasks: tasksToRun
+                    NumTasks: tasksToRun,
+                    Status: "Scheduled",
+                    LaunchId: "-",
+                    ExecutedTime: "-",
+                    ScheduledTime: "-",
                 };
                 lastLaunchTime = action.Minutes;
                 schedule.push(action);
@@ -194,6 +198,10 @@ export class VirtualPlayerTaskSchedulesForm extends Page
             Type: "Terminate",
             Minutes: lastLaunchTime + this._schedule.TerminationTime,
             NumTasks: totalTasks,
+            Status: "Scheduled",
+            LaunchId: "-",
+            ExecutedTime: "-",
+            ScheduledTime: "-",
         });
 
         this._schedule.Actions = schedule;
@@ -213,7 +221,7 @@ export class VirtualPlayerTaskSchedulesForm extends Page
                 runningTotal -= action.NumTasks;
             }
 
-            tableHtml += '<tr><td>' + Utils.formatMinutesToTime(action.Minutes) + '</td><td>' + action.Type + '</td><td>' + action.NumTasks + ' tasks</td><td>' + runningTotal + '</td></tr>';
+            tableHtml += '<tr><td>' + Utils.formatMinutes(action.Minutes) + '</td><td>' + action.Type + '</td><td>' + action.NumTasks + ' tasks</td><td>' + runningTotal + '</td></tr>';
         });
 
         if (scheduleMaxed)
@@ -239,8 +247,6 @@ export class VirtualPlayerTaskSchedulesForm extends Page
             order: [[0, "asc"]],
             ordering: false,
         });
-
-        console.log(schedule);
     }
 
     public setPageData(data:any)

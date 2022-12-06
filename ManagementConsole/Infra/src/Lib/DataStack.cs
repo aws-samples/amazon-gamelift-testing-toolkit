@@ -183,15 +183,15 @@ namespace ManagementConsoleInfra.Lib
             
             VirtualPlayerTaskLaunchTable.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
             {
-                IndexName = "Schedule-GSI",
+                IndexName = "Type-ScheduleId-GSI",
                 PartitionKey = new Attribute
                 {
-                    Name = "ScheduleId",
+                    Name = "Type",
                     Type = AttributeType.STRING
                 },
                 SortKey = new Attribute
                 {
-                    Name = "Time",
+                    Name = "ScheduleId",
                     Type = AttributeType.STRING
                 }
             });
@@ -207,21 +207,6 @@ namespace ManagementConsoleInfra.Lib
                 Encryption = TableEncryption.AWS_MANAGED,
                 RemovalPolicy = RemovalPolicy.DESTROY,
                 PointInTimeRecovery = true,
-            });
-            
-            VirtualPlayerTaskScheduleTable.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
-            {
-                IndexName = "Status-GSI",
-                PartitionKey = new Attribute
-                {
-                    Name = "Status",
-                    Type = AttributeType.STRING
-                },
-                SortKey = new Attribute
-                {
-                    Name = "Time",
-                    Type = AttributeType.STRING
-                }
             });
 
             EventLogTable = new Table(this, "EventLogTable", new TableProps

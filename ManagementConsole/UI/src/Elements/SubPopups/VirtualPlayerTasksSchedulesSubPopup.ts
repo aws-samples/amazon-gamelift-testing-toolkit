@@ -4,24 +4,30 @@
 import 'phaser';
 import {SubPopup} from "../Abstract/SubPopup";
 import {PageManager} from "../Pages/PageManager";
-import {VirtualPlayerTaskSchedulesTable} from "../Pages/VirtualPlayerTaskSchedulesTable";
-import {VirtualPlayerTaskSchedulesForm} from "../Pages/VirtualPlayerTaskSchedulesForm";
+import {VirtualPlayerTaskSchedulesTablePage} from "../Pages/VirtualPlayerTaskSchedulesTablePage";
+import {VirtualPlayerTaskSchedulesFormPage} from "../Pages/VirtualPlayerTaskSchedulesFormPage";
+import {SubPopups} from "./SubPopups";
+import {VirtualPlayerTasksLaunchPage} from "../Pages/VirtualPlayerTasksLaunchPage";
 
 export class VirtualPlayerTasksSchedulesSubPopup extends SubPopup
 {
-    public constructor (cacheKey:string, parentDomId:string)
+    public static id = SubPopups.VIRTUAL_PLAYER_TASKS_SCHEDULES_SUB_POPUP;
+    public static cacheKey = this.id;
+
+    public constructor ()
     {
-        super(cacheKey, parentDomId);
+        super(VirtualPlayerTasksSchedulesSubPopup.cacheKey, VirtualPlayerTasksSchedulesSubPopup.id);
     }
+
 
     refresh = ()=>
     {
         PageManager.resetPages();
 
-        let schedulesTablePage = PageManager.registerPage(new VirtualPlayerTaskSchedulesTable());
-        let schedulesFormPage = PageManager.registerPage(new VirtualPlayerTaskSchedulesForm(schedulesTablePage));
+        let schedulesTablePage = PageManager.registerPage(new VirtualPlayerTaskSchedulesTablePage());
+        let schedulesFormPage = PageManager.registerPage(new VirtualPlayerTaskSchedulesFormPage(schedulesTablePage));
 
-        PageManager.switchPage(VirtualPlayerTaskSchedulesTable.id);
+        PageManager.switchPage(VirtualPlayerTaskSchedulesTablePage.id);
 
         this.hideStatusAlert();
     }

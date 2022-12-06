@@ -10,15 +10,15 @@ import {Events} from "../../Events/Events";
 import {DataTypes} from "../../Data/DataTypes";
 import VirtualPlayerTaskSchedule = DataTypes.VirtualPlayerTaskSchedule;
 
-export class VirtualPlayerTaskSchedulesTable extends Page
+export class VirtualPlayerTaskSchedulesTablePage extends Page
 {
     public static id = Pages.VIRTUAL_PLAYER_TASK_SCHEDULES_TABLE;
-    public static cacheKey = "virtualPlayerTaskSchedulesTable";
+    public static cacheKey = this.id;
     protected _taskSchedules:VirtualPlayerTaskSchedule[] = [];
 
     public constructor (parentPage:Page=null)
     {
-        super(VirtualPlayerTaskSchedulesTable.cacheKey, parentPage, VirtualPlayerTaskSchedulesTable.id);
+        super(VirtualPlayerTaskSchedulesTablePage.cacheKey, parentPage, VirtualPlayerTaskSchedulesTablePage.id);
     }
 
     public onPopupClick(event) {

@@ -25,6 +25,7 @@ export class FleetScalingPopup extends Popup
 
     setupEventListeners()
     {
+        super.setupEventListeners();
         this._emitter.on(Events.GET_FLEET_SCALING_RESPONSE, this.onGetFleetScalingResponse);
         this._emitter.on(Events.ADJUST_FLEET_SCALING_RESPONSE, this.onFleetScalingResponse);
         this._emitter.on(Events.DELETE_SCALING_POLICY_RESPONSE, this.onDeleteScalingPolicyResponse);
@@ -33,6 +34,7 @@ export class FleetScalingPopup extends Popup
 
     removeEventListeners()
     {
+        super.removeEventListeners();
         this._emitter.off(Events.GET_FLEET_SCALING_RESPONSE, this.onGetFleetScalingResponse);
         this._emitter.off(Events.ADJUST_FLEET_SCALING_RESPONSE, this.onFleetScalingResponse);
         this._emitter.off(Events.DELETE_SCALING_POLICY_RESPONSE, this.onDeleteScalingPolicyResponse);

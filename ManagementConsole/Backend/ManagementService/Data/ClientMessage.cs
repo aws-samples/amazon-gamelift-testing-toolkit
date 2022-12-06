@@ -68,9 +68,9 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public string FleetId;
     }
     
-    public class ClientMessageLaunchPlayers : ClientMessage
+    public class ClientMessageLaunchVirtualPlayerTasks : ClientMessage
     {
-        public new string Type = "LaunchPlayers";
+        public new string Type = "LaunchVirtualPlayerTasks";
         public int NumPlayers;
         public string TaskDefinitionArn;
         public string CapacityProvider;
@@ -111,6 +111,20 @@ namespace ManagementConsoleBackend.ManagementService.Data
     {
         public new string Type = "CreateVirtualPlayerTaskSchedule";
         public VirtualPlayerTaskSchedule Schedule;
+    }
+    
+    public class ClientMessageLaunchVirtualPlayerTaskSchedule : ClientMessage
+    {
+        public new string Type = "LaunchVirtualPlayerTaskSchedule";
+        public string ScheduleId;
+        public string TaskDefinitionArn;
+        public string CapacityProvider;
+    }
+    
+    public class ClientMessageGetLaunchRequest : ClientMessage
+    {
+        public new string Type = "GetLaunchRequest";
+        public string LaunchId;
     }
     
     public class ClientMessageGetVirtualPlayerTaskHistory : ClientMessage

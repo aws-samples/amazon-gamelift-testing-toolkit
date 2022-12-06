@@ -10,10 +10,14 @@ import GameSessionQueue = DataTypes.GameSessionQueue;
 import {Locations} from "../../Data/Locations";
 import Alias = DataTypes.Alias;
 import FleetAttributes = DataTypes.FleetAttributes;
+import {SubPopups} from "./SubPopups";
 var parser = require('aws-arn-parser');
 
 export class QueueDestinationOrderSubPopup extends SubPopup
 {
+    public static id = SubPopups.QUEUE_DESTINATION_ORDER_SUB_POPUP;
+    public static cacheKey = this.id;
+
     protected _queue:GameSessionQueue;
     protected _queueAliases:Alias[];
     protected _queueFleets:FleetAttributes[];
@@ -22,9 +26,9 @@ export class QueueDestinationOrderSubPopup extends SubPopup
     protected _destinationsDataTable: any;
     protected _types: any = ["Alias", "Fleet"];
 
-    public constructor (cacheKey:string, parentDomId:string, gameSessionQueue:GameSessionQueue)
+    public constructor (gameSessionQueue:GameSessionQueue)
     {
-        super(cacheKey, parentDomId);
+        super(QueueDestinationOrderSubPopup.cacheKey, QueueDestinationOrderSubPopup.id);
         this._queue = gameSessionQueue;
     }
 

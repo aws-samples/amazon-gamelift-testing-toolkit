@@ -19,6 +19,7 @@ using Amazon.Lambda.Core;
 using Amazon.Lambda.Model;
 using Amazon.S3;
 using Amazon.S3.Model;
+using Amazon.Scheduler;
 using ManagementConsoleBackend.Common;
 using ManagementConsoleBackend.ManagementService.Data;
 using ManagementConsoleBackend.ManagementService.Lib;
@@ -198,6 +199,7 @@ namespace ManagementConsoleBackend.ManagementService
                     var gameLiftRequestHandler = new GameLiftRequestHandler(gameLiftClient);
                     var dynamoDbRequestHandler = new DynamoDbRequestHandler(dynamoDbClient);
                     var virtualPlayersHandler = new VirtualPlayersHandler(new AmazonECSClient());
+                    var schedulerHandler = new SchedulerHandler(new AmazonSchedulerClient());
                     var cloudWatchRequestHandler = new CloudWatchRequestHandler(new AmazonCloudWatchClient());
                     
                     var response = new ServerMessage();
@@ -567,6 +569,10 @@ namespace ManagementConsoleBackend.ManagementService
                             await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetVirtualPlayerTaskQuotas() { Quotas = await virtualPlayersHandler.GetVirtualPlayerTaskQuotas() });
                             break;
                         
+                        case "GetSchedulerSchedules":
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetSchedulerSchedules { Schedules = await schedulerHandler.GetSchedules() });
+                            break;
+                        
                         case "GetVirtualPlayerTaskSchedules":
                             var schedules = await dynamoDbRequestHandler.GetVirtualPlayerTaskSchedules();
                             await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetVirtualPlayerTaskSchedules { Schedules = schedules });
@@ -578,8 +584,21 @@ namespace ManagementConsoleBackend.ManagementService
                             await Utils.SendJsonResponse(_connectionId, stageServiceUrl, createVirtualPlayerTaskScheduleResponse);
                             break;
                         
+                        case "LaunchVirtualPlayerTaskSchedule":
+                            var launchVirtualPlayerTaskScheduleRequest = JsonConvert.DeserializeObject<ClientMessageLaunchVirtualPlayerTaskSchedule>(request.Body);
+                            var launchVirtualPlayerTaskScheduleResponse = await virtualPlayersHandler.LaunchSchedule(launchVirtualPlayerTaskScheduleRequest);
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, launchVirtualPlayerTaskScheduleResponse);
+                            break;
+                        
+                        
+                        case "GetLaunchRequest":
+                            var getLaunchRequest = JsonConvert.DeserializeObject<ClientMessageGetLaunchRequest>(request.Body);
+                            var launchRequest = await dynamoDbRequestHandler.GetLaunchRequest(getLaunchRequest.LaunchId);
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetLaunchRequest { LaunchRequest = launchRequest });
+                            break;
+                        
                         case "GetVirtualPlayerLaunchTaskRequests":
-                            var launchTaskRequests = await dynamoDbRequestHandler.GetLaunchTaskRequests();
+                            var launchTaskRequests = await dynamoDbRequestHandler.GetLaunchRequests("TaskLaunch");
                             await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetVirtualPlayerLaunchTaskRequests { LaunchTaskRequests = launchTaskRequests });
                             break;
                         
@@ -595,11 +614,11 @@ namespace ManagementConsoleBackend.ManagementService
                             await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetTaskDefinitions { TaskDefinitions = taskDefinitions});
                             break;
 
-                        case "LaunchPlayers":
-                            var launchPlayersRequest = JsonConvert.DeserializeObject<ClientMessageLaunchPlayers>(request.Body);
+                        case "LaunchVirtualPlayerTasks":
+                            var launchPlayersRequest = JsonConvert.DeserializeObject<ClientMessageLaunchVirtualPlayerTasks>(request.Body);
                             var result = await virtualPlayersHandler.LaunchPlayers(launchPlayersRequest.NumPlayers,
                                 launchPlayersRequest.TaskDefinitionArn, launchPlayersRequest.CapacityProvider, _connectionId, stageServiceUrl);
-                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageLaunchPlayers { Result = result, NumPlayers = launchPlayersRequest.NumPlayers});
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageLaunchVirtualPlayerTasks { Result = result!=null, NumPlayers = launchPlayersRequest.NumPlayers});
                             break;
                         
                         case "TerminateVirtualPlayerTask":

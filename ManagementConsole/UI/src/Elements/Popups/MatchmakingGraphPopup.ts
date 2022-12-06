@@ -69,11 +69,13 @@ export class MatchmakingGraphPopup extends Popup
 
     setupEventListeners()
     {
+        super.setupEventListeners();
         this._emitter.on(Events.GET_CLOUDWATCH_GRAPH_RESPONSE, this.onGetCloudWatchGraphResponse);
     }
 
     removeEventListeners()
     {
+        super.removeEventListeners();
         this._emitter.off(Events.GET_CLOUDWATCH_GRAPH_RESPONSE, this.onGetCloudWatchGraphResponse);
     }
 

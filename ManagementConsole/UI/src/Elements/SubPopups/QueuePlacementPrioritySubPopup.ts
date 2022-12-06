@@ -8,10 +8,14 @@ import {Events} from "../../Events/Events";
 import {SubPopup} from "../Abstract/SubPopup";
 import GameSessionQueue = DataTypes.GameSessionQueue;
 import {Locations} from "../../Data/Locations";
+import {SubPopups} from "./SubPopups";
 var parser = require('aws-arn-parser');
 
 export class QueuePlacementPrioritySubPopup extends SubPopup
 {
+    public static id = SubPopups.QUEUE_PLACEMENT_PRIORITY_SUB_POPUP;
+    public static cacheKey = this.id;
+
     protected _queue:GameSessionQueue;
     protected _priorityDataTable: any;
     protected _locationOrderDataTable: any;
@@ -29,9 +33,9 @@ export class QueuePlacementPrioritySubPopup extends SubPopup
         "LOCATION"
     ];
 
-    public constructor (cacheKey:string, parentDomId:string, gameSessionQueue:GameSessionQueue)
+    public constructor (gameSessionQueue:GameSessionQueue)
     {
-        super(cacheKey, parentDomId);
+        super(QueuePlacementPrioritySubPopup.cacheKey, QueuePlacementPrioritySubPopup.id);
         this._queue = gameSessionQueue;
     }
 

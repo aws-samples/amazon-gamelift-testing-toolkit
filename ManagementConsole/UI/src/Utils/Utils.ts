@@ -22,7 +22,7 @@ export class Utils
         return result;
     }
 
-    public static formatMinutesToTime(minutes)
+    public static formatMinutes(minutes)
     {
         const hrs = Math.floor(minutes / 60);
         const mins = (minutes % 60);
@@ -30,7 +30,7 @@ export class Utils
         const hourStr = (hrs<10) ? "0" + hrs : hrs;
         const minStr = (mins<10) ? "0" + mins : mins;
 
-        return hourStr + ":" + minStr + ":00";
+        return hourStr + ":" + minStr;
     }
 
     public static getParameterByName(name, url = window.location.href) {

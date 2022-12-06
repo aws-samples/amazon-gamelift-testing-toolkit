@@ -6,6 +6,7 @@ using Amazon.CloudWatchLogs.Model;
 using Amazon.ECS.Model;
 using Amazon.GameLift.Model;
 using ManagementConsoleBackend.Common;
+using ManagementConsoleBackend.ManagementService.Lib;
 using Newtonsoft.Json;
 
 namespace ManagementConsoleBackend.ManagementService.Data
@@ -112,10 +113,22 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public List<VirtualPlayerTaskSchedule> Schedules;
     }
     
+    public class ServerMessageGetSchedulerSchedules : ServerMessage
+    {
+        public new string Type = "GetSchedulerSchedules";
+        public SchedulerSchedules Schedules;
+    }
+    
+    public class ServerMessageGetLaunchRequest : ServerMessage
+    {
+        public new string Type = "GetLaunchRequest";
+        public VirtualPlayerLaunchRequest LaunchRequest;
+    }
+    
     public class ServerMessageGetVirtualPlayerLaunchTaskRequests : ServerMessage
     {
         public new string Type = "GetVirtualPlayerLaunchTaskRequests";
-        public List<LaunchTaskRequest> LaunchTaskRequests;
+        public List<VirtualPlayerLaunchRequest> LaunchTaskRequests;
     }
     
     public class ServerMessageGetQueueEvents : ServerMessage
@@ -313,6 +326,13 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public string[] Resources;
     }
     
+    public class ServerMessageScheduleProgress : ServerMessage
+    {
+        public new string Type = "ScheduleProgress";
+        public VirtualPlayerTaskSchedule Schedule;
+        public int ActionIndex;
+    }
+    
     public class ServerMessageFlexMatchSimulatorEvent : ServerMessage
     {
         public new string Type = "FlexMatchSimulatorEvent";
@@ -328,17 +348,24 @@ namespace ManagementConsoleBackend.ManagementService.Data
     }
 
     
-    public class ServerMessageLaunchPlayers : ServerMessage
+    public class ServerMessageLaunchVirtualPlayerTasks : ServerMessage
     {
-        public new string Type = "LaunchPlayers";
+        public new string Type = "LaunchVirtualPlayerTasks";
         public bool Result;
         public int NumPlayers;
     }
-    public class ServerMessageLaunchPlayersProgress : ServerMessage
+    public class ServerMessageLaunchVirtualPlayerTasksProgress : ServerMessage
     {
-        public new string Type = "LaunchPlayersProgress";
+        public new string Type = "LaunchVirtualPlayerTasksProgress";
         public int NumLaunched;
         public int TotalToLaunch;
+    }
+    
+    public class ServerMessageLaunchSchedule : ServerMessage
+    {
+        public new string Type = "LaunchVirtualPlayerTaskSchedule";
+        public bool Result;
+        public List<string> Errors;
     }
 
 }

@@ -21,15 +21,19 @@ import MatchmakingRuleSet = DataTypes.MatchmakingRuleSet;
 import PlayerProfileAttribute = DataTypes.PlayerProfileAttribute;
 import {SimulateMatchmakingSubPopup} from "./SimulateMatchmakingSubPopup";
 import {SubPopup} from "../Abstract/SubPopup";
+import {SubPopups} from "./SubPopups";
 
 export class ManageRuleSetsSubPopup extends SubPopup
 {
+    public static id = SubPopups.MANAGE_RULE_SETS_SUB_POPUP;
+    public static cacheKey = this.id;
+
     protected _ruleSets: MatchmakingRuleSet[];
     protected _editor;
 
-    public constructor (cacheKey:string, parentDomId:string)
+    public constructor ()
     {
-        super(cacheKey, parentDomId);
+        super(ManageRuleSetsSubPopup.cacheKey, ManageRuleSetsSubPopup.id);
     }
 
     refresh = () =>

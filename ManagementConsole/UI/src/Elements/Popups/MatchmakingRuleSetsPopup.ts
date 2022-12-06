@@ -53,6 +53,7 @@ export class MatchmakingRuleSetsPopup extends Popup
 
     setupEventListeners()
     {
+        super.setupEventListeners();
         this._emitter.on(Events.GET_MATCHMAKING_RULESETS_RESPONSE, this.onGetMatchmakingRuleSetsResponse);
         this._emitter.on(Events.VALIDATE_MATCHMAKING_RULESET_RESPONSE, this.onValidateMatchmakingRuleSetResponse);
         this._emitter.on(Events.CREATE_MATCHMAKING_RULESET_RESPONSE, this.onCreateMatchmakingRuleSetResponse);
@@ -61,6 +62,7 @@ export class MatchmakingRuleSetsPopup extends Popup
 
     removeEventListeners()
     {
+        super.removeEventListeners();
         this._emitter.off(Events.GET_MATCHMAKING_RULESETS_RESPONSE, this.onGetMatchmakingRuleSetsResponse);
         this._emitter.off(Events.VALIDATE_MATCHMAKING_RULESET_RESPONSE, this.onValidateMatchmakingRuleSetResponse);
         this._emitter.off(Events.CREATE_MATCHMAKING_RULESET_RESPONSE, this.onCreateMatchmakingRuleSetResponse);

@@ -5,20 +5,23 @@ import 'phaser';
 import {DataTypes} from "../../Data/DataTypes";
 import {Network} from "../../Network/Network";
 import {Events} from "../../Events/Events";
-import {SubPopup} from "../Abstract/SubPopup";
 import LatencyProfile = DataTypes.LatencyProfile;
 import RegionLatency = DataTypes.RegionLatency;
 import {Locations} from "../../Data/Locations";
 import {Game} from "../../Game";
+import {SubPopups} from "./SubPopups";
+import {SubPopup} from "../Abstract/SubPopup";
 
 export class LatencyProfilesSubPopup extends SubPopup
 {
+    public static id = SubPopups.LATENCY_PROFILES_SUB_POPUP;
+    public static cacheKey = this.id
     protected _latencyProfiles: Record<string, LatencyProfile>;
     protected _editor;
 
-    public constructor (cacheKey:string, parentDomId:string)
+    public constructor ()
     {
-        super(cacheKey, parentDomId);
+        super(LatencyProfilesSubPopup.cacheKey, LatencyProfilesSubPopup.id);
         this._latencyProfiles={};
     }
 

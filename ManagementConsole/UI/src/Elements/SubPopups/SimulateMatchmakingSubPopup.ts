@@ -5,36 +5,40 @@ import 'phaser';
 import {DataTypes} from "../../Data/DataTypes";
 import {SubPopup} from "../Abstract/SubPopup";
 import {PageManager} from "../Pages/PageManager";
-import {SimulateMatchmakingOutput} from "../Pages/SimulateMatchmakingOutput";
-import {SimulateMatchmakingForm} from "../Pages/SimulateMatchmakingForm";
-import {SimulateMatchmakingSimulations} from "../Pages/SimulateMatchmakingSimulations";
-import {SimulateMatchmakingTickets} from "../Pages/SimulateMatchmakingTickets";
-import {SimulateMatchmakingResults} from "../Pages/SimulateMatchmakingResults";
-import {SimulateMatchmakingMatchInfo} from "../Pages/SimulateMatchmakingMatchInfo";
-import {SimulateMatchmakingFailedTickets} from "../Pages/SimulateMatchmakingFailedTickets";
+import {SimulateMatchmakingOutputPage} from "../Pages/SimulateMatchmakingOutputPage";
+import {SimulateMatchmakingFormPage} from "../Pages/SimulateMatchmakingFormPage";
+import {SimulateMatchmakingSimulationsPage} from "../Pages/SimulateMatchmakingSimulationsPage";
+import {SimulateMatchmakingTicketsPage} from "../Pages/SimulateMatchmakingTicketsPage";
+import {SimulateMatchmakingResultsPage} from "../Pages/SimulateMatchmakingResultsPage";
+import {SimulateMatchmakingMatchInfoPage} from "../Pages/SimulateMatchmakingMatchInfoPage";
+import {SimulateMatchmakingFailedTicketsPage} from "../Pages/SimulateMatchmakingFailedTicketsPage";
+import {SubPopups} from "./SubPopups";
 
 export class SimulateMatchmakingSubPopup extends SubPopup
 {
-    public constructor (cacheKey:string, parentDomId:string)
+    public static id = SubPopups.SIMULATE_MATCHMAKING_SUB_POPUP;
+    public static cacheKey = this.id;
+
+    public constructor ()
     {
-        super(cacheKey, parentDomId);
+        super(SimulateMatchmakingSubPopup.cacheKey, SimulateMatchmakingSubPopup.id);
     }
 
     refresh = ()=>
     {
         PageManager.resetPages();
 
-        let simulationsPage = PageManager.registerPage(new SimulateMatchmakingSimulations());
-        PageManager.registerPage(new SimulateMatchmakingForm(simulationsPage));
+        let simulationsPage = PageManager.registerPage(new SimulateMatchmakingSimulationsPage());
+        PageManager.registerPage(new SimulateMatchmakingFormPage(simulationsPage));
 
-        let outputPage = PageManager.registerPage(new SimulateMatchmakingOutput(simulationsPage));
-        PageManager.registerPage(new SimulateMatchmakingTickets(outputPage));
+        let outputPage = PageManager.registerPage(new SimulateMatchmakingOutputPage(simulationsPage));
+        PageManager.registerPage(new SimulateMatchmakingTicketsPage(outputPage));
 
-        let resultsPage = PageManager.registerPage(new SimulateMatchmakingResults(outputPage));
-        PageManager.registerPage(new SimulateMatchmakingMatchInfo(resultsPage));
-        PageManager.registerPage(new SimulateMatchmakingFailedTickets(resultsPage));
+        let resultsPage = PageManager.registerPage(new SimulateMatchmakingResultsPage(outputPage));
+        PageManager.registerPage(new SimulateMatchmakingMatchInfoPage(resultsPage));
+        PageManager.registerPage(new SimulateMatchmakingFailedTicketsPage(resultsPage));
 
-        PageManager.switchPage(SimulateMatchmakingSimulations.id);
+        PageManager.switchPage(SimulateMatchmakingSimulationsPage.id);
 
         this.hideStatusAlert();
     }

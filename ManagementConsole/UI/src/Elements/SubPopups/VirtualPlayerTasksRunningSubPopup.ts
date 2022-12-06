@@ -6,15 +6,19 @@ import {DataTypes} from "../../Data/DataTypes";
 import {SubPopup} from "../Abstract/SubPopup";
 import {Network} from "../../Network/Network";
 import {Events} from "../../Events/Events";
+import {SubPopups} from "./SubPopups";
 
 export class VirtualPlayerTasksRunningSubPopup extends SubPopup
 {
+    public static id = SubPopups.VIRTUAL_PLAYER_TASKS_RUNNING_SUB_POPUP;
+    public static cacheKey = this.id;
+
     protected _logGroup:string = null;
     protected _logStream:string = null;
 
-    public constructor (cacheKey:string, parentDomId:string)
+    public constructor ()
     {
-        super(cacheKey, parentDomId);
+        super(VirtualPlayerTasksRunningSubPopup.cacheKey, VirtualPlayerTasksRunningSubPopup.id);
     }
 
     refresh()

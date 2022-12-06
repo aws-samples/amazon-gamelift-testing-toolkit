@@ -4,26 +4,30 @@
 import 'phaser';
 import {SubPopup} from "../Abstract/SubPopup";
 import {PageManager} from "../Pages/PageManager";
-import {VirtualPlayerLaunchRequests} from "../Pages/VirtualPlayerLaunchRequests";
-import {VirtualPlayerLaunchRequestTasks} from "../Pages/VirtualPlayerLaunchRequestTasks";
-import {VirtualPlayerLaunchRequestTaskLogs} from "../Pages/VirtualPlayerLaunchRequestTaskLogs";
+import {VirtualPlayerLaunchRequestsPage} from "../Pages/VirtualPlayerLaunchRequestsPage";
+import {VirtualPlayerLaunchRequestTasksPage} from "../Pages/VirtualPlayerLaunchRequestTasksPage";
+import {VirtualPlayerLaunchRequestTaskLogsPage} from "../Pages/VirtualPlayerLaunchRequestTaskLogsPage";
+import {SubPopups} from "./SubPopups";
 
 export class VirtualPlayerLaunchRequestsSubPopup extends SubPopup
 {
-    public constructor (cacheKey:string, parentDomId:string)
+    public static id = SubPopups.VIRTUAL_PLAYER_TASKS_LAUNCH_REQUESTS_SUB_POPUP;
+    public static cacheKey = this.id;
+
+    public constructor ()
     {
-        super(cacheKey, parentDomId);
+        super(VirtualPlayerLaunchRequestsSubPopup.cacheKey, VirtualPlayerLaunchRequestsSubPopup.id);
     }
 
     refresh = ()=>
     {
         PageManager.resetPages();
 
-        let launchRequestsPage = PageManager.registerPage(new VirtualPlayerLaunchRequests());
-        let launchRequestTasksPage = PageManager.registerPage(new VirtualPlayerLaunchRequestTasks(launchRequestsPage));
-        PageManager.registerPage(new VirtualPlayerLaunchRequestTaskLogs(launchRequestTasksPage));
+        let launchRequestsPage = PageManager.registerPage(new VirtualPlayerLaunchRequestsPage());
+        let launchRequestTasksPage = PageManager.registerPage(new VirtualPlayerLaunchRequestTasksPage(launchRequestsPage));
+        PageManager.registerPage(new VirtualPlayerLaunchRequestTaskLogsPage(launchRequestTasksPage));
 
-        PageManager.switchPage(VirtualPlayerLaunchRequests.id);
+        PageManager.switchPage(VirtualPlayerLaunchRequestsPage.id);
 
         this.hideStatusAlert();
     }
