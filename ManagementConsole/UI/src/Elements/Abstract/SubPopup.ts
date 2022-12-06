@@ -102,4 +102,8 @@ export abstract class SubPopup
             table.row(i).data(rowData).draw();
         }
     }
+
+    onPopupClick = async (event) =>
+    {
+    }
 }

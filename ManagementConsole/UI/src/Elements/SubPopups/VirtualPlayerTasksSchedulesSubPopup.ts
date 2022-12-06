@@ -7,7 +7,7 @@ import {PageManager} from "../Pages/PageManager";
 import {VirtualPlayerTaskSchedulesTablePage} from "../Pages/VirtualPlayerTaskSchedulesTablePage";
 import {VirtualPlayerTaskSchedulesFormPage} from "../Pages/VirtualPlayerTaskSchedulesFormPage";
 import {SubPopups} from "./SubPopups";
-import {VirtualPlayerTasksLaunchPage} from "../Pages/VirtualPlayerTasksLaunchPage";
+import {VirtualPlayerTaskScheduleViewPage} from "../Pages/VirtualPlayerTaskScheduleViewPage";
 
 export class VirtualPlayerTasksSchedulesSubPopup extends SubPopup
 {
@@ -25,7 +25,8 @@ export class VirtualPlayerTasksSchedulesSubPopup extends SubPopup
         PageManager.resetPages();
 
         let schedulesTablePage = PageManager.registerPage(new VirtualPlayerTaskSchedulesTablePage());
-        let schedulesFormPage = PageManager.registerPage(new VirtualPlayerTaskSchedulesFormPage(schedulesTablePage));
+        PageManager.registerPage(new VirtualPlayerTaskSchedulesFormPage(schedulesTablePage));
+        PageManager.registerPage(new VirtualPlayerTaskScheduleViewPage(schedulesTablePage));
 
         PageManager.switchPage(VirtualPlayerTaskSchedulesTablePage.id);
 

@@ -578,6 +578,12 @@ namespace ManagementConsoleBackend.ManagementService
                             await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetVirtualPlayerTaskSchedules { Schedules = schedules });
                             break;
                         
+                        case "GetVirtualPlayerTaskSchedule":
+                            var getVirtualPlayerTaskScheduleRequest = JsonConvert.DeserializeObject<ClientMessageGetVirtualPlayerTaskSchedule>(request.Body);
+                            var schedule = await dynamoDbRequestHandler.GetVirtualPlayerTaskSchedule(getVirtualPlayerTaskScheduleRequest.ScheduleId);
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetVirtualPlayerTaskSchedule { Schedule = schedule });
+                            break;
+                        
                         case "CreateVirtualPlayerTaskSchedule":
                             var createVirtualPlayerTaskScheduleRequest = JsonConvert.DeserializeObject<ClientMessageCreateVirtualPlayerTaskSchedule>(request.Body);
                             var createVirtualPlayerTaskScheduleResponse = await dynamoDbRequestHandler.CreateVirtualPlayerTaskSchedule(createVirtualPlayerTaskScheduleRequest.Schedule);
@@ -625,6 +631,12 @@ namespace ManagementConsoleBackend.ManagementService
                             var terminateVirtualPlayerRequest = JsonConvert.DeserializeObject<ClientMessageTerminateVirtualPlayer>(request.Body);
                             var terminateVirtualPlayerErrors = await virtualPlayersHandler.TerminateVirtualPlayerTask(terminateVirtualPlayerRequest.TaskArn);
                             await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageTerminateVirtualPlayerTasks { Errors = terminateVirtualPlayerErrors});
+                            break;
+                        
+                        case "TerminateSchedule":
+                            var terminateScheduleRequest = JsonConvert.DeserializeObject<ClientMessageTerminateSchedule>(request.Body);
+                            var terminateScheduleResponse = await virtualPlayersHandler.TerminateSchedule(terminateScheduleRequest.LaunchId);
+                            await Utils.SendJsonResponse(_connectionId, stageServiceUrl, terminateScheduleResponse);
                             break;
                         
                         case "DeleteVirtualPlayerTaskSchedule":

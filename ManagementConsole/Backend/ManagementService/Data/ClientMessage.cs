@@ -107,6 +107,12 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public new string Type = "GetVirtualPlayers";
     }
     
+    public class ClientMessageGetVirtualPlayerTaskSchedule : ClientMessage
+    {
+        public new string Type = "GetVirtualPlayerTaskSchedule";
+        public string ScheduleId;
+    }
+    
     public class ClientMessageCreateVirtualPlayerTaskSchedule : ClientMessage
     {
         public new string Type = "CreateVirtualPlayerTaskSchedule";
@@ -124,6 +130,12 @@ namespace ManagementConsoleBackend.ManagementService.Data
     public class ClientMessageGetLaunchRequest : ClientMessage
     {
         public new string Type = "GetLaunchRequest";
+        public string LaunchId;
+    }
+    
+    public class ClientMessageTerminateSchedule : ClientMessage
+    {
+        public new string Type = "TerminateSchedule";
         public string LaunchId;
     }
     

@@ -55,6 +55,7 @@ export class Events
     public static GET_LAUNCH_REQUEST_RESPONSE:string = "GetLaunchRequestResponse";
     public static GET_VIRTUAL_PLAYER_LAUNCH_TASK_REQUESTS_RESPONSE:string = "GetVirtualPlayerLaunchTaskRequests";
     public static GET_VIRTUAL_PLAYER_TASK_SCHEDULES_RESPONSE:string = "GetVirtualPlayerTaskSchedules";
+    public static GET_VIRTUAL_PLAYER_TASK_SCHEDULE_RESPONSE:string = "GetVirtualPlayerTaskSchedule";
     public static GET_SCHEDULER_SCHEDULES_RESPONSE:string = "GetSchedulerSchedules";
     public static CREATE_VIRTUAL_PLAYER_TASK_SCHEDULE_RESPONSE:string = "CreateVirtualPlayerTaskSchedule";
     public static DELETE_VIRTUAL_PLAYER_TASK_SCHEDULE_RESPONSE:string = "DeleteVirtualPlayerTaskSchedule";
@@ -63,6 +64,7 @@ export class Events
     public static LAUNCH_VIRTUAL_PLAYER_TASKS_RESPONSE:string = "LaunchVirtualPlayerTasksResponse";
     public static LAUNCH_VIRTUAL_PLAYER_TASK_SCHEDULE_RESPONSE:string = "LaunchVirtualPlayerTaskScheduleResponse";
     public static LAUNCH_VIRTUAL_PLAYER_TASKS_PROGRESS_RESPONSE:string = "LaunchVirtualPlayerTasksProgressResponse";
+    public static TERMINATE_SCHEDULE_RESPONSE:string = "TerminateScheduleResponse";
     public static SCHEDULE_PROGRESS:string = "ScheduleProgressUpdate";
     public static TERMINATE_VIRTUAL_PLAYER_TASKS_RESPONSE:string = "TerminateVirtualPlayerTasksResponse";
     public static ADD_DUMMY_FLEET:string = "AddFakeFleet";

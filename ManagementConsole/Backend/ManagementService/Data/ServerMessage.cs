@@ -113,6 +113,12 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public List<VirtualPlayerTaskSchedule> Schedules;
     }
     
+    public class ServerMessageGetVirtualPlayerTaskSchedule : ServerMessage
+    {
+        public new string Type = "GetVirtualPlayerTaskSchedule";
+        public VirtualPlayerTaskSchedule Schedule;
+    }
+    
     public class ServerMessageGetSchedulerSchedules : ServerMessage
     {
         public new string Type = "GetSchedulerSchedules";
@@ -364,6 +370,13 @@ namespace ManagementConsoleBackend.ManagementService.Data
     public class ServerMessageLaunchSchedule : ServerMessage
     {
         public new string Type = "LaunchVirtualPlayerTaskSchedule";
+        public bool Result;
+        public List<string> Errors;
+    }
+    
+    public class ServerMessageTerminateSchedule : ServerMessage
+    {
+        public new string Type = "TerminateVirtualPlayerTaskSchedule";
         public bool Result;
         public List<string> Errors;
     }

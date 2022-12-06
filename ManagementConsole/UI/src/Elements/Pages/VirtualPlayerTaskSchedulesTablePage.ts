@@ -34,6 +34,11 @@ export class VirtualPlayerTaskSchedulesTablePage extends Page
             PageManager.switchPage(Pages.VIRTUAL_PLAYER_TASK_SCHEDULES_FORM);
         }
 
+        if (el.hasClass("viewSchedule"))
+        {
+            PageManager.switchPage(Pages.VIRTUAL_PLAYER_TASK_SCHEDULE_VIEW, el.data("scheduleid"));
+        }
+
         if (el.hasClass("deleteSchedule"))
         {
             this.deleteSchedule(el.data("scheduleid"));

@@ -101,7 +101,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                 {
                     if (schedule.Actions[i].Type == "Launch")
                     {
-                        schedule.Actions[i].ScheduledTime = scheduleTimes.LaunchScheduleStart.AddMinutes(schedule.Actions[i].Minutes).ToString("yyyy-MM-ddTHH:mm:ss");
+                        schedule.Actions[i].ScheduledTime = scheduleTimes.LaunchScheduleStart.AddMinutes(schedule.Actions[i].Minutes - schedule.SchedulePeriodMinutes).ToString("yyyy-MM-ddTHH:mm:ss");
                     }
                     else
                     if (schedule.Actions[i].Type == "Terminate")
@@ -496,6 +496,58 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             }
         }
 
+        public async Task<ServerMessageTerminateSchedule> TerminateSchedule(string LaunchId)
+        {
+            var errors = new List<string>();
+            var response = new ServerMessageTerminateSchedule();
+            response.Result = false;
+            
+            var schedulerHandler = new SchedulerHandler(new AmazonSchedulerClient());
+            var initialisedSchedules = await schedulerHandler.GetSchedules();
+            if (initialisedSchedules == null)
+            {
+                response.Result = false;
+                response.Errors = new List<string>
+                {
+                    "Couldn't initialise scheduler"
+                };
+                return response;
+            }
+
+            if (initialisedSchedules.LaunchSchedule.State.Value != "DISABLED")
+            {
+                var inputObj = JsonConvert.DeserializeObject<VirtualPlayerScheduleTargetInput>(initialisedSchedules.LaunchSchedule.Target.Input);
+                if (inputObj != null && inputObj.LaunchId == LaunchId)
+                {
+                    await schedulerHandler.DisableSchedule(initialisedSchedules.LaunchSchedule);
+                }
+            }
+            
+            // sleep for 10 seconds in case any tasks are launching
+            System.Threading.Thread.Sleep(10000);
+            
+            // terminate tasks
+            var terminateErrors = await TerminateVirtualPlayerTasksByLaunchIdTag(LaunchId);
+            if (terminateErrors.Count > 0)
+            {
+                response.Result = false;
+                response.Errors.AddRange(terminateErrors);
+                return response;
+            }
+            
+            if (initialisedSchedules.TerminateSchedule.State.Value != "DISABLED")
+            {
+                var inputObj = JsonConvert.DeserializeObject<VirtualPlayerScheduleTargetInput>(initialisedSchedules.LaunchSchedule.Target.Input);
+                if (inputObj != null && inputObj.LaunchId == LaunchId)
+                {
+                    await schedulerHandler.DisableSchedule(initialisedSchedules.TerminateSchedule);
+                }
+            }
+
+            response.Result = true;
+            return response;
+        }
+        
         public async Task<List<string>> TerminateVirtualPlayerTasksByLaunchIdTag(string LaunchId)
         {
             var errors = new List<string>();

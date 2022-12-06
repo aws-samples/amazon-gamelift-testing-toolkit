@@ -180,6 +180,10 @@ export class MessageHandler
                 this._emitter.emit(Events.GET_VIRTUAL_PLAYER_TASK_SCHEDULES_RESPONSE, data);
                 break;
 
+            case "GetVirtualPlayerTaskSchedule":
+                this._emitter.emit(Events.GET_VIRTUAL_PLAYER_TASK_SCHEDULE_RESPONSE, data);
+                break;
+
             case "CreateVirtualPlayerTaskSchedule":
                 this._emitter.emit(Events.CREATE_VIRTUAL_PLAYER_TASK_SCHEDULE_RESPONSE, data);
                 break;
@@ -234,6 +238,10 @@ export class MessageHandler
 
             case "GetLaunchRequest":
                 this._emitter.emit(Events.GET_LAUNCH_REQUEST_RESPONSE, data);
+                break;
+
+            case "TerminateVirtualPlayerTaskSchedule":
+                this._emitter.emit(Events.TERMINATE_SCHEDULE_RESPONSE, data);
                 break;
 
             case "LaunchVirtualPlayerTaskSchedule":

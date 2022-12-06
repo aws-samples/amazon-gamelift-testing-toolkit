@@ -81,4 +81,10 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public string LogStream;
         public string LastStatus;
     }
+
+    public class VirtualPlayerScheduleTargetInput
+    {
+        public string LaunchId;
+        public string Type;
+    }
 }

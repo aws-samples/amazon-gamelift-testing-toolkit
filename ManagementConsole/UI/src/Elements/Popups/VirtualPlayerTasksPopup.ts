@@ -42,7 +42,6 @@ export class VirtualPlayerTasksPopup extends Popup
         if (el.parent().hasClass("virtualPlayerTasksMenu")) // click on left hand menu button
         {
             $('.virtualPlayerTasksMenu a').removeClass("active");
-            $('.' + event.target.className).addClass("active");
 
             if (el.hasClass(SubPopups.VIRTUAL_PLAYER_TASKS_OVERVIEW_SUB_POPUP))
             {

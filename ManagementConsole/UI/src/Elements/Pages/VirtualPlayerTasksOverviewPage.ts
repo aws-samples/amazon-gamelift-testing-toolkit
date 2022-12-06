@@ -9,12 +9,14 @@ import {Network} from "../../Network/Network";
 import {Events} from "../../Events/Events";
 import {DataTypes} from "../../Data/DataTypes";
 import VirtualPlayerTaskSchedule = DataTypes.VirtualPlayerTaskSchedule;
+import {SubPopups} from "../SubPopups/SubPopups";
 
 export class VirtualPlayerTasksOverviewPage extends Page
 {
     public static id = Pages.VIRTUAL_PLAYER_TASKS_OVERVIEW;
     public static cacheKey = this.id;
     protected _taskSchedules:VirtualPlayerTaskSchedule[] = [];
+    protected _launchId=null;
 
     public constructor (parentPage:Page=null)
     {
@@ -27,6 +29,13 @@ export class VirtualPlayerTasksOverviewPage extends Page
         if (el.hasClass("refreshButton"))
         {
             this.refresh();
+        }
+
+        if (el.hasClass("terminateSchedule"))
+        {
+            $("button.terminateSchedule").prop("disabled", true);
+            $("p.terminateText").html("Terminating schedule...");
+            Network.sendObject({Type:"TerminateSchedule", LaunchId:this._launchId});
         }
     }
 
@@ -46,6 +55,7 @@ export class VirtualPlayerTasksOverviewPage extends Page
         this._emitter.on(Events.GET_SCHEDULER_SCHEDULES_RESPONSE, this.onGetSchedulerSchedulesResponse);
         this._emitter.on(Events.GET_VIRTUAL_PLAYER_TASKS_RESPONSE, this.onGetVirtualPlayerTasksResponse);
         this._emitter.on(Events.GET_LAUNCH_REQUEST_RESPONSE, this.onGetLaunchRequestResponse);
+        this._emitter.on(Events.TERMINATE_SCHEDULE_RESPONSE, this.onTerminateScheduleResponse);
         this._emitter.on(Events.SCHEDULE_PROGRESS, this.onScheduleProgress);
     }
 
@@ -55,7 +65,13 @@ export class VirtualPlayerTasksOverviewPage extends Page
         this._emitter.off(Events.GET_SCHEDULER_SCHEDULES_RESPONSE, this.onGetSchedulerSchedulesResponse);
         this._emitter.off(Events.GET_VIRTUAL_PLAYER_TASKS_RESPONSE, this.onGetVirtualPlayerTasksResponse);
         this._emitter.off(Events.GET_LAUNCH_REQUEST_RESPONSE, this.onGetLaunchRequestResponse);
+        this._emitter.on(Events.TERMINATE_SCHEDULE_RESPONSE, this.onTerminateScheduleResponse);
         this._emitter.off(Events.SCHEDULE_PROGRESS, this.onScheduleProgress);
+    }
+
+    onTerminateScheduleResponse = (data) =>
+    {
+        this._emitter.emit(Events.SWITCH_SUB_POPUP, { SubPopup: SubPopups.VIRTUAL_PLAYER_TASKS_OVERVIEW_SUB_POPUP });
     }
 
     onGetVirtualPlayerTasksResponse = (data) =>
@@ -87,7 +103,19 @@ export class VirtualPlayerTasksOverviewPage extends Page
 
     updateRunningScheduleTable(schedule, flashIndex=null)
     {
-        $('.runningScheduleTableTitle').html("Running schedule " + schedule.ScheduleName);
+        if (schedule.Actions.find(x=>x.Status=="Scheduled")==false)
+        {
+            $('.runningScheduleTableTitle').html("Completed schedule " + schedule.ScheduleName);
+            $('div.terminateSchedule').hide();
+            $('.completedSchedule').show();
+            this._launchId=null;
+        }
+        else
+        {
+            $('.runningScheduleTableTitle').html("Running schedule " + schedule.ScheduleName);
+            $('div.terminateSchedule').show();
+            $('.completedSchedule').hide();
+        }
 
         let tableHtml="";
         schedule.Actions.map(action =>
@@ -147,6 +175,7 @@ export class VirtualPlayerTasksOverviewPage extends Page
         {
             let inputObj = JSON.parse(data.Schedules.LaunchSchedule.Target.Input)
             let launchId = inputObj["LaunchId"];
+            this._launchId = launchId;
             Network.sendObject({Type:"GetLaunchRequest", LaunchId: launchId});
         }
 

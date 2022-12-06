@@ -57,8 +57,7 @@ export class QueueSettingsPopup extends Popup
 
         if (el.parent().hasClass("queueSettingsMenu")) // click on left hand menu button
         {
-            $('.queueSettingsMenu a').removeClass("active");
-            $('.' + event.target.className).addClass("active");
+            //$('.queueSettingsMenu a').removeClass("active");
 
             if (el.hasClass(SubPopups.QUEUE_SETTINGS_SUB_POPUP))
             {

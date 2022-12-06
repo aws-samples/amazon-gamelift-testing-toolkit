@@ -11,6 +11,7 @@ import {SubPopup} from "./SubPopup";
 import {ScreenResolution} from "../../Data/ScreenResolution";
 import {Game} from "../../Game";
 import {PageManager} from "../Pages/PageManager";
+import {SubPopups} from "../SubPopups/SubPopups";
 
 export abstract class Popup extends Phaser.GameObjects.Container
 {
@@ -20,7 +21,7 @@ export abstract class Popup extends Phaser.GameObjects.Container
     protected _htmlName:string;
     protected _html:string;
     protected _subPopups: Record<string, SubPopup>;
-    protected _currentSubPopup;
+    protected _currentSubPopup:SubPopup;
 
     protected constructor (scene:Phaser.Scene, x:number, y:number)
     {
@@ -62,9 +63,14 @@ export abstract class Popup extends Phaser.GameObjects.Container
     {
         $('.tab-pane').hide();
         this._currentSubPopup?.removeEventListeners();
+        if (this._currentSubPopup!=null)
+        {
+            $('.' + this._currentSubPopup.domId).removeClass("active");
+        }
         this._subPopups[subPopupName].setupEventListeners();
         this._subPopups[subPopupName].loadContent();
         this._currentSubPopup = this._subPopups[subPopupName];
+        $('.' + subPopupName).addClass("active");
         $("#" + subPopupName).show();
     }
 

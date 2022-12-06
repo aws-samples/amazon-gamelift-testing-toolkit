@@ -53,7 +53,6 @@ export class FlexMatchSimulatorPopup extends Popup
         if (el.parent().hasClass("flexMatchSimulatorMenu")) // click on left hand menu button
         {
             $('.flexMatchSimulatorMenu a').removeClass("active");
-            $('.' + event.target.className).addClass("active");
 
             if (el.hasClass(SubPopups.PLAYER_PROFILES_SUB_POPUP))
             {
