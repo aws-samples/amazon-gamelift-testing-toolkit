@@ -20,6 +20,12 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public MatchmakingSimulationPlayerConfig[] PlayerProfileConfigs;
     }
     
+    public class ClientMessageDeleteVirtualPlayerTaskSchedule : ClientMessage
+    {
+        public new string Type = "DeleteVirtualPlayerTaskSchedule";
+        public string ScheduleId;
+    }
+    
     public class ClientMessageDeletePlayerProfile : ClientMessage
     {
         public new string Type = "DeletePlayerProfile";
@@ -62,9 +68,9 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public string FleetId;
     }
     
-    public class ClientMessageLaunchPlayers : ClientMessage
+    public class ClientMessageLaunchVirtualPlayerTasks : ClientMessage
     {
-        public new string Type = "LaunchPlayers";
+        public new string Type = "LaunchVirtualPlayerTasks";
         public int NumPlayers;
         public string TaskDefinitionArn;
         public string CapacityProvider;
@@ -99,6 +105,43 @@ namespace ManagementConsoleBackend.ManagementService.Data
     public class ClientMessageGetVirtualPlayers : ClientMessage
     {
         public new string Type = "GetVirtualPlayers";
+    }
+    
+    public class ClientMessageGetVirtualPlayerTaskSchedule : ClientMessage
+    {
+        public new string Type = "GetVirtualPlayerTaskSchedule";
+        public string ScheduleId;
+    }
+    
+    public class ClientMessageCreateVirtualPlayerTaskSchedule : ClientMessage
+    {
+        public new string Type = "CreateVirtualPlayerTaskSchedule";
+        public VirtualPlayerTaskSchedule Schedule;
+    }
+    
+    public class ClientMessageLaunchVirtualPlayerTaskSchedule : ClientMessage
+    {
+        public new string Type = "LaunchVirtualPlayerTaskSchedule";
+        public string ScheduleId;
+        public string TaskDefinitionArn;
+        public string CapacityProvider;
+    }
+    
+    public class ClientMessageGetLaunchRequest : ClientMessage
+    {
+        public new string Type = "GetLaunchRequest";
+        public string LaunchId;
+    }
+    
+    public class ClientMessageTerminateSchedule : ClientMessage
+    {
+        public new string Type = "TerminateSchedule";
+        public string LaunchId;
+    }
+    
+    public class ClientMessageGetVirtualPlayerTaskHistory : ClientMessage
+    {
+        public new string Type = "GetVirtualPlayerTaskHistory";
     }
     
     public class ClientMessageGetPlayerProfiles : ClientMessage

@@ -29,6 +29,11 @@ export abstract class SubPopup
         this.refresh();
     }
 
+    get domId()
+    {
+        return this._parentDomId;
+    }
+
     refresh()
     {
 
@@ -52,19 +57,19 @@ export abstract class SubPopup
 
     showSuccessAlert = (text) =>
     {
-        $('#'+this._parentDomId).find("#statusText")[0].className = "alert alert-success";
+        $('#'+this._parentDomId).find("#statusText").attr("class","alert alert-success");
         $('#'+this._parentDomId).find("#statusText").html(text);
     }
 
     showFailureAlert = (text) =>
     {
-        $('#'+this._parentDomId).find("#statusText")[0].className = "alert alert-danger";
+        $('#'+this._parentDomId).find("#statusText").attr("class","alert alert-danger");
         $('#'+this._parentDomId).find("#statusText").html(text);
     }
 
     hideStatusAlert()
     {
-        $('#'+this._parentDomId).find("#statusText")[0].className = "alert hide";
+        $('#'+this._parentDomId).find("#statusText").attr("class", "alert hide");
     }
 
     activateDataTable(id, config=null) {
@@ -96,5 +101,9 @@ export abstract class SubPopup
             rowData[0] = i+1;
             table.row(i).data(rowData).draw();
         }
+    }
+
+    onPopupClick = async (event) =>
+    {
     }
 }

@@ -13,8 +13,6 @@ import {FleetEventsPopup} from "./FleetEventsPopup";
 import {GameSessionsTablePopup} from "./GameSessionsTablePopup";
 import {QueueEventsPopup} from "./QueueEventsPopup";
 import {MatchmakingTicketsPopup} from "./MatchmakingTicketsPopup";
-import {ManageVirtualPlayersPopup} from "./ManageVirtualPlayersPopup";
-import {LaunchVirtualPlayersPopup} from "./LaunchVirtualPlayersPopup";
 import {SimpleJsonPopup} from "./SimpleJsonPopup";
 import {MatchmakingRuleSetsPopup} from "./MatchmakingRuleSetsPopup";
 import {MatchmakingConfigPopup} from "./MatchmakingConfigPopup";
@@ -23,6 +21,8 @@ import {QueueGraphPopup} from "./QueueGraphPopup";
 import {FleetGraphPopup} from "./FleetGraphPopup";
 import {FlexMatchSimulatorPopup} from "./FlexMatchSimulatorPopup";
 import {QueueSettingsPopup} from "./QueueSettingsPopup";
+import {VirtualPlayerTasksPopup} from "./VirtualPlayerTasksPopup";
+import {PageManager} from "../Pages/PageManager";
 
 export class PopupHandler
 {
@@ -47,9 +47,8 @@ export class PopupHandler
         PopupHandler.emitter.on(Events.SHOW_FLEET_LOCATIONS_POPUP, PopupHandler.onShowFleetLocationsPopup);
         PopupHandler.emitter.on(Events.SHOW_FLEET_EVENTS_POPUP, PopupHandler.onShowFleetEventsPopup);
         PopupHandler.emitter.on(Events.SHOW_GAME_SESSIONS_TABLE_POPUP, PopupHandler.onShowGameSessionsTablePopup);
-        PopupHandler.emitter.on(Events.SHOW_MANAGE_VIRTUAL_PLAYERS_POPUP, PopupHandler.onShowManageVirtualPlayersPopup);
         PopupHandler.emitter.on(Events.SHOW_FLEXMATCH_SIMULATOR_POPUP, PopupHandler.onShowFlexMatchSimulatorPopup);
-        PopupHandler.emitter.on(Events.SHOW_LAUNCH_VIRTUAL_PLAYERS_POPUP, PopupHandler.onShowLaunchVirtualPlayersPopup);
+        PopupHandler.emitter.on(Events.SHOW_VIRTUAL_PLAYER_TASKS_POPUP, PopupHandler.onShowVirtualPlayerTasksPopup);
         PopupHandler.emitter.on(Events.SHOW_QUEUE_POPUP, PopupHandler.onShowQueuePopup);
         PopupHandler.emitter.on(Events.SHOW_QUEUE_EVENTS_POPUP, PopupHandler.onShowQueueEventsPopup);
         PopupHandler.emitter.on(Events.SHOW_QUEUE_SETTINGS_POPUP, PopupHandler.onShowQueueSettingsPopup);
@@ -223,18 +222,10 @@ export class PopupHandler
         PopupHandler.popup.show(event);
     };
 
-    protected static onShowManageVirtualPlayersPopup = (event:PopupClickEvent) =>
+    protected static onShowVirtualPlayerTasksPopup = (event:PopupClickEvent) =>
     {
         PopupHandler.onClosePopup();
-        PopupHandler.popup = new ManageVirtualPlayersPopup(PopupHandler.scene, 0, 0);
-        PopupHandler.scene.add.existing(PopupHandler.popup);
-        PopupHandler.popup.show(event);
-    };
-
-    protected static onShowLaunchVirtualPlayersPopup = (event:PopupClickEvent) =>
-    {
-        PopupHandler.onClosePopup();
-        let popup = new LaunchVirtualPlayersPopup(PopupHandler.scene, 0, 0);
+        let popup = new VirtualPlayerTasksPopup(PopupHandler.scene, 0, 0);
         PopupHandler.popup = popup
         PopupHandler.scene.add.existing(PopupHandler.popup);
         PopupHandler.popup.show(event);

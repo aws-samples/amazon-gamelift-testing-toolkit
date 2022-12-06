@@ -13,6 +13,7 @@ export class FleetEventsPopup extends Popup
     {
         super(scene, x, y);
         this._htmlName="fleetEventsPopup";
+        this.setupEventListeners();
     }
 
     setPopupData(data:any)

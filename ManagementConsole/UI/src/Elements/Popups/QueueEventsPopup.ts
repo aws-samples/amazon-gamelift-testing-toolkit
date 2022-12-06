@@ -154,6 +154,7 @@ export class QueueEventsPopup extends Popup
 
     setupEventListeners()
     {
+        super.setupEventListeners();
         this._emitter.on(Events.GET_QUEUE_EVENTS_RESPONSE, this.onGetQueueEventsResponse);
         this._emitter.on(Events.GET_MATCHMAKING_TICKET_HEADERS_BY_MATCH_ID_RESPONSE, this.onGetMatchmakingTicketHeadersResponse);
         this._emitter.on(Events.GET_MATCHMAKING_TICKET_RESPONSE, this.onGetMatchmakingTicketResponse);
@@ -161,6 +162,7 @@ export class QueueEventsPopup extends Popup
 
     removeEventListeners()
     {
+        super.removeEventListeners();
         this._emitter.off(Events.GET_QUEUE_EVENTS_RESPONSE, this.onGetQueueEventsResponse);
         this._emitter.off(Events.GET_MATCHMAKING_TICKET_HEADERS_BY_MATCH_ID_RESPONSE, this.onGetMatchmakingTicketHeadersResponse);
         this._emitter.off(Events.GET_MATCHMAKING_TICKET_RESPONSE, this.onGetMatchmakingTicketResponse);

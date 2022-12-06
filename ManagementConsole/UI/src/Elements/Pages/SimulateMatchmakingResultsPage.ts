@@ -10,17 +10,17 @@ import {Page} from "../Abstract/Page";
 import {Pages} from "./Pages";
 import {Utils} from "../../Utils/Utils";
 
-export class SimulateMatchmakingResults extends Page
+export class SimulateMatchmakingResultsPage extends Page
 {
     public static id = Pages.SIMULATE_MATCHMAKING_RESULTS;
-    public static cacheKey = "simulateMatchmakingResults";
+    public static cacheKey = this.id;
     protected _currentSimulation;
     protected _matches: Record<string, any>;
     protected _failedPlayers: any[]=[];
 
     public constructor (parentPage:Page=null)
     {
-        super( SimulateMatchmakingResults.cacheKey,  parentPage, SimulateMatchmakingResults.id);
+        super( SimulateMatchmakingResultsPage.cacheKey,  parentPage, SimulateMatchmakingResultsPage.id);
     }
 
     public onPopupClick(event) {

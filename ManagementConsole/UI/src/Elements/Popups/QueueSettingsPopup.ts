@@ -9,6 +9,7 @@ import {QueuePlacementPrioritySubPopup} from "../SubPopups/QueuePlacementPriorit
 import {QueueDestinationOrderSubPopup} from "../SubPopups/QueueDestinationOrderSubPopup";
 import {DataTypes} from "../../Data/DataTypes";
 import GameSessionQueue = DataTypes.GameSessionQueue;
+import {SubPopups} from "../SubPopups/SubPopups";
 
 export class QueueSettingsPopup extends Popup
 {
@@ -25,9 +26,9 @@ export class QueueSettingsPopup extends Popup
     {
         this._queueData = data.gameObject.Data as GameSessionQueue;
 
-        this.registerSubPopup("queueSettings", new QueueSettingsSubPopup("queueSettingsSubPopup", "queueSettings", this._queueData));
-        this.registerSubPopup("placementPriority", new QueuePlacementPrioritySubPopup("queuePlacementPrioritySubPopup", "placementPriority", this._queueData));
-        this.registerSubPopup("destinationOrder", new QueueDestinationOrderSubPopup("queueDestinationOrderSubPopup", "destinationOrder", this._queueData));
+        this.registerSubPopup(new QueueSettingsSubPopup(this._queueData));
+        this.registerSubPopup(new QueuePlacementPrioritySubPopup(this._queueData));
+        this.registerSubPopup(new QueueDestinationOrderSubPopup(this._queueData));
 
         $('#queueSettingsName').html(this._queueData.Name);
 
@@ -36,16 +37,18 @@ export class QueueSettingsPopup extends Popup
 
     refresh()
     {
-        this.switchSubPopup("queueSettings");
+        this.switchSubPopup(SubPopups.QUEUE_SETTINGS_SUB_POPUP);
     }
 
 
     setupEventListeners()
     {
+        super.setupEventListeners();
     }
 
     removeEventListeners()
     {
+        super.removeEventListeners();
     }
 
     onPopupClick = async (event) => {
@@ -54,25 +57,22 @@ export class QueueSettingsPopup extends Popup
 
         if (el.parent().hasClass("queueSettingsMenu")) // click on left hand menu button
         {
-            $('.queueSettingsMenu a').removeClass("active");
-            $('.' + event.target.className).addClass("active");
-            $('.tab-pane').hide();
+            //$('.queueSettingsMenu a').removeClass("active");
 
-            if (el.hasClass("queueSettings"))
+            if (el.hasClass(SubPopups.QUEUE_SETTINGS_SUB_POPUP))
             {
-                this.switchSubPopup("queueSettings");
+                this.switchSubPopup(SubPopups.QUEUE_SETTINGS_SUB_POPUP);
             }
             else
-            if (el.hasClass("placementPriority"))
+            if (el.hasClass(SubPopups.QUEUE_PLACEMENT_PRIORITY_SUB_POPUP))
             {
-                this.switchSubPopup("placementPriority");
+                this.switchSubPopup(SubPopups.QUEUE_PLACEMENT_PRIORITY_SUB_POPUP);
             }
             else
-            if (el.hasClass("destinationOrder"))
+            if (el.hasClass(SubPopups.QUEUE_DESTINATION_ORDER_SUB_POPUP))
             {
-                this.switchSubPopup("destinationOrder");
+                this.switchSubPopup(SubPopups.QUEUE_DESTINATION_ORDER_SUB_POPUP);
             }
-            $(el.attr("data-tab")).show();
         }
         else
         if (event.target.className == "closeButton") {

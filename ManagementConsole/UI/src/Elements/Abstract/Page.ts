@@ -31,12 +31,11 @@ export abstract class Page
         let html = Game.game.cache.html.get(this._cacheKey);
         $('#'+this._domId).html(html);
         this._html = $('#'+this._domId).html();
-        this.refresh();
     }
 
     hideStatusAlert()
     {
-
+        $('#'+this._domId).find("#statusText")[0].className = "alert hide";
     }
 
     public setPageData(data:any)

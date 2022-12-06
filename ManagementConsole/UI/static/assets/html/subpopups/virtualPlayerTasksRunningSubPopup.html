@@ -1,0 +1,41 @@
+<div class="alert hide" id="statusText"></div>
+<div class="virtualPlayerTasksRunningContent">
+    <div class="virtualPlayersContent">
+        <div class="refreshButton"></div>
+        <a class="terminateAllVirtualPlayerTasks btn btn-primary btn-sm" href="#">Terminate All Virtual Player Tasks</a>
+        <p class="title mb-3"></p>
+        <div class="virtualPlayersTableContainer">
+            <table id="virtualPlayersTable" class="table table-bordered table-striped mb-0">
+                <thead>
+                <tr>
+                    <th>Launched</th>
+                    <th>Arn</th>
+                    <th>Provider</th>
+                    <th>Status</th>
+                    <th>Cpu</th>
+                    <th>Memory</th>
+                    <th>Terminate</th>
+                    <th>Logs</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="virtualPlayersLogsContent hide">
+        <btn id="backButton" class="btn btn-primary btn-sm">Back</btn>
+        <div class="refreshLogsButton"></div>
+        <table id="virtualPlayersLogsTable" class="table table-bordered table-striped mb-0">
+            <thead>
+            <tr>
+                <th>Date</th>
+                <th>Message</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>

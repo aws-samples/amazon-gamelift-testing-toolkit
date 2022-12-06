@@ -38,6 +38,7 @@ export class GameSessionsTablePopup extends Popup
 
     setupEventListeners()
     {
+        super.setupEventListeners();
         this._emitter.on(Events.GET_GAME_SESSIONS_RESPONSE, this.onGetGameSessionsResponse);
         this._emitter.on(Events.GET_GAME_SESSION_LOGS_RESPONSE, this.onGetGameSessionLogsResponse);
         this._emitter.on(Events.GET_PLAYER_SESSIONS_RESPONSE, this.onGetPlayerSessionsResponse);
@@ -45,6 +46,7 @@ export class GameSessionsTablePopup extends Popup
 
     removeEventListeners()
     {
+        super.removeEventListeners();
         this._emitter.off(Events.GET_GAME_SESSIONS_RESPONSE, this.onGetGameSessionsResponse);
         this._emitter.off(Events.GET_GAME_SESSION_LOGS_RESPONSE, this.onGetGameSessionLogsResponse);
         this._emitter.off(Events.GET_PLAYER_SESSIONS_RESPONSE, this.onGetPlayerSessionsResponse);

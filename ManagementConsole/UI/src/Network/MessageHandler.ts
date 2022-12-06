@@ -64,8 +64,8 @@ export class MessageHandler
                 this._emitter.emit(Events.UPDATE_FLEET_LOCATIONS_RESPONSE, data as SimpleResult);
                 break;
 
-            case "TerminateVirtualPlayer":
-                this._emitter.emit(Events.TERMINATE_VIRTUAL_PLAYER_RESPONSE, data as SimpleResult);
+            case "TerminateVirtualPlayerTasks":
+                this._emitter.emit(Events.TERMINATE_VIRTUAL_PLAYER_TASKS_RESPONSE, data as SimpleResult);
                 break;
 
             case "GetGameSessions":
@@ -164,8 +164,36 @@ export class MessageHandler
                 this._emitter.emit(Events.GET_LATENCY_PROFILES_RESPONSE, data.Profiles);
                 break;
 
-            case "GetVirtualPlayers":
-                this._emitter.emit(Events.GET_VIRTUAL_PLAYERS_RESPONSE, data);
+            case "GetVirtualPlayerTasks":
+                this._emitter.emit(Events.GET_VIRTUAL_PLAYER_TASKS_RESPONSE, data);
+                break;
+
+            case "GetSchedulerSchedules":
+                this._emitter.emit(Events.GET_SCHEDULER_SCHEDULES_RESPONSE, data);
+                break;
+
+            case "GetVirtualPlayerLaunchTaskRequests":
+                this._emitter.emit(Events.GET_VIRTUAL_PLAYER_LAUNCH_TASK_REQUESTS_RESPONSE, data);
+                break;
+
+            case "GetVirtualPlayerTaskSchedules":
+                this._emitter.emit(Events.GET_VIRTUAL_PLAYER_TASK_SCHEDULES_RESPONSE, data);
+                break;
+
+            case "GetVirtualPlayerTaskSchedule":
+                this._emitter.emit(Events.GET_VIRTUAL_PLAYER_TASK_SCHEDULE_RESPONSE, data);
+                break;
+
+            case "CreateVirtualPlayerTaskSchedule":
+                this._emitter.emit(Events.CREATE_VIRTUAL_PLAYER_TASK_SCHEDULE_RESPONSE, data);
+                break;
+
+            case "DeleteVirtualPlayerTaskSchedule":
+                this._emitter.emit(Events.DELETE_VIRTUAL_PLAYER_TASK_SCHEDULE_RESPONSE, data);
+                break;
+
+            case "GetVirtualPlayerTaskQuotas":
+                this._emitter.emit(Events.GET_VIRTUAL_PLAYER_TASK_QUOTAS_RESPONSE, data);
                 break;
 
             case "GetMatchmakingTicketHeaders":
@@ -204,12 +232,28 @@ export class MessageHandler
                 this._emitter.emit(Events.UPDATE_MATCHMAKING_CONFIGURATION_RESPONSE, data);
                 break;
 
-            case "LaunchPlayers":
-                this._emitter.emit(Events.LAUNCH_VIRTUAL_PLAYERS_RESPONSE, data);
+            case "LaunchVirtualPlayerTasks":
+                this._emitter.emit(Events.LAUNCH_VIRTUAL_PLAYER_TASKS_RESPONSE, data);
                 break;
 
-            case "LaunchPlayersProgress":
-                this._emitter.emit(Events.LAUNCH_VIRTUAL_PLAYERS_PROGRESS_RESPONSE, data);
+            case "GetLaunchRequest":
+                this._emitter.emit(Events.GET_LAUNCH_REQUEST_RESPONSE, data);
+                break;
+
+            case "TerminateVirtualPlayerTaskSchedule":
+                this._emitter.emit(Events.TERMINATE_SCHEDULE_RESPONSE, data);
+                break;
+
+            case "LaunchVirtualPlayerTaskSchedule":
+                this._emitter.emit(Events.LAUNCH_VIRTUAL_PLAYER_TASK_SCHEDULE_RESPONSE, data);
+                break;
+
+            case "LaunchVirtualPlayerTasksProgress":
+                this._emitter.emit(Events.LAUNCH_VIRTUAL_PLAYER_TASKS_PROGRESS_RESPONSE, data);
+                break;
+
+            case "ScheduleProgress":
+                this._emitter.emit(Events.SCHEDULE_PROGRESS, data);
                 break;
 
         }

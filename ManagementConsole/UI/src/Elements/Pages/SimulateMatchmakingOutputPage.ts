@@ -8,16 +8,16 @@ import {PageManager} from "../Pages/PageManager";
 import {Page} from "../Abstract/Page";
 import {Pages} from "./Pages";
 
-export class SimulateMatchmakingOutput extends Page
+export class SimulateMatchmakingOutputPage extends Page
 {
     public static id = Pages.SIMULATE_MATCHMAKING_OUTPUT;
-    public static cacheKey = "simulateMatchmakingOutput";
+    public static cacheKey = this.id;
     protected _currentSimulation;
     protected _intervalId;
 
     public constructor (parentPage:Page=null)
     {
-        super( SimulateMatchmakingOutput.cacheKey,  parentPage, SimulateMatchmakingOutput.id);
+        super( SimulateMatchmakingOutputPage.cacheKey,  parentPage, SimulateMatchmakingOutputPage.id);
         this.getSimulationData = this.getSimulationData.bind(this);
     }
 

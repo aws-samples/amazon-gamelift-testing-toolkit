@@ -20,12 +20,16 @@ import JSONEditor, {JSONEditorOptions} from 'jsoneditor';
 import MatchmakingRuleSet = DataTypes.MatchmakingRuleSet;
 import PlayerProfileAttribute = DataTypes.PlayerProfileAttribute;
 import {SubPopup} from "../Abstract/SubPopup";
+import {SubPopups} from "./SubPopups";
 
 export class RuleSetBuilderSubPopup extends SubPopup
 {
-    public constructor (cacheKey:string, parentDomId:string)
+    public static id = SubPopups.RULE_SET_BUILDER_SUB_POPUP;
+    public static cacheKey = this.id;
+
+    public constructor ()
     {
-        super(cacheKey, parentDomId);
+        super(RuleSetBuilderSubPopup.cacheKey, RuleSetBuilderSubPopup.id);
     }
 
     refresh = ()=>

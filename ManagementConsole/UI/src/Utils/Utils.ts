@@ -22,6 +22,16 @@ export class Utils
         return result;
     }
 
+    public static formatMinutes(minutes)
+    {
+        const hrs = Math.floor(minutes / 60);
+        const mins = (minutes % 60);
+
+        const hourStr = (hrs<10) ? "0" + hrs : hrs;
+        const minStr = (mins<10) ? "0" + mins : mins;
+
+        return hourStr + ":" + minStr;
+    }
 
     public static getParameterByName(name, url = window.location.href) {
         name = name.replace(/[\[\]]/g, '\\$&');

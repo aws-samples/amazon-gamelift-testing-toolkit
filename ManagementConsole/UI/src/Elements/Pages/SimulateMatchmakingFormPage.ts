@@ -13,17 +13,17 @@ import LatencyProfile = DataTypes.LatencyProfile;
 import MatchmakingRuleSet = DataTypes.MatchmakingRuleSet;
 import {Game} from "../../Game";
 
-export class SimulateMatchmakingForm extends Page
+export class SimulateMatchmakingFormPage extends Page
 {
     public static id = Pages.SIMULATE_MATCHMAKING_FORM;
-    public static cacheKey = "simulateMatchmakingForm";
+    public static cacheKey = this.id
     protected _playerProfiles: PlayerProfile[];
     protected _latencyProfiles: LatencyProfile[];
     protected _ruleSets: MatchmakingRuleSet[];
 
     public constructor (parentPage:Page=null)
     {
-        super(SimulateMatchmakingForm.cacheKey, parentPage, SimulateMatchmakingForm.id);
+        super(SimulateMatchmakingFormPage.cacheKey, parentPage, SimulateMatchmakingFormPage.id);
         this._playerProfiles=[];
         this._latencyProfiles=[];
     }

@@ -24,11 +24,13 @@ export class FleetLocationsPopup extends Popup
 
     setupEventListeners()
     {
+        super.setupEventListeners();
         this._emitter.on(Events.UPDATE_FLEET_LOCATIONS_RESPONSE, this.onUpdateLocationsResponse);
     }
 
     removeEventListeners()
     {
+        super.removeEventListeners();
         this._emitter.off(Events.UPDATE_FLEET_LOCATIONS_RESPONSE, this.onUpdateLocationsResponse);
     }
 

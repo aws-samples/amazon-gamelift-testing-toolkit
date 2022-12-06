@@ -8,16 +8,16 @@ import JSONEditor, {JSONEditorOptions} from 'jsoneditor';
 import {Page} from "../Abstract/Page";
 import {Pages} from "./Pages";
 
-export class SimulateMatchmakingTickets extends Page
+export class SimulateMatchmakingTicketsPage extends Page
 {
     public static id = Pages.SIMULATE_MATCHMAKING_TICKETS;
-    public static cacheKey = "simulateMatchmakingTickets";
+    public static cacheKey = this.id;
     protected _currentSimulation;
     protected _ticketEvents: any[];
 
     public constructor (parentPage:Page=null)
     {
-        super( SimulateMatchmakingTickets.cacheKey,  parentPage, SimulateMatchmakingTickets.id);
+        super( SimulateMatchmakingTicketsPage.cacheKey,  parentPage, SimulateMatchmakingTicketsPage.id);
     }
 
     public onPopupClick(event) {

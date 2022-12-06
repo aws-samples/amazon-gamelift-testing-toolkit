@@ -215,6 +215,7 @@ export class MatchmakingTicketsPopup extends Popup
 
     setupEventListeners()
     {
+        super.setupEventListeners();
         this._emitter.on(Events.GET_MATCHMAKING_TICKET_HEADERS_RESPONSE, this.onGetMatchmakingTicketHeadersResponse);
         this._emitter.on(Events.GET_MATCHMAKING_TICKET_RESPONSE, this.onGetMatchmakingTicketResponse);
         this._emitter.on(Events.GET_QUEUE_EVENT_BY_PLACEMENT_ID_RESPONSE, this.onGetQueueEventResponse);
@@ -222,6 +223,7 @@ export class MatchmakingTicketsPopup extends Popup
 
     removeEventListeners()
     {
+        super.removeEventListeners();
         this._emitter.off(Events.GET_MATCHMAKING_TICKET_HEADERS_RESPONSE, this.onGetMatchmakingTicketHeadersResponse);
         this._emitter.off(Events.GET_MATCHMAKING_TICKET_RESPONSE, this.onGetMatchmakingTicketResponse);
         this._emitter.off(Events.GET_QUEUE_EVENT_BY_PLACEMENT_ID_RESPONSE, this.onGetQueueEventResponse);

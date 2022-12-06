@@ -8,14 +8,18 @@ import {Events} from "../../Events/Events";
 import {SubPopup} from "../Abstract/SubPopup";
 import GameSessionQueue = DataTypes.GameSessionQueue;
 import {Game} from "../../Game";
+import {SubPopups} from "./SubPopups";
 
 export class QueueSettingsSubPopup extends SubPopup
 {
+    public static id = SubPopups.QUEUE_SETTINGS_SUB_POPUP;
+    public static cacheKey = this.id;
+
     protected _queue:GameSessionQueue;
 
-    public constructor (cacheKey:string, parentDomId:string, gameSessionQueue:GameSessionQueue)
+    public constructor (gameSessionQueue:GameSessionQueue)
     {
-        super(cacheKey, parentDomId);
+        super(QueueSettingsSubPopup.cacheKey, QueueSettingsSubPopup.id);
         this._queue = gameSessionQueue;
     }
 

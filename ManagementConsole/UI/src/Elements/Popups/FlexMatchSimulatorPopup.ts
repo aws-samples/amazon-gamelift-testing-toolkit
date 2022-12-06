@@ -9,6 +9,7 @@ import {ManageRuleSetsSubPopup} from "../SubPopups/ManageRuleSetsSubPopup";
 import {PlayerProfilesSubPopup} from "../SubPopups/PlayerProfilesSubPopup";
 import {RuleSetBuilderSubPopup} from "../SubPopups/RuleSetBuilderSubPopup";
 import {LatencyProfilesSubPopup} from "../SubPopups/LatencyProfilesSubPopup";
+import {SubPopups} from "../SubPopups/SubPopups";
 
 export class FlexMatchSimulatorPopup extends Popup
 {
@@ -18,12 +19,11 @@ export class FlexMatchSimulatorPopup extends Popup
         this._htmlName="flexMatchSimulatorPopup";
         this.setupEventListeners();
 
-        this.registerSubPopup("simulateMatchmaking", new SimulateMatchmakingSubPopup("simulateMatchmakingSubPopup", "simulateMatchmaking"));
-        this.registerSubPopup("configurePlayerProfiles", new PlayerProfilesSubPopup("playerProfilesSubPopup", "playerProfiles"));
-        this.registerSubPopup("configureLatencyProfiles", new LatencyProfilesSubPopup("latencyProfilesSubPopup", "latencyProfiles"));
-        //this.registerSubPopup("ruleSetBuilder", new RuleSetBuilderSubPopup("ruleSetBuilderSubPopup", "ruleSetBuilder"));
-        this.registerSubPopup("ruleSetBuilder", new RuleSetBuilderSubPopup("ruleSetBuilderSubPopup", "ruleSetBuilder"));
-        this.registerSubPopup("manageRuleSets", new ManageRuleSetsSubPopup("ruleSetsSubPopup", "ruleSets"));
+        this.registerSubPopup(new SimulateMatchmakingSubPopup());
+        this.registerSubPopup(new PlayerProfilesSubPopup());
+        this.registerSubPopup(new LatencyProfilesSubPopup());
+        this.registerSubPopup(new RuleSetBuilderSubPopup());
+        this.registerSubPopup(new ManageRuleSetsSubPopup());
     }
 
     setPopupData(data:any)
@@ -33,16 +33,17 @@ export class FlexMatchSimulatorPopup extends Popup
 
     refresh()
     {
-        this.switchSubPopup("simulateMatchmaking");
+        this.switchSubPopup(SubPopups.SIMULATE_MATCHMAKING_SUB_POPUP);
     }
-
 
     setupEventListeners()
     {
+        super.setupEventListeners();
     }
 
     removeEventListeners()
     {
+        super.removeEventListeners();
     }
 
     onPopupClick = async (event) => {
@@ -52,34 +53,31 @@ export class FlexMatchSimulatorPopup extends Popup
         if (el.parent().hasClass("flexMatchSimulatorMenu")) // click on left hand menu button
         {
             $('.flexMatchSimulatorMenu a').removeClass("active");
-            $('.' + event.target.className).addClass("active");
-            $('.tab-pane').hide();
 
-            if (el.hasClass("configurePlayerProfiles"))
+            if (el.hasClass(SubPopups.PLAYER_PROFILES_SUB_POPUP))
             {
-                this.switchSubPopup("configurePlayerProfiles");
+                this.switchSubPopup(SubPopups.PLAYER_PROFILES_SUB_POPUP);
             }
             else
-            if (el.hasClass("configureLatencyProfiles"))
+            if (el.hasClass(SubPopups.LATENCY_PROFILES_SUB_POPUP))
             {
-                this.switchSubPopup("configureLatencyProfiles");
+                this.switchSubPopup(SubPopups.LATENCY_PROFILES_SUB_POPUP);
             }
             else
-            if (el.hasClass("simulateMatchmaking"))
+            if (el.hasClass(SubPopups.SIMULATE_MATCHMAKING_SUB_POPUP))
             {
-                this.switchSubPopup("simulateMatchmaking");
+                this.switchSubPopup(SubPopups.SIMULATE_MATCHMAKING_SUB_POPUP);
             }
             else
-            if (el.hasClass("ruleSetBuilder"))
+            if (el.hasClass(SubPopups.RULE_SET_BUILDER_SUB_POPUP))
             {
-                this.switchSubPopup("ruleSetBuilder");
+                this.switchSubPopup(SubPopups.RULE_SET_BUILDER_SUB_POPUP);
             }
             else
-            if (el.hasClass("ruleSets"))
+            if (el.hasClass(SubPopups.MANAGE_RULE_SETS_SUB_POPUP))
             {
-                this.switchSubPopup("manageRuleSets");
+                this.switchSubPopup(SubPopups.MANAGE_RULE_SETS_SUB_POPUP);
             }
-            $(el.attr("data-tab")).show();
         }
         else
         if (event.target.className == "closeButton") {

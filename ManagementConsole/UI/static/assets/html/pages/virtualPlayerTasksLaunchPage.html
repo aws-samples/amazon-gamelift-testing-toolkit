@@ -1,0 +1,54 @@
+<div class="alert hide" id="statusText"></div>
+<div class="virtualPlayerTasksLaunchContent">
+    <p class="title">Launch Virtual Player Tasks</p>
+
+    <div class="loadingMessage" style="font-size:1.3em">
+        <p>Loading...</p>
+    </div>
+
+    <div class="launchPlayersForm hide">
+        <h6>Please select a Fargate Task definition for your virtual players:</h6>
+        <select id="taskDefinition" style="font-size:1.3em; margin-bottom:0.5rem">
+        </select>
+
+        <h6>Choose a Fargate Capacity Provider:</h6>
+        <input type="radio" name="fargateCapacityProvider" value="FARGATE_SPOT" id="fargateSpotCapacityProviderRadio" checked="checked">
+
+        <label id="fargateSpotCapacityProviderRadioLabel" for="fargateSpotCapacityProviderRadio">FARGATE_SPOT</label>
+        <input type="radio" name="fargateCapacityProvider" value="FARGATE" id="fargateCapacityProviderRadio">
+        <label id="fargateCapacityProviderRadioLabel" for="fargateCapacityProviderRadio">FARGATE</label>
+
+        <h6>Do you want launch tasks from a schedule?</h6>
+        <input type="radio" name="launchType" value="taskLaunch" id="simpleLaunchRadio" checked="checked">
+
+        <label id="simpleLaunchRadioLabel" for="simpleLaunchRadio">No</label>
+        <input type="radio" name="launchType" value="scheduleLaunch" id="scheduleLaunchRadio">
+        <label id="scheduleLaunchRadioLabel" for="scheduleLaunchRadio">Yes</label>
+
+        <div class="taskLaunchForm">
+            <h6>How many virtual player tasks do you want to launch?</h6>
+            <p id="errorText" class="errorText hide">You must enter between 1-1000 tasks!</p>
+            <input min="1" max="1000" type="number" value="1" id="numPlayers" name="numPlayers"><br/>
+        </div>
+
+        <div class="scheduleLaunchForm hide">
+            <h6>Please select the schedule to launch</h6>
+            <select id="scheduleId" style="font-size:1.3em; margin-bottom:0.5rem">
+            </select>
+        </div>
+        <div class="noSchedules hide" style="margin-top:20px">
+            <p style="font-size:1.3em">You have no schedules set up.</p>
+            <button style="margin-top:15px" class="createSchedule btn btn-primary btn-sm">Create a schedule</button>
+        </div>
+        <div class="existingSchedule hide" style="margin-top:20px">
+            <p style="font-size:1.3em">There is already a schedule running, you can't launch a schedule until this has finished</p>
+            <button style="margin-top:15px" class="viewExistingSchedule btn btn-primary btn-sm">View Schedule</button>
+        </div>
+
+
+        <button id="launchPlayers" class="btn btn-primary btn-sm">Launch Tasks</button>
+        <div class="launchPlayersProgress">
+            <h6 class="launchPlayersProgressText"></h6>
+        </div>
+    </div>
+</div>

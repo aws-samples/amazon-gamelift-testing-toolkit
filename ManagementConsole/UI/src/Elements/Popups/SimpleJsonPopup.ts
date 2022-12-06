@@ -14,6 +14,7 @@ export class SimpleJsonPopup extends Popup
         super(scene, x, y);
         this._htmlName="simpleJsonPopup";
         this._title = title;
+        this.setupEventListeners();
     }
 
     setPopupData(data:any)

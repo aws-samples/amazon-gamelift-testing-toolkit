@@ -9,15 +9,19 @@ import PlayerProfileAttribute = DataTypes.PlayerProfileAttribute;
 import {SubPopup} from "../Abstract/SubPopup";
 import PlayerProfile = DataTypes.PlayerProfile;
 import {Game} from "../../Game";
+import {SubPopups} from "./SubPopups";
 
 export class PlayerProfilesSubPopup extends SubPopup
 {
+    public static id = SubPopups.PLAYER_PROFILES_SUB_POPUP;
+    public static cacheKey = this.id;
+
     protected _playerProfiles: Record<string, PlayerProfile>;
     protected _editor;
 
-    public constructor (cacheKey:string, parentDomId:string)
+    public constructor ()
     {
-        super(cacheKey, parentDomId);
+        super(PlayerProfilesSubPopup.cacheKey, PlayerProfilesSubPopup.id);
         this._playerProfiles={};
     }
 
@@ -102,19 +106,19 @@ export class PlayerProfilesSubPopup extends SubPopup
 
     showSuccessAlert = (text) =>
     {
-        $('#'+this._parentDomId).find("#statusText")[0].className = "alert alert-success";
+        $('#'+this._parentDomId).find("#statusText").attr("class", "alert alert-success");
         $('#'+this._parentDomId).find("#statusText").html(text);
     }
 
     showFailureAlert = (text) =>
     {
-        $('#'+this._parentDomId).find("#statusText")[0].className = "alert alert-danger";
+        $('#'+this._parentDomId).find("#statusText").attr("class", "alert alert-danger");
         $('#'+this._parentDomId).find("#statusText").html(text);
     }
 
     hideStatusAlert = () =>
     {
-        $('#'+this._parentDomId).find("#statusText")[0].className = "alert hide";
+        $('#'+this._parentDomId).find("#statusText").attr("class", "alert hide");
     }
 
     onAttributeTypeChange = async (event) =>

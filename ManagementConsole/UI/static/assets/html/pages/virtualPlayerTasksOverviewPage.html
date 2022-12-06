@@ -1,0 +1,78 @@
+<div class="alert hide" id="statusText"></div>
+<div class="virtualPlayerTasksOverviewContent">
+    <p class="title">Overview</p>
+
+    <div class="loadingMessage" style="font-size:1.3em">
+        <p>Loading...</p>
+    </div>
+
+    <div class="overviewPage hide">
+        <div class="helpText" style="margin-top:20px; font-size:1.3em">
+            <p>
+                The testing toolkit provides two ways to launch virtual player tasks:
+            </p>
+            <ul style="margin-top:5px">
+                <li>you can launch some tasks to run immediately</li>
+                <li>you can create a schedule and use it to launch tasks over a period of time</li>
+            </ul>
+        </div>
+        <div class="tasksText">
+            <p style="font-size:1.3em">There are <span class="runningTasks">-</span> tasks running currently.</p>
+        </div>
+        <div class="scheduleText">
+            <p style="font-size:1.3em"><span class="scheduleInfo"></span>
+            </p>
+        </div>
+
+        <div class="runningScheduleTableContainer hide">
+            <hr/>
+            <h4 class="runningScheduleTableTitle"></h4>
+            <table id="runningScheduleTable" class="table table-bordered table-striped mb-0">
+                <thead>
+                <tr>
+                    <th>Scheduled</th>
+                    <th>Action</th>
+                    <th>Num Tasks</th>
+                    <th>Status</th>
+                    <th>Executed</th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <div class="terminateSchedule">
+                <button class="terminateSchedule btn btn-primary btn-sm" style="float:left">Terminate Schedule</button>
+                <p class="terminateText" style="float:left; margin-top:15px"></p>
+            </div>
+            <div class="completedSchedule hide" style="font-size:1.3em; margin-top:10px; clear:both">
+                <p>The schedule is now complete</p>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!--
+    <div class="launchPlayersForm">
+        <h6>Please select a Fargate Task definition for your virtual players:</h6>
+        <select id="taskDefinition" style="font-size:1.3em; margin-bottom:0.5rem">
+        </select>
+
+        <h6>Choose a Fargate Capacity Provider:</h6>
+        <input type="radio" name="fargateCapacityProvider" value="FARGATE_SPOT" id="fargateSpotCapacityProviderRadio" checked="checked">
+
+        <label id="fargateSpotCapacityProviderRadioLabel" for="fargateSpotCapacityProviderRadio">FARGATE_SPOT</label>
+        <input type="radio" name="fargateCapacityProvider" value="FARGATE" id="fargateCapacityProviderRadio">
+        <label id="fargateCapacityProviderRadioLabel" for="fargateCapacityProviderRadio">FARGATE</label>
+
+        <h6>How many virtual player tasks do you want to launch?</h6>
+        <p id="errorText" class="errorText hide">You must enter between 1-1000 tasks!</p>
+        <input min="1" max="1000" type="number" value="1" id="numPlayers" name="numPlayers"><br/>
+
+        <button id="launchPlayers" class="btn btn-primary btn-sm">Launch Tasks</button>
+        <div class="launchPlayersProgress">
+            <h6 class="launchPlayersProgressText"></h6>
+        </div>
+    </div>
+    -->
+</div>

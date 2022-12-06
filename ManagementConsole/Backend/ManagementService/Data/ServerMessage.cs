@@ -6,6 +6,7 @@ using Amazon.CloudWatchLogs.Model;
 using Amazon.ECS.Model;
 using Amazon.GameLift.Model;
 using ManagementConsoleBackend.Common;
+using ManagementConsoleBackend.ManagementService.Lib;
 using Newtonsoft.Json;
 
 namespace ManagementConsoleBackend.ManagementService.Data
@@ -86,11 +87,54 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public List<Alias> Aliases;
     }
     
-    public class ServerMessageGetVirtualPlayers : ServerMessage
+    public class ServerMessageGetVirtualPlayerTasks : ServerMessage
     {
-        public new string Type = "GetVirtualPlayers";
-        public List<Amazon.ECS.Model.Task> Tasks;
-        public List<TaskDefinition> TaskDefinitions;
+        public new string Type = "GetVirtualPlayerTasks";
+        public List<VirtualPlayerTask> Tasks;
+    }
+    
+    public class ServerMessageGetVirtualPlayerTaskQuotas : ServerMessage
+    {
+        public new string Type = "GetVirtualPlayerTaskQuotas";
+        public VirtualPlayerTaskQuotas Quotas;
+    }
+    
+    public class ServerMessageCreateVirtualPlayerTaskSchedule : ServerMessage
+    {
+        public new string Type = "CreateVirtualPlayerTaskSchedule";
+        public VirtualPlayerTaskSchedule Schedule;
+        public bool Created;
+        public string ErrorMessage = "";
+    }
+    
+    public class ServerMessageGetVirtualPlayerTaskSchedules : ServerMessage
+    {
+        public new string Type = "GetVirtualPlayerTaskSchedules";
+        public List<VirtualPlayerTaskSchedule> Schedules;
+    }
+    
+    public class ServerMessageGetVirtualPlayerTaskSchedule : ServerMessage
+    {
+        public new string Type = "GetVirtualPlayerTaskSchedule";
+        public VirtualPlayerTaskSchedule Schedule;
+    }
+    
+    public class ServerMessageGetSchedulerSchedules : ServerMessage
+    {
+        public new string Type = "GetSchedulerSchedules";
+        public SchedulerSchedules Schedules;
+    }
+    
+    public class ServerMessageGetLaunchRequest : ServerMessage
+    {
+        public new string Type = "GetLaunchRequest";
+        public VirtualPlayerLaunchRequest LaunchRequest;
+    }
+    
+    public class ServerMessageGetVirtualPlayerLaunchTaskRequests : ServerMessage
+    {
+        public new string Type = "GetVirtualPlayerLaunchTaskRequests";
+        public List<VirtualPlayerLaunchRequest> LaunchTaskRequests;
     }
     
     public class ServerMessageGetQueueEvents : ServerMessage
@@ -133,18 +177,12 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public bool IsDb = false;
     }
     
-    public class ServerMessageTerminateVirtualPlayer : ServerMessage
+    public class ServerMessageTerminateVirtualPlayerTasks : ServerMessage
     {
-        public new string Type = "TerminateVirtualPlayer";
+        public new string Type = "TerminateVirtualPlayerTasks";
         public List<string> Errors;
     }
-    
-    public class ServerMessageTerminateAllVirtualPlayers : ServerMessage
-    {
-        public new string Type = "TerminateAllVirtualPlayers";
-        public List<string> Errors;
-    }
-    
+
     public class ServerMessageSetScalingPolicy : ServerMessage
     {
         public new string Type = "SetScalingPolicy";
@@ -262,6 +300,12 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public bool Deleted;
         public string ErrorMessage = "";
     }
+    
+    public class ServerMessageDeleteVirtualPlayerTaskSchedule : ServerMessage
+    {
+        public new string Type = "DeleteVirtualPlayerTaskSchedule";
+        public List<string> Errors;
+    }
 
     public class ServerMessageDeleteScalingPolicy : ServerMessage
     {
@@ -288,6 +332,13 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public string[] Resources;
     }
     
+    public class ServerMessageScheduleProgress : ServerMessage
+    {
+        public new string Type = "ScheduleProgress";
+        public VirtualPlayerTaskSchedule Schedule;
+        public int ActionIndex;
+    }
+    
     public class ServerMessageFlexMatchSimulatorEvent : ServerMessage
     {
         public new string Type = "FlexMatchSimulatorEvent";
@@ -303,17 +354,31 @@ namespace ManagementConsoleBackend.ManagementService.Data
     }
 
     
-    public class ServerMessageLaunchPlayers : ServerMessage
+    public class ServerMessageLaunchVirtualPlayerTasks : ServerMessage
     {
-        public new string Type = "LaunchPlayers";
+        public new string Type = "LaunchVirtualPlayerTasks";
         public bool Result;
         public int NumPlayers;
     }
-    public class ServerMessageLaunchPlayersProgress : ServerMessage
+    public class ServerMessageLaunchVirtualPlayerTasksProgress : ServerMessage
     {
-        public new string Type = "LaunchPlayersProgress";
+        public new string Type = "LaunchVirtualPlayerTasksProgress";
         public int NumLaunched;
         public int TotalToLaunch;
+    }
+    
+    public class ServerMessageLaunchSchedule : ServerMessage
+    {
+        public new string Type = "LaunchVirtualPlayerTaskSchedule";
+        public bool Result;
+        public List<string> Errors;
+    }
+    
+    public class ServerMessageTerminateSchedule : ServerMessage
+    {
+        public new string Type = "TerminateVirtualPlayerTaskSchedule";
+        public bool Result;
+        public List<string> Errors;
     }
 
 }

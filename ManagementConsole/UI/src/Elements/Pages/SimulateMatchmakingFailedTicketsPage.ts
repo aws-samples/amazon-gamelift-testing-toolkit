@@ -14,17 +14,17 @@ import {PageManager} from "../Pages/PageManager";
 import {Page} from "../Abstract/Page";
 import {Pages} from "./Pages";
 
-export class SimulateMatchmakingFailedTickets extends Page
+export class SimulateMatchmakingFailedTicketsPage extends Page
 {
     public static id = Pages.SIMULATE_MATCHMAKING_FAILED_TICKETS;
-    public static cacheKey = "simulateMatchmakingFailedTickets";
+    public static cacheKey = this.id;
     protected _ticketEvents: any[];
     protected _currentSimulation;
     protected _ticketId: string;
 
     public constructor (parentPage:Page=null)
     {
-        super( SimulateMatchmakingFailedTickets.cacheKey,  parentPage, SimulateMatchmakingFailedTickets.id);
+        super( SimulateMatchmakingFailedTicketsPage.cacheKey,  parentPage, SimulateMatchmakingFailedTicketsPage.id);
     }
 
     public onPopupClick(event) {

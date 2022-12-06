@@ -482,6 +482,169 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             }
         }
         
+        public async Task<ServerMessageCreateVirtualPlayerTaskSchedule> CreateVirtualPlayerTaskSchedule(VirtualPlayerTaskSchedule schedule)
+        {
+            var response = new ServerMessageCreateVirtualPlayerTaskSchedule();
+            
+            var taskSchedulesTable =
+                Table.LoadTable(_client, Environment.GetEnvironmentVariable("VirtualPlayerTaskScheduleTableName"));
+            
+            schedule.ScheduleId = Guid.NewGuid().ToString();
+            
+            var item = Document.FromJson(JsonConvert.SerializeObject(schedule));
+
+            response.Created = false;
+            try
+            {
+                await taskSchedulesTable.PutItemAsync(item);
+                response.Created = true;
+                response.Schedule = schedule;
+            }
+            catch (Exception e)
+            {
+                response.ErrorMessage = e.Message;
+                LambdaLogger.Log(e.ToString());
+            }
+
+            return response;
+        }
+        
+        public async Task DeleteVirtualPlayerTaskSchedule(string scheduleId)
+        {
+            var virtualPlayerTaskScheduleTable =
+                Table.LoadTable(_client, Environment.GetEnvironmentVariable("VirtualPlayerTaskScheduleTableName"));
+            
+            var item = new Document();
+            item["ScheduleId"] = scheduleId;
+            
+            try
+            {
+                await virtualPlayerTaskScheduleTable.DeleteItemAsync(item);
+            }
+            catch (Exception e)
+            {
+                LambdaLogger.Log(e.ToString());
+            }
+        }
+        
+        public async Task<VirtualPlayerTaskSchedule> GetVirtualPlayerTaskSchedule(string scheduleId)
+        {
+            var context = new DynamoDBContext(_client);
+            
+            var virtualPlayerTaskScheduleTable =
+                Table.LoadTable(_client, Environment.GetEnvironmentVariable("VirtualPlayerTaskScheduleTableName"));
+            
+            var item = new Document();
+            item["ScheduleId"] = scheduleId;
+            
+            try
+            {
+                var scheduleDocument = await virtualPlayerTaskScheduleTable.GetItemAsync(item);
+                var schedule = context.FromDocument<VirtualPlayerTaskSchedule>(scheduleDocument);
+                return schedule;
+            }
+            catch (Exception e)
+            {
+                LambdaLogger.Log(e.ToString());
+                return null;
+            }
+        }
+        
+        public async Task<List<VirtualPlayerLaunchRequest>> GetLaunchRequests(string requestType)
+        {
+            var launchTasks = new List<VirtualPlayerLaunchRequest>();
+            var launchTaskTable =
+                Table.LoadTable(_client, Environment.GetEnvironmentVariable("VirtualPlayerTaskLaunchTableName"));
+
+            var filter = new QueryFilter("Type", QueryOperator.Equal, requestType);
+
+            var queryConfig = new QueryOperationConfig
+            {
+                IndexName = "Type-ScheduleId-GSI",
+                Filter = filter,
+                BackwardSearch = true,
+            };
+            
+            var search = launchTaskTable.Query(queryConfig);
+            
+            var documentList = new List<Document>();
+            do
+            {
+                documentList = await search.GetNextSetAsync();
+                foreach (var document in documentList)
+                {
+                    launchTasks.Add(JsonConvert.DeserializeObject<VirtualPlayerLaunchRequest>(document.ToJson()));
+                }
+            } while (!search.IsDone);
+
+            return launchTasks;
+        }
+        
+        public async Task<VirtualPlayerLaunchRequest> GetLaunchRequest(string launchId)
+        {
+            var context = new DynamoDBContext(_client);
+            
+            var virtualPlayerTaskScheduleTable =
+                Table.LoadTable(_client, Environment.GetEnvironmentVariable("VirtualPlayerTaskLaunchTableName"));
+            
+            var item = new Document();
+            item["LaunchId"] = launchId;
+            
+            try
+            {
+                var launchRequestDocument = await virtualPlayerTaskScheduleTable.GetItemAsync(item);
+                var launchRequest = context.FromDocument<VirtualPlayerLaunchRequest>(launchRequestDocument);
+                return launchRequest;
+            }
+            catch (Exception e)
+            {
+                LambdaLogger.Log(e.ToString());
+                return null;
+            }
+        }
+
+
+        public async Task<List<VirtualPlayerTaskSchedule>> GetVirtualPlayerTaskSchedules()
+        {
+            var schedules = new List<VirtualPlayerTaskSchedule>();
+            var schedulesTable =
+                Table.LoadTable(_client, Environment.GetEnvironmentVariable("VirtualPlayerTaskScheduleTableName"));
+
+            var search = schedulesTable.Scan(new ScanOperationConfig());
+            
+            var documentList = new List<Document>();
+            do
+            {
+                documentList = await search.GetNextSetAsync();
+                foreach (var document in documentList)
+                {
+                    schedules.Add(JsonConvert.DeserializeObject<VirtualPlayerTaskSchedule>(document.ToJson()));
+                }
+            } while (!search.IsDone);
+
+            return schedules;
+        }
+        
+        public async Task<bool> SaveLaunchRequest(VirtualPlayerLaunchRequest launchRequest)
+        {
+            var launchTaskTable =
+                Table.LoadTable(_client, Environment.GetEnvironmentVariable("VirtualPlayerTaskLaunchTableName"));
+
+            var item = Document.FromJson(JsonConvert.SerializeObject(launchRequest));
+
+            try
+            {
+                await launchTaskTable.PutItemAsync(item);
+                return true;
+            }
+            catch (Exception e)
+            {
+                LambdaLogger.Log(e.ToString());
+            }
+
+            return false;
+        }
+        
         public async Task SaveLatencyProfile(LatencyProfile profile)
         {
             var latencyProfileTable =

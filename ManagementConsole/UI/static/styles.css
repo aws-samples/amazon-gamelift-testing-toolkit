@@ -42,7 +42,7 @@ h6 { margin-top: 10px;}
 
 .launchPlayersForm, .matchmakingConfigForm {
     margin-left: 10px;
-    margin-top: 40px;
+    margin-top: 30px;
 }
 
 button#launchPlayers  { margin-left:0; float:left; margin-top:10px; }
@@ -53,17 +53,26 @@ button#launchPlayers  { margin-left:0; float:left; margin-top:10px; }
 }
 
 .closeButton {
-    float: right;
-    margin-right: 5px;
-    margin-top: 5px;
     background-image: url(assets/closebutton.png);
     background-size: 30px;
     width: 30px;
     height: 30px;
     cursor: pointer;
+/*
+    float: right;
+    margin-right: 5px;
+    margin-top: 5px;
+    position: relative;
+    z-index: 999;
+
+ */
+    position: absolute;
+    right: 10px;
+    top:10px;
+    z-index:99;
 }
 
-.refreshButton {
+.refreshButton, .refreshLogsButton {
     float: left;
     margin-right: 5px;
     margin-top: 5px;
@@ -106,11 +115,11 @@ button#launchPlayers  { margin-left:0; float:left; margin-top:10px; }
 }
 
 .matchmakingTicketHeadersContent, .queueEventsContent, .gameSessionsContent, .fleetEventsContent {
-    margin-top: 40px;
+    margin-top: 25px;
 }
 
 #simulateMatchmakingTickets .matchmakingTicketHeadersContent {
-    margin-top: 0px;
+    margin-top: 25px;
 }
 
 .existingRuleSetName { margin-top:10px; margin-bottom:20px}
@@ -128,13 +137,13 @@ button#launchPlayers  { margin-left:0; float:left; margin-top:10px; }
 
 .flexMatchSimulatorContainer
 {
-    margin-top: 40px;
+    margin-top: 10px;
     min-width: 1240px;
 }
 
 .queueSettingsContainer
 {
-    margin-top: 40px;
+    margin-top: 10px;
     min-width: 1240px;
 }
 
@@ -169,6 +178,16 @@ button#launchPlayers  { margin-left:0; float:left; margin-top:10px; }
 }
 
 .queueSettingsPopup {
+    background: #eceeee;
+    border: 1px solid #42464b;
+    border-radius: 6px;
+    height: 715px;
+    margin: 0 auto 0;
+    /*width: 1260px;*/
+    padding: 10px
+}
+
+.virtualPlayerTasksPopup {
     background: #eceeee;
     border: 1px solid #42464b;
     border-radius: 6px;
@@ -461,7 +480,7 @@ p.title {
     width:150px;
 }
 
-.fleetMenu a, .settingsMenu a, .queueMenu a, .mmConfigMenu a, .flexMatchSimulatorMenu a, .queueSettingsMenu a {
+.fleetMenu a, .settingsMenu a, .queueMenu a, .mmConfigMenu a, .flexMatchSimulatorMenu a, .queueSettingsMenu a, .virtualPlayerTasksMenu a {
     background-color: #eceeee;
     color: black;
     display: block;
@@ -481,11 +500,11 @@ p.title {
     text-decoration: none;
     font-size: 1.5em;
 }
-.flexMatchSimulatorMenu, .queueSettingsMenu {
+.flexMatchSimulatorMenu, .queueSettingsMenu, .virtualPlayerTasksMenu {
     float:left;
 }
 
-.flexMatchSimulatorMenu a, .queueSettingsMenu a {
+.flexMatchSimulatorMenu a, .queueSettingsMenu a, .virtualPlayerTasksMenu a {
     background-color: #eceeee;
     color: black;
     display: block;
@@ -495,7 +514,7 @@ p.title {
     font-size: 1.5em;
 }
 
-.fleetMenu a:hover, .settingsMenu a:hover, .queueMenu a:hover, .mmConfigMenu a:hover, .flexMatchSimulatorMenu a:hover, .queueSettingsMenu a:hover {
+.fleetMenu a:hover, .settingsMenu a:hover, .queueMenu a:hover, .mmConfigMenu a:hover, .flexMatchSimulatorMenu a:hover, .queueSettingsMenu a:hover, .virtualPlayerTasksMenu a:hover {
     background-color: #ff9900;
     cursor:pointer;
     color: #000000;
@@ -507,11 +526,10 @@ p.title {
     transform: translate(-50%, 0);
 }
 
-.flexMatchSimulatorMenu a.active, .flexMatchSimulatorMenu a:active, .queueSettingsMenu a.active, .queueSettingsMenu a:active {
+.flexMatchSimulatorMenu a.active, .flexMatchSimulatorMenu a:active, .queueSettingsMenu a.active, .queueSettingsMenu a:active, .virtualPlayerTasksMenu a.active, .virtualPlayerTasksMenu a:active {
     background-color: #ff9900;
     color: #000000;
 }
-
 
 .fixed_header{
     width: 400px;
@@ -643,11 +661,30 @@ div#failedMatchPlayersTable { float: right }
 .columnToggle { float:right; margin-right:10px;}
 .matchInfoPlayersContent { clear: both }
 .failedMatchPlayersContent { clear: both }
+.virtualPlayersHistoryTableContainer { clear:both }
+a.terminateAllVirtualPlayerTasks { margin-left:10px; margin-top:4px}
 .matchedPlayers h4 { margin-top:35px}
 .ruleEvaluationMetrics h4 { margin-top:35px}
 .successfulMatchTicketHeadersContent h4 { margin-top: 35px }
 .successfulMatchTicketEventsContent h4 { margin-top: 35px }
+button#createSchedule { margin-top: -4px }
 
 .no-sort::after { display: none!important; }
 
 .no-sort { pointer-events: none!important; cursor: default!important; }
+
+@keyframes successFlash {
+    from { background-color: forestgreen; }
+    to { background-color: inherit; }
+}
+.successFlash {
+    animation: successFlash 1s;
+}
+
+@keyframes failureFlash {
+    from { background-color: red; }
+    to { background-color: inherit; }
+}
+.failureFlash {
+    animation: failureFlash 1s;
+}
