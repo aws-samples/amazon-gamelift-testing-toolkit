@@ -165,7 +165,6 @@ export class GameSessionsTablePopup extends Popup
             this.showFailureAlert(logResponse.ErrorMessage);
             return;
         }
-        let html="";
 
         this._logFiles={};
 
@@ -181,7 +180,7 @@ export class GameSessionsTablePopup extends Popup
         this.element.find(".gameSessionsContent").attr("class","gameSessionsContent hide");
         this.element.find(".gameSessionLogsContent").attr("class","gameSessionLogsContent");
 
-        sel.on("change",  (e)=>
+        sel.on("change",  ()=>
         {
            this.updateLogFile();
         });
@@ -239,13 +238,15 @@ export class GameSessionsTablePopup extends Popup
     onPopupClick = async (event) => {
         this.hideStatusAlert();
         event.stopPropagation();
+        const el = $(event.target);
+
         if (event.target.className == "closeButton")
         {
             this._emitter.emit(Events.CLOSE_POPUP);
             this.setVisible(false);
         }
         else
-        if (event.target.id == "backButton")
+        if (el.hasClass("back"))
         {
             this.element.find(".gameSessionsContent").attr("class","gameSessionsContent");
             this.element.find(".gameSessionDetailContent").attr("class","gameSessionDetailContent hide");

@@ -2,15 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import 'phaser';
-import {DataTypes} from "../../Data/DataTypes";
 import {Network} from "../../Network/Network";
 import {Events} from "../../Events/Events";
 import JSONEditor, {JSONEditorOptions} from 'jsoneditor';
-import MatchmakingRuleSet = DataTypes.MatchmakingRuleSet;
-import {SubPopup} from "../Abstract/SubPopup";
-import PlayerProfile = DataTypes.PlayerProfile;
-import LatencyProfile = DataTypes.LatencyProfile;
-import {PageManager} from "../Pages/PageManager";
 import {Page} from "../Abstract/Page";
 import {Pages} from "./Pages";
 
@@ -41,7 +35,7 @@ export class SimulateMatchmakingFailedTicketsPage extends Page
             this.backToFailedMatchTicketEventList();
         }
         else
-        if (el.attr("id")=="backToMatchResults")
+        if (el.hasClass("backToMatchResults"))
         {
             this.goBack(this._currentSimulation);
         }
@@ -78,11 +72,9 @@ export class SimulateMatchmakingFailedTicketsPage extends Page
         data.TicketHeaders?.map(header =>
         {
             let viewEventsTd='<td><a class="viewTicket btn btn-primary btn-sm" id="' + header.TicketId +'" href="' + "#" + '">View Events</a></td>';
-            let viewQueueEventsTd='<td><a class="viewQueueEvent btn btn-primary btn-sm" id="' + header.MatchId +'" href="' + "#" + '">View Queue Event</a></td>';
 
             if (header.MatchId==undefined)
             {
-                viewQueueEventsTd='<td></td>';
                 matchData.failedMatches.push(header);
             }
             else

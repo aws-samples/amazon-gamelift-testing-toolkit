@@ -3,23 +3,10 @@
 
 import 'phaser';
 import {DataTypes} from "../../Data/DataTypes";
-import {Fleet} from "../Fleet";
-import DOMElement = Phaser.GameObjects.DOMElement;
 import {Network} from "../../Network/Network";
-import {EventDispatcher} from "../../Events/EventDispatcher";
 import {Events} from "../../Events/Events";
-import Rectangle = Phaser.GameObjects.Rectangle;
-import config from "../../Config/Config"
-import {Popup} from "../Abstract/Popup";
-import Instance = DataTypes.Instance;
-import GameSession = DataTypes.GameSession;
-import GameSessionQueue = DataTypes.GameSessionQueue;
-import QueuePlacementEventDetail = DataTypes.QueuePlacementEventDetail;
-import {Utils} from "../../Utils/Utils";
 import JSONEditor, {JSONEditorOptions} from 'jsoneditor';
 import MatchmakingRuleSet = DataTypes.MatchmakingRuleSet;
-import PlayerProfileAttribute = DataTypes.PlayerProfileAttribute;
-import {SimulateMatchmakingSubPopup} from "./SimulateMatchmakingSubPopup";
 import {SubPopup} from "../Abstract/SubPopup";
 import {SubPopups} from "./SubPopups";
 
@@ -127,13 +114,13 @@ export class ManageRuleSetsSubPopup extends SubPopup
 
     showSuccessAlert = (text) =>
     {
-        $('#'+this._parentDomId).find("#statusText")[0].className = "alert alert-success";
+        $('#'+this._parentDomId).find("#statusText").attr("class","alert alert-success");
         $('#'+this._parentDomId).find("#statusText").html(text);
     }
 
     showFailureAlert = (text) =>
     {
-        $('#'+this._parentDomId).find("#statusText")[0].className = "alert alert-danger";
+        $('#'+this._parentDomId).find("#statusText").attr("class","alert alert-danger");
         $('#'+this._parentDomId).find("#statusText").html(text);
     }
 

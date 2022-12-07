@@ -7,7 +7,6 @@ import {Network} from "../../Network/Network";
 import {Events} from "../../Events/Events";
 import {Popup} from "../Abstract/Popup";
 import GameSessionQueue = DataTypes.GameSessionQueue;
-import QueuePlacementEventDetail = DataTypes.QueuePlacementEventDetail;
 import {Utils} from "../../Utils/Utils";
 import JSONEditor, {JSONEditorOptions} from 'jsoneditor';
 import {Game} from "../../Game";
@@ -87,12 +86,6 @@ export class QueueEventsPopup extends Popup
         data.TicketHeaders?.map(header =>
         {
             let viewEventsTd='<td><a class="viewTicket btn btn-primary btn-sm" id="' + header.TicketId +'" href="' + "#" + '">View Events</a></td>';
-            let viewQueueEventsTd='<td><a class="viewQueueEvent btn btn-primary btn-sm" id="' + header.MatchId +'" href="' + "#" + '">View Queue Event</a></td>';
-
-            if (header.MatchId==undefined)
-            {
-                viewQueueEventsTd='<td></td>';
-            }
 
             if (header.LastEventType==null)
             {
@@ -222,6 +215,7 @@ export class QueueEventsPopup extends Popup
     onPopupClick = async (event) => {
 
         event.stopPropagation();
+        let el = $(event.target);
         if (event.target.className == "refreshButton")
         {
             this.refresh();
@@ -231,7 +225,7 @@ export class QueueEventsPopup extends Popup
             this._emitter.emit(Events.CLOSE_POPUP);
             this.setVisible(false);
         }
-        else if (event.target.id == "backToQueueEventList")
+        else if (el.hasClass("backToQueueEventList"))
         {
             this.backToQueueEventList();
         }

@@ -31,7 +31,7 @@ export class SimulateMatchmakingFormPage extends Page
     public onPopupClick(event) {
         let el = $(event.target);
 
-        if (el.attr("id")=="backToMatchmakingSimulations") // show simulations list
+        if (el.hasClass("backToMatchmakingSimulations")) // show simulations list
         {
             this.goBack();
         }

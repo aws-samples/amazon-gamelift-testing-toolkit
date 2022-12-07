@@ -2064,6 +2064,9 @@ aws-arn-parser@^1.0.1:
 aws-sdk-js-v3@aws/aws-sdk-js-v3:
   version "0.0.0"
   resolved "https://codeload.github.com/aws/aws-sdk-js-v3/tar.gz/6b5a56bdaab05a188e59745b5cccb6a2c0a28ac1"
+  dependencies:
+    glob "^7.1.6"
+    yargs "^15.1.0"
 
 babel-loader@^8.2.2:
   version "8.3.0"

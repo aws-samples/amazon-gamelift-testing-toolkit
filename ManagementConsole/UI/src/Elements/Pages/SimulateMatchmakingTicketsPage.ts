@@ -24,7 +24,7 @@ export class SimulateMatchmakingTicketsPage extends Page
         let el = $(event.target);
 
 
-        if (el.attr("id")=="backToSimulationOutput")
+        if (el.hasClass("backToSimulationOutput"))
         {
             this.goBack(this._currentSimulation);
         }
@@ -80,7 +80,6 @@ export class SimulateMatchmakingTicketsPage extends Page
         data.TicketHeaders?.map(header =>
         {
             let viewEventsTd='<td><a class="viewTicket btn btn-primary btn-sm" id="' + header.TicketId +'" href="' + "#" + '">View Events</a></td>';
-            let viewQueueEventsTd='<td><a class="viewQueueEvent btn btn-primary btn-sm" id="' + header.MatchId +'" href="' + "#" + '">View Queue Event</a></td>';
 
             if (header.MatchId==undefined)
             {

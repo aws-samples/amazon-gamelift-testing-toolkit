@@ -27,7 +27,7 @@ export class SimulateMatchmakingMatchInfoPage extends Page
     public onPopupClick(event) {
         let el = $(event.target);
 
-        if (el.attr("id")=="backToMatchResults")
+        if (el.hasClass("backToMatchResults"))
         {
             this.goBack(this._currentSimulation);
         }
@@ -209,8 +209,6 @@ export class SimulateMatchmakingMatchInfoPage extends Page
 
             match.Players.map(player=>
             {
-                let attributeHtml="";
-
                 Object.keys(player.PlayerData.PlayerAttributes).map(playerAttributeName =>
                 {
                     if (playerAttributes.indexOf(playerAttributeName)==-1)

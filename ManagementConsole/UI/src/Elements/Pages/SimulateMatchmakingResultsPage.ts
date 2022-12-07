@@ -2,10 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import 'phaser';
-import {DataTypes} from "../../Data/DataTypes";
 import {Network} from "../../Network/Network";
 import {Events} from "../../Events/Events";
-import {PageManager} from "../Pages/PageManager";
+import {PageManager} from "./PageManager";
 import {Page} from "../Abstract/Page";
 import {Pages} from "./Pages";
 import {Utils} from "../../Utils/Utils";
@@ -26,7 +25,7 @@ export class SimulateMatchmakingResultsPage extends Page
     public onPopupClick(event) {
         let el = $(event.target);
 
-        if (el.attr("id")=="backToSimulationOutput")
+        if (el.hasClass("backToSimulationOutput"))
         {
             this.goBack(this._currentSimulation);
         }
@@ -76,7 +75,6 @@ export class SimulateMatchmakingResultsPage extends Page
     onGetSimulationMatchesResponse = (matchResults) =>
     {
         let successHtml="";
-        let failedHtml="";
         this._matches = {};
         this._failedPlayers=[];
         let successfulMatches=0;
@@ -217,8 +215,6 @@ export class SimulateMatchmakingResultsPage extends Page
 
             match.Players.map(player=>
             {
-                let attributeHtml="";
-
                 Object.keys(player.PlayerData.PlayerAttributes).map(playerAttributeName =>
                 {
                     if (playerAttributes.indexOf(playerAttributeName)==-1)
@@ -366,8 +362,6 @@ export class SimulateMatchmakingResultsPage extends Page
 
             this._failedPlayers.map(player=>
             {
-                let attributeHtml="";
-
                 Object.keys(player.PlayerData.PlayerAttributes).map(playerAttributeName =>
                 {
                     if (playerAttributes.indexOf(playerAttributeName)==-1)

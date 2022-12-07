@@ -2,9 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import 'phaser';
-import DOMElement = Phaser.GameObjects.DOMElement;
 import {EventDispatcher} from "../../Events/EventDispatcher";
-import UUID = Phaser.Utils.String.UUID;
 import {PageManager} from "../Pages/PageManager";
 import {Game} from "../../Game";
 
@@ -35,7 +33,7 @@ export abstract class Page
 
     hideStatusAlert()
     {
-        $('#'+this._domId).find("#statusText")[0].className = "alert hide";
+        $('#'+this._domId).find("#statusText").attr("class","alert hide");
     }
 
     public setPageData(data:any)
@@ -112,13 +110,13 @@ export abstract class Page
 
     showSuccessAlert = (text) =>
     {
-        $('#'+this._domId).find("#statusText")[0].className = "alert alert-success";
+        $('#'+this._domId).find("#statusText").attr("class","alert alert-success");
         $('#'+this._domId).find("#statusText").html(text);
     }
 
     showFailureAlert = (text) =>
     {
-        $('#'+this._domId).find("#statusText")[0].className = "alert alert-danger";
+        $('#'+this._domId).find("#statusText").attr("class","alert alert-danger");
         $('#'+this._domId).find("#statusText").html(text);
     }
 
@@ -150,8 +148,7 @@ export abstract class Page
                 };
             }
             // @ts-ignore
-            var table = $('#'+this._domId).find("#"+id).DataTable(config);
-            return table;
+            return $('#'+this._domId).find("#"+id).DataTable(config);
         }
     }
 }

@@ -4,7 +4,7 @@
 import 'phaser';
 import {Network} from "../../Network/Network";
 import {Events} from "../../Events/Events";
-import {PageManager} from "../Pages/PageManager";
+import {PageManager} from "./PageManager";
 import {Page} from "../Abstract/Page";
 import {Pages} from "./Pages";
 
@@ -24,7 +24,7 @@ export class SimulateMatchmakingOutputPage extends Page
     public onPopupClick(event) {
         let el = $(event.target);
 
-        if (el.attr("id")=="backToMatchmakingSimulations") // back to simulations table
+        if (el.hasClass("backToMatchmakingSimulations")) // back to simulations table
         {
             this.goBack();
         }
