@@ -688,3 +688,6 @@ button#createSchedule { margin-top: -4px }
 .failureFlash {
     animation: failureFlash 1s;
 }
+div.dataTables_wrapper {
+    clear:both;
+}

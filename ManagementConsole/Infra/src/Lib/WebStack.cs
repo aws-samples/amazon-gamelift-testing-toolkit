@@ -30,6 +30,7 @@ namespace ManagementConsoleInfra.Lib
         public IdentityPool WebIdentityPool;
 
         public static string ProjectRoot = "../Backend";
+        public static string CodeRoot = ProjectRoot + "/bin/Release/net6.0";
         
         internal WebStack(Construct scope, string id, WebProps props = null) : base(scope, id, props)
         {
@@ -145,7 +146,7 @@ namespace ManagementConsoleInfra.Lib
             var configJsonFunction = new Amazon.CDK.AWS.Lambda.Function(this, "ConfigJsonLambdaFunction", new Amazon.CDK.AWS.Lambda.FunctionProps
             {
                 Runtime = Program.DotNetRuntime,
-                Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Code = Code.FromAsset(CodeRoot),
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.ManagementService::ConfigJsonGenerator",
                 Environment = new Dictionary<string, string>
                 {

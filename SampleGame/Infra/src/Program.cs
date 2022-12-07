@@ -13,7 +13,7 @@ namespace SampleGameInfra
     {
         private const string StackName = "AGTT-SampleGameStack";
 
-        internal static readonly Runtime DotNetRuntime = Runtime.DOTNET_CORE_3_1;
+        internal static readonly Runtime DotNetRuntime = Runtime.DOTNET_6;
 
         public static void Main(string[] args)
         {

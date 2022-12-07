@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Amazon.CloudWatchLogs;
 using Amazon.CloudWatchLogs.Model;
@@ -498,10 +498,16 @@ namespace ManagementConsoleBackend.ManagementService.Lib
 
                 var gameSessionLogUrlResponse = await _client.GetGameSessionLogUrlAsync(request);
                 var logUrl = gameSessionLogUrlResponse.PreSignedUrl;
-                using (var client = new WebClient())
+                using (var client = new HttpClient())
                 {
                     LambdaLogger.Log("DOWNLOADING " + gameSessionLogUrlResponse.PreSignedUrl);
-                    client.DownloadFile(gameSessionLogUrlResponse.PreSignedUrl, logOutputFile);
+                    using (var s = await client.GetStreamAsync(gameSessionLogUrlResponse.PreSignedUrl))
+                    {
+                        using (var fs = new FileStream(logOutputFile, FileMode.Create))
+                        {
+                            await s.CopyToAsync(fs);
+                        }
+                    }
                     LambdaLogger.Log("DOWNLOADED!");
                 }
                 

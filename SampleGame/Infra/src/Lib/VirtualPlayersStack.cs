@@ -32,7 +32,7 @@ namespace SampleGameInfra.Lib
         {
             var gameClientCommand = new string[]
             {
-                "/local/game/bin/SampleGameBuild.csproj/net5.0/linux-x64/SampleGameBuild",
+                "/local/game/bin/SampleGameBuild.csproj/net6.0/linux-x64/SampleGameBuild",
                 "--type", "client",
                 "--url", props.WebSocketApiUrl,
                 "--identity-pool-id", props.IdentityPoolId,

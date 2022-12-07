@@ -40,6 +40,7 @@ namespace SampleGameInfra.Lib
         public IdentityPool GameIdentityPool;
 
         public static string ProjectRoot = "../Backend";
+        public static string CodeRoot = ProjectRoot + "/bin/Release/net6.0";
         
         internal BackendStack(Construct scope, string id, BackendStackProps props) : base(scope, id, props)
         {    
@@ -161,7 +162,7 @@ namespace SampleGameInfra.Lib
             GameClientServiceFunction = new Lambda.Function(this, "GCSServiceLambdaFunction", new Lambda.FunctionProps
             {
                 Runtime = Program.DotNetRuntime,
-                Code = Lambda.Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Code = Lambda.Code.FromAsset(CodeRoot),
                 Handler = "SampleGameBackend::SampleGameBackend.GameClientService.GameClientService::GameClientServiceHandler",
                 Environment = new Dictionary<string, string>
                 {
@@ -200,7 +201,7 @@ namespace SampleGameInfra.Lib
             FlexMatchEventFunction = new Lambda.Function(this, "GCSFlexMatchEventLambdaFunction", new Lambda.FunctionProps
             {
                 Runtime = Program.DotNetRuntime,
-                Code = Lambda.Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Code = Lambda.Code.FromAsset(CodeRoot),
                 Handler = "SampleGameBackend::SampleGameBackend.GameClientService.GameClientService::FlexMatchEventHandler",
                 Environment = new Dictionary<string, string>
                 {
@@ -366,7 +367,7 @@ namespace SampleGameInfra.Lib
                 processProperties.Add(new GameLift.CfnFleet.ServerProcessProperty
                 {
                     ConcurrentExecutions = 1,
-                    LaunchPath = "/local/game/bin/SampleGameBuild.csproj/net5.0/linux-x64/SampleGameBuild",
+                    LaunchPath = "/local/game/bin/SampleGameBuild.csproj/net6.0/linux-x64/SampleGameBuild",
                     Parameters = "--type server --port " + port,
                 });
                 

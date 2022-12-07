@@ -3,7 +3,7 @@ RUN yum update -y
 RUN mkdir /local/game
 WORKDIR /local/game/
 RUN rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm
-RUN yum -y install dotnet-sdk-5.0 openssl-libs unzip yum-utils
+RUN yum -y install dotnet-sdk-6.0 openssl-libs unzip yum-utils
 RUN mkdir -p mono_dependencies ;\
 cd mono_dependencies ;\
 rpm --import "http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF" ;\
@@ -24,6 +24,6 @@ cd ../../.. ;\
 rm -rf aws-gamelift-sdk-temp
 COPY . /local/game/
 RUN /bin/dotnet publish -c SampleGameBuild.csproj -r linux-x64 --self-contained true ;\
-cp /local/game/log4net.config /local/game/bin/SampleGameBuild.csproj/net5.0/linux-x64/ ;\
-cp /local/game/QuizConfig.json /local/game/bin/SampleGameBuild.csproj/net5.0/linux-x64/
+cp /local/game/log4net.config /local/game/bin/SampleGameBuild.csproj/net6.0/linux-x64/ ;\
+cp /local/game/QuizConfig.json /local/game/bin/SampleGameBuild.csproj/net6.0/linux-x64/
 CMD tail -f

@@ -1,6 +1,6 @@
 #!/bin/bash
 sudo rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm
-sudo yum -y install dotnet-sdk-5.0 openssl-libs unzip yum-utils
+sudo yum -y install dotnet-sdk-6.0 openssl-libs unzip yum-utils
 
 sudo mkdir -p mono_dependencies
 cd mono_dependencies
@@ -23,5 +23,5 @@ cd ../../..
 sudo rm -rf aws-gamelift-sdk-temp
 
 sudo dotnet publish -c SampleGameBuild.csproj -r linux-x64 --self-contained true
-sudo cp ./log4net.config ./bin/SampleGameBuild.csproj/net5.0/linux-x64/
-sudo cp ./QuizConfig.json ./bin/SampleGameBuild.csproj/net5.0/linux-x64/
+sudo cp ./log4net.config ./bin/SampleGameBuild.csproj/net6.0/linux-x64/
+sudo cp ./QuizConfig.json ./bin/SampleGameBuild.csproj/net6.0/linux-x64/

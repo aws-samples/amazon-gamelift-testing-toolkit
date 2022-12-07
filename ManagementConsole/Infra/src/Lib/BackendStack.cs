@@ -70,6 +70,7 @@ namespace ManagementConsoleInfra.Lib
         public SecurityGroup VirtualPlayersRunnerSecurityGroup;
         
         public static string ProjectRoot = "../Backend";
+        public static string CodeRoot = ProjectRoot + "/bin/Release/net6.0";
         
         internal BackendStack(Construct scope, string id, BackendProps props = null) : base(scope, id, props)
         {
@@ -315,7 +316,7 @@ namespace ManagementConsoleInfra.Lib
             SfnPollerFunction = new Function(this, "SfnPollerLambdaFunction", new FunctionProps
             {
                 Runtime = Program.DotNetRuntime,
-                Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Code = Code.FromAsset(CodeRoot),
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.StepFunctions::StatePollHandler",
                 Environment = new Dictionary<string, string>
                 {
@@ -378,7 +379,7 @@ namespace ManagementConsoleInfra.Lib
             var sfnIteratorHandlerFunction = new Function(this, "SfnIteratorHandlerLambdaFunction", new FunctionProps
             {
                 Runtime = Program.DotNetRuntime,
-                Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Code = Code.FromAsset(CodeRoot),
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.StepFunctions::StepFunctionIteratorHandler",
                 Timeout = Duration.Seconds(30),
                 MemorySize = 128,
@@ -402,7 +403,7 @@ namespace ManagementConsoleInfra.Lib
             SfnRestartFunction = new Function(this, "SfnRestartHandlerLambdaFunction", new FunctionProps
             {
                 Runtime = Program.DotNetRuntime,
-                Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Code = Code.FromAsset(CodeRoot),
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.StepFunctions::StepFunctionRestartHandler",
                 Timeout = Duration.Seconds(30),
                 MemorySize = 128,
@@ -515,7 +516,7 @@ namespace ManagementConsoleInfra.Lib
             SfnGameSessionPollerFunction = new Function(this, "SfnGameSessionPollerLambdaFunction", new FunctionProps
             {
                 Runtime = Program.DotNetRuntime,
-                Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Code = Code.FromAsset(CodeRoot),
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.StepFunctions::GameSessionPollHandler",
                 Environment = new Dictionary<string, string>
                 {
@@ -568,7 +569,7 @@ namespace ManagementConsoleInfra.Lib
             var sfnGameSessionIteratorHandlerFunction = new Function(this, "SfnGameSessionIteratorHandlerLambdaFunction", new FunctionProps
             {
                 Runtime = Program.DotNetRuntime,
-                Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Code = Code.FromAsset(CodeRoot),
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.StepFunctions::StepFunctionIteratorHandler",
                 Timeout = Duration.Seconds(30),
                 MemorySize = 128,
@@ -592,7 +593,7 @@ namespace ManagementConsoleInfra.Lib
             SfnGameSessionRestartFunction = new Function(this, "SfnGameSessionRestartHandlerLambdaFunction", new FunctionProps
             {
                 Runtime = Program.DotNetRuntime,
-                Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Code = Code.FromAsset(CodeRoot),
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.StepFunctions::StepFunctionRestartHandler",
                 Timeout = Duration.Seconds(30),
                 MemorySize = 128,
@@ -710,7 +711,7 @@ namespace ManagementConsoleInfra.Lib
             ManagementServiceFunction = new Function(this, "MgmtServiceLambdaFunction", new FunctionProps
             {
                 Runtime = Program.DotNetRuntime,
-                Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Code = Code.FromAsset(CodeRoot),
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.ManagementService::ManagementServiceHandler",
                 Environment = new Dictionary<string, string>
                 {
@@ -888,7 +889,7 @@ namespace ManagementConsoleInfra.Lib
             VirtualPlayerTaskScheduledActionFunction = new Function(this, "VirtualPlayerTaskScheduledActionLambdaFunction", new FunctionProps
             {
                 Runtime = Program.DotNetRuntime,
-                Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Code = Code.FromAsset(CodeRoot),
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.VirtualPlayerTaskScheduledAction::ScheduledActionHandler",
                 Environment = new Dictionary<string, string>
                 {
@@ -1005,7 +1006,7 @@ namespace ManagementConsoleInfra.Lib
             FlexMatchSimulatorFunction = new Function(this, "FlexMatchSimulatorLambdaFunction", new FunctionProps
             {
                 Runtime = Program.DotNetRuntime,
-                Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Code = Code.FromAsset(CodeRoot),
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.FlexMatchSimulator::FlexMatchSimulatorHandler",
                 Environment = new Dictionary<string, string>
                 {
@@ -1065,7 +1066,7 @@ namespace ManagementConsoleInfra.Lib
             StateEventHandlerFunction = new Function(this, "StateEventHandlerLambdaFunction", new FunctionProps
             {
                 Runtime = Program.DotNetRuntime,
-                Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Code = Code.FromAsset(CodeRoot),
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.EventHandlers::StateEventHandler",
                 Environment = new Dictionary<string, string>
                 {
@@ -1097,7 +1098,7 @@ namespace ManagementConsoleInfra.Lib
             ConfigPopulatorFunction = new Function(this, "MgmtConfigPopulatorLambdaFunction", new FunctionProps
             {
                 Runtime = Program.DotNetRuntime,
-                Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Code = Code.FromAsset(CodeRoot),
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.ManagementService::PopulateConfigData",
                 Environment = new Dictionary<string, string>
                 {
@@ -1130,7 +1131,7 @@ namespace ManagementConsoleInfra.Lib
             FlexMatchEventFunction = new Function(this, "FlexMatchEventLambdaFunction", new FunctionProps
             {
                 Runtime = Program.DotNetRuntime,
-                Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Code = Code.FromAsset(CodeRoot),
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.EventHandlers::FlexMatchEventHandler",
                 Environment = new Dictionary<string, string>
                 {
@@ -1176,7 +1177,7 @@ namespace ManagementConsoleInfra.Lib
             QueuePlacementEventFunction = new Function(this, "QueuePlacementEventLambdaFunction", new FunctionProps
             {
                 Runtime = Program.DotNetRuntime,
-                Code = Code.FromAsset(ProjectRoot + "/bin/Release/netcoreapp3.1"),
+                Code = Code.FromAsset(CodeRoot),
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.EventHandlers::QueuePlacementEventHandler",
                 Environment = new Dictionary<string, string>
                 {
