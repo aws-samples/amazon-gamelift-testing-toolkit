@@ -115,4 +115,4 @@ export  class PreloaderScene extends Phaser.Scene {
         this.loadElements();
 
     }
-};
+}

@@ -60,4 +60,4 @@ export class BootScene extends Phaser.Scene {
             this.scene.start('Preloader');
         }
     }
-};
+}
