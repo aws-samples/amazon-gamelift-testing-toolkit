@@ -163,6 +163,7 @@ namespace SampleGameInfra.Lib
             {
                 Runtime = Program.DotNetRuntime,
                 Code = Lambda.Code.FromAsset(CodeRoot),
+                Architecture = Lambda.Architecture.ARM_64,
                 Handler = "SampleGameBackend::SampleGameBackend.GameClientService.GameClientService::GameClientServiceHandler",
                 Environment = new Dictionary<string, string>
                 {
@@ -202,6 +203,7 @@ namespace SampleGameInfra.Lib
             {
                 Runtime = Program.DotNetRuntime,
                 Code = Lambda.Code.FromAsset(CodeRoot),
+                Architecture = Lambda.Architecture.ARM_64,
                 Handler = "SampleGameBackend::SampleGameBackend.GameClientService.GameClientService::FlexMatchEventHandler",
                 Environment = new Dictionary<string, string>
                 {

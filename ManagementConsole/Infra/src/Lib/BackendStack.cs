@@ -317,6 +317,7 @@ namespace ManagementConsoleInfra.Lib
             {
                 Runtime = Program.DotNetRuntime,
                 Code = Code.FromAsset(CodeRoot),
+                Architecture = Architecture.ARM_64,
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.StepFunctions::StatePollHandler",
                 Environment = new Dictionary<string, string>
                 {
@@ -380,6 +381,7 @@ namespace ManagementConsoleInfra.Lib
             {
                 Runtime = Program.DotNetRuntime,
                 Code = Code.FromAsset(CodeRoot),
+                Architecture = Architecture.ARM_64,
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.StepFunctions::StepFunctionIteratorHandler",
                 Timeout = Duration.Seconds(30),
                 MemorySize = 128,
@@ -404,6 +406,7 @@ namespace ManagementConsoleInfra.Lib
             {
                 Runtime = Program.DotNetRuntime,
                 Code = Code.FromAsset(CodeRoot),
+                Architecture = Architecture.ARM_64,
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.StepFunctions::StepFunctionRestartHandler",
                 Timeout = Duration.Seconds(30),
                 MemorySize = 128,
@@ -517,6 +520,7 @@ namespace ManagementConsoleInfra.Lib
             {
                 Runtime = Program.DotNetRuntime,
                 Code = Code.FromAsset(CodeRoot),
+                Architecture = Architecture.ARM_64,
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.StepFunctions::GameSessionPollHandler",
                 Environment = new Dictionary<string, string>
                 {
@@ -570,6 +574,7 @@ namespace ManagementConsoleInfra.Lib
             {
                 Runtime = Program.DotNetRuntime,
                 Code = Code.FromAsset(CodeRoot),
+                Architecture = Architecture.ARM_64,
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.StepFunctions::StepFunctionIteratorHandler",
                 Timeout = Duration.Seconds(30),
                 MemorySize = 128,
@@ -594,6 +599,7 @@ namespace ManagementConsoleInfra.Lib
             {
                 Runtime = Program.DotNetRuntime,
                 Code = Code.FromAsset(CodeRoot),
+                Architecture = Architecture.ARM_64,
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.StepFunctions::StepFunctionRestartHandler",
                 Timeout = Duration.Seconds(30),
                 MemorySize = 128,
@@ -712,6 +718,7 @@ namespace ManagementConsoleInfra.Lib
             {
                 Runtime = Program.DotNetRuntime,
                 Code = Code.FromAsset(CodeRoot),
+                Architecture = Architecture.ARM_64,
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.ManagementService::ManagementServiceHandler",
                 Environment = new Dictionary<string, string>
                 {
@@ -890,6 +897,7 @@ namespace ManagementConsoleInfra.Lib
             {
                 Runtime = Program.DotNetRuntime,
                 Code = Code.FromAsset(CodeRoot),
+                Architecture = Architecture.ARM_64,
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.VirtualPlayerTaskScheduledAction::ScheduledActionHandler",
                 Environment = new Dictionary<string, string>
                 {
@@ -1007,6 +1015,7 @@ namespace ManagementConsoleInfra.Lib
             {
                 Runtime = Program.DotNetRuntime,
                 Code = Code.FromAsset(CodeRoot),
+                Architecture = Architecture.ARM_64,
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.FlexMatchSimulator::FlexMatchSimulatorHandler",
                 Environment = new Dictionary<string, string>
                 {
@@ -1067,6 +1076,7 @@ namespace ManagementConsoleInfra.Lib
             {
                 Runtime = Program.DotNetRuntime,
                 Code = Code.FromAsset(CodeRoot),
+                Architecture = Architecture.ARM_64,
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.EventHandlers::StateEventHandler",
                 Environment = new Dictionary<string, string>
                 {
@@ -1099,6 +1109,7 @@ namespace ManagementConsoleInfra.Lib
             {
                 Runtime = Program.DotNetRuntime,
                 Code = Code.FromAsset(CodeRoot),
+                Architecture = Architecture.ARM_64,
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.ManagementService::PopulateConfigData",
                 Environment = new Dictionary<string, string>
                 {
@@ -1132,6 +1143,7 @@ namespace ManagementConsoleInfra.Lib
             {
                 Runtime = Program.DotNetRuntime,
                 Code = Code.FromAsset(CodeRoot),
+                Architecture = Architecture.ARM_64,
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.EventHandlers::FlexMatchEventHandler",
                 Environment = new Dictionary<string, string>
                 {
@@ -1178,6 +1190,7 @@ namespace ManagementConsoleInfra.Lib
             {
                 Runtime = Program.DotNetRuntime,
                 Code = Code.FromAsset(CodeRoot),
+                Architecture = Architecture.ARM_64,
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.EventHandlers::QueuePlacementEventHandler",
                 Environment = new Dictionary<string, string>
                 {

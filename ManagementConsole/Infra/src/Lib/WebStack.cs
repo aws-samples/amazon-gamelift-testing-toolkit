@@ -147,6 +147,7 @@ namespace ManagementConsoleInfra.Lib
             {
                 Runtime = Program.DotNetRuntime,
                 Code = Code.FromAsset(CodeRoot),
+                Architecture = Architecture.ARM_64,
                 Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.ManagementService::ConfigJsonGenerator",
                 Environment = new Dictionary<string, string>
                 {
