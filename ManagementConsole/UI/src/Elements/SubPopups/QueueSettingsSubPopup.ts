@@ -76,9 +76,7 @@ export class QueueSettingsSubPopup extends SubPopup
         {
             const timeout = parseInt($('#' + this._parentDomId).find(".queueSettingsForm #timeoutInSeconds").val() as string);
             const policies = this.getPlayerLatencyPolicyValues();
-            // TODO - reinstate once removal issue resolved
-            // Network.sendObject({Type: "UpdateQueueSettings", QueueArn:this._queue.GameSessionQueueArn, TimeoutInSeconds: timeout, PlayerLatencyPolicies:policies});
-            Network.sendObject({Type: "UpdateQueueSettings", QueueArn:this._queue.GameSessionQueueArn, TimeoutInSeconds: timeout});
+            Network.sendObject({Type: "UpdateQueueSettings", QueueArn:this._queue.GameSessionQueueArn, TimeoutInSeconds: timeout, PlayerLatencyPolicies:policies});
         }
 
         if (el.hasClass('addPlayerLatencyPolicy'))

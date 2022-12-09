@@ -383,7 +383,6 @@ namespace ManagementConsoleBackend.ManagementService
                             {
                                 var saveLatencyProfileRequest =
                                     JsonConvert.DeserializeObject<ClientMessageSaveLatencyProfile>(request.Body);
-                                LambdaLogger.Log("PROFILE CONVERTED:" + JsonConvert.SerializeObject(saveLatencyProfileRequest.Profile));
                                 await dynamoDbRequestHandler.SaveLatencyProfile(saveLatencyProfileRequest.Profile);
                                 await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageSaveLatencyProfile { Errors = new List<string>() });
                             }
@@ -435,14 +434,9 @@ namespace ManagementConsoleBackend.ManagementService
                             {
                                 Name = updateQueueSettingsRequest.QueueArn,
                                 TimeoutInSeconds = updateQueueSettingsRequest.TimeoutInSeconds,
+                                PlayerLatencyPolicies = updateQueueSettingsRequest.PlayerLatencyPolicies.ToList(),
+                                IsPlayerLatencyPoliciesSet = true,
                             };
-
-                            if (updateQueueSettingsRequest.PlayerLatencyPolicies!=null)
-                            {
-                                updateQueueSettingsApiRequest.PlayerLatencyPolicies = updateQueueSettingsRequest.PlayerLatencyPolicies.ToList();
-                            }
-
-                            LambdaLogger.Log(JsonConvert.SerializeObject(updateQueueSettingsApiRequest));
                             await Utils.SendJsonResponse(_connectionId, stageServiceUrl, await gameLiftRequestHandler.UpdateGameSessionQueue(updateQueueSettingsApiRequest));
                             break;
                         
@@ -475,6 +469,7 @@ namespace ManagementConsoleBackend.ManagementService
                             {
                                 Name = updateQueueDestinationsRequest.QueueArn,
                                 Destinations = queueDestinations,
+                                IsDestinationsSet = true,
                             };
                             await Utils.SendJsonResponse(_connectionId, stageServiceUrl, await gameLiftRequestHandler.UpdateGameSessionQueue(updateQueueDestinationsApiRequest));
                             break;
