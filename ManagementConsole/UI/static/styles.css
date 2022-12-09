@@ -7,7 +7,7 @@ p { margin : 0 }
 .settings {
     background: #eceeee;
     border: 1px solid #42464b;
-    border-radius: 0px 6px 6px 0px;
+    border-radius: 0 6px 6px 0;
     height: 710px;
     margin: 0;
     width: 298px;
@@ -172,7 +172,7 @@ button#launchPlayers  { margin-left:0; float:left; margin-top:10px; }
     border: 1px solid #42464b;
     border-radius: 6px;
     height: 715px;
-    margin: 0px auto 0;
+    margin: 0 auto 0;
     /*width: 1260px;*/
     padding: 10px
 }
@@ -306,9 +306,9 @@ table#fleetLocationsTable {
     width: 298px;
 }
 
-button, p, input, td {font-family: "Noto Sans"}
+button, p, input, td {font-family: "Noto Sans", sans-serif}
 
-span.medium {font-family: "Noto Sans"; font-size:1.3em}
+span.medium {font-family: "Noto Sans", sans-serif; font-size:1.3em}
 
 select { font-size:1.3em; height: 25px;}
 
@@ -419,7 +419,7 @@ input[type="checkbox"] {
 
 input[type="submit"]:active {
     top:3px;
-    box-shadow: inset 0px 1px 0px #ff9900, 0px 2px 0px 0px #ff9910, 0px 5px 3px #999;
+    box-shadow: inset 0 1px 0 #ff9900, 0 2px 0 0 #ff9910, 0 5px 3px #999;
 }
 
 .fleetMenu {
@@ -487,7 +487,7 @@ p.title {
     padding: 4px;
     text-decoration: none;
     font-size: 1.2em;
-    font-family: "Noto Sans";
+    font-family: "Noto Sans", sans-serif;
 }
 .settingsMenu { margin-top: 40px;}
 
@@ -577,7 +577,8 @@ table#fleetEventsTable.table td {
     padding: 10px;
 }
 
-.falken { font-family: "Noto Sans"}
+.falken {
+    font-family: "Noto Sans", sans-serif}
 
 table td { font-size: 1em !important;}
 
@@ -644,7 +645,7 @@ div#failedMatchPlayersTable { float: right }
     margin-top:-6px;
     margin-left:5px;
     border:1px solid black;
-    border-radius:0px;
+    border-radius:0;
 }
 
 .dt-button-collection a.buttons-columnVisibility.active span:before {
@@ -667,7 +668,6 @@ a.terminateAllVirtualPlayerTasks { margin-left:10px; margin-top:4px}
 .ruleEvaluationMetrics h4 { margin-top:35px}
 .successfulMatchTicketHeadersContent h4 { margin-top: 35px }
 .successfulMatchTicketEventsContent h4 { margin-top: 35px }
-button#createSchedule { margin-top: -4px }
 
 .no-sort::after { display: none!important; }
 
