@@ -9,12 +9,14 @@ import {Events} from "../../Events/Events";
 import {DataTypes} from "../../Data/DataTypes";
 import VirtualPlayerTaskSchedule = DataTypes.VirtualPlayerTaskSchedule;
 import {SubPopups} from "../SubPopups/SubPopups";
+import VirtualPlayerTasksQuotas = DataTypes.VirtualPlayerTasksQuotas;
 
 export class VirtualPlayerTasksLaunchPage extends Page
 {
     public static id = Pages.VIRTUAL_PLAYER_TASKS_LAUNCH;
     public static cacheKey = this.id;
     protected _schedules:VirtualPlayerTaskSchedule[] = [];
+    protected _quotaInfo: VirtualPlayerTasksQuotas = {};
 
     public constructor (parentPage:Page=null)
     {
@@ -43,6 +45,7 @@ export class VirtualPlayerTasksLaunchPage extends Page
         this._emitter.on(Events.LAUNCH_VIRTUAL_PLAYER_TASKS_RESPONSE, this.onLaunchVirtualPlayersResponse);
         this._emitter.on(Events.LAUNCH_VIRTUAL_PLAYER_TASK_SCHEDULE_RESPONSE, this.onLaunchVirtualPlayerTaskScheduleResponse);
         this._emitter.on(Events.GET_VIRTUAL_PLAYER_TASK_SCHEDULES_RESPONSE, this.onGetVirtualPlayerTaskSchedulesResponse);
+        this._emitter.on(Events.GET_VIRTUAL_PLAYER_TASK_QUOTAS_RESPONSE, this.onGetVirtualPlayerTaskQuotasResponse);
         this._emitter.on(Events.GET_SCHEDULER_SCHEDULES_RESPONSE, this.onGetSchedulerSchedulesResponse);
         this._emitter.on(Events.LAUNCH_VIRTUAL_PLAYER_TASKS_PROGRESS_RESPONSE, this.onLaunchVirtualPlayersProgressResponse);
     }
@@ -53,6 +56,7 @@ export class VirtualPlayerTasksLaunchPage extends Page
         this._emitter.off(Events.LAUNCH_VIRTUAL_PLAYER_TASKS_RESPONSE, this.onLaunchVirtualPlayersResponse);
         this._emitter.off(Events.LAUNCH_VIRTUAL_PLAYER_TASK_SCHEDULE_RESPONSE, this.onLaunchVirtualPlayerTaskScheduleResponse);
         this._emitter.off(Events.GET_VIRTUAL_PLAYER_TASK_SCHEDULES_RESPONSE, this.onGetVirtualPlayerTaskSchedulesResponse);
+        this._emitter.off(Events.GET_VIRTUAL_PLAYER_TASK_QUOTAS_RESPONSE, this.onGetVirtualPlayerTaskQuotasResponse);
         this._emitter.off(Events.GET_SCHEDULER_SCHEDULES_RESPONSE, this.onGetSchedulerSchedulesResponse);
         this._emitter.off(Events.LAUNCH_VIRTUAL_PLAYER_TASKS_PROGRESS_RESPONSE, this.onLaunchVirtualPlayersProgressResponse);
     }
@@ -67,7 +71,7 @@ export class VirtualPlayerTasksLaunchPage extends Page
         return $('input[type=radio][name=launchType]:checked').val();
     }
 
-    onLaunchTypeChange = (e) =>
+    onLaunchTypeChange = () =>
     {
         const launchType = this.getScheduleType();
 
@@ -92,6 +96,13 @@ export class VirtualPlayerTasksLaunchPage extends Page
 
     onGetSchedulerSchedulesResponse = (data) =>
     {
+        const launchType = this.getScheduleType();
+
+        if (launchType!="scheduleLaunch")
+        {
+            return;
+        }
+
         if (data.Schedules.LaunchSchedule.State.Value=="DISABLED" && data.Schedules.TerminateSchedule.State.Value=="DISABLED")
         {
             $("#" + this._domId).find(".taskLaunchForm").hide();
@@ -124,7 +135,16 @@ export class VirtualPlayerTasksLaunchPage extends Page
         let scheduleId = $('#'+this._domId).find("#scheduleId").val();
         let numPlayers = $('#'+this._domId).find("#numPlayers").val();
         let taskDefinitionArn = $('#'+this._domId).find("#taskDefinition").val();
-        let fargateCapacityProvider = $("input[name='fargateCapacityProvider']:checked").val();
+
+        if (numPlayers<1 || numPlayers>this._quotaInfo.RatePerMinute)
+        {
+            $('#'+this._domId).find("p#numTasksErrorText").html("You must enter between 1-" + this._quotaInfo.RatePerMinute + " tasks");
+            $('#'+this._domId).find("p#numTasksErrorText").show();
+        }
+        else
+        {
+            $('#'+this._domId).find("p#numTasksErrorText").hide();
+        }
 
         if (taskDefinitionArn=="")
         {
@@ -172,10 +192,20 @@ export class VirtualPlayerTasksLaunchPage extends Page
         {
             optionHtml += "<option value=\"" + schedule.ScheduleId + "\">" + schedule.ScheduleName + "</option>";
         });
-
         $('#'+this._domId).find("#scheduleId").html(optionHtml);
+
+        Network.sendObject({Type:"GetVirtualPlayerTaskQuotas"});
+
+    }
+
+    onGetVirtualPlayerTaskQuotasResponse = (data) =>
+    {
+        this._quotaInfo = data.Quotas;
+        $("p.quotaText").html("Your service quotas allow a maximum of <b>" + data.Quotas.RunningFargateOnDemandVcpu + "</b> On-Demand vCPUs and <b>" + data.Quotas.RunningFargateSpotVcpu + "</b> Spot vCPUs.  Maximum <b>" + data.Quotas.RatePerMinute + "</b> task launches per minute.");
+
         $('#'+this._domId).find('.launchPlayersForm').show();
         $('#'+this._domId).find('.loadingMessage').hide();
+        this.validateForm();
     }
 
     onLaunchVirtualPlayersResponse = (data) =>
@@ -240,14 +270,15 @@ export class VirtualPlayerTasksLaunchPage extends Page
 
                 if (scheduleType=="taskLaunch")
                 {
-                    if (numPlayers<1 || numPlayers>500)
+                    if (numPlayers<1 || numPlayers>this._quotaInfo.RatePerMinute)
                     {
-                        $('#'+this._domId).find("#errorText").attr("class", "errorText");
+                        $('#'+this._domId).find("p#numTasksErrorText").html("You must enter between 1-" + this._quotaInfo.RatePerMinute + " tasks");
+                        $('#'+this._domId).find("p#numTasksErrorText").show();
                     }
                     else
                     {
                         $("button#launchPlayers").prop("disabled", true);
-                        $('#'+this._domId).find("#errorText").attr("class", "errorText hide");
+                        $('#'+this._domId).find("p#numTasksErrorText").show();
                         this.setLaunchProgressText("Launching Virtual Player Tasks...");
                         Network.sendObject({Type:"LaunchVirtualPlayerTasks", NumPlayers:numPlayers, TaskDefinitionArn:taskDefinitionArn, CapacityProvider:fargateCapacityProvider});
                     }
@@ -257,7 +288,7 @@ export class VirtualPlayerTasksLaunchPage extends Page
                 {
                     const scheduleId = $('#'+this._domId).find("#scheduleId").val();
                     $("button#launchPlayers").prop("disabled", true);
-                    $('#'+this._domId).find("#errorText").attr("class", "errorText hide");
+                    $('#'+this._domId).find("#errorText").hide();
                     Network.sendObject({Type:"LaunchVirtualPlayerTaskSchedule", ScheduleId: scheduleId, TaskDefinitionArn:taskDefinitionArn, CapacityProvider:fargateCapacityProvider});
                 }
             }

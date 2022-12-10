@@ -7,6 +7,8 @@
     </div>
 
     <div class="launchPlayersForm hide">
+        <p class="quotaText" style="margin-top: 15px;font-size: 1.3em;"></p>
+
         <h6>Please select a Fargate Task definition for your virtual players:</h6>
         <select id="taskDefinition" style="font-size:1.3em; margin-bottom:0.5rem">
         </select>
@@ -27,8 +29,9 @@
 
         <div class="taskLaunchForm">
             <h6>How many virtual player tasks do you want to launch?</h6>
-            <p id="errorText" class="errorText hide">You must enter between 1-1000 tasks!</p>
-            <input min="1" max="1000" type="number" value="1" id="numPlayers" name="numPlayers"><br/>
+            <input min="1" max="1000" type="number" value="1" id="numPlayers" name="numPlayers" style="float:left">
+            <p id="numTasksErrorText" class="errorText hide" style="margin-left:10px; margin-top: 5px; float:left" >You must enter between 1-1000 tasks!</p>
+            <br/>
         </div>
 
         <div class="scheduleLaunchForm hide">
@@ -46,7 +49,7 @@
         </div>
 
 
-        <button id="launchPlayers" class="btn btn-primary btn-sm">Launch Tasks</button>
+        <button id="launchPlayers" class="btn btn-primary btn-sm" style="clear:both">Launch Tasks</button>
         <div class="launchPlayersProgress">
             <h6 class="launchPlayersProgressText"></h6>
         </div>
