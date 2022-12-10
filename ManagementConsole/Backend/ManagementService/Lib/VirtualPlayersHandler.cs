@@ -162,8 +162,6 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                         playersToLaunch = maxTasksPerRequest;
                     }
 
-                    remainingPlayersToLaunch -= playersToLaunch;
-
                     // Launch players with the VirtualPlayers tag set to true
                     var tags = new List<Tag>();
                     tags.Add(new Tag
@@ -187,7 +185,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                         CapacityProvider = capacityProvider,
                         Weight = 1,
                     });
-                    
+
                     var request = new RunTaskRequest
                     {
                         Cluster = Environment.GetEnvironmentVariable("VirtualPlayersClusterArn"),
@@ -209,7 +207,11 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                     
                     LambdaLogger.Log(JsonConvert.SerializeObject(request));
                     var response = await _client.RunTaskAsync(request);
+                    LambdaLogger.Log(JsonConvert.SerializeObject(response));
+                    LambdaLogger.Log("HOPED TO LAUNCH " + playersToLaunch + " - RESPONSE CONTAINED " + response.Tasks.Count + " TASKS");
                     
+                    remainingPlayersToLaunch -= response.Tasks.Count;
+
                     foreach (var task in response.Tasks)
                     {
                         var virtualPlayerTask = new VirtualPlayerTask
