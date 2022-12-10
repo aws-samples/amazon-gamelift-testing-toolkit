@@ -54,25 +54,25 @@ export class RuleSetBuilderSubPopup extends SubPopup
                 '</tr>';
         });
 
-        $('#'+this._parentDomId).find("table#matchmakingSimulationsTable tbody").append( html);
+        this.selector.find("table#matchmakingSimulationsTable tbody").append( html);
         this.activateDataTable("matchmakingSimulationsTable");
     }
 
     showSuccessAlert = (text) =>
     {
-        $('#'+this._parentDomId).find("#statusText").attr("class","alert alert-success");
-        $('#'+this._parentDomId).find("#statusText").html(text);
+        this.selector.find("#statusText").attr("class","alert alert-success");
+        this.selector.find("#statusText").html(text);
     }
 
     showFailureAlert = (text) =>
     {
-        $('#'+this._parentDomId).find("#statusText").attr("class","alert alert-danger");
-        $('#'+this._parentDomId).find("#statusText").html(text);
+        this.selector.find("#statusText").attr("class","alert alert-danger");
+        this.selector.find("#statusText").html(text);
     }
 
     hideStatusAlert = () =>
     {
-        $('#'+this._parentDomId).find("#statusText").attr("class","alert hide");
+        this.selector.find("#statusText").attr("class","alert hide");
     }
 
     onPopupClick = async (event) => {
@@ -80,8 +80,8 @@ export class RuleSetBuilderSubPopup extends SubPopup
         let el = $(event.target);
 
         if (event.target.id == "backButton") {
-            $('#'+this._parentDomId).find(".ruleSetsContent")[0].className = "ruleSetsContent";
-            $('#'+this._parentDomId).find(".ruleSetsDetailContent")[0].className = "ruleSetsDetailContent hide";
+            this.selector.find(".ruleSetsContent")[0].className = "ruleSetsContent";
+            this.selector.find(".ruleSetsDetailContent")[0].className = "ruleSetsDetailContent hide";
             this.refresh();
         }
         else if (event.target.id=="simulateMatchmakingButton")
@@ -98,7 +98,7 @@ export class RuleSetBuilderSubPopup extends SubPopup
 
     activateDataTable(id) {
         // @ts-ignore
-        $('#'+this._parentDomId).find("#"+id).DataTable({
+        this.selector.find("#"+id).DataTable({
             scrollY: "400px",
             scrollCollapse: true,
             columnDefs: [

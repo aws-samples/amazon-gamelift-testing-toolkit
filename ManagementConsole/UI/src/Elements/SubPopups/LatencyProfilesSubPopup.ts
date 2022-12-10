@@ -309,7 +309,7 @@ export class LatencyProfilesSubPopup extends SubPopup
 
     resetJson()
     {
-        $('#'+this._parentDomId).find("#ruleSetJson").html("");
+        this.selector.find("#ruleSetJson").html("");
     }
 
     activateDataTable(id) {

@@ -106,19 +106,19 @@ export class PlayerProfilesSubPopup extends SubPopup
 
     showSuccessAlert = (text) =>
     {
-        $('#'+this._parentDomId).find("#statusText").attr("class", "alert alert-success");
-        $('#'+this._parentDomId).find("#statusText").html(text);
+        this.selector.find("#statusText").attr("class", "alert alert-success");
+        this.selector.find("#statusText").html(text);
     }
 
     showFailureAlert = (text) =>
     {
-        $('#'+this._parentDomId).find("#statusText").attr("class", "alert alert-danger");
-        $('#'+this._parentDomId).find("#statusText").html(text);
+        this.selector.find("#statusText").attr("class", "alert alert-danger");
+        this.selector.find("#statusText").html(text);
     }
 
     hideStatusAlert = () =>
     {
-        $('#'+this._parentDomId).find("#statusText").attr("class", "alert hide");
+        this.selector.find("#statusText").attr("class", "alert hide");
     }
 
     onAttributeTypeChange = async (event) =>
@@ -152,97 +152,6 @@ export class PlayerProfilesSubPopup extends SubPopup
         el.parent().parent().find("div.playerAttributeForm-SL").hide();
         el.parent().parent().find("div.playerAttributeForm-SDM").hide();
         el.parent().parent().find('div.playerAttributeForm-'+el.val()).show();
-    }
-
-    validatePlayerProfileForm = () =>
-    {
-        let playerProfile: DataTypes.PlayerProfile = {
-            Name: $('#playerProfileName').val() as string,
-            Attributes: null
-        };
-
-        if (playerProfile.Name=="")
-        {
-            this.showFailureAlert("You must specify a name for your profile!")
-            return null;
-        }
-
-        let playerAttributes:PlayerProfileAttribute[] = [];
-        $( "#playerProfileAttributes div.playerAttribute" ).each(function() {
-            let attributeName = $(this).find("input.playerAttributeForm-name").val() as string;
-
-            if (attributeName.length==0)
-            {
-                $(this).find("input.playerAttributeForm-name").addClass("errorBorder");
-                return null;
-            }
-            else
-            {
-                $(this).find("input.playerAttributeForm-name").removeClass("errorBorder");
-            }
-            let attributeType = $(this).find("select.attributeType").val();
-            let valueType = $(this).find(".playerAttributeForm-"+attributeType).find("select.valueType").val();
-
-            let myObj: PlayerProfileAttribute = {
-                AttributeName:attributeName as string,
-                AttributeType:attributeType as string,
-                Value:"",
-                ValueType:valueType as string,
-                ValueMap:{},
-            };
-
-            if (valueType=="randomInteger")
-            {
-                myObj.Min = parseInt($(this).find(".playerAttributeForm-"+attributeType+"-value-min").val() as string);
-                myObj.Max = parseInt($(this).find(".playerAttributeForm-"+attributeType+"-value-max").val() as string);
-            }
-            else
-            if (valueType=="randomDouble")
-            {
-                myObj.Min = parseFloat($(this).find(".playerAttributeForm-"+attributeType+"-value-min").val() as string);
-                myObj.Max = parseFloat($(this).find(".playerAttributeForm-"+attributeType+"-value-max").val() as string);
-            }
-            else if (valueType=="value")
-            {
-                if (attributeType=="N")
-                {
-                    myObj.Value = parseInt($(this).find(".playerAttributeForm-"+attributeType+"-value-value").val() as string);
-                }
-
-                if (attributeType=="S")
-                {
-                    myObj.Value = $(this).find(".playerAttributeForm-"+attributeType+"-value-value").val();
-                }
-                if (attributeType=="SL")
-                {
-                    let stringListValues = [];
-                    let stringListText = $(this).find(".playerAttributeForm-"+attributeType+"-value-value").val() as string;
-                    stringListText.split("\n").map((str=>
-                    {
-                        str = str.trim();
-                        if (str.length)
-                        {
-                            stringListValues.push(str);
-                        }
-                    }));
-                    myObj.Value=stringListValues;
-//                        myObj["value"] = $(this).find(".playerAttributeForm-"+attributeType+"-value").val();
-                }
-                if (attributeType=="SDM")
-                {
-                    let myMap = {};
-                    $(this).find(".stringDoubleMapValue").each(function(ind)
-                    {
-                        let mapKey = $(this).find(".playerAttributeForm-"+attributeType+"-value-key").val() as string;
-                        let mapValue = $(this).find(".playerAttributeForm-"+attributeType+"-value-value").val() as number;
-                        myMap[mapKey] = mapValue;
-                    });
-                    myObj.ValueMap = myMap;
-                }
-            }
-            playerAttributes.push(myObj);
-        });
-
     }
 
     constructPlayerProfileObject = () =>
@@ -586,7 +495,7 @@ export class PlayerProfilesSubPopup extends SubPopup
 
     resetJson()
     {
-        $('#'+this._parentDomId).find("#ruleSetJson").html("");
+        this.selector.find("#ruleSetJson").html("");
     }
 
     activateDataTable(id) {

@@ -70,7 +70,7 @@ export class ManageRuleSetsSubPopup extends SubPopup
         });
 
         this.resetTable();
-        $('#'+this._parentDomId).find("table#ruleSetsTable tbody").append( html);
+        this.selector.find("table#ruleSetsTable tbody").append( html);
         this.activateDataTable("ruleSetsTable");
     }
 
@@ -114,22 +114,22 @@ export class ManageRuleSetsSubPopup extends SubPopup
 
     showSuccessAlert = (text) =>
     {
-        $('#'+this._parentDomId).find("#statusText").attr("class","alert alert-success");
-        $('#'+this._parentDomId).find("#statusText").html(text);
+        this.selector.find("#statusText").attr("class","alert alert-success");
+        this.selector.find("#statusText").html(text);
     }
 
     showFailureAlert = (text) =>
     {
-        $('#'+this._parentDomId).find("#statusText").attr("class","alert alert-danger");
-        $('#'+this._parentDomId).find("#statusText").html(text);
+        this.selector.find("#statusText").attr("class","alert alert-danger");
+        this.selector.find("#statusText").html(text);
     }
 
     onPopupClick = async (event) => {
         event.stopPropagation();
 
         if (event.target.id == "backButton") {
-            $('#'+this._parentDomId).find(".ruleSetsContent")[0].className = "ruleSetsContent";
-            $('#'+this._parentDomId).find(".ruleSetsDetailContent")[0].className = "ruleSetsDetailContent hide";
+            this.selector.find(".ruleSetsContent")[0].className = "ruleSetsContent";
+            this.selector.find(".ruleSetsDetailContent")[0].className = "ruleSetsDetailContent hide";
             this.resetJson();
             this.refresh();
         }
@@ -166,7 +166,7 @@ export class ManageRuleSetsSubPopup extends SubPopup
 
     cloneEditRuleSet = (ruleSet) =>
     {
-        const container = $('#'+this._parentDomId).find("#ruleSetJson")[0];
+        const container = this.selector.find("#ruleSetJson")[0];
         const options:JSONEditorOptions = {modes:["code", "tree"], name:"Matchmaking RuleSet"}
 
         this._editor = new JSONEditor(container, options);
@@ -176,10 +176,10 @@ export class ManageRuleSetsSubPopup extends SubPopup
         var ruleSetBody = JSON.parse(ruleSet.RuleSetBody);
         this._editor.set(ruleSetBody);
 
-        $('#'+this._parentDomId).find(".ruleSetsContent")[0].className="ruleSetsContent hide";
-        $('#'+this._parentDomId).find("#saveButton")[0].className="btn btn-primary btn-sm";
-        $('#'+this._parentDomId).find("#validateButton")[0].className="btn btn-primary btn-sm";
-        $('#'+this._parentDomId).find(".ruleSetsDetailContent")[0].className="ruleSetsDetailContent";
+        this.selector.find(".ruleSetsContent")[0].className="ruleSetsContent hide";
+        this.selector.find("#saveButton")[0].className="btn btn-primary btn-sm";
+        this.selector.find("#validateButton")[0].className="btn btn-primary btn-sm";
+        this.selector.find(".ruleSetsDetailContent")[0].className="ruleSetsDetailContent";
     }
 
     newRuleSet = () =>
@@ -188,7 +188,6 @@ export class ManageRuleSetsSubPopup extends SubPopup
         const options:JSONEditorOptions = {modes:["code", "tree"], name:"Matchmaking RuleSet"}
         $(".existingRuleSetName").hide();
         $(".rulesetButtons").show();
-        $('#ruleSetName').val("");
         this._editor = new JSONEditor(container, options);
         $('#ruleSetName').val("");
         let emptyRuleset = {
@@ -198,29 +197,28 @@ export class ManageRuleSetsSubPopup extends SubPopup
 
         this._editor.set(emptyRuleset);
 
-        $('#'+this._parentDomId).find(".ruleSetsContent")[0].className="ruleSetsContent hide";
-        $('#'+this._parentDomId).find("#saveButton")[0].className="btn btn-primary btn-sm";
-        $('#'+this._parentDomId).find("#validateButton")[0].className="btn btn-primary btn-sm";
-        $('#'+this._parentDomId).find(".ruleSetsDetailContent")[0].className="ruleSetsDetailContent";
+        this.selector.find(".ruleSetsContent")[0].className="ruleSetsContent hide";
+        this.selector.find("#saveButton")[0].className="btn btn-primary btn-sm";
+        this.selector.find("#validateButton")[0].className="btn btn-primary btn-sm";
+        this.selector.find(".ruleSetsDetailContent")[0].className="ruleSetsDetailContent";
     }
 
     showRuleSetDetail = (ruleSet) =>
     {
-        const container = $('#'+this._parentDomId).find("#ruleSetJson")[0];
+        const container = this.selector.find("#ruleSetJson")[0];
         const options:JSONEditorOptions = {mode:"view", name:"Matchmaking RuleSet"}
 
         this._editor = new JSONEditor(container, options);
-        $(".existingRuleSetName").show();
-        $(".existingRuleSetName").html(ruleSet.RuleSetName);
+        $(".existingRuleSetName").html(ruleSet.RuleSetName).show();
         $(".rulesetButtons").hide();
 
         this._editor.set(JSON.parse(ruleSet.RuleSetBody));
         this._editor.expandAll();
 
-        $('#'+this._parentDomId).find(".ruleSetsContent")[0].className="ruleSetsContent hide";
-        $('#'+this._parentDomId).find("#saveButton")[0].className="btn btn-primary btn-sm hide";
-        $('#'+this._parentDomId).find("#validateButton")[0].className="btn btn-primary btn-sm hide";
-        $('#'+this._parentDomId).find(".ruleSetsDetailContent")[0].className="ruleSetsDetailContent";
+        this.selector.find(".ruleSetsContent")[0].className="ruleSetsContent hide";
+        this.selector.find("#saveButton")[0].className="btn btn-primary btn-sm hide";
+        this.selector.find("#validateButton")[0].className="btn btn-primary btn-sm hide";
+        this.selector.find(".ruleSetsDetailContent")[0].className="ruleSetsDetailContent";
     }
 
     deleteRuleSet = (ruleSet) =>
@@ -230,12 +228,12 @@ export class ManageRuleSetsSubPopup extends SubPopup
 
     resetJson()
     {
-        $('#'+this._parentDomId).find("#ruleSetJson").html("");
+        this.selector.find("#ruleSetJson").html("");
     }
 
     activateDataTable(id) {
         // @ts-ignore
-        $('#'+this._parentDomId).find("#"+id).DataTable({
+        this.selector.find("#"+id).DataTable({
             scrollY: "400px",
             scrollCollapse: true,
             columnDefs: [

@@ -4,7 +4,6 @@
 import 'phaser';
 import DOMElement = Phaser.GameObjects.DOMElement;
 import {EventDispatcher} from "../../Events/EventDispatcher";
-import {PopupClickEvent} from "../../Events/PopupClickEvent";
 import {Game} from "../../Game";
 
 export abstract class SubPopup
@@ -24,14 +23,19 @@ export abstract class SubPopup
 
     loadContent()
     {
-        $('#'+this._parentDomId).html(Game.game.cache.html.get(this._cacheKey));
-        this._html = $('#'+this._parentDomId).html();
+        this.selector.html(Game.game.cache.html.get(this._cacheKey));
+        this._html = this.selector.html();
         this.refresh();
     }
 
     get domId()
     {
         return this._parentDomId;
+    }
+
+    public get selector():JQuery
+    {
+        return $('#' + this._parentDomId);
     }
 
     refresh()
@@ -52,24 +56,24 @@ export abstract class SubPopup
     resetElement(selector)
     {
         let el = $("<div>" + this._html + "</div>");
-        $('#'+this._parentDomId).find(selector).html(el.find(selector).html());
+        this.selector.find(selector).html(el.find(selector).html());
     }
 
     showSuccessAlert = (text) =>
     {
-        $('#'+this._parentDomId).find("#statusText").attr("class","alert alert-success");
-        $('#'+this._parentDomId).find("#statusText").html(text);
+        this.selector.find("#statusText").attr("class","alert alert-success");
+        this.selector.find("#statusText").html(text);
     }
 
     showFailureAlert = (text) =>
     {
-        $('#'+this._parentDomId).find("#statusText").attr("class","alert alert-danger");
-        $('#'+this._parentDomId).find("#statusText").html(text);
+        this.selector.find("#statusText").attr("class","alert alert-danger");
+        this.selector.find("#statusText").html(text);
     }
 
     hideStatusAlert()
     {
-        $('#'+this._parentDomId).find("#statusText").attr("class", "alert hide");
+        this.selector.find("#statusText").attr("class", "alert hide");
     }
 
     activateDataTable(id, config=null) {
@@ -89,8 +93,7 @@ export abstract class SubPopup
                 };
             }
             // @ts-ignore
-            var table = $('#'+this._parentDomId).find("#"+id).DataTable(config);
-            return table;
+            return this.selector.find("#"+id).DataTable(config);
         }
     }
 

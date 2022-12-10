@@ -51,7 +51,7 @@ export class QueueSettingsSubPopup extends SubPopup
     {
         this.resetElement(".queueSettingsContent");
         this.addPlayerLatencyPolicies(this._queue.PlayerLatencyPolicies);
-        $('#' + this._parentDomId).find(".queueSettingsForm #timeoutInSeconds").val(this._queue.TimeoutInSeconds);
+        this.selector.find(".queueSettingsForm #timeoutInSeconds").val(this._queue.TimeoutInSeconds);
     }
 
     onUpdateGameSessionQueueResponse = (data) =>
@@ -74,7 +74,7 @@ export class QueueSettingsSubPopup extends SubPopup
 
         if (el.hasClass("updateQueueSettings"))
         {
-            const timeout = parseInt($('#' + this._parentDomId).find(".queueSettingsForm #timeoutInSeconds").val() as string);
+            const timeout = parseInt(this.selector.find(".queueSettingsForm #timeoutInSeconds").val() as string);
             const policies = this.getPlayerLatencyPolicyValues();
             Network.sendObject({Type: "UpdateQueueSettings", QueueArn:this._queue.GameSessionQueueArn, TimeoutInSeconds: timeout, PlayerLatencyPolicies:policies});
         }
