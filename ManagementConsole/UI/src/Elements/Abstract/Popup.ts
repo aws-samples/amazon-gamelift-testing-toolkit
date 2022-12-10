@@ -116,11 +116,6 @@ export abstract class Popup extends Phaser.GameObjects.Container
         }
     }
 
-    onBgClick = async ()=>
-    {
-        this.setVisible(false);
-    }
-
     setupEventListeners()
     {
         this._emitter.on(Events.SWITCH_SUB_POPUP, this.onSwitchSubPopup);

@@ -107,6 +107,20 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public string ErrorMessage = "";
     }
     
+    public class ServerMessagePurgeDataProgress : ServerMessage
+    {
+        public new string Type = "PurgeDataProgress";
+        public int ItemsPurged;
+    }
+    
+    public class ServerMessagePurgeData : ServerMessage
+    {
+        public new string Type = "PurgeData";
+        public bool RequestSubmitted;
+        public bool Completed;
+        public int ItemsPurged;
+    }
+    
     public class ServerMessageGetVirtualPlayerTaskSchedules : ServerMessage
     {
         public new string Type = "GetVirtualPlayerTaskSchedules";

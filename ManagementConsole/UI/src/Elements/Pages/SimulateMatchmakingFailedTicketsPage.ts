@@ -105,8 +105,8 @@ export class SimulateMatchmakingFailedTicketsPage extends Page
         });
 
         this.resetTicketHeadersTable();
-
-        $('#'+this._domId).find("table#matchmakingTicketHeadersTable tbody").html(html);
+        
+        this.selector.find("table#matchmakingTicketHeadersTable tbody").html(html);
         this.activateDataTable("matchmakingTicketHeadersTable");
     }
 
@@ -129,7 +129,7 @@ export class SimulateMatchmakingFailedTicketsPage extends Page
                 '</tr>'
         });
 
-        $('#'+this._domId).find("table#failedMatchmakingTicketEventsTable tbody").html(html);
+        this.selector.find("table#failedMatchmakingTicketEventsTable tbody").html(html);
         this.activateDataTable("failedMatchmakingTicketEventsTable");
     }
 
@@ -141,32 +141,32 @@ export class SimulateMatchmakingFailedTicketsPage extends Page
 
     hideMatchmakingTicketsList()
     {
-        $('#'+this._domId).find(".matchmakingTicketHeadersContent").hide();
+        this.selector.find(".matchmakingTicketHeadersContent").hide();
     }
 
     showMatchmakingTicketJson()
     {
-        $('#'+this._domId).find(".matchmakingTicketEventDetailContent").show();
+        this.selector.find(".matchmakingTicketEventDetailContent").show();
     }
 
     hideMatchmakingTicketJson()
     {
-        $('#'+this._domId).find(".matchmakingTicketEventDetailContent").hide();
+        this.selector.find(".matchmakingTicketEventDetailContent").hide();
     }
 
     showMatchmakingTicketsList()
     {
-        $('#'+this._domId).find(".matchmakingTicketHeadersContent").show();
+        this.selector.find(".matchmakingTicketHeadersContent").show();
     }
 
     showMatchmakingTicketEventList()
     {
-        $('#'+this._domId).find(".matchmakingTicketEventsContent").show();
+        this.selector.find(".matchmakingTicketEventsContent").show();
     }
 
     hideMatchmakingTicketEventList()
     {
-        $('#'+this._domId).find(".matchmakingTicketEventsContent").hide();
+        this.selector.find(".matchmakingTicketEventsContent").hide();
     }
 
     backToMatchmakingTicketsList()
@@ -185,7 +185,7 @@ export class SimulateMatchmakingFailedTicketsPage extends Page
 
     resetJson()
     {
-        $('#'+this._domId).find("#matchmakingTicketEventJson").html("");
+        this.selector.find("#matchmakingTicketEventJson").html("");
     }
 
     showEventDetail = (ticketEvent) =>
@@ -203,17 +203,17 @@ export class SimulateMatchmakingFailedTicketsPage extends Page
 
     showFailedMatchTicketJson()
     {
-        $('#'+this._domId).find(".failedMatchTicketEventDetailContent").show();
+        this.selector.find(".failedMatchTicketEventDetailContent").show();
     }
 
     hideFailedMatchTicketJson()
     {
-        $('#'+this._domId).find(".failedMatchTicketEventDetailContent").hide();
+        this.selector.find(".failedMatchTicketEventDetailContent").hide();
     }
 
     showFailedMatchTicketEventDetail = (ticketEvent) =>
     {
-        const container = $('#'+this._domId).find("#failedMatchmakingTicketEventJson")[0];
+        const container = this.selector.find("#failedMatchmakingTicketEventJson")[0];
         const options:JSONEditorOptions = {mode:"view", name:"FlexMatch Event"}
 
         const editor = new JSONEditor(container, options);
@@ -226,7 +226,7 @@ export class SimulateMatchmakingFailedTicketsPage extends Page
 
     hideFailedMatchTicketEventList()
     {
-        $('#'+this._domId).find(".failedMatchTicketEventsContent").hide();
+        this.selector.find(".failedMatchTicketEventsContent").hide();
     }
 
     backToFailedMatchTicketEventList()
@@ -238,11 +238,11 @@ export class SimulateMatchmakingFailedTicketsPage extends Page
 
     showFailedMatchTicketEventList()
     {
-        $('#'+this._domId).find(".failedMatchTicketEventsContent").show();
+        this.selector.find(".failedMatchTicketEventsContent").show();
     }
 
     resetFailedMatchJson()
     {
-        $('#'+this._domId).find("#failedMatchmakingTicketEventJson").html("");
+        this.selector.find("#failedMatchmakingTicketEventJson").html("");
     }
 }

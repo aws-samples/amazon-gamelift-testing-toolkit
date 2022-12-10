@@ -90,6 +90,11 @@ export class SettingsPanel extends Phaser.GameObjects.Container
                 this._emitter.emit(Events.CLOSE_SETTINGS);
                 break;
 
+            case "purgeEventData":
+                this._emitter.emit(Events.SHOW_PURGE_DATA_POPUP);
+                this._emitter.emit(Events.CLOSE_SETTINGS);
+                break;
+
             case "socketClose":
                 Network.disconnect();
                 break;

@@ -138,7 +138,7 @@ export class SimulateMatchmakingResultsPage extends Page
         this.resetSuccessfulMatchesTable();
         this.resetSuccessfulMatchTicketEventTable();
 
-        $('#'+this._domId).find("table#successfulMatchesTable tbody").html(successHtml);
+        this.selector.find("table#successfulMatchesTable tbody").html(successHtml);
 
         this.showMatchResults();
         this.activateDataTable("successfulMatchesTable", {
@@ -193,7 +193,7 @@ export class SimulateMatchmakingResultsPage extends Page
         });
 
         this.resetSuccessfulMatchTicketsTable();
-        $('#'+this._domId).find("table#successfulMatchTicketHeadersTable tbody").html(html);
+        this.selector.find("table#successfulMatchTicketHeadersTable tbody").html(html);
     }
 
 
@@ -202,8 +202,8 @@ export class SimulateMatchmakingResultsPage extends Page
         this.resetMatchInfoPlayersTable();
         let match = this._matches[matchId];
 
-        $('#'+this._domId).find("a.viewRuleEvaluationMetrics").attr("data-matchid", matchId);
-        $('#'+this._domId).find("a.viewSuccessfulMatchTickets").attr("data-matchid", matchId);
+        this.selector.find("a.viewRuleEvaluationMetrics").attr("data-matchid", matchId);
+        this.selector.find("a.viewSuccessfulMatchTickets").attr("data-matchid", matchId);
 
         let matchPlayerTableHtml="";
         let columnToggleHtml="Toggle column: ";
@@ -236,14 +236,14 @@ export class SimulateMatchmakingResultsPage extends Page
             playerAttributes.map(playerAttributeName =>
             {
                 i++;
-                $('#'+this._domId).find("#matchInfoPlayersTable >thead tr").append("<th>" + playerAttributeName + "</th");
+                this.selector.find("#matchInfoPlayersTable >thead tr").append("<th>" + playerAttributeName + "</th");
                 columnToggleHtml+='<a class="toggle-vis" data-column="' + i + '">' + playerAttributeName + '</a> - ';
             });
 
             if (showLatencyData)
             {
                 i++;
-                $('#'+this._domId).find("#matchInfoPlayersTable >thead tr").append("<th>Latency</th");
+                this.selector.find("#matchInfoPlayersTable >thead tr").append("<th>Latency</th");
                 columnToggleHtml+='<a class="toggle-vis" data-column="' + i + '">Latency</a> - ';
             }
 
@@ -256,7 +256,7 @@ export class SimulateMatchmakingResultsPage extends Page
                 {
                     let playerAttribute = player.PlayerData.PlayerAttributes[playerAttributeName];
                     attributeHtml+= "<td>" + Utils.getPlayerAttributeText(playerAttribute) + "</td>";
-                    //$('#'+this._domId).find("#matchInfoPlayersTable >thead tr").append("<th>" + playerAttributeName + "</th");
+                    //this.selector.find("#matchInfoPlayersTable >thead tr").append("<th>" + playerAttributeName + "</th");
 
                 });
 
@@ -274,7 +274,7 @@ export class SimulateMatchmakingResultsPage extends Page
                     '</tr>'
             });
 
-            $('#'+this._domId).find("table#matchInfoPlayersTable tbody").html(matchPlayerTableHtml);
+            this.selector.find("table#matchInfoPlayersTable tbody").html(matchPlayerTableHtml);
 
 
 
@@ -309,8 +309,8 @@ export class SimulateMatchmakingResultsPage extends Page
                     0, "desc" ]],
             });
 
-            $('#'+this._domId).find("div.matchedPlayers div.columnToggle").html(columnToggleHtml);
-            $('#'+this._domId).find("div.matchedPlayers div.columnToggle a.toggle-vis").on("click", function (e)  {
+            this.selector.find("div.matchedPlayers div.columnToggle").html(columnToggleHtml);
+            this.selector.find("div.matchedPlayers div.columnToggle a.toggle-vis").on("click", function (e)  {
                 e.preventDefault();
                 let column = table.column($(this).attr("data-column"));
 
@@ -318,7 +318,7 @@ export class SimulateMatchmakingResultsPage extends Page
                 table.columns.adjust().draw();
             });
 
-            $('#'+this._domId).find("select.selectMatchInfo").on("change",   (e) =>{
+            this.selector.find("select.selectMatchInfo").on("change",   (e) =>{
                 e.preventDefault();
                 let selectedValue = $(e.target).val();
 
@@ -383,18 +383,18 @@ export class SimulateMatchmakingResultsPage extends Page
             playerAttributes.map(playerAttributeName =>
             {
                 i++;
-                $('#'+this._domId).find("#failedMatchPlayersTable >thead tr").append("<th>" + playerAttributeName + "</th");
+                this.selector.find("#failedMatchPlayersTable >thead tr").append("<th>" + playerAttributeName + "</th");
                 columnToggleHtml+='<a class="toggle-vis" data-column="' + i + '">' + playerAttributeName + '</a> - ';
             });
 
             if (showLatencyData)
             {
                 i++;
-                $('#'+this._domId).find("#failedMatchPlayersTable >thead tr").append("<th>Latency</th");
+                this.selector.find("#failedMatchPlayersTable >thead tr").append("<th>Latency</th");
                 columnToggleHtml+='<a class="toggle-vis" data-column="' + i + '">Latency</a> - ';
             }
 
-            $('#'+this._domId).find("#failedMatchPlayersTable >thead tr").append("<th>Ticket</th");
+            this.selector.find("#failedMatchPlayersTable >thead tr").append("<th>Ticket</th");
 
             columnToggleHtml = columnToggleHtml.slice(0,columnToggleHtml.length-2);
 
@@ -422,7 +422,7 @@ export class SimulateMatchmakingResultsPage extends Page
                     '</tr>'
             });
 
-            $('#'+this._domId).find("table#failedMatchPlayersTable tbody").html(matchPlayerTableHtml);
+            this.selector.find("table#failedMatchPlayersTable tbody").html(matchPlayerTableHtml);
 
             let table = this.activateDataTable("failedMatchPlayersTable", {
                 scrollY: "370px",
@@ -453,8 +453,8 @@ export class SimulateMatchmakingResultsPage extends Page
                 }
             });
 
-            $('#'+this._domId).find("div.unmatchedPlayers div.columnToggle").html(columnToggleHtml);
-            $('#'+this._domId).find("div.unmatchedPlayers div.columnToggle a.toggle-vis").on("click", function (e)  {
+            this.selector.find("div.unmatchedPlayers div.columnToggle").html(columnToggleHtml);
+            this.selector.find("div.unmatchedPlayers div.columnToggle a.toggle-vis").on("click", function (e)  {
                 e.preventDefault();
                 let column = table.column($(this).attr("data-column"));
 
@@ -483,7 +483,7 @@ export class SimulateMatchmakingResultsPage extends Page
 
         this.resetRuleEvaluationMetricsTable();
 
-        $('#'+this._domId).find("table#ruleEvaluationMetricsTable tbody").html(html);
+        this.selector.find("table#ruleEvaluationMetricsTable tbody").html(html);
     }
 
     resetSuccessfulMatchesTable()
@@ -555,47 +555,47 @@ export class SimulateMatchmakingResultsPage extends Page
 
     showMatchResults()
     {
-        $('#'+this._domId).find(".matchResultsContent").show();
+        this.selector.find(".matchResultsContent").show();
     }
 
     hideMatchResults()
     {
-        $('#'+this._domId).find(".matchResultsContent").hide();
+        this.selector.find(".matchResultsContent").hide();
     }
 
     showMatchInfo()
     {
         this.resetMatchInfo();
-        $('#'+this._domId).find(".matchInfo").show();
+        this.selector.find(".matchInfo").show();
         this.hideMatchResults();
     }
 
     showFailedMatchInfo()
     {
         this.resetFailedMatchInfo();
-        $('#'+this._domId).find(".failedMatchInfo").show();
+        this.selector.find(".failedMatchInfo").show();
         this.hideMatchResults();
     }
 
     showMatchTickets()
     {
-        $('#'+this._domId).find(".matchTickets").show();
+        this.selector.find(".matchTickets").show();
         this.hideMatchResults();
     }
 
     hideMatchTickets()
     {
-        $('#'+this._domId).find(".matchTickets").hide();
+        this.selector.find(".matchTickets").hide();
     }
 
     showMatchInfoHeader()
     {
-        $('#'+this._domId).find(".matchInfoHeader").show();
+        this.selector.find(".matchInfoHeader").show();
     }
 
     hideMatchInfoHeader()
     {
-        $('#'+this._domId).find(".matchInfoHeader").hide();
+        this.selector.find(".matchInfoHeader").hide();
     }
 
     // Hide show for match tickets list
@@ -603,61 +603,61 @@ export class SimulateMatchmakingResultsPage extends Page
     showSuccessfulMatchTicketsList()
     {
         this.showMatchInfoHeader();
-        $('#'+this._domId).find(".successfulMatchTicketHeadersContent").show();
+        this.selector.find(".successfulMatchTicketHeadersContent").show();
         this.hideMatchResults();
     }
 
     hideSuccessfulMatchTicketsList()
     {
-        $('#'+this._domId).find(".successfulMatchTicketHeadersContent").hide();
+        this.selector.find(".successfulMatchTicketHeadersContent").hide();
     }
 
     showSuccessfulMatchTicketEventList()
     {
         this.hideMatchInfoHeader();
-        $('#'+this._domId).find(".successfulMatchTicketEventsContent").show();
+        this.selector.find(".successfulMatchTicketEventsContent").show();
         this.hideMatchResults();
         this.hideSuccessfulMatchTicketsList();
     }
 
     hideSuccessfulMatchTicketEventList()
     {
-        $('#'+this._domId).find(".successfulMatchTicketEventsContent").hide();
+        this.selector.find(".successfulMatchTicketEventsContent").hide();
     }
 
     showFailedMatchTicketEventList()
     {
         this.hideMatchResults();
-        $('#'+this._domId).find(".failedMatchTicketEventsContent").show();
+        this.selector.find(".failedMatchTicketEventsContent").show();
     }
 
     hideFailedMatchTicketEventList()
     {
-        $('#'+this._domId).find(".failedMatchTicketEventsContent").hide();
+        this.selector.find(".failedMatchTicketEventsContent").hide();
     }
 
     showSuccessfulMatchesList()
     {
-        $('#'+this._domId).find(".successfulMatchesContent").show();
+        this.selector.find(".successfulMatchesContent").show();
     }
 
     hideSuccessfulMatchesList()
     {
-        $('#'+this._domId).find(".successfulMatchesContent").hide();
+        this.selector.find(".successfulMatchesContent").hide();
     }
 
     showFailedMatchesList()
     {
-        $('#'+this._domId).find(".failedMatchesContent").show();
+        this.selector.find(".failedMatchesContent").show();
     }
 
     hideFailedMatchesList()
     {
-        $('#'+this._domId).find(".failedMatchesContent").hide();
+        this.selector.find(".failedMatchesContent").hide();
     }
 
     hideMatchInfo()
     {
-        $('#'+this._domId).find(".matchInfo").hide();
+        this.selector.find(".matchInfo").hide();
     }
 }

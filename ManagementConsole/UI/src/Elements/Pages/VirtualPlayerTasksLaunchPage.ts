@@ -75,14 +75,14 @@ export class VirtualPlayerTasksLaunchPage extends Page
     {
         const launchType = this.getScheduleType();
 
-        $('#' + this._domId).find(".noSchedules").hide();
+        this.selector.find(".noSchedules").hide();
 
         $("button#launchPlayers").show();
 
         if (launchType=="taskLaunch")
         {
-            $("#" + this._domId).find(".taskLaunchForm").show();
-            $("#" + this._domId).find(".scheduleLaunchForm").hide();
+            this.selector.find(".taskLaunchForm").show();
+            this.selector.find(".scheduleLaunchForm").hide();
         }
         else
         if (launchType=="scheduleLaunch")
@@ -105,21 +105,21 @@ export class VirtualPlayerTasksLaunchPage extends Page
 
         if (data.Schedules.LaunchSchedule.State.Value=="DISABLED" && data.Schedules.TerminateSchedule.State.Value=="DISABLED")
         {
-            $("#" + this._domId).find(".taskLaunchForm").hide();
-            $("#" + this._domId).find(".scheduleLaunchForm").show();
+            this.selector.find(".taskLaunchForm").hide();
+            this.selector.find(".scheduleLaunchForm").show();
             if (this._schedules.length==0)
             {
                 $("button#launchPlayers").hide();
-                $('#'+this._domId).find(".scheduleLaunchForm").hide();
-                $('#'+this._domId).find(".noSchedules").show();
+                this.selector.find(".scheduleLaunchForm").hide();
+                this.selector.find(".noSchedules").show();
             }
         }
         else
         {
             $("button#launchPlayers").hide();
-            $("#" + this._domId).find(".taskLaunchForm").hide();
-            $('#'+this._domId).find(".scheduleLaunchForm").hide();
-            $('#'+this._domId).find(".existingSchedule").show();
+            this.selector.find(".taskLaunchForm").hide();
+            this.selector.find(".scheduleLaunchForm").hide();
+            this.selector.find(".existingSchedule").show();
         }
 
         this.validateForm();
@@ -132,18 +132,18 @@ export class VirtualPlayerTasksLaunchPage extends Page
 
         const launchType = this.getScheduleType();
 
-        let scheduleId = $('#'+this._domId).find("#scheduleId").val();
-        let numPlayers = $('#'+this._domId).find("#numPlayers").val();
-        let taskDefinitionArn = $('#'+this._domId).find("#taskDefinition").val();
+        let scheduleId = this.selector.find("#scheduleId").val();
+        let numPlayers = this.selector.find("#numPlayers").val();
+        let taskDefinitionArn = this.selector.find("#taskDefinition").val();
 
         if (numPlayers<1 || numPlayers>this._quotaInfo.RatePerMinute)
         {
-            $('#'+this._domId).find("p#numTasksErrorText").html("You must enter between 1-" + this._quotaInfo.RatePerMinute + " tasks");
-            $('#'+this._domId).find("p#numTasksErrorText").show();
+            this.selector.find("p#numTasksErrorText").html("You must enter between 1-" + this._quotaInfo.RatePerMinute + " tasks");
+            this.selector.find("p#numTasksErrorText").show();
         }
         else
         {
-            $('#'+this._domId).find("p#numTasksErrorText").hide();
+            this.selector.find("p#numTasksErrorText").hide();
         }
 
         if (taskDefinitionArn=="")
@@ -192,7 +192,7 @@ export class VirtualPlayerTasksLaunchPage extends Page
         {
             optionHtml += "<option value=\"" + schedule.ScheduleId + "\">" + schedule.ScheduleName + "</option>";
         });
-        $('#'+this._domId).find("#scheduleId").html(optionHtml);
+        this.selector.find("#scheduleId").html(optionHtml);
 
         Network.sendObject({Type:"GetVirtualPlayerTaskQuotas"});
 
@@ -203,8 +203,8 @@ export class VirtualPlayerTasksLaunchPage extends Page
         this._quotaInfo = data.Quotas;
         $("p.quotaText").html("Your service quotas allow a maximum of <b>" + data.Quotas.RunningFargateOnDemandVcpu + "</b> On-Demand vCPUs and <b>" + data.Quotas.RunningFargateSpotVcpu + "</b> Spot vCPUs.  Maximum <b>" + data.Quotas.RatePerMinute + "</b> task launches per minute.");
 
-        $('#'+this._domId).find('.launchPlayersForm').show();
-        $('#'+this._domId).find('.loadingMessage').hide();
+        this.selector.find('.launchPlayersForm').show();
+        this.selector.find('.loadingMessage').hide();
         this.validateForm();
     }
 
@@ -250,7 +250,7 @@ export class VirtualPlayerTasksLaunchPage extends Page
             optionHtml += "<option value=\"" + taskDefinition.TaskDefinitionArn + "\">" + taskDefinition.Family + "</option>";
         });
 
-        $('#'+this._domId).find("#taskDefinition").html(optionHtml);
+        this.selector.find("#taskDefinition").html(optionHtml);
     };
 
 
@@ -264,21 +264,21 @@ export class VirtualPlayerTasksLaunchPage extends Page
             if (this.validateForm())
             {
                 const scheduleType = this.getScheduleType();
-                const numPlayers = $('#'+this._domId).find("#numPlayers").val();
-                const taskDefinitionArn = $('#'+this._domId).find("#taskDefinition").val();
+                const numPlayers = this.selector.find("#numPlayers").val();
+                const taskDefinitionArn = this.selector.find("#taskDefinition").val();
                 const fargateCapacityProvider = $("input[name='fargateCapacityProvider']:checked").val();
 
                 if (scheduleType=="taskLaunch")
                 {
                     if (numPlayers<1 || numPlayers>this._quotaInfo.RatePerMinute)
                     {
-                        $('#'+this._domId).find("p#numTasksErrorText").html("You must enter between 1-" + this._quotaInfo.RatePerMinute + " tasks");
-                        $('#'+this._domId).find("p#numTasksErrorText").show();
+                        this.selector.find("p#numTasksErrorText").html("You must enter between 1-" + this._quotaInfo.RatePerMinute + " tasks");
+                        this.selector.find("p#numTasksErrorText").show();
                     }
                     else
                     {
                         $("button#launchPlayers").prop("disabled", true);
-                        $('#'+this._domId).find("p#numTasksErrorText").show();
+                        this.selector.find("p#numTasksErrorText").show();
                         this.setLaunchProgressText("Launching Virtual Player Tasks...");
                         Network.sendObject({Type:"LaunchVirtualPlayerTasks", NumPlayers:numPlayers, TaskDefinitionArn:taskDefinitionArn, CapacityProvider:fargateCapacityProvider});
                     }
@@ -286,9 +286,9 @@ export class VirtualPlayerTasksLaunchPage extends Page
                 else
                 if (scheduleType=="scheduleLaunch")
                 {
-                    const scheduleId = $('#'+this._domId).find("#scheduleId").val();
+                    const scheduleId = this.selector.find("#scheduleId").val();
                     $("button#launchPlayers").prop("disabled", true);
-                    $('#'+this._domId).find("#errorText").hide();
+                    this.selector.find("#errorText").hide();
                     Network.sendObject({Type:"LaunchVirtualPlayerTaskSchedule", ScheduleId: scheduleId, TaskDefinitionArn:taskDefinitionArn, CapacityProvider:fargateCapacityProvider});
                 }
             }

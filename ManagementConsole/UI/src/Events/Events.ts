@@ -64,6 +64,8 @@ export class Events
     public static LAUNCH_VIRTUAL_PLAYER_TASKS_RESPONSE:string = "LaunchVirtualPlayerTasksResponse";
     public static LAUNCH_VIRTUAL_PLAYER_TASK_SCHEDULE_RESPONSE:string = "LaunchVirtualPlayerTaskScheduleResponse";
     public static LAUNCH_VIRTUAL_PLAYER_TASKS_PROGRESS_RESPONSE:string = "LaunchVirtualPlayerTasksProgressResponse";
+    public static PURGE_DATA_RESPONSE:string = "PurgeDataResponse";
+    public static PURGE_DATA_PROGRESS_RESPONSE:string = "PurgeDataProgressResponse";
     public static TERMINATE_SCHEDULE_RESPONSE:string = "TerminateScheduleResponse";
     public static SCHEDULE_PROGRESS:string = "ScheduleProgressUpdate";
     public static TERMINATE_VIRTUAL_PLAYER_TASKS_RESPONSE:string = "TerminateVirtualPlayerTasksResponse";
@@ -88,6 +90,7 @@ export class Events
     public static SHOW_QUEUE_EVENTS_POPUP:string = "ShowQueueEventsPopup";
     public static SHOW_QUEUE_SETTINGS_POPUP:string = "ShowQueueSettingsPopup";
     public static SHOW_FLEXMATCH_SIMULATOR_POPUP:string = "ShowFlexMatchSimulatorPopup";
+    public static SHOW_PURGE_DATA_POPUP:string = "ShowPurgeDataPopup";
     public static SHOW_MATCHMAKING_RULESETS_POPUP:string = "ShowMatchmakingRuleSetsPopup";
     public static SHOW_MATCHMAKING_TICKETS_POPUP:string = "ShowMatchmakingTicketsPopup";
     public static SHOW_MODIFY_MATCHMAKING_CONFIGURATION_POPUP:string = "ShowModifyMatchmakingConfigurationPopup";

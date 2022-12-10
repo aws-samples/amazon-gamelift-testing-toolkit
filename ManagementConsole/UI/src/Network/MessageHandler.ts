@@ -256,6 +256,14 @@ export class MessageHandler
                 this._emitter.emit(Events.SCHEDULE_PROGRESS, data);
                 break;
 
+            case "PurgeData":
+                this._emitter.emit(Events.PURGE_DATA_RESPONSE, data);
+                break;
+
+            case "PurgeDataProgress":
+                this._emitter.emit(Events.PURGE_DATA_PROGRESS_RESPONSE, data);
+                break;
+
         }
     };
 }

@@ -1,21 +1,25 @@
-    <div class="virtualPlayerLaunchRequestTasks">
-        <button id="backButton" class="btn btn-primary btn-sm">Back</button>
-        <div class="alert hide" id="statusText"></div>
-        <p class="title mb-3"></p>
-        <div class="virtualPlayerLaunchRequestTasksTableContainer">
-            <table id="virtualPlayerLaunchRequestTasksTable" class="table table-bordered table-striped mb-0">
-                <thead>
-                <tr>
-                    <th>Launched</th>
-                    <th>Arn</th>
-                    <th>Provider</th>
-                    <th>Cpu</th>
-                    <th>Memory</th>
-                    <th>Logs</th>
-                </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </div>
+<div class="virtualPlayerLaunchRequestTasks">
+    <button id="backButton" class="btn btn-primary btn-sm">Back</button>
+    <div class="alert hide" id="statusText"></div>
+
+    <div class="loadingMessage" style="font-size:1.3em">
+        <p>Loading...</p>
     </div>
+    <p class="title mb-3"></p>
+    <div class="virtualPlayerLaunchRequestTasksTableContainer hide">
+        <table id="virtualPlayerLaunchRequestTasksTable" class="table table-bordered table-striped mb-0">
+            <thead>
+            <tr>
+                <th>Launched</th>
+                <th>Arn</th>
+                <th>Provider</th>
+                <th>Cpu</th>
+                <th>Memory</th>
+                <th>Logs</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>

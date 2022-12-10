@@ -95,29 +95,29 @@ export class SimulateMatchmakingOutputPage extends Page
         if (simulation.PlayersMatched + simulation.PlayersFailed == totalPlayers)
         {
             this.stopPolling();
-            $('#'+this._domId).find(".simulateMatchmakingOutput span.matchmakingStatus").html("Simulation Complete");
-            $('#'+this._domId).find(".simulateMatchmakingOutput span.matchmakingStatus").removeClass("inProgressBg").addClass("completeBg");
-            $('#'+this._domId).find("#showSimulationResults").show();
-            $('#'+this._domId).find("#showSimulationTickets").show();
+            this.selector.find(".simulateMatchmakingOutput span.matchmakingStatus").html("Simulation Complete");
+            this.selector.find(".simulateMatchmakingOutput span.matchmakingStatus").removeClass("inProgressBg").addClass("completeBg");
+            this.selector.find("#showSimulationResults").show();
+            this.selector.find("#showSimulationTickets").show();
         }
         else
         {
-            $('#'+this._domId).find(".simulateMatchmakingOutput span.matchmakingStatus").html("Simulation In Progress");
-            $('#'+this._domId).find(".simulateMatchmakingOutput span.matchmakingStatus").removeClass("completeBg").addClass("inProgressBg");
+            this.selector.find(".simulateMatchmakingOutput span.matchmakingStatus").html("Simulation In Progress");
+            this.selector.find(".simulateMatchmakingOutput span.matchmakingStatus").removeClass("completeBg").addClass("inProgressBg");
         }
 
-        $('#'+this._domId).find(".simulateMatchmakingOutput span.simulationDate").html(simulation.Date);
-        $('#'+this._domId).find(".simulateMatchmakingOutput span.totalPlayers").html(totalPlayers.toString());
-        $('#'+this._domId).find(".simulateMatchmakingOutput span.totalEvents").html(totalEvents.toString());
-        $('#'+this._domId).find(".simulateMatchmakingOutput span.totalMatchAttempts").html(totalMatchAttempts.toString());
-        $('#'+this._domId).find(".simulateMatchmakingOutput span.playersMatched").html(simulation.PlayersMatched + '/' + totalPlayers);
-        $('#'+this._domId).find(".simulateMatchmakingOutput span.playersMatchFailed").html(simulation.PlayersFailed + '/' + totalPlayers);
-        $('#'+this._domId).find(".simulateMatchmakingOutput span.matchesMade").html(simulation.MatchesMade + '/' + totalMatchAttempts);
-        $('#'+this._domId).find(".simulateMatchmakingOutput span.matchmakingSearchingEvents").html(simulation.MatchmakingSearchingEvents);
-        $('#'+this._domId).find(".simulateMatchmakingOutput span.potentialMatchCreatedEvents").html(simulation.PotentialMatchCreatedEvents);
-        $('#'+this._domId).find(".simulateMatchmakingOutput span.matchmakingSucceededEvents").html(simulation.MatchmakingSucceededEvents);
-        $('#'+this._domId).find(".simulateMatchmakingOutput span.matchmakingTimedOutEvents").html(simulation.MatchmakingTimedOutEvents);
-        $('#'+this._domId).find(".simulateMatchmakingOutput span.matchmakingCancelledEvents").html(simulation.MatchmakingCancelledEvents);
-        $('#'+this._domId).find(".simulateMatchmakingOutput span.matchmakingFailedEvents").html(simulation.MatchmakingFailedEvents);
+        this.selector.find(".simulateMatchmakingOutput span.simulationDate").html(simulation.Date);
+        this.selector.find(".simulateMatchmakingOutput span.totalPlayers").html(totalPlayers.toString());
+        this.selector.find(".simulateMatchmakingOutput span.totalEvents").html(totalEvents.toString());
+        this.selector.find(".simulateMatchmakingOutput span.totalMatchAttempts").html(totalMatchAttempts.toString());
+        this.selector.find(".simulateMatchmakingOutput span.playersMatched").html(simulation.PlayersMatched + '/' + totalPlayers);
+        this.selector.find(".simulateMatchmakingOutput span.playersMatchFailed").html(simulation.PlayersFailed + '/' + totalPlayers);
+        this.selector.find(".simulateMatchmakingOutput span.matchesMade").html(simulation.MatchesMade + '/' + totalMatchAttempts);
+        this.selector.find(".simulateMatchmakingOutput span.matchmakingSearchingEvents").html(simulation.MatchmakingSearchingEvents);
+        this.selector.find(".simulateMatchmakingOutput span.potentialMatchCreatedEvents").html(simulation.PotentialMatchCreatedEvents);
+        this.selector.find(".simulateMatchmakingOutput span.matchmakingSucceededEvents").html(simulation.MatchmakingSucceededEvents);
+        this.selector.find(".simulateMatchmakingOutput span.matchmakingTimedOutEvents").html(simulation.MatchmakingTimedOutEvents);
+        this.selector.find(".simulateMatchmakingOutput span.matchmakingCancelledEvents").html(simulation.MatchmakingCancelledEvents);
+        this.selector.find(".simulateMatchmakingOutput span.matchmakingFailedEvents").html(simulation.MatchmakingFailedEvents);
     }
 }

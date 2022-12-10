@@ -18,6 +18,12 @@ export class VirtualPlayerLaunchRequestTasksPage extends Page
         super(VirtualPlayerLaunchRequestTasksPage.cacheKey, parentPage, VirtualPlayerLaunchRequestTasksPage.id);
     }
 
+    loadingComplete()
+    {
+        this.selector.find('.virtualPlayerLaunchRequestTasks').show();
+        this.selector.find('.loadingMessage').hide();
+    }
+
     public onPopupClick(event) {
         let el = $(event.target);
 
@@ -62,6 +68,7 @@ export class VirtualPlayerLaunchRequestTasksPage extends Page
         this.resetElement(".virtualPlayerLaunchRequestTasksTableContainer");
 
         $("table#virtualPlayerLaunchRequestTasksTable tbody").html(html);
+        this.loadingComplete();
         this.activateDataTable("virtualPlayerLaunchRequestTasksTable");
     };
 

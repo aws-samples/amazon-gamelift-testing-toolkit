@@ -205,7 +205,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                     documentList = await search.GetNextSetAsync();
                     foreach (var document in documentList)
                     {
-                        tickets.Add(context.FromDocument<TicketTableDocument>(document));
+                        tickets.Add(JsonConvert.DeserializeObject<TicketTableDocument>(document.ToJson()));
                     }
                 } while (!search.IsDone);
 
@@ -226,7 +226,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                 var matchLogTable = Table.LoadTable(_client, Environment.GetEnvironmentVariable("MatchLogTableName"));
                 var matchLogItem = await matchLogTable.GetItemAsync(matchId);
                 var context = new DynamoDBContext(_client);
-                var matchTableDocument = context.FromDocument<MatchTableDocument>(matchLogItem);
+                var matchTableDocument = JsonConvert.DeserializeObject<MatchTableDocument>(matchLogItem.ToJson());
                 
                 var ticketLogTable =
                     Table.LoadTable(_client, Environment.GetEnvironmentVariable("TicketLogTableName"));
@@ -250,7 +250,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                 var tickets = new List<TicketTableDocument>();
                 foreach (var document in batchGet.Results)
                 {
-                    tickets.Add(context.FromDocument<TicketTableDocument>(document));
+                    tickets.Add(JsonConvert.DeserializeObject<TicketTableDocument>(document.ToJson()));
                 }
 
                 return tickets;
@@ -352,7 +352,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                     documentList = await search.GetNextSetAsync();
                     foreach (var document in documentList)
                     {
-                        tickets.Add(context.FromDocument<TicketTableDocument>(document));
+                        tickets.Add(JsonConvert.DeserializeObject<TicketTableDocument>(document.ToJson()));
                     }
                 } while (!search.IsDone);
 
@@ -446,7 +446,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                     foreach (var document in documentList)
                     {
                         LambdaLogger.Log(document.ToJson());
-                        simulations.Add(context.FromDocument<MatchmakingSimulation>(document));
+                        simulations.Add(JsonConvert.DeserializeObject<MatchmakingSimulation>(document.ToJson()));
                     }
                 } while (!search.IsDone);
 
@@ -540,7 +540,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             try
             {
                 var scheduleDocument = await virtualPlayerTaskScheduleTable.GetItemAsync(item);
-                var schedule = context.FromDocument<VirtualPlayerTaskSchedule>(scheduleDocument);
+                var schedule = JsonConvert.DeserializeObject<VirtualPlayerTaskSchedule>(scheduleDocument.ToJson());
                 return schedule;
             }
             catch (Exception e)
@@ -592,8 +592,8 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             
             try
             {
-                var launchRequestDocument = await virtualPlayerTaskScheduleTable.GetItemAsync(item);
-                var launchRequest = context.FromDocument<VirtualPlayerLaunchRequest>(launchRequestDocument);
+                var document = await virtualPlayerTaskScheduleTable.GetItemAsync(item);
+                var launchRequest = JsonConvert.DeserializeObject<VirtualPlayerLaunchRequest>(document.ToJson());
                 return launchRequest;
             }
             catch (Exception e)
@@ -755,7 +755,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             var item = new Document();
             item["SimulationId"] = simulationId;
             item = await matchmakingSimulationsTable.GetItemAsync(item);
-            var simulation = context.FromDocument<MatchmakingSimulation>(item);
+            var simulation = JsonConvert.DeserializeObject<MatchmakingSimulation>(item.ToJson());
             return simulation;
         }
 
@@ -777,7 +777,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                 var item = new Document();
                 item["TicketId"] = ticketId;
                 item = await ticketLogTable.GetItemAsync(item);
-                var ticketDocument = context.FromDocument<TicketTableDocument>(item);
+                var ticketDocument = JsonConvert.DeserializeObject<TicketTableDocument>(item.ToJson());
                 
                 var batchGet = eventLogTable.CreateBatchGet();
                 foreach(string ticketEventId in ticketDocument.Events)
@@ -832,6 +832,40 @@ namespace ManagementConsoleBackend.ManagementService.Lib
 
             return null;
         }
+
+        public async Task<int> PurgeTable(string tableName)
+        {
+            var table = Table.LoadTable(_client, tableName);
+            
+            var search = table.Scan(new ScanOperationConfig
+            {
+                AttributesToGet = new List<string>(),
+            });
+            var deleteBatch = table.CreateBatchWrite();
+
+            var totalAdded = 0;
+            do
+            {
+                var documentList = await search.GetNextSetAsync();
+                foreach (var document in documentList)
+                {
+                    deleteBatch.AddItemToDelete(document);
+                    totalAdded++;
+                }
+                LambdaLogger.Log(totalAdded + " added to batch");
+            } while (!search.IsDone);
+            
+            try
+            {
+                await deleteBatch.ExecuteAsync();
+
+            }
+            catch (Exception e)
+            {
+                LambdaLogger.Log(e.Message);
+            }
+            return totalAdded;
+        }
         
         public async Task<ConfigTableDocument> GetManagementConfig(string configId)
         {
@@ -845,7 +879,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                 var item = new Document();
                 item["ConfigId"] = configId;
                 item = await table.GetItemAsync(item);
-                var configTableDocument = context.FromDocument<ConfigTableDocument>(item);
+                var configTableDocument = JsonConvert.DeserializeObject<ConfigTableDocument>(item.ToJson());
 
                 return configTableDocument;
             }

@@ -52,6 +52,12 @@ export class VirtualPlayerLaunchRequestsPage extends Page
         this._emitter.off(Events.GET_VIRTUAL_PLAYER_LAUNCH_TASK_REQUESTS_RESPONSE, this.onGetVirtualPlayerLaunchTaskRequestsResponse);
     }
 
+    loadingComplete()
+    {
+        this.selector.find('.virtualPlayersHistoryTableContainer').show();
+        this.selector.find('.loadingMessage').hide();
+    }
+
     onGetVirtualPlayerLaunchTaskRequestsResponse = (data) =>
     {
         let html="";
@@ -72,6 +78,9 @@ export class VirtualPlayerLaunchRequestsPage extends Page
         this.resetElement(".virtualPlayersHistoryTableContainer");
 
         $("table#virtualPlayersHistoryTable tbody").html(html);
+
+        this.loadingComplete();
+
         this.activateDataTable("virtualPlayersHistoryTable");
     };
 

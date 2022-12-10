@@ -391,7 +391,8 @@ export namespace DataTypes
         NumTasks: number;
         LaunchId:string;
         ScheduledTime:string;
-        ExecutedTime:string;
+        StartedTime:string;
+        EndedTime:string;
         Status:string;
     }
 

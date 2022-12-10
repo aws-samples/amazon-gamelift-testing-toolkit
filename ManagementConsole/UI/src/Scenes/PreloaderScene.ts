@@ -54,6 +54,7 @@ export  class PreloaderScene extends Phaser.Scene {
         this.load.html('virtualPlayerTasksPopup', 'assets/html/popups/virtualPlayerTasksPopup.html');
         this.load.html('matchmakingConfigPopup', 'assets/html/popups/matchmakingConfigPopup.html');
         this.load.html('queueEventsPopup', 'assets/html/popups/queueEventsPopup.html');
+        this.load.html('purgeDataPopup', 'assets/html/popups/purgeDataPopup.html');
 
         // SUBPOPUPS
         Object.keys(SubPopups).map(key=>

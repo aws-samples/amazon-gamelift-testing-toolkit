@@ -27,7 +27,8 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public int NumTasks;
         public string Status;
         public string ScheduledTime;
-        public string ExecutedTime;
+        public string StartedTime;
+        public string EndedTime;
         public string LaunchId;
     }
     

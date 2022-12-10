@@ -61,6 +61,7 @@ namespace ManagementConsoleInfra.Lib
         public Function VirtualPlayerTaskScheduledActionFunction;
         public Function FlexMatchEventFunction;
         public Function QueuePlacementEventFunction;
+        public Function PurgeDataFunction;
         public Function ConfigPopulatorFunction;
         public Amazon.CDK.AWS.Events.EventBus GameEventBus;
         public WebSocketStage ProdStage;
@@ -137,7 +138,7 @@ namespace ManagementConsoleInfra.Lib
                 {
                     Integration = new WebSocketLambdaIntegration("ManagementServiceIntegration", ManagementServiceFunction)
                 },
-                RouteSelectionExpression = "$request.body.Type"
+                RouteSelectionExpression = "$request.body.Type",
             });
             webSocketApi.Node.AddDependency(cfnAccount);
 
@@ -184,6 +185,7 @@ namespace ManagementConsoleInfra.Lib
             
             ManagementServiceFunction.AddEnvironment("StageServiceUrl", serviceUrl);
             StateEventHandlerFunction.AddEnvironment("StageServiceUrl", serviceUrl);
+            PurgeDataFunction.AddEnvironment("StageServiceUrl", serviceUrl);
             VirtualPlayerTaskScheduledActionFunction.AddEnvironment("StageServiceUrl", serviceUrl);
             QueuePlacementEventFunction.AddEnvironment("StageServiceUrl", serviceUrl);
             FlexMatchEventFunction.AddEnvironment("StageServiceUrl", serviceUrl);
@@ -193,6 +195,7 @@ namespace ManagementConsoleInfra.Lib
             ProdStage.GrantManagementApiAccess(StateEventHandlerFunction);
             ProdStage.GrantManagementApiAccess(QueuePlacementEventFunction);
             ProdStage.GrantManagementApiAccess(FlexMatchEventFunction);
+            ProdStage.GrantManagementApiAccess(PurgeDataFunction);
             ProdStage.GrantManagementApiAccess(VirtualPlayerTaskScheduledActionFunction);
             
             var apiGwInvokePolicy = new PolicyStatement(new PolicyStatementProps
@@ -328,7 +331,7 @@ namespace ManagementConsoleInfra.Lib
                     ["VirtualPlayerTaskLaunchTableName"] = props.VirtualPlayerTaskLaunchTable.TableName,
                 },
                 Timeout = Duration.Seconds(30),
-                MemorySize = 1024,
+                MemorySize = 512,
                 Role = sfnPollerFunctionRole
             });
             
@@ -527,7 +530,7 @@ namespace ManagementConsoleInfra.Lib
                     ["GameSessionTableName"] = props.GameSessionTable.TableName,
                 },
                 Timeout = Duration.Seconds(30),
-                MemorySize = 1024,
+                MemorySize = 512,
                 Role = sfnGameSessionPollerFunctionRole
             });
             
@@ -698,17 +701,10 @@ namespace ManagementConsoleInfra.Lib
                 Value = GameSessionPollerStateMachine.StateMachineArn
             });
         }
-        
-        private void CreateLambdas(Construct scope, BackendProps props) 
-        {
-            var subnetIds = new List<string>();
-            foreach (var subnet in VirtualPlayersRunnerVpc.PrivateSubnets)
-            {
-                subnetIds.Add(subnet.SubnetId);
-            }
-            
-            // SETUP MANAGEMENT SERVICE FUNCTION
 
+        private void CreateManagementServiceFunction(Construct scope, BackendProps props, List<string> subnetIds)
+        {
+            // SETUP MANAGEMENT SERVICE FUNCTION
             var managementServiceFunctionRole = new Role(this, "ManagementServiceFunctionRole", new RoleProps
             {
                 AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
@@ -857,13 +853,13 @@ namespace ManagementConsoleInfra.Lib
             }));
 
             props.ManagementConnectionsTable.GrantReadWriteData(ManagementServiceFunction);
-            props.EventLogTable.GrantReadData(ManagementServiceFunction);
+            props.EventLogTable.GrantReadWriteData(ManagementServiceFunction);
             props.MatchmakingSimulationTable.GrantReadWriteData(ManagementServiceFunction);
             props.SimulationPlayersTable.GrantReadWriteData(ManagementServiceFunction);
             props.PlayerProfileTable.GrantReadWriteData(ManagementServiceFunction);
             props.LatencyProfileTable.GrantReadWriteData(ManagementServiceFunction);
-            props.TicketLogTable.GrantReadData(ManagementServiceFunction);
-            props.MatchLogTable.GrantReadData(ManagementServiceFunction);
+            props.TicketLogTable.GrantReadWriteData(ManagementServiceFunction);
+            props.MatchLogTable.GrantReadWriteData(ManagementServiceFunction);
             props.SimulationResultsTable.GrantReadData(ManagementServiceFunction);
             props.GameSessionTable.GrantReadWriteData(ManagementServiceFunction);
             props.StateLogTable.GrantReadData(ManagementServiceFunction);
@@ -880,7 +876,10 @@ namespace ManagementConsoleInfra.Lib
                     Reason = "Suppress wildcard finding to give permission to access CloudWatch and GameLift generic components"
                 }
             }, true);
-            
+        }
+
+        private void CreateVirtualPlayerScheduleFunction(Construct scope, BackendProps props, List<string> subnetIds)
+        {
             // SETUP VIRTUAL PLAYER SCHEDULED ACTION FUNCTION
             var virtualPlayerScheduledActionFunctionRole = new Role(this, "VirtualPlayerScheduleActionFunctionRole", new RoleProps
             {
@@ -1004,8 +1003,11 @@ namespace ManagementConsoleInfra.Lib
                 }
             }, true);
             
+        }
+
+        private void CreateFlexMatchSimulatorFunction(Construct scope, BackendProps props)
+        {
             // SETUP FLEXMATCH SIMULATOR FUNCTION
-            
             var flexMatchSimulatorFunctionRole = new Role(this, "FlexMatchSimulatorFunctionRole", new RoleProps
             {
                 AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
@@ -1016,7 +1018,8 @@ namespace ManagementConsoleInfra.Lib
                 Runtime = Program.DotNetRuntime,
                 Code = Code.FromAsset(CodeRoot),
                 Architecture = Architecture.ARM_64,
-                Handler = "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.FlexMatchSimulator::FlexMatchSimulatorHandler",
+                Handler =
+                    "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.FlexMatchSimulator::FlexMatchSimulatorHandler",
                 Environment = new Dictionary<string, string>
                 {
                     ["MatchmakingSimulationTableName"] = props.MatchmakingSimulationTable.TableName,
@@ -1027,27 +1030,28 @@ namespace ManagementConsoleInfra.Lib
                     ["FlexMatchSimulatorArn"] = FlexMatchSimulator.AttrArn,
                 },
                 Timeout = Duration.Minutes(15),
-                MemorySize = 1024,
+                MemorySize = 512,
                 Role = flexMatchSimulatorFunctionRole
             });
             FlexMatchSimulatorFunction.GrantInvoke(ManagementServiceFunction);
-            ManagementServiceFunction.AddEnvironment("FlexMatchSimulatorFunctionName", FlexMatchSimulatorFunction.FunctionName);
-            
+            ManagementServiceFunction.AddEnvironment("FlexMatchSimulatorFunctionName",
+                FlexMatchSimulatorFunction.FunctionName);
+
             flexMatchSimulatorFunctionRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
+            {
+                Effect = Effect.ALLOW,
+                Resources = new[] { "*" },
+                Actions = new[]
                 {
-                    Effect = Effect.ALLOW,
-                    Resources = new[] {"*"},
-                    Actions = new[]
-                    {
-                        "gamelift:UpdateMatchmakingConfiguration",
-                        "gamelift:StartMatchmaking",
-                        "gamelift:DescribeMatchmakingRuleSets",
-                        "gamelift:ValidateMatchmakingRuleSet",
-                        "gamelift:CreateMatchmakingRuleSet",
-                        "gamelift:DeleteMatchmakingRuleSet",
-                        "gamelift:DescribeMatchmakingConfigurations",
-                    }
-                }));
+                    "gamelift:UpdateMatchmakingConfiguration",
+                    "gamelift:StartMatchmaking",
+                    "gamelift:DescribeMatchmakingRuleSets",
+                    "gamelift:ValidateMatchmakingRuleSet",
+                    "gamelift:CreateMatchmakingRuleSet",
+                    "gamelift:DeleteMatchmakingRuleSet",
+                    "gamelift:DescribeMatchmakingConfigurations",
+                }
+            }));
 
             props.MatchmakingSimulationTable.GrantReadWriteData(FlexMatchSimulatorFunction);
             props.SimulationPlayersTable.GrantReadWriteData(FlexMatchSimulatorFunction);
@@ -1061,12 +1065,15 @@ namespace ManagementConsoleInfra.Lib
                 new NagPackSuppression
                 {
                     Id = "AwsSolutions-IAM5",
-                    Reason = "Suppress wildcard finding to give permission to access CloudWatch and GameLift generic components"
+                    Reason =
+                        "Suppress wildcard finding to give permission to access CloudWatch and GameLift generic components"
                 }
             }, true);
-            
-            // SETUP STATE EVENT HANDLER FUNCTION
+        }
 
+        private void CreateStateEventHandlerFunction(Construct scope, BackendProps props)
+        {
+            // SETUP STATE EVENT HANDLER FUNCTION
             var stateEventFunctionRole = new Role(this, "stateEventFunctionRole", new RoleProps
             {
                 AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
@@ -1083,7 +1090,7 @@ namespace ManagementConsoleInfra.Lib
                     ["ConnectionsTableName"] = props.ManagementConnectionsTable.TableName,
                 },
                 Timeout = Duration.Seconds(30),
-                MemorySize = 1024,
+                MemorySize = 512,
                 Role = stateEventFunctionRole
             });
             // Adding specific CDK-Nag Suppressions
@@ -1097,9 +1104,11 @@ namespace ManagementConsoleInfra.Lib
             }, true);
             
             props.ManagementConnectionsTable.GrantReadWriteData(StateEventHandlerFunction);
+        }
 
+        private void CreateConfigPopulatorFunction(Construct scope, BackendProps props)
+        {
             // SETUP CONFIG POPULATOR FUNCTION
-            
             var configPopulatorFunctionRole = new Role(this, "ConfigPopulatorFunctionRole", new RoleProps
             {
                 AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
@@ -1117,7 +1126,7 @@ namespace ManagementConsoleInfra.Lib
                     ["FlexMatchSimulatorArn"] = FlexMatchSimulator.AttrArn,
                 },
                 Timeout = Duration.Seconds(30),
-                MemorySize = 1024,
+                MemorySize = 512,
                 Role = configPopulatorFunctionRole
             });
             // Adding specific CDK-Nag Suppressions
@@ -1131,9 +1140,11 @@ namespace ManagementConsoleInfra.Lib
             }, true);
             
             props.ManagementConfigTable.GrantReadWriteData(ConfigPopulatorFunction);
-            
+        }
+
+        private void CreateFlexMatchEventHandlerFunction(Construct scope, BackendProps props)
+        { 
             // SETUP FLEXMATCH EVENT HANDLER FUNCTION
-            
             var flexMatchEventFunctionRole = new Role(this, "FlexMatchEventFunctionRole", new RoleProps
             {
                 AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
@@ -1157,7 +1168,7 @@ namespace ManagementConsoleInfra.Lib
                     ["EventLogTableName"] = props.EventLogTable.TableName,
                 },
                 Timeout = Duration.Seconds(30),
-                MemorySize = 1024,
+                MemorySize = 512,
                 Role = flexMatchEventFunctionRole
             });
             // Adding specific CDK-Nag Suppressions
@@ -1178,7 +1189,10 @@ namespace ManagementConsoleInfra.Lib
             props.MatchmakingSimulationTable.GrantReadWriteData(FlexMatchEventFunction);
             props.SimulationPlayersTable.GrantReadData(FlexMatchEventFunction);
             props.SimulationResultsTable.GrantReadWriteData(FlexMatchEventFunction);
+        }
 
+        private void CreateQueueEventHandlerFunction(Construct scope, BackendProps props)
+        {
             // SETUP QUEUE PLACEMENT EVENT HANDLER FUNCTION
             
             var queuePlacementEventFunctionRole = new Role(this, "QueuePlacementEventFunctionRole", new RoleProps
@@ -1198,7 +1212,7 @@ namespace ManagementConsoleInfra.Lib
                     ["ConnectionsTableName"] = props.ManagementConnectionsTable.TableName,
                 },
                 Timeout = Duration.Seconds(30),
-                MemorySize = 1024,
+                MemorySize = 512,
                 Role = queuePlacementEventFunctionRole
             });
             // Adding specific CDK-Nag Suppressions
@@ -1213,6 +1227,70 @@ namespace ManagementConsoleInfra.Lib
             
             props.EventLogTable.GrantReadWriteData(QueuePlacementEventFunction);
             props.ManagementConnectionsTable.GrantReadWriteData(QueuePlacementEventFunction);
+        }
+        
+        private void CreatePurgeDataFunction(Construct scope, BackendProps props)
+        {
+            // SETUP PURGE DATA FUNCTION
+            var purgeDataFunctionRole = new Role(this, "PurgeDataFunctionRole", new RoleProps
+            {
+                AssumedBy = new ServicePrincipal("lambda.amazonaws.com")
+            });
+            purgeDataFunctionRole.AddToPrincipalPolicy(DefaultLambdaPolicy);
+            PurgeDataFunction = new Function(this, "PurgeDataLambdaFunction", new FunctionProps
+            {
+                Runtime = Program.DotNetRuntime,
+                Code = Code.FromAsset(CodeRoot),
+                Architecture = Architecture.ARM_64,
+                Handler =
+                    "ManagementConsoleBackend::ManagementConsoleBackend.ManagementService.PurgeData::PurgeDataHandler",
+                Environment = new Dictionary<string, string>
+                {
+                    ["TicketLogTableName"] = props.TicketLogTable.TableName,
+                    ["MatchLogTableName"] = props.MatchLogTable.TableName,
+                    ["EventLogTableName"] = props.EventLogTable.TableName,
+                    ["GameSessionTableName"] = props.GameSessionTable.TableName,
+                },
+                Timeout = Duration.Minutes(15),
+                MemorySize = 512,
+                Role = purgeDataFunctionRole
+            });
+            PurgeDataFunction.GrantInvoke(ManagementServiceFunction);
+            ManagementServiceFunction.AddEnvironment("PurgeDataFunctionName", PurgeDataFunction.FunctionName);
+
+            props.TicketLogTable.GrantReadWriteData(PurgeDataFunction);
+            props.EventLogTable.GrantReadWriteData(PurgeDataFunction);
+            props.MatchLogTable.GrantReadWriteData(PurgeDataFunction);
+            props.GameSessionTable.GrantReadWriteData(PurgeDataFunction);
+
+            // Adding specific CDK-Nag Suppressions
+            NagSuppressions.AddResourceSuppressions(purgeDataFunctionRole, new INagPackSuppression[]
+            {
+                new NagPackSuppression
+                {
+                    Id = "AwsSolutions-IAM5",
+                    Reason =
+                        "Suppress wildcard finding to give permission to access CloudWatch and GameLift generic components"
+                }
+            }, true);
+        }
+
+        private void CreateLambdas(Construct scope, BackendProps props) 
+        {
+            var subnetIds = new List<string>();
+            foreach (var subnet in VirtualPlayersRunnerVpc.PrivateSubnets)
+            {
+                subnetIds.Add(subnet.SubnetId);
+            }
+            
+            CreateManagementServiceFunction(scope, props, subnetIds);
+            CreateVirtualPlayerScheduleFunction(scope, props, subnetIds);
+            CreateFlexMatchSimulatorFunction(scope, props);
+            CreateStateEventHandlerFunction(scope, props);
+            CreateConfigPopulatorFunction(scope, props);
+            CreateFlexMatchEventHandlerFunction(scope, props);
+            CreateQueueEventHandlerFunction(scope, props);
+            CreatePurgeDataFunction(scope, props);
         }
         
         private void CreateFlexMatchSimulator(Construct scope)

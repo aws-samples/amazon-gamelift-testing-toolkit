@@ -27,13 +27,13 @@ export abstract class Page
     loadContent()
     {
         let html = Game.game.cache.html.get(this._cacheKey);
-        $('#'+this._domId).html(html);
-        this._html = $('#'+this._domId).html();
+        this.selector.html(html);
+        this._html = this.selector.html();
     }
 
     hideStatusAlert()
     {
-        $('#'+this._domId).find("#statusText").attr("class","alert hide");
+        this.selector.find("#statusText").attr("class","alert hide");
     }
 
     public setPageData(data:any)
@@ -44,6 +44,11 @@ export abstract class Page
     public get domId()
     {
         return this._domId;
+    }
+
+    public get selector():JQuery
+    {
+        return $('#' + this._domId);
     }
 
     public setParent(parentPage:Page)
@@ -68,14 +73,14 @@ export abstract class Page
 
     showPage()
     {
-        $('#' + this._domId).show();
+        this.selector.show();
         this.setupEventListeners();
         this.initPage();
     }
 
     hidePage()
     {
-        $('#' + this._domId).hide();
+        this.selector.hide();
         this.removeEventListeners();
         this.cleanupPage();
     }
@@ -110,25 +115,25 @@ export abstract class Page
 
     showSuccessAlert = (text) =>
     {
-        $('#'+this._domId).find("#statusText").attr("class","alert alert-success");
-        $('#'+this._domId).find("#statusText").html(text);
+        this.selector.find("#statusText").attr("class","alert alert-success");
+        this.selector.find("#statusText").html(text);
     }
 
     showFailureAlert = (text) =>
     {
-        $('#'+this._domId).find("#statusText").attr("class","alert alert-danger");
-        $('#'+this._domId).find("#statusText").html(text);
+        this.selector.find("#statusText").attr("class","alert alert-danger");
+        this.selector.find("#statusText").html(text);
     }
 
     resetPage()
     {
-        $('#'+this._domId).html(this._html);
+        this.selector.html(this._html);
     }
 
     resetElement(selector)
     {
         let el = $("<div>" + this._html + "</div>");
-        $('#'+this._domId).find(selector).html(el.find(selector).html());
+        this.selector.find(selector).html(el.find(selector).html());
     }
 
     activateDataTable(id, config=null) {
@@ -148,7 +153,7 @@ export abstract class Page
                 };
             }
             // @ts-ignore
-            return $('#'+this._domId).find("#"+id).DataTable(config);
+            return this.selector.find("#"+id).DataTable(config);
         }
     }
 }

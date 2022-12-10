@@ -54,7 +54,7 @@ export class SimulateMatchmakingFormPage extends Page
         let playerProfileConfigs=[];
         let totalPlayersAdded=0;
 
-        $('#'+this._domId).find(".playerProfileTemplate").each(function ()
+        this.selector.find(".playerProfileTemplate").each(function ()
         {
             let numPlayers = parseInt($(this).find('.numPlayers').val() as string);
             if (numPlayers >0)
@@ -124,7 +124,7 @@ export class SimulateMatchmakingFormPage extends Page
                 template.find("select#latencyProfile").append('<option value="' + profile.ProfileId + '">' + profile.Name + '</option>');
             });
         }
-        template.appendTo($('#'+this._domId).find("#simulationPlayerProfiles"));
+        template.appendTo(this.selector.find("#simulationPlayerProfiles"));
     }
 
     onGetPlayerProfilesResponse = (data) =>
@@ -132,7 +132,7 @@ export class SimulateMatchmakingFormPage extends Page
         this._playerProfiles = data;
         if (this._playerProfiles.length==0)
         {
-            $('#' + this._domId).find(".simulateMatchmakingFormContent").html('<div style="margin-top:20px" class="alert alert-danger">No player profiles found - please create a player profile before simulating matchmaking.</div>');
+            this.selector.find(".simulateMatchmakingFormContent").html('<div style="margin-top:20px" class="alert alert-danger">No player profiles found - please create a player profile before simulating matchmaking.</div>');
         }
     }
 
@@ -143,10 +143,10 @@ export class SimulateMatchmakingFormPage extends Page
 
     onGetMatchmakingRuleSetsResponse = (data) => {
         this._ruleSets = data;
-        $('#'+this._domId).find("#simulationRuleSet").html("");
+        this.selector.find("#simulationRuleSet").html("");
         this._ruleSets.map(ruleset=>
         {
-            $('#'+this._domId).find("#simulationRuleSet").append('<option value="' + ruleset.RuleSetArn + '">' + ruleset.RuleSetName + '</option>');
+            this.selector.find("#simulationRuleSet").append('<option value="' + ruleset.RuleSetArn + '">' + ruleset.RuleSetName + '</option>');
         })
     }
 }

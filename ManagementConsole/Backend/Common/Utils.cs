@@ -121,6 +121,12 @@ namespace ManagementConsoleBackend.Common
         {
             return (rng.NextDouble() * max);
         }
+        
+        public static string ReadEventStream(Stream stream)
+        {
+            using var reader = new StreamReader(stream);
+            return reader.ReadToEnd();
+        }
 
     }
 }

@@ -21,6 +21,12 @@ export class VirtualPlayerTasksRunningSubPopup extends SubPopup
         super(VirtualPlayerTasksRunningSubPopup.cacheKey, VirtualPlayerTasksRunningSubPopup.id);
     }
 
+    loadingComplete()
+    {
+        this.selector.find('.virtualPlayerTasksRunningContent').show();
+        this.selector.find('.loadingMessage').hide();
+    }
+
     refresh()
     {
         this.hideStatusAlert();
@@ -113,6 +119,7 @@ export class VirtualPlayerTasksRunningSubPopup extends SubPopup
         this.resetElement(".virtualPlayersTableContainer");
 
         $("table#virtualPlayersTable tbody").html(html);
+        this.loadingComplete();
         this.activateDataTable("virtualPlayersTable");
     };
 

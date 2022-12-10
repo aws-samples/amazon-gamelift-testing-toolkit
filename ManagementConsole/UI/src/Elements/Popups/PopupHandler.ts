@@ -23,6 +23,7 @@ import {FlexMatchSimulatorPopup} from "./FlexMatchSimulatorPopup";
 import {QueueSettingsPopup} from "./QueueSettingsPopup";
 import {VirtualPlayerTasksPopup} from "./VirtualPlayerTasksPopup";
 import {PageManager} from "../Pages/PageManager";
+import {PurgeDataPopup} from "./PurgeDataPopup";
 
 export class PopupHandler
 {
@@ -48,6 +49,7 @@ export class PopupHandler
         PopupHandler.emitter.on(Events.SHOW_FLEET_EVENTS_POPUP, PopupHandler.onShowFleetEventsPopup);
         PopupHandler.emitter.on(Events.SHOW_GAME_SESSIONS_TABLE_POPUP, PopupHandler.onShowGameSessionsTablePopup);
         PopupHandler.emitter.on(Events.SHOW_FLEXMATCH_SIMULATOR_POPUP, PopupHandler.onShowFlexMatchSimulatorPopup);
+        PopupHandler.emitter.on(Events.SHOW_PURGE_DATA_POPUP, PopupHandler.onShowPurgeDataPopup);
         PopupHandler.emitter.on(Events.SHOW_VIRTUAL_PLAYER_TASKS_POPUP, PopupHandler.onShowVirtualPlayerTasksPopup);
         PopupHandler.emitter.on(Events.SHOW_QUEUE_POPUP, PopupHandler.onShowQueuePopup);
         PopupHandler.emitter.on(Events.SHOW_QUEUE_EVENTS_POPUP, PopupHandler.onShowQueueEventsPopup);
@@ -210,6 +212,14 @@ export class PopupHandler
     {
         PopupHandler.onClosePopup();
         PopupHandler.popup = new QueueSettingsPopup(PopupHandler.scene, 0, 0);
+        PopupHandler.scene.add.existing(PopupHandler.popup);
+        PopupHandler.popup.show(event);
+    };
+
+    protected static onShowPurgeDataPopup = (event:PopupClickEvent) =>
+    {
+        PopupHandler.onClosePopup();
+        PopupHandler.popup = new PurgeDataPopup(PopupHandler.scene, 0, 0);
         PopupHandler.scene.add.existing(PopupHandler.popup);
         PopupHandler.popup.show(event);
     };

@@ -114,7 +114,7 @@ export class SimulateMatchmakingTicketsPage extends Page
 
         this.resetTicketHeadersTable();
 
-        $('#'+this._domId).find("table#matchmakingTicketHeadersTable tbody").html(html);
+        this.selector.find("table#matchmakingTicketHeadersTable tbody").html(html);
         this.activateDataTable("matchmakingTicketHeadersTable");
     }
 
@@ -139,7 +139,7 @@ export class SimulateMatchmakingTicketsPage extends Page
 
         this.resetEventsTable();
 
-        $('#' + this._domId).find("table#matchmakingTicketEventsTable tbody").html(html);
+        this.selector.find("table#matchmakingTicketEventsTable tbody").html(html);
 
         this.hideMatchmakingTicketsList();
         this.showMatchmakingTicketEventList();
@@ -153,32 +153,32 @@ export class SimulateMatchmakingTicketsPage extends Page
 
     hideMatchmakingTicketsList()
     {
-        $('#'+this._domId).find(".matchmakingTicketHeadersContent").hide();
+        this.selector.find(".matchmakingTicketHeadersContent").hide();
     }
 
     showMatchmakingTicketJson()
     {
-        $('#'+this._domId).find(".matchmakingTicketEventDetailContent").show();
+        this.selector.find(".matchmakingTicketEventDetailContent").show();
     }
 
     hideMatchmakingTicketJson()
     {
-        $('#'+this._domId).find(".matchmakingTicketEventDetailContent").hide();
+        this.selector.find(".matchmakingTicketEventDetailContent").hide();
     }
 
     showMatchmakingTicketsList()
     {
-        $('#'+this._domId).find(".matchmakingTicketHeadersContent").show();
+        this.selector.find(".matchmakingTicketHeadersContent").show();
     }
 
     showMatchmakingTicketEventList()
     {
-        $('#'+this._domId).find(".matchmakingTicketEventsContent").show();
+        this.selector.find(".matchmakingTicketEventsContent").show();
     }
 
     hideMatchmakingTicketEventList()
     {
-        $('#'+this._domId).find(".matchmakingTicketEventsContent").hide();
+        this.selector.find(".matchmakingTicketEventsContent").hide();
     }
 
     backToMatchmakingTicketsList()
@@ -197,7 +197,7 @@ export class SimulateMatchmakingTicketsPage extends Page
 
     resetJson()
     {
-        $('#'+this._domId).find("#matchmakingTicketEventJson").html("");
+        this.selector.find("#matchmakingTicketEventJson").html("");
     }
 
     showEventDetail = (ticketEvent) =>

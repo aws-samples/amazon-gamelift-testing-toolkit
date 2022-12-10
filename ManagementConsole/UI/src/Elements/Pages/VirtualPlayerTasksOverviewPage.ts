@@ -82,7 +82,7 @@ export class VirtualPlayerTasksOverviewPage extends Page
             runningTasks = data.Tasks.length;
         }
 
-        $("#" + this._domId).find("span.runningTasks").html(runningTasks);
+        this.selector.find("span.runningTasks").html(runningTasks);
         this.loadingComplete();
     };
 
@@ -103,7 +103,7 @@ export class VirtualPlayerTasksOverviewPage extends Page
 
     updateRunningScheduleTable(schedule, flashIndex=null)
     {
-        if (schedule.Actions.find(x=>x.Status=="Scheduled")==false)
+        if (schedule.Actions.find(x=>x.Status=="Scheduled")==undefined)
         {
             $('.runningScheduleTableTitle').html("Completed schedule " + schedule.ScheduleName);
             $('div.terminateSchedule').hide();
@@ -125,7 +125,7 @@ export class VirtualPlayerTasksOverviewPage extends Page
                 + '<td>' + action.Type + '</td>'
                 + '<td>' + action.NumTasks + '</td>'
                 + '<td>' + action.Status + '</td>'
-                + '<td>' + action.ExecutedTime + '</td>'
+                + '<td>' + action.StartedTime + '</td>'
                 + '</tr>';
         })
 
@@ -160,15 +160,15 @@ export class VirtualPlayerTasksOverviewPage extends Page
 
     loadingComplete()
     {
-        $('#'+this._domId).find('.overviewPage').show();
-        $('#'+this._domId).find('.loadingMessage').hide();
+        this.selector.find('.overviewPage').show();
+        this.selector.find('.loadingMessage').hide();
     }
 
     onGetSchedulerSchedulesResponse = (data) =>
     {
         if (data.Schedules.LaunchSchedule.State.Value=="DISABLED" && data.Schedules.TerminateSchedule.State.Value=="DISABLED")
         {
-            $("#" + this._domId).find("span.scheduleInfo").html("There is no schedule running.");
+            this.selector.find("span.scheduleInfo").html("There is no schedule running.");
 
         }
         else

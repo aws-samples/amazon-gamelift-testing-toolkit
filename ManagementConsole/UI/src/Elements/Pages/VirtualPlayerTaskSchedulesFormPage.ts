@@ -183,7 +183,8 @@ export class VirtualPlayerTaskSchedulesFormPage extends Page
                     NumTasks: tasksToRun,
                     Status: "Scheduled",
                     LaunchId: "-",
-                    ExecutedTime: "-",
+                    StartedTime: "-",
+                    EndedTime: "-",
                     ScheduledTime: "-",
                 };
                 lastLaunchTime = action.Minutes;
@@ -200,7 +201,8 @@ export class VirtualPlayerTaskSchedulesFormPage extends Page
             NumTasks: totalTasks,
             Status: "Scheduled",
             LaunchId: "-",
-            ExecutedTime: "-",
+            StartedTime: "-",
+            EndedTime: "-",
             ScheduledTime: "-",
         });
 

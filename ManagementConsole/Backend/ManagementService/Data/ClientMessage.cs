@@ -127,6 +127,13 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public string CapacityProvider;
     }
     
+    public class ClientMessagePurgeData : ClientMessage
+    {
+        public new string Type = "PurgeData";
+        public bool PurgeMatchmakingData;
+        public bool PurgeGameSessionsData;
+    }
+    
     public class ClientMessageGetLaunchRequest : ClientMessage
     {
         public new string Type = "GetLaunchRequest";

@@ -58,7 +58,7 @@ export class SimulateMatchmakingSimulationsPage extends Page
         });
 
         this.resetTable();
-        $('#'+this._domId).find("table#matchmakingSimulationsTable tbody").append( html);
+        this.selector.find("table#matchmakingSimulationsTable tbody").append( html);
         this.activateDataTable("matchmakingSimulationsTable");
     }
 

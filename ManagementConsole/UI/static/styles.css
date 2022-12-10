@@ -227,6 +227,16 @@ button#launchPlayers  { margin-left:0; float:left; margin-top:10px; }
     padding: 10px
 }
 
+.purgeDataPopup {
+    background: #eceeee;
+    border: 1px solid #42464b;
+    border-radius: 6px;
+    height: 400px;
+    margin: 0 auto 0;
+    width: 600px;
+    padding: 10px
+}
+
 .matchmakingTicketHeadersTablePopup {
     background: #eceeee;
     border: 1px solid #42464b;
@@ -691,3 +701,8 @@ a.terminateAllVirtualPlayerTasks { margin-left:10px; margin-top:4px}
 div.dataTables_wrapper {
     clear:both;
 }
+
+.purgeDataForm input { float:left; margin-left:10px; margin-top:5px}
+.purgeDataForm p { clear:left; font-size:1.3em; float:left }
+.purgeDataForm button { clear:both; float:left; margin-top:10px}
+.purgeDataProgress { clear:both; }
