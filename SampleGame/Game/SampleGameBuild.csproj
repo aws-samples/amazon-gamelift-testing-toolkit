@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="AWSSDK.CloudWatchLogs" Version="3.7.102.10" />
+      <PackageReference Include="AWSSDK.CloudWatchLogs" Version="3.7.102.12" />
       <PackageReference Include="AWSSDK.CognitoIdentity" Version="3.7.100.33" />
       <PackageReference Include="AWSSDK.GameLift" Version="3.7.102.1" />
       <PackageReference Include="AWSSDK.SecurityToken" Version="3.7.100.33" />
