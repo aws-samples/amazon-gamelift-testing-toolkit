@@ -278,7 +278,7 @@ export class VirtualPlayerTasksLaunchPage extends Page
                     else
                     {
                         $("button#launchPlayers").prop("disabled", true);
-                        this.selector.find("p#numTasksErrorText").show();
+                        this.selector.find("p#numTasksErrorText").hide();
                         this.setLaunchProgressText("Launching Virtual Player Tasks...");
                         Network.sendObject({Type:"LaunchVirtualPlayerTasks", NumPlayers:numPlayers, TaskDefinitionArn:taskDefinitionArn, CapacityProvider:fargateCapacityProvider});
                     }
