@@ -523,7 +523,7 @@ namespace SampleGameInfra.Lib
                 RuleSetName = ruleSetName
             });
 
-            matchConfig.AddDependsOn(ruleSet2Player);
+            matchConfig.AddDependency(ruleSet2Player);
 
             return matchConfig;
         }

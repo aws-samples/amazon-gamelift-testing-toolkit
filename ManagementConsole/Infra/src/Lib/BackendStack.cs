@@ -1319,7 +1319,7 @@ namespace ManagementConsoleInfra.Lib
                 Name = "MMSimulatorConfig"
             });
             
-            FlexMatchSimulator.AddDependsOn(ruleSet);
+            FlexMatchSimulator.AddDependency(ruleSet);
         }
     }
 }
