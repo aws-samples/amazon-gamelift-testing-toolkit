@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <!-- CDK Construct Library dependencies -->
-    <PackageReference Include="Amazon.CDK.Lib" Version="2.55.1" />
+    <PackageReference Include="Amazon.CDK.Lib" Version="2.56.0" />
     <PackageReference Include="Amazon.CDK.AWS.APIGatewayv2.Integrations.Alpha" Version="2.38.1-alpha.0" />
     <PackageReference Include="Amazon.CDK.AWS.APIGatewayv2.Alpha" Version="2.38.1-alpha.0" />
     <PackageReference Include="Amazon.CDK.AWS.APIGatewayv2.Authorizers.Alpha" Version="2.38.1-alpha.0" />
