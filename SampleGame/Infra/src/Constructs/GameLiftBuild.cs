@@ -39,7 +39,7 @@ namespace TestGame.CDK.Constructs
             {
                 Name = props.Name,
                 OperatingSystem = props.OperatingSystem,
-                StorageLocation = new CfnBuild.S3LocationProperty
+                StorageLocation = new CfnBuild.StorageLocationProperty
                 {
                     Bucket = BuildAsset.Asset.S3BucketName,
                     Key = BuildAsset.Asset.S3ObjectKey,
