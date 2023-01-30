@@ -20,7 +20,7 @@
     <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.101.21" />
     <PackageReference Include="AWSSDK.ECS" Version="3.7.104.11" />
     <PackageReference Include="AWSSDK.EventBridge" Version="3.7.100.51" />
-    <PackageReference Include="AWSSDK.GameLift" Version="3.7.102.19" />
+    <PackageReference Include="AWSSDK.GameLift" Version="3.7.102.30" />
     <PackageReference Include="AWSSDK.Lambda" Version="3.7.102.27" />
     <PackageReference Include="AWSSDK.S3" Version="3.7.101.51" />
     <PackageReference Include="AWSSDK.Scheduler" Version="3.7.101.9" />
