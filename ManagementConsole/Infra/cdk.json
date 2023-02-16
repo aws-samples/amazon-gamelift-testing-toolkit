@@ -27,6 +27,7 @@
     "@aws-cdk/aws-iam:minimizePolicies": true,
     "@aws-cdk/aws-ecs:arnFormatIncludesClusterName": true,
     "@aws-cdk/core:validateSnapshotRemovalPolicy": true,
+    "@aws-cdk/customresources:installLatestAwsSdkDefault": false,
     "@aws-cdk/aws-codepipeline:crossAccountKeyAliasStackSafeResourceName": true,
     "@aws-cdk/aws-s3:createDefaultLoggingPolicy": true,
     "@aws-cdk/aws-sns-subscriptions:restrictSqsDescryption": true,
