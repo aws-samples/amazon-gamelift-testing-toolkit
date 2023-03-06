@@ -21,6 +21,6 @@
     "host-docs-website-local": "docker run --rm -it -p 8000:8000 -v ${PWD}/docs:/docs squidfunk/mkdocs-material"
   },
   "devDependencies": {
-    "aws-cdk": "^2.65.0"
+    "aws-cdk": "^2.67.0"
   }
 }
