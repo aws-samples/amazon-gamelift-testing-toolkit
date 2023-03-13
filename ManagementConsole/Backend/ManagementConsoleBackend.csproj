@@ -25,7 +25,7 @@
     <PackageReference Include="AWSSDK.S3" Version="3.7.103.21" />
     <PackageReference Include="AWSSDK.Scheduler" Version="3.7.101.42" />
     <PackageReference Include="AWSSDK.ServiceQuotas" Version="3.7.100.84" />
-    <PackageReference Include="AWSSDK.StepFunctions" Version="3.7.102.57" />
+    <PackageReference Include="AWSSDK.StepFunctions" Version="3.7.102.62" />
     <PackageReference Include="CompareNETObjects" Version="4.79.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
   </ItemGroup>
