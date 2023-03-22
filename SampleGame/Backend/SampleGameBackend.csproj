@@ -10,19 +10,19 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.6.0" />
-    <PackageReference Include="Amazon.Lambda.CloudWatchEvents" Version="4.2.0" />
+    <PackageReference Include="Amazon.Lambda.CloudWatchEvents" Version="4.3.0" />
     <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
     <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.3.1" />
-    <PackageReference Include="AWSSDK.ApiGatewayManagementApi" Version="3.7.100.84" />
-    <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.104.22" />
-    <PackageReference Include="AWSSDK.CloudWatchLogs" Version="3.7.104.27" />
-    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.101.55" />
-    <PackageReference Include="AWSSDK.ECS" Version="3.7.105.5" />
-    <PackageReference Include="AWSSDK.EventBridge" Version="3.7.101.22" />
-    <PackageReference Include="AWSSDK.GameLift" Version="3.7.102.52" />
-    <PackageReference Include="AWSSDK.S3" Version="3.7.103.21" />
-    <PackageReference Include="AWSSDK.StepFunctions" Version="3.7.102.57" />
+    <PackageReference Include="AWSSDK.ApiGatewayManagementApi" Version="3.7.100.96" />
+    <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.104.34" />
+    <PackageReference Include="AWSSDK.CloudWatchLogs" Version="3.7.104.39" />
+    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.102.10" />
+    <PackageReference Include="AWSSDK.ECS" Version="3.7.105.17" />
+    <PackageReference Include="AWSSDK.EventBridge" Version="3.7.101.34" />
+    <PackageReference Include="AWSSDK.GameLift" Version="3.7.102.64" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.103.33" />
+    <PackageReference Include="AWSSDK.StepFunctions" Version="3.7.102.69" />
     <PackageReference Include="CompareNETObjects" Version="4.79.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 </Project>
