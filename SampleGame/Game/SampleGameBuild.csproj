@@ -6,10 +6,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="AWSSDK.CloudWatchLogs" Version="3.7.104.39" />
-      <PackageReference Include="AWSSDK.CognitoIdentity" Version="3.7.100.96" />
-      <PackageReference Include="AWSSDK.GameLift" Version="3.7.102.64" />
-      <PackageReference Include="AWSSDK.SecurityToken" Version="3.7.101.31" />
+      <PackageReference Include="AWSSDK.CloudWatchLogs" Version="3.7.104.42" />
+      <PackageReference Include="AWSSDK.CognitoIdentity" Version="3.7.100.99" />
+      <PackageReference Include="AWSSDK.GameLift" Version="3.7.102.67" />
+      <PackageReference Include="AWSSDK.SecurityToken" Version="3.7.101.34" />
       <PackageReference Include="CommandLineParser" Version="2.9.1" />
       <PackageReference Include="JetBrains.Annotations" Version="2022.3.1" />
       <PackageReference Include="log4net" Version="2.0.15" />
