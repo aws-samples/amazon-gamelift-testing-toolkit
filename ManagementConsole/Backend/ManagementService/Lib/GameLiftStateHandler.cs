@@ -96,7 +96,7 @@ namespace ManagementConsoleBackend.ManagementService.Lib
                         LocationCapacities = locationCapacities,
                         ScalingPolicies = await gameLiftRequestHandler.GetScalingPolicies(fleetId),
                         RuntimeConfiguration = await gameLiftRequestHandler.GetRuntimeConfiguration(fleetId),
-                        FleetEvents = await gameLiftRequestHandler.GetFleetEvents(fleetId),
+                        FleetEvents = new List<Event>(),//await gameLiftRequestHandler.GetFleetEvents(fleetId, 300),
                         FleetUtilization = await gameLiftRequestHandler.GetFleetUtilization(fleetId),
                         FleetAttributes = await gameLiftRequestHandler.GetFleetAttributes(fleetId),
                         Instances = instances,

@@ -261,6 +261,12 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public string QueueArn;
     }
     
+    public class ClientMessageGetGameFleetEvents : ClientMessage
+    {
+        public new string Type = "GetFleetEvents";
+        public string FleetId;
+    }
+    
     public class ClientMessageGetFleetScaling : ClientMessage
     {
         public new string Type = "GetFleetScaling";

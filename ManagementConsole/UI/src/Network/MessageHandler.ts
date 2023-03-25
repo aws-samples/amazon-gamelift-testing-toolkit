@@ -72,6 +72,10 @@ export class MessageHandler
                 this._emitter.emit(Events.GET_GAME_SESSIONS_RESPONSE, data.GameSessions);
                 break;
 
+            case "GetFleetEvents":
+                this._emitter.emit(Events.GET_FLEET_EVENTS_RESPONSE, data.FleetEvents);
+                break;
+
             case "GetFleetScaling":
                 this._emitter.emit(Events.GET_FLEET_SCALING_RESPONSE, data as SimpleResult);
                 break;

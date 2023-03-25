@@ -47,6 +47,12 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public List<FleetAttributes> FleetAttributes;
     }
     
+    public class ServerMessageGetFleetEvents : ServerMessage
+    {
+        public new string Type = "GetFleetEvents";
+        public List<Event> FleetEvents;
+    }
+    
     public class ServerMessageGetAliases : ServerMessage
     {
         public new string Type = "GetAliases";

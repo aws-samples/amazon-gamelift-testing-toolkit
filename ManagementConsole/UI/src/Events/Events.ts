@@ -18,6 +18,7 @@ export class Events
     public static SET_SCALING_POLICY_RESPONSE:string = "SetScalingPolicyResponse";
     public static DELETE_SCALING_POLICY_RESPONSE:string = "DeleteScalingPolicyResponse";
     public static UPDATE_FLEET_LOCATIONS_RESPONSE:string = "UpdateFleetLocationsResponse";
+    public static GET_FLEET_EVENTS_RESPONSE:string = "GetFleetEventsResponse";
     public static GET_GAME_SESSIONS_RESPONSE:string = "GetGameSessionsResponse";
     public static GET_GAME_SESSION_LOGS_RESPONSE:string = "GetGameSessionLogsResponse";
     public static GET_GAME_SESSION_QUEUE:string = "GetGameSessionQueue";

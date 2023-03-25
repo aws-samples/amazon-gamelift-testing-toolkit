@@ -702,19 +702,27 @@ namespace ManagementConsoleBackend.ManagementService.Lib
             }
         }
         
-        public async Task<List<Event>> GetFleetEvents(string fleetId)
+        public async Task<List<Event>> GetFleetEvents(string fleetId, int limit=5000)
         {
             var fleetEvents = new List<Event>();
             try
             {
-                var fleetEventsPaginator = _client.Paginators.DescribeFleetEvents(new DescribeFleetEventsRequest
+                var fleetEventsRequest = new DescribeFleetEventsRequest
                 {
-                    FleetId = fleetId
-                });
+                    FleetId = fleetId,
+                };
 
+                var fleetEventsPaginator = _client.Paginators.DescribeFleetEvents(fleetEventsRequest);
+
+                var numEvents = 0;
                 await foreach (var fleetEvent in fleetEventsPaginator.Events)
                 {
                     fleetEvents.Add(fleetEvent);
+                    numEvents++;
+                    if (numEvents >= limit)
+                    {
+                        break;
+                    }
                 }
 
                 return fleetEvents;

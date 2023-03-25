@@ -5,6 +5,8 @@ import 'phaser';
 import {DataTypes} from "../../Data/DataTypes";
 import {Popup} from "../Abstract/Popup";
 import FleetData = DataTypes.FleetData;
+import {Network} from "../../Network/Network";
+import {Events} from "../../Events/Events";
 
 export class FleetEventsPopup extends Popup
 {
@@ -20,6 +22,20 @@ export class FleetEventsPopup extends Popup
     {
         this._fleetData = data.gameObject.Data as FleetData;
 
+        Network.sendObject({Type:"GetFleetEvents", FleetId:this._fleetData.FleetId});
+
+    }
+
+    loadingComplete()
+    {
+        this.element.find('.fleetEventsContent').show();
+        this.element.find('.loadingMessage').hide();
+    }
+
+    onGetFleetEventsResponse = (data:DataTypes.FleetEvent[]) =>
+    {
+        console.log(data);
+        this._fleetData.FleetEvents = data;
         let html="";
         this._fleetData.FleetEvents.map(fleetEvent =>
         {
@@ -37,9 +53,8 @@ export class FleetEventsPopup extends Popup
                 '</tr>';
         })
         this.element.find("tbody").append(html);
-    }
 
-    drawComplete() {
+        this.loadingComplete();
         // @ts-ignore
         $('#fleetEventsTable').DataTable({
             scrollY: "400px",
@@ -50,5 +65,17 @@ export class FleetEventsPopup extends Popup
             ],
             order: [[ 0, "desc" ]]
         });
+    }
+
+    setupEventListeners()
+    {
+        super.setupEventListeners();
+        this._emitter.on(Events.GET_FLEET_EVENTS_RESPONSE, this.onGetFleetEventsResponse);
+    }
+
+    removeEventListeners()
+    {
+        super.removeEventListeners();
+        this._emitter.off(Events.GET_FLEET_EVENTS_RESPONSE, this.onGetFleetEventsResponse);
     }
 }

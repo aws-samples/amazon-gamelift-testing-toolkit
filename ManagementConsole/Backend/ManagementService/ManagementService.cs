@@ -209,6 +209,11 @@ public class ManagementService
                     case "GetFleetAttributes":
                         await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetFleetAttributes { FleetAttributes = await gameLiftRequestHandler.GetFleetAttributes()});
                         break;
+                    
+                    case "GetFleetEvents":
+                        var getFleetEventsRequest = JsonConvert.DeserializeObject<ClientMessageGetGameFleetEvents>(request.Body);
+                        await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetFleetEvents { FleetEvents = await gameLiftRequestHandler.GetFleetEvents(getFleetEventsRequest.FleetId)});
+                        break;
                         
                     case "GetAliases":
                         await Utils.SendJsonResponse(_connectionId, stageServiceUrl, new ServerMessageGetAliases { Aliases = await gameLiftRequestHandler.GetAliases()});
