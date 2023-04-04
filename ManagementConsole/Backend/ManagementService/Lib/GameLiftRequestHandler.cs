@@ -49,8 +49,17 @@ namespace ManagementConsoleBackend.ManagementService.Lib
 
         public async Task<List<FleetCapacity>> GetFleetCapacities()
         {
-            var fleetIds = await GetFleetIds();
-            
+            var fleetsAttributes = await GetFleetAttributes();
+            var fleetIds = new List<string>();
+
+            foreach (var fleet in fleetsAttributes)
+            {
+                if (fleet.ComputeType == ComputeType.EC2)
+                {
+                    fleetIds.Add(fleet.FleetId);
+                }
+            }
+
             try
             {
                 var fleetCapacitiesPaginator = _client.Paginators.DescribeFleetCapacity(new DescribeFleetCapacityRequest
