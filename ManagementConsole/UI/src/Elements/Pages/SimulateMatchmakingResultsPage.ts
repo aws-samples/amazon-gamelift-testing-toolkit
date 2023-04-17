@@ -32,6 +32,7 @@ export class SimulateMatchmakingResultsPage extends Page
         else
         if (el.hasClass("viewMatchInfo"))
         {
+            console.log("VIEWING MATCH INFO");
             PageManager.switchPage(Pages.SIMULATE_MATCHMAKING_MATCH_INFO, {currentSimulation:this._currentSimulation, currentMatchId:el.attr("id"), matches:this._matches});
         }
         else if (el.attr("id")=="backToSuccessfulMatchTickets")
@@ -84,6 +85,8 @@ export class SimulateMatchmakingResultsPage extends Page
             this._matches[matchResult.MatchId] = matchResult;
             let matchPlayerText="";
             let matchPlayers={};
+            let matchLatencyText="";
+            let matchLatencies={};
             let totalMatchTime=0;
             let totalPlayers=0;
             matchResult.Players.map(player =>
@@ -93,6 +96,14 @@ export class SimulateMatchmakingResultsPage extends Page
                 if (matchPlayers[player.MatchedTeam]==undefined)
                 {
                     matchPlayers[player.MatchedTeam]={};
+                }
+                if (player.LatencyProfileId!=null)
+                {
+                    if (matchLatencies[player["LatencyProfileName"]]==undefined)
+                    {
+                        matchLatencies[player["LatencyProfileName"]]=0;
+                    }
+                    matchLatencies[player["LatencyProfileName"]]++;
                 }
                 if (matchPlayers[player.MatchedTeam][player["ProfileName"]]==undefined)
                 {
@@ -116,13 +127,19 @@ export class SimulateMatchmakingResultsPage extends Page
                 matchPlayerText+="<br/>";
             });
 
+            Object.keys(matchLatencies).map(latencyProfile=>
+            {
+                matchLatencyText+= latencyProfile + " " + matchLatencies[latencyProfile] + "</br>";
+            });
+
             if (matchResult.MatchedSuccessfully)
             {
                 successfulMatches++;
                 successHtml += '<tr>' +
                     '<td>' + matchResult.Date + '</td>'+
-                    '<td>' + matchResult.MatchId + '</td>'+
+                    //'<td>' + matchResult.MatchId + '</td>'+
                     '<td>' + matchPlayerText + '</td>'+
+                    '<td>' + matchLatencyText + '</td>'+
                     '<td>' + (totalMatchTime/totalPlayers).toFixed(1) + ' seconds</td>'+
                     '<td><a class="viewMatchInfo btn btn-primary btn-sm" id="' + matchResult.MatchId +'" href="' + "#" + '">Match Info</a></td>' +
                     '</tr>';

@@ -63,6 +63,9 @@ namespace ManagementConsoleBackend.ManagementService.Data
 
         [DynamoDBProperty("TimeToLive")]
         public long TimeToLive;
+        
+        [DynamoDBProperty("Errors")]
+        public List<string> Errors { get; set; }
     }
 
     public class MatchmakingSimulationPlayerConfig
@@ -85,6 +88,7 @@ namespace ManagementConsoleBackend.ManagementService.Data
         public string MatchedTeam;
         public Player PlayerData;
         public string LatencyProfileId;
+        public string LatencyProfileName;
         public int TimeDelay;
         public bool MatchedSuccessfully = false;
         public long StartMatchTime;

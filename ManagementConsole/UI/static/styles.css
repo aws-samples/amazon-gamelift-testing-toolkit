@@ -333,6 +333,7 @@ select { font-size:1.3em; height: 25px;}
 .errorBorder { border: 1px solid #ff0000 }
 
 span.matchmakingStatus { padding:10px; display:inline-block }
+span.failedBg { background-color: #ff0000 }
 span.inProgressBg { background-color: #ffcc00 }
 span.completeBg { background-color: #00cc00 }
 

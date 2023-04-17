@@ -181,6 +181,7 @@ namespace ManagementConsoleBackend.ManagementService
                             if (latencyProfile != null)
                             {
                                 matchmakingPlayer.LatencyProfileId = latencyProfile.ProfileId;
+                                matchmakingPlayer.LatencyProfileName = latencyProfile.Name;
                             }
 
                             playerBatch.AddDocumentToPut(
@@ -213,7 +214,37 @@ namespace ManagementConsoleBackend.ManagementService
                 if (playersByTimeDelay.ContainsKey(secondsPassed))
                 {
                     LambdaLogger.Log(DateTime.Now.ToLongTimeString() + " REQUESTING " + playersByTimeDelay[secondsPassed].Count + " PLAYERS");
-                    await StartMatching(playersByTimeDelay[secondsPassed], gameLiftRequestHandler, flexMatchSimulatorArn, simulation.SimulationId);
+                    var matchErrors = await StartMatching(playersByTimeDelay[secondsPassed], gameLiftRequestHandler, flexMatchSimulatorArn, simulation.SimulationId);
+                    if (matchErrors.Count>0)
+                    {
+                        var updateRequest = new UpdateItemRequest
+                        {
+                            TableName = Environment.GetEnvironmentVariable("MatchmakingSimulationTableName"),
+                            Key = new Dictionary<string, AttributeValue>()
+                                {{"SimulationId", new AttributeValue {S = simulation.SimulationId }}},
+                            UpdateExpression = "SET #status = :status, #errors = :errors",
+                            ExpressionAttributeNames = new Dictionary<string, string>
+                            {
+                                {"#status", "Status"},
+                                {"#errors", "Errors"},
+                            },
+                            ExpressionAttributeValues = new Dictionary<string, AttributeValue>()
+                            {
+                                {":status", new AttributeValue {S = "Failed"}},
+                                {":errors", new AttributeValue {SS = matchErrors}},
+                            }
+                        };
+                        LambdaLogger.Log("SIMULATION FAILED");
+                        try
+                        {
+                            await dynamoDbClient.UpdateItemAsync(updateRequest);
+                        }
+                        catch (Exception e)
+                        {
+                            LambdaLogger.Log(e.Message);
+                        }
+                        break;
+                    }
                 }
                 System.Threading.Thread.Sleep(1000);
                 secondsPassed++;
@@ -224,7 +255,7 @@ namespace ManagementConsoleBackend.ManagementService
             return true;
         }
     
-        private async Task<bool> StartMatching(List<Player> players, GameLiftRequestHandler gameLiftRequestHandler, string flexMatchSimulatorArn, string simulationId)
+        private async Task<List<string>> StartMatching(List<Player> players, GameLiftRequestHandler gameLiftRequestHandler, string flexMatchSimulatorArn, string simulationId)
         {
             var errors = new List<string>();
             
@@ -234,7 +265,7 @@ namespace ManagementConsoleBackend.ManagementService
             {
                 foreach (var player in players)
                 {
-                    errors = await gameLiftRequestHandler.StartMatchmaking(flexMatchSimulatorArn, player);
+                    errors.AddRange(await gameLiftRequestHandler.StartMatchmaking(flexMatchSimulatorArn, player));
                     if (errors.Count > 0)
                     {
                         LambdaLogger.Log(errors[0]);
@@ -248,7 +279,7 @@ namespace ManagementConsoleBackend.ManagementService
                 errors.Add(e.Message);
             }
 
-            return true;
+            return errors;
         }
         
                

@@ -91,19 +91,30 @@ export class SimulateMatchmakingOutputPage extends Page
         });
         let totalMatchAttempts = simulation.MatchesMade+simulation.MatchesFailed;
         let totalEvents = simulation.MatchmakingCancelledEvents + simulation.MatchmakingFailedEvents + simulation.MatchmakingSearchingEvents + simulation.PotentialMatchCreatedEvents + simulation.MatchmakingSucceededEvents;
+        this.selector.find(".simulateMatchmakingOutput p.simulationErrors").html("");
 
         if (simulation.PlayersMatched + simulation.PlayersFailed == totalPlayers)
         {
             this.stopPolling();
             this.selector.find(".simulateMatchmakingOutput span.matchmakingStatus").html("Simulation Complete");
-            this.selector.find(".simulateMatchmakingOutput span.matchmakingStatus").removeClass("inProgressBg").addClass("completeBg");
+            this.selector.find(".simulateMatchmakingOutput span.matchmakingStatus").removeClass("failedBg").removeClass("inProgressBg").addClass("completeBg");
+            this.selector.find("#showSimulationResults").show();
+            this.selector.find("#showSimulationTickets").show();
+        }
+        else
+        if (simulation.Status=="Failed")
+        {
+            this.stopPolling();
+            this.selector.find(".simulateMatchmakingOutput span.matchmakingStatus").html("Simulation Failed");
+            this.selector.find(".simulateMatchmakingOutput p.simulationErrors").html(simulation.Errors.join("<br/>"));
+            this.selector.find(".simulateMatchmakingOutput span.matchmakingStatus").removeClass("completeBg").removeClass("inProgressBg").addClass("failedBg");
             this.selector.find("#showSimulationResults").show();
             this.selector.find("#showSimulationTickets").show();
         }
         else
         {
             this.selector.find(".simulateMatchmakingOutput span.matchmakingStatus").html("Simulation In Progress");
-            this.selector.find(".simulateMatchmakingOutput span.matchmakingStatus").removeClass("completeBg").addClass("inProgressBg");
+            this.selector.find(".simulateMatchmakingOutput span.matchmakingStatus").removeClass("failedBg").removeClass("completeBg").addClass("inProgressBg");
         }
 
         this.selector.find(".simulateMatchmakingOutput span.simulationDate").html(simulation.Date);
