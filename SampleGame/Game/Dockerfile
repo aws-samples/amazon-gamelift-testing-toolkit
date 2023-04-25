@@ -1,4 +1,4 @@
-FROM amazonlinux:latest
+FROM amazonlinux:2
 RUN yum update -y
 RUN mkdir /local/game
 WORKDIR /local/game/
