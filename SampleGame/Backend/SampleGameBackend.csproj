@@ -18,7 +18,7 @@
     <PackageReference Include="AWSSDK.CloudWatchLogs" Version="3.7.104.42" />
     <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.102.13" />
     <PackageReference Include="AWSSDK.ECS" Version="3.7.105.20" />
-    <PackageReference Include="AWSSDK.EventBridge" Version="3.7.101.37" />
+    <PackageReference Include="AWSSDK.EventBridge" Version="3.7.102.16" />
     <PackageReference Include="AWSSDK.GameLift" Version="3.7.102.67" />
     <PackageReference Include="AWSSDK.S3" Version="3.7.103.36" />
     <PackageReference Include="AWSSDK.StepFunctions" Version="3.7.102.72" />
