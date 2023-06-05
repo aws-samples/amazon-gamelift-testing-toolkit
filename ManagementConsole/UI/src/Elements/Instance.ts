@@ -63,34 +63,29 @@ export class Instance extends Container
     updateInstance(instance:DataTypes.Instance)
     {
         this._instance = instance;
-        if (this._instance.Status?.Value=="PENDING")
+        switch (this._instance.Status?.Value)
         {
-            this._image.tint = 0x00cc00;
-            this._image.alpha=0.75;
-            this.startFlashing();
-        }
-        else
-        if (this._instance.Status?.Value=="TERMINATING")
-        {
-            this._image.tint = 0xcc0000;
-            this._image.alpha=0.75;
-            this.startFlashing();
-        }
-        else
-        {
-            this._flashingAnim.stop(0);
-            this._image.clearTint();
-            this._image.clearAlpha();
+            case "PENDING":
+            case "Activating":
+            case "PendingAuxProxyRegistration":
+                this._image.tint = 0x00cc00;
+                this._image.alpha=0.75;
+                this.startFlashing();
+                break;
+
+            case "TERMINATING":
+                this._image.tint = 0xcc0000;
+                this._image.alpha=0.75;
+                this.startFlashing();
+                break;
+
+            default:
+                this._flashingAnim.stop(0);
+                this._image.clearTint();
+                this._image.clearAlpha();
         }
 
-        if (ConsoleScene.animationsEnabled)
-        {
-            this.visible=true;
-        }
-        else
-        {
-            this.visible=false;
-        }
+        this.visible = ConsoleScene.animationsEnabled;
     }
 
     onTouch = (pointer, localX, localY, event)=>
