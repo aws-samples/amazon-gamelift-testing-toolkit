@@ -13,19 +13,19 @@
     <PackageReference Include="Amazon.Lambda.CloudWatchEvents" Version="4.3.0" />
     <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
     <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.3.1" />
-    <PackageReference Include="AWSSDK.ApiGatewayManagementApi" Version="3.7.100.140" />
-    <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.105.33" />
-    <PackageReference Include="AWSSDK.CloudWatch" Version="3.7.104.15" />
-    <PackageReference Include="AWSSDK.CloudWatchLogs" Version="3.7.104.84" />
-    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.103.16" />
-    <PackageReference Include="AWSSDK.ECS" Version="3.7.108.15" />
-    <PackageReference Include="AWSSDK.EventBridge" Version="3.7.102.30" />
-    <PackageReference Include="AWSSDK.GameLift" Version="3.7.104.5" />
-    <PackageReference Include="AWSSDK.Lambda" Version="3.7.110.2" />
-    <PackageReference Include="AWSSDK.S3" Version="3.7.104.20" />
-    <PackageReference Include="AWSSDK.Scheduler" Version="3.7.101.99" />
-    <PackageReference Include="AWSSDK.ServiceQuotas" Version="3.7.100.129" />
-    <PackageReference Include="AWSSDK.StepFunctions" Version="3.7.102.113" />
+    <PackageReference Include="AWSSDK.ApiGatewayManagementApi" Version="3.7.100.144" />
+    <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.107.2" />
+    <PackageReference Include="AWSSDK.CloudWatch" Version="3.7.104.19" />
+    <PackageReference Include="AWSSDK.CloudWatchLogs" Version="3.7.105.2" />
+    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.103.20" />
+    <PackageReference Include="AWSSDK.ECS" Version="3.7.108.19" />
+    <PackageReference Include="AWSSDK.EventBridge" Version="3.7.102.34" />
+    <PackageReference Include="AWSSDK.GameLift" Version="3.7.104.9" />
+    <PackageReference Include="AWSSDK.Lambda" Version="3.7.111.3" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.104.31" />
+    <PackageReference Include="AWSSDK.Scheduler" Version="3.7.101.103" />
+    <PackageReference Include="AWSSDK.ServiceQuotas" Version="3.7.100.144" />
+    <PackageReference Include="AWSSDK.StepFunctions" Version="3.7.102.117" />
     <PackageReference Include="CompareNETObjects" Version="4.79.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
