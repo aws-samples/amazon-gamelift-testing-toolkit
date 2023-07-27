@@ -493,7 +493,7 @@ namespace ManagementConsoleInfra.Lib
 
             StatePollerStateMachine = new StateMachine(this, "PollerStateMachine", new StateMachineProps
             {
-                Definition = configureCount,
+                DefinitionBody = DefinitionBody.FromChainable(configureCount),
             });
             // Adding specific CDK-Nag Suppressions
             NagSuppressions.AddResourceSuppressions(StatePollerStateMachine, new INagPackSuppression[]
@@ -685,7 +685,7 @@ namespace ManagementConsoleInfra.Lib
 
             GameSessionPollerStateMachine = new StateMachine(this, "GameSessionPollerStateMachine", new StateMachineProps
             {
-                Definition = configureCount,
+                DefinitionBody = DefinitionBody.FromChainable(configureCount),
             });
             // Adding specific CDK-Nag Suppressions
             NagSuppressions.AddResourceSuppressions(GameSessionPollerStateMachine, new INagPackSuppression[]
