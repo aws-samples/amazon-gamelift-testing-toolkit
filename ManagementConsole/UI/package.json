@@ -34,7 +34,7 @@
         "jquery": "^3.6.1",
         "jsoneditor": "^9.9.0",
         "jsonpath": "^1.1.1",
-        "phaser": "^3.55.2",
+        "phaser": "3.55.2",
         "phaser3-rex-plugins": "^1.1.66",
         "progress-webpack-plugin": "^1.0.16",
         "raw-loader": "^4.0.2",
@@ -47,6 +47,9 @@
         "webpack-dev-server": "^4.9.0",
         "webpack-merge": "^5.8.0",
         "write-file-webpack-plugin": "^4.5.1"
+    },
+    "resolutions": {
+    	"**/escodegen": "^2.1.0"
     },
     "engines": {
         "node": ">=14"
