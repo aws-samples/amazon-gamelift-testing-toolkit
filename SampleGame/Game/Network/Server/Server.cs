@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System;
 using System.Net;
 using System.Net.Sockets;
+using Microsoft.Extensions.Logging;
 
 namespace SampleGameBuild.Network.Server
 {
@@ -21,7 +22,8 @@ namespace SampleGameBuild.Network.Server
         {
             _gameServer = gameServer;
             _clients = new List<TcpClient>();
-
+            
+            Console.WriteLine("server started");
             if (StartListener(port))
             {
                 _gameServer.OnReady();

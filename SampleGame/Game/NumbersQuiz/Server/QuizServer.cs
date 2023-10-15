@@ -19,31 +19,35 @@ namespace SampleGameBuild.NumbersQuiz.Server
     {
         private GameState _gameState;
         private Players _players;
-        public readonly int _port;
         private GameLiftHandler _gameLiftHandler;
         private Stopwatch _connectionTimer;
         private Aws.GameLift.Server.Model.GameSession _gameSession;
         private string _logFilePath;
         private readonly int _numGames;
+        private Options _options;
 
-        public QuizServer(int port, int numGames=15)
+        public QuizServer(Options options, int numGames=15)
         {
-            _logFilePath = "/local/game/serverlogs-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + $"-{port}.txt";
+            _options = options;
+            //_logFilePath = "/local/game/serverlogs-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + $"-{port}.txt";
+            _logFilePath = "/tmp/serverlogs-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + $"-{_options.Port}.txt";
             Console.WriteLine(_logFilePath);
-            GameLogger.LogFilePath = _logFilePath;
-            _port = port;
+            //GameLogger.LogFilePath = _logFilePath;
+            Console.WriteLine("Am running");
             _numGames = numGames;
             _gameState = new GameState();
             _players = new Players();
             _connectionTimer = new Stopwatch();
+
             _gameLiftHandler = new GameLiftHandler(this);
 
             Running = true;
+
         }
 
         public int Port
         {    
-            get { return _port; }    
+            get { return _options.Port; }    
         }
 
         public string LogFilePath
@@ -56,7 +60,7 @@ namespace SampleGameBuild.NumbersQuiz.Server
         public void OnReady()
         {
             GameLogger.Log("GameLift SDK:" + GameLiftHandler.GetSDKVersion());
-            _gameLiftHandler.InitGameLift();
+            _gameLiftHandler.InitialiseGameLift(_options);
         }
 
         public void OnConnection(TcpClient client)
@@ -295,10 +299,10 @@ namespace SampleGameBuild.NumbersQuiz.Server
         {
             Console.WriteLine("metadata loaded");
             GameLogger.Log("Loaded metadata:" + JsonConvert.SerializeObject(metadata));
-            if (AwsHandler.AssumeInstanceRole(metadata.InstanceRoleArn))
+            /*if (AwsHandler.AssumeInstanceRole(metadata.InstanceRoleArn))
             {
                 GameLogger.Log("role assumed");
-            }
+            }*/
         }
 
         public void OnGameLiftSDKActivationSuccess(GenericOutcome outcome)

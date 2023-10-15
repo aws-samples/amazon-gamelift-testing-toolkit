@@ -1,25 +1,23 @@
 #!/bin/bash
+sudo dnf install -y 'dnf-command(config-manager)'
+
 sudo rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm
-sudo yum -y install dotnet-sdk-6.0 openssl-libs unzip yum-utils
+sudo dnf install -y dotnet-sdk-7.0 openssl-libs unzip
 
-sudo mkdir -p mono_dependencies
-cd mono_dependencies
-sudo rpm --import "http://keyserver.ubuntu.com/pks/lookup?op=get&search=0x3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF"
-sudo yum-config-manager --add-repo http://download.mono-project.com/repo/centos/
-sudo yum -y install mono-devel mono-complete nuget
-cd ..
-sudo rm -rf mono_dependencies
+sudo dnf config-manager --add-repo https://download.mono-project.com/repo/centos8-stable.repo
+sudo dnf install -y mono-complete nuget mono-devel
 
-sudo curl -O https://gamelift-release.s3-us-west-2.amazonaws.com/GameLift_06_03_2021.zip
+sudo curl -O https://gamelift-server-sdk-release.s3.us-west-2.amazonaws.com/csharp/GameLift-CSharp-ServerSDK-5.1.1.zip
 sudo mkdir DLL
 sudo mkdir aws-gamelift-sdk-temp
-sudo unzip GameLift_06_03_2021.zip -d aws-gamelift-sdk-temp
-sudo rm GameLift_06_03_2021.zip
-cd aws-gamelift-sdk-temp/GameLift-SDK-Release-4.0.2/GameLift-CSharp-ServerSDK-4.0.2/
-sudo nuget restore
-sudo msbuild GameLiftServerSDKNet45.sln -property:Configuration=Release
-sudo cp Net45/bin/Release/* ../../../DLL/
-cd ../../..
+sudo unzip GameLift-CSharp-ServerSDK-5.1.1.zip -d aws-gamelift-sdk-temp
+sudo rm GameLift-CSharp-ServerSDK-5.1.1.zip
+
+cd aws-gamelift-sdk-temp/src/
+sudo nuget restore GameLiftServerSDK.sln 
+sudo msbuild GameLiftServerSDK.sln -property:Configuration=Release -property:TargetFrameworkVersion=v4.6.2
+sudo cp src/GameLiftServerSDK/bin/x64/Release/net6.0/* ../../DLL/
+cd ../../
 sudo rm -rf aws-gamelift-sdk-temp
 
 sudo dotnet publish -c SampleGameBuild.csproj -r linux-x64 --self-contained true

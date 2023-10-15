@@ -20,6 +20,8 @@ namespace ManagementConsoleInfra.Lib
         
         internal InfraStage(Construct scope, string id, InfraStageProps props = null) : base(scope, id, props)
         {
+            var logsStack = new ApiGwLogsStack(this, "ApiGwLogsStack");
+            
             SecurityStack = new SecurityStack(this, "SecurityStack", new SecurityProps
             {
                 Description = "GameLift Testing Toolkit - Security infrastructure"
@@ -47,6 +49,9 @@ namespace ManagementConsoleInfra.Lib
                 EncryptionKey = SecurityStack.EncryptionKey,
                 Description = "(SO9068) GameLift Testing Toolkit - Backend infrastructure"
             });
+            
+            BackendStack.AddDependency(logsStack);
+            
             WebStack = new WebStack(this, "WebStack", new WebProps
             {
                 ApiProdStage = BackendStack.ProdStage,

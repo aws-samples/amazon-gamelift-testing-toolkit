@@ -22,8 +22,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Reference Include="GameLiftServerSDKNet45, Version=4.0.0.0, Culture=neutral, PublicKeyToken=null">
-        <HintPath>DLL\GameLiftServerSDKNet45.dll</HintPath>
+      <Reference Include="GameLiftServerSDK">
+        <HintPath>DLL\GameLiftServerSDK.dll</HintPath>
+      </Reference>
+      <Reference Include="System.Net.WebSockets.Client">
+        <HintPath>DLL\System.Net.WebSockets.Client.dll</HintPath>
       </Reference>
     </ItemGroup>
 

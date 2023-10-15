@@ -16,7 +16,7 @@ namespace SampleGameInfra.Lib
     {
         
         // Update with arguments for running game client
-        private static string[] GameClientArguments = new string[]{"/local/game/bin/SampleGameBuild.csproj/net6.0/linux-x64/SampleGameBuild","--type", "client", "-u", "wss://qpl45ulh80.execute-api.eu-west-1.amazonaws.com/prod"};
+        private static string[] GameClientArguments = new string[]{"/local/game/bin/SampleGameBuild.csproj/net6.0/linux-x64/SampleGameBuild","--type", "client" };
         internal InfraStage(Construct scope, string id, InfraStageProps props = null) : base(scope, id, props)
         {
             var virtualPlayersConfig = new VirtualPlayersConfiguration
@@ -28,16 +28,31 @@ namespace SampleGameInfra.Lib
             var gameLiftBuildProps = new GameLiftBuildProps
             {
                 AssetPath = "../Game/", 
-                Name = "Sample Game Build", 
-                OperatingSystem = GameLiftBuildOs.AmazonLinux2, 
+                Name = "Sample Game Build",
                 Version = "0.01",
+                ServerSdkVersion = "5.1.1",
+                OperatingSystem = GameLiftBuildOs.AmazonLinux2023,
             };
+
+            if (scope.Node.GetContext("os").ToString() == "windows2016")
+            {
+                gameLiftBuildProps.OperatingSystem = GameLiftBuildOs.Windows2016;
+            }
+
+            if (scope.Node.GetContext("os").ToString() == "al2023")
+            {
+                gameLiftBuildProps.OperatingSystem = GameLiftBuildOs.AmazonLinux2023;
+            }
+
+            var apiGwLogsStack = new ApiGwLogsStack(this, "ApiGwLogsStack");
 
             var backendStack = new BackendStack(this, "BackendStack", new BackendStackProps
             {
                 GameLiftBuildProps = gameLiftBuildProps,
                 Description = "GameLift Testing Toolkit - Sample Game Backend infrastructure"
             });
+            
+            backendStack.AddDependency(apiGwLogsStack);
 
             var virtualPlayersStack = new VirtualPlayersStack(this, "VirtualPlayerStack", new VirtualPlayersStackProps
             {

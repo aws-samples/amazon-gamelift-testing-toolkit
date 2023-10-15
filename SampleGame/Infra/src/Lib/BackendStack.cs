@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using Amazon.CDK;
+using Amazon.CDK.AWS.APIGateway;
 using Amazon.CDK.AWS.Apigatewayv2;
 using Amazon.CDK.AWS.Apigatewayv2.Alpha;
 using Amazon.CDK.AWS.Apigatewayv2.Integrations.Alpha;
@@ -20,6 +21,7 @@ using Newtonsoft.Json;
 using GameLift = Amazon.CDK.AWS.GameLift;
 using TestGame.CDK.Constructs;
 using Attribute = Amazon.CDK.AWS.DynamoDB.Attribute;
+using CfnStage = Amazon.CDK.AWS.Apigatewayv2.CfnStage;
 
 namespace SampleGameInfra.Lib
 {
@@ -84,7 +86,7 @@ namespace SampleGameInfra.Lib
                 DesiredEc2Instances = 0,
                 MinSize = 0,
                 InstanceRoleArn = instanceRole.RoleArn,
-            }, 10);
+            }, 10, props.GameLiftBuildProps.OperatingSystem);
             
             var alias = CreateAlias( "SampleGameOnDemandAlias", fleet);
             
@@ -98,7 +100,7 @@ namespace SampleGameInfra.Lib
                 DesiredEc2Instances = 0,
                 MinSize = 0,
                 InstanceRoleArn = instanceRole.RoleArn,
-            }, 10);
+            }, 10, props.GameLiftBuildProps.OperatingSystem);
             
             var spotAlias = CreateAlias( "SampleGameSpotAlias", spotFleet);
             var aliases = new[] {spotAlias, alias};
@@ -235,7 +237,7 @@ namespace SampleGameInfra.Lib
             var gameClientServiceFunctionArn = GameClientServiceFunction.FunctionArn;
             var gameClientServiceApi = $"2015-03-31/functions/{gameClientServiceFunctionArn}/invocations";
             var integrationUri = $"arn:aws:apigateway:{this.Region}:lambda:path/{gameClientServiceApi}";
-            
+
             WebSocketApi = new WebSocketApi(this, "GCSAPIGW", new WebSocketApiProps
             {
                 ApiName = "GameClientServiceApi",
@@ -243,7 +245,7 @@ namespace SampleGameInfra.Lib
                 {
                     Integration = new WebSocketLambdaIntegration("GameClientServiceIntegration", GameClientServiceFunction),
                 },
-                RouteSelectionExpression = "$request.body.Type"
+                RouteSelectionExpression = "$request.body.Type",
             });
 
             var connectIntegration = new CfnIntegration(this, "WebSocketConnectIntegration", new CfnIntegrationProps
@@ -265,9 +267,9 @@ namespace SampleGameInfra.Lib
             {
                 StageName = "prod",
                 WebSocketApi = WebSocketApi,
-                AutoDeploy = true
+                AutoDeploy = true,
             });
-            
+
             GameIdentityPool = new IdentityPool(this, "SampleGameIdentityPool", new IdentityPoolProps
             {
                 AllowUnauthenticatedIdentities = true,
@@ -360,18 +362,30 @@ namespace SampleGameInfra.Lib
             }));
         }
 
-        internal GameLift.CfnFleet CreateFleet(GameLiftBuild build, string fleetName, GameLift.CfnFleetProps fleetProps, int numProcesses=1 )
+        internal GameLift.CfnFleet CreateFleet(GameLiftBuild build, string fleetName, GameLift.CfnFleetProps fleetProps, int numProcesses, string operatingSystem )
         {
             var processProperties = new List<GameLift.CfnFleet.ServerProcessProperty>();
             var inboundPermissionProperties = new List<GameLift.CfnFleet.IpPermissionProperty>();
             for (int port = 1935; port < 1935+numProcesses; port++)
             {
-                processProperties.Add(new GameLift.CfnFleet.ServerProcessProperty
+                if (operatingSystem == GameLiftBuildOs.Windows2016)
                 {
-                    ConcurrentExecutions = 1,
-                    LaunchPath = "/local/game/bin/SampleGameBuild.csproj/net6.0/linux-x64/SampleGameBuild",
-                    Parameters = "--type server --port " + port,
-                });
+                    processProperties.Add(new GameLift.CfnFleet.ServerProcessProperty
+                    {
+                        ConcurrentExecutions = 1,
+                        LaunchPath = @"C:\game\bin\SampleGameBuild.csproj\net6.0\win-x64\publish\SampleGameBuild.exe",
+                        Parameters = "--type server --port " + port,
+                    });
+                }
+                else
+                {
+                    processProperties.Add(new GameLift.CfnFleet.ServerProcessProperty
+                    {
+                        ConcurrentExecutions = 1,
+                        LaunchPath = "/local/game/bin/SampleGameBuild.csproj/net6.0/linux-x64/SampleGameBuild",
+                        Parameters = "--type server --port " + port,
+                    });
+                }
                 
                 inboundPermissionProperties.Add(new GameLift.CfnFleet.IpPermissionProperty
                 {

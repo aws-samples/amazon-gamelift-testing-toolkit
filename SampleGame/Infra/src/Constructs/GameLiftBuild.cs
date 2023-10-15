@@ -13,13 +13,14 @@ namespace TestGame.CDK.Constructs
         public string Name;
         public string Version;
         public string OperatingSystem;
+        public string ServerSdkVersion;
     }
 
     public struct GameLiftBuildOs
     {
-        public static string AmazonLinux1 = "AMAZON_LINUX";
         public static string AmazonLinux2 = "AMAZON_LINUX_2";
-        public static string Windows2012 = "WINDOWS_2012";
+        public static string Windows2016 = "WINDOWS_2016";
+        public static string AmazonLinux2023 = "AMAZON_LINUX_2023";
     }
      
     public class GameLiftBuild : Construct
@@ -45,7 +46,8 @@ namespace TestGame.CDK.Constructs
                     Key = BuildAsset.Asset.S3ObjectKey,
                     RoleArn = BuildAsset.Role.RoleArn
                 },
-                Version = props.Version
+                Version = props.Version,
+                ServerSdkVersion = props.ServerSdkVersion,
             });
             
             CfnBuild.Node.AddDependency(BuildAsset);

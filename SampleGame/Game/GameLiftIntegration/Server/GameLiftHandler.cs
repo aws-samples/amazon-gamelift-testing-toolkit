@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
+using Aws.GameLift;
 using Aws.GameLift.Server;
 using Newtonsoft.Json;
 using SampleGameBuild.NumbersQuiz.Server;
@@ -23,12 +24,10 @@ namespace SampleGameBuild.GameLiftIntegration.Server
             LoadMetadata();
         }
 
-        public void InitGameLift()
-        {
-            Console.WriteLine("Init SDK");
+        public void ProcessInitOutcome(GenericOutcome initOutcome)
+        {            
             try
             {
-                var initOutcome = GameLiftServerAPI.InitSDK();
                 Console.WriteLine("inited");
                 if (initOutcome.Success)
                 {
@@ -45,6 +44,33 @@ namespace SampleGameBuild.GameLiftIntegration.Server
             catch (Exception e)
             {
                 _gameServer.OnGameLiftSDKActivationException(e);
+            }
+        }
+        
+        public void InitialiseGameLift(Options options)
+        {
+            if (options.AnywhereAuthToken!=null && options.AnywhereFleetId!=null && options.AnywhereHostId!=null && options.AnywhereWebSocketUrl!=null)
+            {
+                Console.WriteLine("Init GameLift Anywhere");
+                Process currentProcess = Process.GetCurrentProcess();
+                var serverParams = new ServerParameters(options.AnywhereWebSocketUrl, currentProcess.Id.ToString(),
+                    options.AnywhereHostId, options.AnywhereFleetId, options.AnywhereAuthToken);
+                
+                var initOutcome = GameLiftServerAPI.InitSDK(serverParams);
+                ProcessInitOutcome(initOutcome);
+            }
+            else
+            {
+                Console.WriteLine("Init GameLift Managed");
+                try
+                {
+                    var initOutcome = GameLiftServerAPI.InitSDK();
+                    ProcessInitOutcome(initOutcome);
+                }
+                catch (Exception e)
+                {
+                    _gameServer.OnGameLiftSDKActivationException(e);
+                }
             }
         }
 
@@ -175,6 +201,10 @@ namespace SampleGameBuild.GameLiftIntegration.Server
                         { 
                             _gameServer.OnGameLiftGameSessionActivationException(e);
                         }
+                    },
+                    /* onUpdateGameSession */ (gameSession) =>
+                    {
+                        
                     },
                     /* onProcessTerminate */ () => {
                         _gameServer.OnGameLiftProcessTerminate();

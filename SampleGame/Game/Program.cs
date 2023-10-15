@@ -16,6 +16,7 @@ namespace SampleGameBuild
 
         static void Launch(Options options)
         {
+            Console.WriteLine("Starting up");
             var game = new Game(options);
             game.StartLoop();
 

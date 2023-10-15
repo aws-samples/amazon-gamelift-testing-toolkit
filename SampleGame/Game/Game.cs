@@ -91,7 +91,7 @@ namespace SampleGameBuild
 
         public void RunServer()
         {
-            using var server = new Server(_options.Port, new QuizServer(_options.Port));
+            using var server = new Server(_options.Port, new QuizServer(_options));
             while (server.Running)
             {
                 server.OnLoop();
