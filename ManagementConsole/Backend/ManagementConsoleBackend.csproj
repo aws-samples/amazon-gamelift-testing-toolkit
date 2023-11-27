@@ -21,7 +21,7 @@
     <PackageReference Include="AWSSDK.ECS" Version="3.7.201.11" />
     <PackageReference Include="AWSSDK.EventBridge" Version="3.7.202.4" />
     <PackageReference Include="AWSSDK.GameLift" Version="3.7.201.22" />
-    <PackageReference Include="AWSSDK.Lambda" Version="3.7.201.37" />
+    <PackageReference Include="AWSSDK.Lambda" Version="3.7.303.5" />
     <PackageReference Include="AWSSDK.S3" Version="3.7.203.16" />
     <PackageReference Include="AWSSDK.Scheduler" Version="3.7.201.34" />
     <PackageReference Include="AWSSDK.ServiceQuotas" Version="3.7.201.14" />
