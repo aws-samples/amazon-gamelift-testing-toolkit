@@ -3,10 +3,8 @@
 
 using System.Collections.Generic;
 using Amazon.CDK;
-using Amazon.CDK.AWS.APIGateway;
 using Amazon.CDK.AWS.Apigatewayv2;
-using Amazon.CDK.AWS.Apigatewayv2.Alpha;
-using Amazon.CDK.AWS.Apigatewayv2.Integrations.Alpha;
+using Amazon.CDK.AwsApigatewayv2Integrations;
 using Amazon.CDK.AWS.Cognito;
 using Amazon.CDK.AWS.Cognito.IdentityPool.Alpha;
 using Amazon.CDK.AWS.DynamoDB;
@@ -374,7 +372,7 @@ namespace SampleGameInfra.Lib
                     {
                         ConcurrentExecutions = 1,
                         LaunchPath = @"C:\game\bin\SampleGameBuild.csproj\net6.0\win-x64\publish\SampleGameBuild.exe",
-                        Parameters = "--type server --port " + port,
+                        Parameters = "--type server --port " + port + @" --logFilePath C:\game\",
                     });
                 }
                 else
@@ -383,7 +381,7 @@ namespace SampleGameInfra.Lib
                     {
                         ConcurrentExecutions = 1,
                         LaunchPath = "/local/game/bin/SampleGameBuild.csproj/net6.0/linux-x64/SampleGameBuild",
-                        Parameters = "--type server --port " + port,
+                        Parameters = "--type server --port " + port + " --logFilePath /local/game/",
                     });
                 }
                 

@@ -29,20 +29,17 @@ namespace SampleGameBuild.NumbersQuiz.Server
         public QuizServer(Options options, int numGames=15)
         {
             _options = options;
-            //_logFilePath = "/local/game/serverlogs-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + $"-{port}.txt";
-            _logFilePath = "/tmp/serverlogs-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + $"-{_options.Port}.txt";
+            _logFilePath = options.LogFilePath + "serverlogs-" + DateTime.Now.ToString("yyyyMMdd-HHmmss") + $"-{options.Port}.txt";
             Console.WriteLine(_logFilePath);
-            //GameLogger.LogFilePath = _logFilePath;
+            GameLogger.LogFilePath = _logFilePath;
             Console.WriteLine("Am running");
             _numGames = numGames;
             _gameState = new GameState();
             _players = new Players();
             _connectionTimer = new Stopwatch();
-
             _gameLiftHandler = new GameLiftHandler(this);
 
             Running = true;
-
         }
 
         public int Port

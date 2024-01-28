@@ -50,6 +50,10 @@ namespace SampleGameBuild
         [Option('d', "anywhereHostId", Required = false, Default = null,
             HelpText = "GameLift Anywhere HostId when type=server")]
         public string AnywhereHostId { get; set; }
+        
+        [Option('l', "logFilePath", Required = false, Default = "/tmp/",
+            HelpText = "Path where server logs should be written")]
+        public string LogFilePath { get; set; }
     
     }
 

@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 using Amazon.CDK;
-using Amazon.CDK.AWS.Apigatewayv2.Alpha;
+using Amazon.CDK.AWS.Apigatewayv2;
 using Amazon.CDK.AWS.CloudFront;
 using Amazon.CDK.AWS.Cognito;
 using Amazon.CDK.AWS.Cognito.IdentityPool.Alpha;

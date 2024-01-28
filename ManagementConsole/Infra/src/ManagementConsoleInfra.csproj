@@ -9,15 +9,12 @@
 
   <ItemGroup>
     <!-- CDK Construct Library dependencies -->
-    <PackageReference Include="Amazon.CDK.Lib" Version="2.96.2" />
-    <PackageReference Include="Amazon.CDK.AWS.APIGatewayv2.Integrations.Alpha" Version="2.38.1-alpha.0" />
-    <PackageReference Include="Amazon.CDK.AWS.APIGatewayv2.Alpha" Version="2.38.1-alpha.0" />
-    <PackageReference Include="Amazon.CDK.AWS.APIGatewayv2.Authorizers.Alpha" Version="2.38.1-alpha.0" />
+    <PackageReference Include="Amazon.CDK.Lib" Version="2.124.0" />
     <PackageReference Include="Amazon.CDK.AWS.Cognito.IdentityPool.Alpha" Version="2.38.1-alpha.0" />
-    <PackageReference Include="Constructs" Version="10.2.70" />
-    <PackageReference Include="Amazon.Lambda.Core" Version="2.1.0" />
-    <PackageReference Include="Amazon.Lambda.Serialization.Json" Version="2.1.1" />
-    <PackageReference Include="Cdklabs.CdkNag" Version="2.27.133" />
+    <PackageReference Include="Constructs" Version="10.3.0" />
+    <PackageReference Include="Amazon.Lambda.Core" Version="2.2.0" />
+    <PackageReference Include="Amazon.Lambda.Serialization.Json" Version="2.2.0" />
+    <PackageReference Include="Cdklabs.CdkNag" Version="2.28.23" />
   </ItemGroup>
 
   <ItemGroup>
