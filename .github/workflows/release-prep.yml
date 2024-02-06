@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Get current date
         id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        run: echo "date=$(date +'%Y-%m-%d')" >> "$GITHUB_OUTPUT"
       - name: Set current release version env variable
         run: |
           echo "CURRENT_VERSION=$(cat VERSION)" >> $GITHUB_ENV
