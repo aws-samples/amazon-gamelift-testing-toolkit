@@ -851,6 +851,8 @@ namespace ManagementConsoleInfra.Lib
                     
             }));
             
+            var allowedTasksArn = $"arn:aws:ecs:{this.Region}:{this.Account}:task/{VirtualPlayersRunnerCluster.ClusterName}/*";
+            
             managementServiceFunctionRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
             {
                 Actions = new[]
@@ -858,13 +860,7 @@ namespace ManagementConsoleInfra.Lib
                     "ecs:TagResource",
                 },
                 Effect = Effect.ALLOW,
-                Resources = new[] {"*"},
-                Conditions = new Dictionary<string, object>
-                {
-                    { "ArnEquals", new Dictionary<string, string> { { "ecs:Cluster", VirtualPlayersRunnerCluster.ClusterArn + "/*" } } },
-                    { "StringEquals", new Dictionary<string, string> { { "ecs:ResourceTag/AmazonGameLiftTestingToolkit-VirtualPlayers", "true" } } },
-                },
-                    
+                Resources = new[] { allowedTasksArn },
             }));
 
             props.ManagementConnectionsTable.GrantReadWriteData(ManagementServiceFunction);
@@ -1001,6 +997,8 @@ namespace ManagementConsoleInfra.Lib
                     
             }));
             
+            var allowedTasksArn = $"arn:aws:ecs:{this.Region}:{this.Account}:task/{VirtualPlayersRunnerCluster.ClusterName}/*";
+            
             virtualPlayerScheduledActionFunctionRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
             {
                 Actions = new[]
@@ -1008,13 +1006,7 @@ namespace ManagementConsoleInfra.Lib
                     "ecs:TagResource",
                 },
                 Effect = Effect.ALLOW,
-                Resources = new[] {"*"},
-                Conditions = new Dictionary<string, object>
-                {
-                    { "ArnEquals", new Dictionary<string, string> { { "ecs:Cluster", VirtualPlayersRunnerCluster.ClusterArn + "/*" } } },
-                    { "StringEquals", new Dictionary<string, string> { { "ecs:ResourceTag/AmazonGameLiftTestingToolkit-VirtualPlayers", "true" } } },
-                },
-                    
+                Resources = new[] { allowedTasksArn },
             }));
 
             ManagementServiceFunction.AddEnvironment("VirtualPlayerScheduleActionFunctionArn", VirtualPlayerTaskScheduledActionFunction.FunctionArn);
