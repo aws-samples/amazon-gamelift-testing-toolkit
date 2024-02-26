@@ -840,6 +840,7 @@ namespace ManagementConsoleInfra.Lib
                 {
                     "ecs:StopTask",
                     "ecs:RunTask",
+                    "ecs:TagResource",
                 },
                 Effect = Effect.ALLOW,
                 Resources = new[] {"*"},
@@ -974,6 +975,7 @@ namespace ManagementConsoleInfra.Lib
                 {
                     "ecs:StopTask",
                     "ecs:RunTask",
+                    "ecs:TagResource",
                 },
                 Effect = Effect.ALLOW,
                 Resources = new[] {"*"},
