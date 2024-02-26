@@ -840,13 +840,28 @@ namespace ManagementConsoleInfra.Lib
                 {
                     "ecs:StopTask",
                     "ecs:RunTask",
-                    "ecs:TagResource",
                 },
                 Effect = Effect.ALLOW,
                 Resources = new[] {"*"},
                 Conditions = new Dictionary<string, object>
                 {
                     { "ArnEquals", new Dictionary<string, string> { { "ecs:Cluster", VirtualPlayersRunnerCluster.ClusterArn } } },
+                    { "StringEquals", new Dictionary<string, string> { { "ecs:ResourceTag/AmazonGameLiftTestingToolkit-VirtualPlayers", "true" } } },
+                },
+                    
+            }));
+            
+            managementServiceFunctionRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
+            {
+                Actions = new[]
+                {
+                    "ecs:TagResource",
+                },
+                Effect = Effect.ALLOW,
+                Resources = new[] {"*"},
+                Conditions = new Dictionary<string, object>
+                {
+                    { "ArnEquals", new Dictionary<string, string> { { "ecs:Cluster", VirtualPlayersRunnerCluster.ClusterArn + "/*" } } },
                     { "StringEquals", new Dictionary<string, string> { { "ecs:ResourceTag/AmazonGameLiftTestingToolkit-VirtualPlayers", "true" } } },
                 },
                     
@@ -975,13 +990,28 @@ namespace ManagementConsoleInfra.Lib
                 {
                     "ecs:StopTask",
                     "ecs:RunTask",
-                    "ecs:TagResource",
                 },
                 Effect = Effect.ALLOW,
                 Resources = new[] {"*"},
                 Conditions = new Dictionary<string, object>
                 {
                     { "ArnEquals", new Dictionary<string, string> { { "ecs:Cluster", VirtualPlayersRunnerCluster.ClusterArn } } },
+                    { "StringEquals", new Dictionary<string, string> { { "ecs:ResourceTag/AmazonGameLiftTestingToolkit-VirtualPlayers", "true" } } },
+                },
+                    
+            }));
+            
+            virtualPlayerScheduledActionFunctionRole.AddToPrincipalPolicy(new PolicyStatement(new PolicyStatementProps
+            {
+                Actions = new[]
+                {
+                    "ecs:TagResource",
+                },
+                Effect = Effect.ALLOW,
+                Resources = new[] {"*"},
+                Conditions = new Dictionary<string, object>
+                {
+                    { "ArnEquals", new Dictionary<string, string> { { "ecs:Cluster", VirtualPlayersRunnerCluster.ClusterArn + "/*" } } },
                     { "StringEquals", new Dictionary<string, string> { { "ecs:ResourceTag/AmazonGameLiftTestingToolkit-VirtualPlayers", "true" } } },
                 },
                     
