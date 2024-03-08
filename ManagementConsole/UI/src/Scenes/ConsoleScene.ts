@@ -338,16 +338,21 @@ export class ConsoleScene extends Phaser.Scene
             }
         });
 
+        console.log(fleets);
+
         fleets.map((fleet)=>
         {
-            const fleetWorldTranslation = fleet.getWorldTranslation();
+            if (fleet!=null)
+            {
+                const fleetWorldTranslation = fleet.getWorldTranslation();
 
-            const startX = queueWorldTranslation["translateX"] + queue.displayWidth/2;
-            const startY = queueWorldTranslation["translateY"] + queue.displayHeight;
-            const endX = fleetWorldTranslation["translateX"] + fleet.displayWidth/2;
-            const endY = fleetWorldTranslation["translateY"];
+                const startX = queueWorldTranslation["translateX"] + queue.displayWidth/2;
+                const startY = queueWorldTranslation["translateY"] + queue.displayHeight;
+                const endX = fleetWorldTranslation["translateX"] + fleet.displayWidth/2;
+                const endY = fleetWorldTranslation["translateY"];
 
-            this.drawArrow(startX, startY, endX, endY, 0xffffff, 20);
+                this.drawArrow(startX, startY, endX, endY, 0xffffff, 20);
+            }
         });
     };
 
