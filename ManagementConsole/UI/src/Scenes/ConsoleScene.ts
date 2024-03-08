@@ -248,7 +248,7 @@ export class ConsoleScene extends Phaser.Scene
         this._gtLogo.scale = 0.5;
         this._gtLogo.setOrigin(0);
         this._gtLogo.x = ScreenResolution.width - this._gtLogo.displayWidth - 3;
-        this._gtLogo.y = 0;
+        this._gtLogo.y = 10;
 
         this.setupEventListeners();
 
@@ -453,7 +453,7 @@ export class ConsoleScene extends Phaser.Scene
         ScreenResolution.updateUserResolution(this.scale.width, this.scale.height);
 
         this._gtLogo.x = ScreenResolution.width - this._gtLogo.displayWidth - 3;
-        this._gtLogo.y = 0;
+        this._gtLogo.y = 10;
 
         this._matchmakingConfigurations.resize(ScreenResolution.width, MatchmakingConfig.configHeight);
         this._queues.resize(ScreenResolution.width, GameSessionQueue.queueHeight);
