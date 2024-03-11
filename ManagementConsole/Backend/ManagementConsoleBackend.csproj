@@ -23,7 +23,7 @@
     <PackageReference Include="AWSSDK.GameLift" Version="3.7.301.22" />
     <PackageReference Include="AWSSDK.Lambda" Version="3.7.303.37" />
     <PackageReference Include="AWSSDK.S3" Version="3.7.305.17" />
-    <PackageReference Include="AWSSDK.Scheduler" Version="3.7.300.41" />
+    <PackageReference Include="AWSSDK.Scheduler" Version="3.7.300.55" />
     <PackageReference Include="AWSSDK.ServiceQuotas" Version="3.7.300.41" />
     <PackageReference Include="AWSSDK.StepFunctions" Version="3.7.302.33" />
     <PackageReference Include="CompareNETObjects" Version="4.83.0" />
