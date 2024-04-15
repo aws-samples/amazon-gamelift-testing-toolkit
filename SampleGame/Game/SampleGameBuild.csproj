@@ -9,7 +9,7 @@
       <PackageReference Include="AWSSDK.CloudWatchLogs" Version="3.7.303.8" />
       <PackageReference Include="AWSSDK.CognitoIdentity" Version="3.7.300.41" />
       <PackageReference Include="AWSSDK.GameLift" Version="3.7.301.22" />
-      <PackageReference Include="AWSSDK.SecurityToken" Version="3.7.300.42" />
+      <PackageReference Include="AWSSDK.SecurityToken" Version="3.7.300.75" />
       <PackageReference Include="CommandLineParser" Version="2.9.1" />
       <PackageReference Include="JetBrains.Annotations" Version="2023.3.0" />
       <PackageReference Include="log4net" Version="2.0.15" />
