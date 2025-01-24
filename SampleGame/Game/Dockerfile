@@ -5,6 +5,12 @@ WORKDIR /local/game/
 RUN dnf config-manager --add-repo https://download.mono-project.com/repo/centos8-stable.repo
 RUN dnf install -y mono-complete nuget mono-devel
 RUN rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm ;
+RUN awk ' \
+    /^\[amazonlinux\]/ {in_section=1} \
+    /^$/ && in_section {print "excludepkgs=dotnet*,aspnet*,netstandard*"; in_section=0} \
+    {print} \
+    ' /etc/yum.repos.d/amazonlinux.repo > /tmp/temp.repo && \
+    mv /tmp/temp.repo /etc/yum.repos.d/amazonlinux.repo
 RUN dnf install -y dotnet-sdk-7.0 openssl-libs unzip
 RUN curl -O https://gamelift-server-sdk-release.s3.us-west-2.amazonaws.com/csharp/GameLift-CSharp-ServerSDK-5.1.1.zip ;\
 mkdir aws-gamelift-sdk-temp ;\

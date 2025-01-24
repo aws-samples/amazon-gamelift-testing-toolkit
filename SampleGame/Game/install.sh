@@ -2,6 +2,13 @@
 sudo dnf install -y 'dnf-command(config-manager)'
 
 sudo rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm
+
+sudo awk '
+    /^\[amazonlinux\]/ {in_section=1}
+    /^$/ && in_section {print "excludepkgs=dotnet*,aspnet*,netstandard*"; in_section=0}
+    {print}
+' /etc/yum.repos.d/amazonlinux.repo > temp && sudo mv temp /etc/yum.repos.d/amazonlinux.repo
+
 sudo dnf install -y dotnet-sdk-7.0 openssl-libs unzip
 
 sudo dnf config-manager --add-repo https://download.mono-project.com/repo/centos8-stable.repo
