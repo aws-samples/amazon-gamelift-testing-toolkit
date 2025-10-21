@@ -6,6 +6,10 @@ on:
         description: 'Release number to upgrade to. For example X.X.X. Follow Semantic Versioning when deciding on next version.'
         required: true
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
