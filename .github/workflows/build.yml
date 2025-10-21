@@ -15,6 +15,9 @@ on:
       - 'ManagementConsole/**'
       - 'SampleGame/**'
       - '.github/workflows/**'
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
