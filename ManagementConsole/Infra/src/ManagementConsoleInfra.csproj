@@ -11,8 +11,8 @@
     <!-- CDK Construct Library dependencies -->
     <PackageReference Include="Amazon.CDK.Lib" Version="2.253.1" />
     <PackageReference Include="Constructs" Version="10.5.1" />
-    <PackageReference Include="Amazon.Lambda.Core" Version="2.2.0" />
-    <PackageReference Include="Amazon.Lambda.Serialization.Json" Version="2.2.0" />
+    <PackageReference Include="Amazon.Lambda.Core" Version="2.8.1" />
+    <PackageReference Include="Amazon.Lambda.Serialization.Json" Version="2.2.5" />
     <PackageReference Include="Cdklabs.CdkNag" Version="2.37.55" />
   </ItemGroup>
 
