@@ -81,10 +81,8 @@ namespace SampleGameInfra.Lib
                 Name = "Sample Game OnDemand Fleet",
                 BuildId = build.BuildId,
                 Ec2InstanceType = "c5.large",
-                FleetType = "ON_DEMAND", 
-                MaxSize = 0, // these values can only be changed after deployment
-                DesiredEc2Instances = 0,
-                MinSize = 0,
+                FleetType = "ON_DEMAND",
+                // fleet deploys with zero capacity; scale up post-deployment via the toolkit or scaling policies
                 InstanceRoleArn = instanceRole.RoleArn,
             }, 10, props.GameLiftBuildProps.OperatingSystem);
             
@@ -95,10 +93,8 @@ namespace SampleGameInfra.Lib
                 Name = "Sample Game Spot Fleet",
                 BuildId = build.BuildId,
                 Ec2InstanceType = "c5.large",
-                FleetType = "SPOT", 
-                MaxSize = 0, // these values can only be changed after deployment
-                DesiredEc2Instances = 0,
-                MinSize = 0,
+                FleetType = "SPOT",
+                // fleet deploys with zero capacity; scale up post-deployment via the toolkit or scaling policies
                 InstanceRoleArn = instanceRole.RoleArn,
             }, 10, props.GameLiftBuildProps.OperatingSystem);
             
@@ -136,7 +132,7 @@ namespace SampleGameInfra.Lib
                 Encryption = TableEncryption.AWS_MANAGED,
                 RemovalPolicy = RemovalPolicy.DESTROY,
                 TimeToLiveAttribute = "TimeToLive",
-                PointInTimeRecovery = true,
+                PointInTimeRecoverySpecification = new PointInTimeRecoverySpecification { PointInTimeRecoveryEnabled = true },
             });
             
             TicketsTable.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
