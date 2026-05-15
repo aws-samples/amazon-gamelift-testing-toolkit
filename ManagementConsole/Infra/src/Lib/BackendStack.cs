@@ -24,6 +24,8 @@ using Newtonsoft.Json;
 using CfnRoute = Amazon.CDK.AWS.Apigatewayv2.CfnRoute;
 using CfnRouteProps = Amazon.CDK.AWS.Apigatewayv2.CfnRouteProps;
 using CfnStage = Amazon.CDK.AWS.Apigatewayv2.CfnStage;
+using CfnIntegration = Amazon.CDK.AWS.Apigatewayv2.CfnIntegration;
+using CfnIntegrationProps = Amazon.CDK.AWS.Apigatewayv2.CfnIntegrationProps;
 
 namespace ManagementConsoleInfra.Lib
 {
@@ -70,7 +72,7 @@ namespace ManagementConsoleInfra.Lib
         public SecurityGroup VirtualPlayersRunnerSecurityGroup;
         
         public static string ProjectRoot = "../Backend";
-        public static string CodeRoot = ProjectRoot + "/bin/Release/net6.0";
+        public static string CodeRoot = ProjectRoot + "/bin/Release/net8.0";
         
         internal BackendStack(Construct scope, string id, BackendProps props = null) : base(scope, id, props)
         {

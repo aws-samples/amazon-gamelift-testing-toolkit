@@ -30,7 +30,7 @@ namespace ManagementConsoleInfra.Lib
         public IdentityPool WebIdentityPool;
 
         public static string ProjectRoot = "../Backend";
-        public static string CodeRoot = ProjectRoot + "/bin/Release/net6.0";
+        public static string CodeRoot = ProjectRoot + "/bin/Release/net8.0";
         
         internal WebStack(Construct scope, string id, WebProps props = null) : base(scope, id, props)
         {
