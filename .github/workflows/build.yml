@@ -18,22 +18,14 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 4
-      matrix:
-        # test against latest update of each major .Net version, as well as specific updates of LTS versions:
-        net: [ '6.0.x' ]
-    name: .Net ${{ matrix.net }}
     env:
-      DOTNET: ${{ matrix.net-version }}
-      OS: ${{ matrix.os }}
       AWS_REGION: eu-west-1
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ matrix.net }}
+          global-json-file: global.json
       - name: Install Lambda dependencies
         run: |
           dotnet tool install -g Amazon.Lambda.Tools
@@ -52,8 +44,8 @@ jobs:
           mkdir -p ./pr
           echo ${{ github.event.number }}
           echo ${{ github.event.number }} > ./pr/NR
-      - uses: actions/upload-artifact@v2
-        name: Updload artifact
+      - uses: actions/upload-artifact@v4
+        name: Upload artifact
         with:
           name: pr
           path: pr/
