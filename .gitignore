@@ -26,6 +26,9 @@ open-source/
 tmp/
 temp/
 
+# Kiro workspace (specs, steering, hooks — local dev artefacts)
+.kiro/
+
 ### VisualStudioCode ###
 .vscode/*
 
