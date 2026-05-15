@@ -16,13 +16,13 @@ The UI is implemented as a static website built with [Phaser](https://phaser.io/
 
 ### Management services and data
 
-The web console&#39;s functionality is provided by the management services. The services consist of an API Gateway WebSocket API, which uses [IAM authorization](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-control-access-iam.html) for access control and then calls a .NET Core 3.1 Lambda function.
+The web console's functionality is provided by the management services. The services consist of an API Gateway WebSocket API, which uses [IAM authorization](https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-websocket-control-access-iam.html) for access control and then calls a .NET 8 Lambda function.
 
 The Lambda function stores WebSocket connection details in a DynamoDB connections table. It then handles a variety of messages from the web console, interacting with a number of resources.
 
 Integrates with GameLift to retrieve game server information, such as fleet details and player sessions, to manage matchmaking, and to retrieve [Amazon CloudWatch](https://aws.amazon.com/cloudwatch/) logs.
 
-The DynamoDB tables store the service&#39;s state data, and include a cache of recent GameLift state such as queue events, matchmaking tickets, and game session details.
+The DynamoDB tables store the service's state data, and include a cache of recent GameLift state such as queue events, matchmaking tickets, and game session details.
 
 Launches and terminates virtual players by calling Amazon ECS.
 
@@ -32,7 +32,7 @@ The GameLift listener is responsible for listening to GameLift event notificatio
 
 The listener defines an Amazon EventBridge management service [event bus](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-bus.html) and subscribes to GameLift matchmaking and queue placement events using [rules](https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-rules.html). The events are then published to the management services by inserting event data in the corresponding DynamoDB tables.
 
-In addition, there&#39;s an AWS Step Function that regularly calls GameLift, checks its current state, and removes any out-of-date data from the management services&#39; DynamoDB tables.
+In addition, there's an AWS Step Function that regularly calls GameLift, checks its current state, and removes any out-of-date data from the management services' DynamoDB tables.
 
 ## Sample game
 

@@ -16,7 +16,7 @@ namespace SampleGameInfra.Lib
     {
         
         // Update with arguments for running game client
-        private static string[] GameClientArguments = new string[]{"/local/game/publish/SampleGameBuild","--type", "client" };
+        private static string[] GameClientArguments = new string[]{"/local/game/SampleGameBuild","--type", "client" };
         internal InfraStage(Construct scope, string id, InfraStageProps props = null) : base(scope, id, props)
         {
             var virtualPlayersConfig = new VirtualPlayersConfiguration

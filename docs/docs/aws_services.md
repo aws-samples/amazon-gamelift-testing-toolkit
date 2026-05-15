@@ -8,7 +8,7 @@ However, the toolkit also requires a game to test, as shown below on the right-h
 
 Once the toolkit has been deployed with a game, the key interactions with the toolkit and the game are as follows: 
 
-1. The UI provides the toolkit&#39;s management interface, which is hosted as a static website on [Amazon Simple Storage Service](https://aws.amazon.com/s3/) (Amazon S3) and distributed by [Amazon CloudFront](https://aws.amazon.com/cloudfront/). Users are authenticated via [Amazon Cognito](https://aws.amazon.com/cognito/).
+1. The UI provides the toolkit's management interface, which is hosted as a static website on [Amazon Simple Storage Service](https://aws.amazon.com/s3/) (Amazon S3) and distributed by [Amazon CloudFront](https://aws.amazon.com/cloudfront/). Users are authenticated via [Amazon Cognito](https://aws.amazon.com/cognito/).
 2. The management services provide dynamic features for the web console, which are accessed through [Amazon API Gateway](https://aws.amazon.com/api-gateway/) endpoints that call [AWS Lambda](https://aws.amazon.com/lambda/), and use [Amazon DynamoDB](https://aws.amazon.com/dynamodb/) for storage. API calls are authenticated using Amazon Cognito.
 3. Game servers and configuration in [Amazon GameLift](https://aws.amazon.com/gamelift/) are queried and updated by the management services.
 4. Virtual players are controlled by the management services and run test game clients as [AWS Fargate](https://aws.amazon.com/fargate/) tasks in [Amazon Elastic Container Service](https://aws.amazon.com/ecs/) (Amazon ECS).

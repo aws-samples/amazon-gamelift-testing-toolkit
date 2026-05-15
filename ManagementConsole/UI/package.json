@@ -12,6 +12,7 @@
     "license": "Apache-2.0",
     "devDependencies": {
         "@aws-amplify/auth": "^6.20.0",
+        "@aws-amplify/core": "^6.16.2",
         "@babel/core": "^7.24.0",
         "@babel/preset-env": "^7.24.0",
         "@types/file-saver": "^2.0.5",
@@ -49,7 +50,8 @@
         "write-file-webpack-plugin": "^4.5.1"
     },
     "resolutions": {
-    	"**/escodegen": "^2.1.0"
+    	"**/escodegen": "^2.1.0",
+    	"**/tslib": "^2.6.0"
     },
     "engines": {
         "node": ">=18"

@@ -1,6 +1,6 @@
 {
   "name": "amazon-gamelift-testing-toolkit",
-  "version": "1.0.0",
+  "version": "1.5.0",
   "description": "A tool for deploying, testing and visualising Amazon GameLift",
   "main": "index.js",
   "author": "aws-solution-builders",
@@ -14,8 +14,8 @@
     "deploy-sample-game-windows": "yarn pack-sample-game && cd SampleGame/Infra && npx cdk synth -c os=windows2016 && npx cdk -a cdk.out/assembly-AGTT-SampleGameStack deploy --all",
     "delete-toolkit": "cd ManagementConsole/Infra && npx cdk -a cdk.out/assembly-AGTT-ManagementConsoleStack destroy --all",
     "delete-sample-game": "cd SampleGame/Infra && npx cdk -a cdk.out/assembly-AGTT-SampleGameStack destroy --all",
-    "pack-management-console": "cd ManagementConsole/Backend && dotnet pack --configuration Release",
-    "pack-sample-game": "cd SampleGame/Backend && dotnet pack --configuration Release",
+    "pack-management-console": "cd ManagementConsole/Backend && dotnet pack --configuration Release --verbosity quiet",
+    "pack-sample-game": "cd SampleGame/Backend && dotnet pack --configuration Release --verbosity quiet",
     "build-web": "yarn install-web && yarn install-static && cd ManagementConsole/UI && yarn build",
     "install-web": "cd ManagementConsole/UI && yarn install",
     "install-static": "cd ManagementConsole/UI/static && yarn install",
