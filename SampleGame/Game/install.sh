@@ -1,32 +1,17 @@
 #!/bin/bash
 sudo dnf install -y 'dnf-command(config-manager)'
 
-sudo rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm
+sudo dnf install -y dotnet-sdk-8.0 openssl-libs unzip libicu git
 
-sudo awk '
-    /^\[amazonlinux\]/ {in_section=1}
-    /^$/ && in_section {print "excludepkgs=dotnet*,aspnet*,netstandard*"; in_section=0}
-    {print}
-' /etc/yum.repos.d/amazonlinux.repo > temp && sudo mv temp /etc/yum.repos.d/amazonlinux.repo
-
-sudo dnf install -y dotnet-sdk-7.0 openssl-libs unzip
-
-sudo dnf config-manager --add-repo https://download.mono-project.com/repo/centos8-stable.repo
-sudo dnf install -y mono-complete nuget mono-devel
-
-sudo curl -O https://gamelift-server-sdk-release.s3.us-west-2.amazonaws.com/csharp/GameLift-CSharp-ServerSDK-5.1.1.zip
+sudo git clone --depth 1 --branch v5.4.0 https://github.com/amazon-gamelift/amazon-gamelift-servers-csharp-server-sdk.git aws-gamelift-sdk-temp
 sudo mkdir DLL
-sudo mkdir aws-gamelift-sdk-temp
-sudo unzip GameLift-CSharp-ServerSDK-5.1.1.zip -d aws-gamelift-sdk-temp
-sudo rm GameLift-CSharp-ServerSDK-5.1.1.zip
 
-cd aws-gamelift-sdk-temp/src/
-sudo nuget restore GameLiftServerSDK.sln 
-sudo msbuild GameLiftServerSDK.sln -property:Configuration=Release -property:TargetFrameworkVersion=v4.6.2
-sudo cp src/GameLiftServerSDK/bin/x64/Release/net6.0/* ../../DLL/
-cd ../../
+cd aws-gamelift-sdk-temp/src/GameLiftServerSDK/
+sudo dotnet publish -c Release -f net8.0 -o ../../../DLL/
+cd ../../../
 sudo rm -rf aws-gamelift-sdk-temp
 
-sudo dotnet publish -c SampleGameBuild.csproj -r linux-x64 --self-contained true
-sudo cp ./log4net.config ./bin/SampleGameBuild.csproj/net6.0/linux-x64/
-sudo cp ./QuizConfig.json ./bin/SampleGameBuild.csproj/net6.0/linux-x64/
+sudo dotnet publish SampleGameBuild.csproj -c Release -r linux-x64 --self-contained true -o ./publish
+sudo cp ./DLL/*.dll ./publish/
+sudo cp ./log4net.config ./publish/
+sudo cp ./QuizConfig.json ./publish/

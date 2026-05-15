@@ -32,7 +32,7 @@ namespace SampleGameInfra.Lib
         {
             var gameClientCommand = new string[]
             {
-                "/local/game/bin/SampleGameBuild.csproj/net6.0/linux-x64/SampleGameBuild",
+                "/local/game/publish/SampleGameBuild",
                 "--type", "client",
                 "--url", props.WebSocketApiUrl,
                 "--identity-pool-id", props.IdentityPoolId,
@@ -66,6 +66,7 @@ namespace SampleGameInfra.Lib
             var asset = new DockerImageAsset(this, "VirtualPlayersImage", new DockerImageAssetProps
             {
                 Directory = props.VirtualPlayersConfiguration.DockerFileDirectory,
+                Platform = Platform_.LINUX_AMD64,
             });
             
             asset.Repository.GrantPull(executionRole);
@@ -79,6 +80,11 @@ namespace SampleGameInfra.Lib
                     MemoryLimitMiB = 2048,
                     ExecutionRole = executionRole,
                     TaskRole = taskRole,
+                    RuntimePlatform = new RuntimePlatform
+                    {
+                        OperatingSystemFamily = OperatingSystemFamily.LINUX,
+                        CpuArchitecture = CpuArchitecture.X86_64,
+                    },
                 });
 
             var containerLogGroup = new LogGroup(this, "LogGroup", new Amazon.CDK.AWS.Logs.LogGroupProps());

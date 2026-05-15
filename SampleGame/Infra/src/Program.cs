@@ -13,7 +13,7 @@ namespace SampleGameInfra
     {
         private const string StackName = "AGTT-SampleGameStack";
 
-        internal static readonly Runtime DotNetRuntime = Runtime.DOTNET_6;
+        internal static readonly Runtime DotNetRuntime = Runtime.DOTNET_8;
 
         public static void Main(string[] args)
         {
@@ -40,6 +40,7 @@ namespace SampleGameInfra
                 BuildSuppressions("AwsSolutions-APIG4", "API Gateway WebSocket $default route does not support authorization."),
                 BuildSuppressions("AwsSolutions-ECS7", "Container logging not required for sample game virtual players."),
                 BuildSuppressions("AwsSolutions-COG7", "Sample game doesn't require players to have a user account."),
+                BuildSuppressions("AwsSolutions-L1", "Sample game pinned to Runtime.DOTNET_8 per Req 3; cdk-nag 2.37.x flags DOTNET_8 as non-latest. Matches the parent dependency-modernization spec's identical suppression in ManagementConsole/Infra/src/Program.cs."),
             };
         }
 

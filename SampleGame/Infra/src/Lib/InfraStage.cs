@@ -16,7 +16,7 @@ namespace SampleGameInfra.Lib
     {
         
         // Update with arguments for running game client
-        private static string[] GameClientArguments = new string[]{"/local/game/bin/SampleGameBuild.csproj/net6.0/linux-x64/SampleGameBuild","--type", "client" };
+        private static string[] GameClientArguments = new string[]{"/local/game/publish/SampleGameBuild","--type", "client" };
         internal InfraStage(Construct scope, string id, InfraStageProps props = null) : base(scope, id, props)
         {
             var virtualPlayersConfig = new VirtualPlayersConfiguration
@@ -30,7 +30,7 @@ namespace SampleGameInfra.Lib
                 AssetPath = "../Game/", 
                 Name = "Sample Game Build",
                 Version = "0.01",
-                ServerSdkVersion = "5.1.1",
+                ServerSdkVersion = "5.4.0",
                 OperatingSystem = GameLiftBuildOs.AmazonLinux2023,
             };
 
