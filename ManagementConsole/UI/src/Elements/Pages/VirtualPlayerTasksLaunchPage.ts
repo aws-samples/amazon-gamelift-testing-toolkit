@@ -133,7 +133,7 @@ export class VirtualPlayerTasksLaunchPage extends Page
         const launchType = this.getScheduleType();
 
         let scheduleId = this.selector.find("#scheduleId").val();
-        let numPlayers = this.selector.find("#numPlayers").val();
+        let numPlayers = Number(this.selector.find("#numPlayers").val());
         let taskDefinitionArn = this.selector.find("#taskDefinition").val();
 
         if (numPlayers<1 || numPlayers>this._quotaInfo.RatePerMinute)
@@ -264,7 +264,7 @@ export class VirtualPlayerTasksLaunchPage extends Page
             if (this.validateForm())
             {
                 const scheduleType = this.getScheduleType();
-                const numPlayers = this.selector.find("#numPlayers").val();
+                const numPlayers = Number(this.selector.find("#numPlayers").val());
                 const taskDefinitionArn = this.selector.find("#taskDefinition").val();
                 const fargateCapacityProvider = $("input[name='fargateCapacityProvider']:checked").val();
 

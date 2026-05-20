@@ -23,20 +23,20 @@ The Amazon GameLift Testing toolkit uses the following AWS services:
 
 You are responsible for the cost of the AWS services used while running this solution. 
 
-As of November 2021, the cost for running this solution with the default settings and 8 virtual players in the us-east-1 region (N.Virginia) is approximately **$0.52 for 1 hour testing on a C5.large on demand instance and a C5.large spot instance**. However, be aware the costs of running bigger tests with more virtual players and larger fleet sizes will scale with the increase in resources, so before testing at scale you should run smaller tests and verify the costs first.   
+As of May 2026, the cost for running this solution with the default settings and 8 virtual players in the us-east-1 region (N.Virginia) is approximately **$0.51 for 1 hour testing on a c5.large on demand instance and a c5.large spot instance**. However, be aware the costs of running bigger tests with more virtual players and larger fleet sizes will scale with the increase in resources, so before testing at scale you should run smaller tests and verify the costs first.
 
 | **AWS service** | Resources | Cost |
 | --- | --- | --- |
-| Amazon GameLift | 1x C5.large spot instance | $0.028 |
-| Amazon GameLift | 1x C5.large on demand instance | $0.109 |
-| Amazon Fargate | 8x vCPU hour | $0.323 |
+| Amazon GameLift | 1x c5.large spot instance | $0.028 |
+| Amazon GameLift | 1x c5.large on demand instance | $0.109 |
+| Amazon Fargate | 8x vCPU hour | $0.324 |
 | Step Functions | 1,000 state transitions | $0.025 |
-| DynamoDB | 1,000 On-demand Write requests | $0.010 |
+| DynamoDB | 1,000 On-demand Write requests | $0.001 |
 | DynamoDB | 3,000 On-demand Read requests | $0.000 |
-| Lambda | 5,000 requests | $0.010 |
-| Lambda | 125 GB seconds duration | $0.000 |
+| Lambda | 5,000 requests | $0.001 |
+| Lambda | 125 GB seconds duration | $0.002 |
 | NAT Gateway | 1 hour duration | $0.045 |
-| | **Total cost:** | **$0.522** |
+| | **Total cost:** | **$0.507** |
 
 We recommend creating a [budget](https://alpha-docs-aws.amazon.com/awsaccountbilling/latest/aboutv2/budgets-create.html) through [AWS Cost Explorer](http://aws.amazon.com/aws-cost-management/aws-cost-explorer/) to help manage costs. Prices are subject to change. For full details, refer to the pricing webpage for each AWS service used in this solution.
 

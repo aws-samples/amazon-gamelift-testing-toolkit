@@ -5,8 +5,9 @@ using System.Collections.Generic;
 using Amazon.CDK;
 using Amazon.CDK.AWS.Apigatewayv2;
 using Amazon.CDK.AWS.CloudFront;
+using Amazon.CDK.AWS.CloudFront.Origins;
 using Amazon.CDK.AWS.Cognito;
-using Amazon.CDK.AWS.Cognito.IdentityPool.Alpha;
+using Amazon.CDK.AWS.Cognito.Identitypool;
 using Amazon.CDK.AWS.IAM;
 using Amazon.CDK.AWS.Lambda;
 using Amazon.CDK.AWS.S3;
@@ -22,19 +23,17 @@ namespace ManagementConsoleInfra.Lib
     }
     public class WebStack : Stack
     {
-        public OriginAccessIdentity Oai;
         public Bucket WebsiteBucket;
-        public CloudFrontWebDistribution WebDistribution;
+        public Distribution WebDistribution;
         public UserPool WebUserPool;
         public UserPoolClient WebUserPoolClient;
         public IdentityPool WebIdentityPool;
 
         public static string ProjectRoot = "../Backend";
-        public static string CodeRoot = ProjectRoot + "/bin/Release/net6.0";
+        public static string CodeRoot = ProjectRoot + "/bin/Release/net8.0";
         
         internal WebStack(Construct scope, string id, WebProps props = null) : base(scope, id, props)
         {
-            Oai = new OriginAccessIdentity(this, "OAI");
             WebsiteBucket = new Bucket(this, "WebsiteBucket", new BucketProps
             {
                 PublicReadAccess = false,
@@ -46,30 +45,40 @@ namespace ManagementConsoleInfra.Lib
                 Encryption = BucketEncryption.S3_MANAGED,
                 EnforceSSL = true,
             });
-            WebsiteBucket.GrantRead(Oai);
 
-            WebDistribution = new CloudFrontWebDistribution(this, "WebsiteCloudfrontDistribution", new CloudFrontWebDistributionProps
+            // Migrated from deprecated CloudFrontWebDistribution to the stable Distribution L2 construct.
+            // We use Origin Access Control (OAC) via S3BucketOrigin.WithOriginAccessControl, which is the
+            // current recommendation over the legacy Origin Access Identity (OAI). S3BucketOrigin auto-creates
+            // the OAC and grants the required read permission to CloudFront on the bucket, so the previous
+            // explicit `OriginAccessIdentity` + `WebsiteBucket.GrantRead(oai)` wiring is no longer needed.
+            //
+            // NOTE: switching OAI -> OAC on an existing stack can cause CloudFormation to replace the
+            // CloudFront distribution (new logical id on the OAC resource, bucket policy principal changes
+            // from the OAI canonical user to the OAC service principal). Review the `cdk diff` output and
+            // expect a new distribution domain name on first deploy of this change.
+            //
+            // A custom cache policy preserves the previous 300s default TTL; the built-in CACHING_OPTIMIZED
+            // policy uses a 1-day TTL, which would be a behavioural change. Default root object "index.html"
+            // is set explicitly here because it was implicit (default) on CloudFrontWebDistribution.
+            var websiteCachePolicy = new CachePolicy(this, "WebsiteCachePolicy", new CachePolicyProps
             {
-                OriginConfigs = new [] 
-                { 
-                    new SourceConfiguration 
-                    {
-                        S3OriginSource = new S3OriginConfig {
-                            S3BucketSource = WebsiteBucket,
-                            OriginAccessIdentity = Oai,
-                        },
-                        Behaviors = new [] 
-                        { 
-                            new Behavior
-                            {
-                                IsDefaultBehavior = true,
-                                DefaultTtl = Duration.Seconds(300),
-                            } 
-                        }
-                    }
+                DefaultTtl = Duration.Seconds(300),
+                MinTtl = Duration.Seconds(0),
+                MaxTtl = Duration.Days(365),
+                EnableAcceptEncodingGzip = true,
+                EnableAcceptEncodingBrotli = true,
+            });
+
+            WebDistribution = new Distribution(this, "WebsiteCloudfrontDistribution", new DistributionProps
+            {
+                DefaultBehavior = new BehaviorOptions
+                {
+                    Origin = S3BucketOrigin.WithOriginAccessControl(WebsiteBucket),
+                    ViewerProtocolPolicy = ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+                    CachePolicy = websiteCachePolicy,
                 },
+                DefaultRootObject = "index.html",
                 PriceClass = PriceClass.PRICE_CLASS_100,
-                ViewerProtocolPolicy = ViewerProtocolPolicy.REDIRECT_TO_HTTPS
             });
             
             var deployment = new BucketDeployment(this, "DeployTest", new BucketDeploymentProps

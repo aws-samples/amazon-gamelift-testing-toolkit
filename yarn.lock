@@ -2,14 +2,7 @@
 # yarn lockfile v1
 
 
-aws-cdk@2.124.0:
-  version "2.124.0"
-  resolved "https://registry.yarnpkg.com/aws-cdk/-/aws-cdk-2.124.0.tgz#b07bbdb03a8b585dad85702295d234d782067e17"
-  integrity sha512-kUOfqwIAaTEx4ZozojZEhWa8G+O9KU+P0tERtDVmTw9ip4QXNMwTTkjj/IPtoH8qfXGdeibTQ9MJwRvHOR8kXQ==
-  optionalDependencies:
-    fsevents "2.3.2"
-
-fsevents@2.3.2:
-  version "2.3.2"
-  resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.2.tgz#8a526f78b8fdf4623b709e0b975c52c24c02fd1a"
-  integrity sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==
+aws-cdk@2.1121.0:
+  version "2.1121.0"
+  resolved "https://registry.yarnpkg.com/aws-cdk/-/aws-cdk-2.1121.0.tgz#7cdf5eb23545dc457e78cd18a1850b24c6a60b49"
+  integrity sha512-cG7CHt/SytYTfwrK+BUNQpqmS1dwhjt8z6ExKL6GK4n+8/6ZCwFzxlZWA/jUd2+Y9xPc+Q8cLKfMqGmgxEXbkg==

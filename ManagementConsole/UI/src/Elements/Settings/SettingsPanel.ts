@@ -7,7 +7,7 @@ import {Network} from "../../Network/Network";
 import {EventDispatcher} from "../../Events/EventDispatcher";
 import {Events} from "../../Events/Events";
 import {SettingsForm} from "./SettingsForm";
-import { Auth } from '@aws-amplify/auth';
+import { signOut, signInWithRedirect } from 'aws-amplify/auth';
 import {Game} from "../../Game";
 
 export class SettingsPanel extends Phaser.GameObjects.Container
@@ -105,8 +105,8 @@ export class SettingsPanel extends Phaser.GameObjects.Container
                 break;
 
             case "logout":
-                await Auth.signOut();
-                Auth.federatedSignIn();
+                await signOut();
+                signInWithRedirect();
                 break;
 
             case "addFakeFleet":

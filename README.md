@@ -14,8 +14,8 @@ The quickest way to get started is to build and deploy the toolkit and the sampl
 
 * An existing AWS account.
 * The [AWS Command Line Interface (CLI)](https://aws.amazon.com/cli/) installed locally.
-* [Node.js 18.x](https://nodejs.org/) installed locally, including npm.
-* [.NET 6](https://dotnet.microsoft.com/en-us/download/dotnet) installed locally.
+* [Node.js 18.x](https://nodejs.org/) or later installed locally, including npm.
+* [.NET 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) installed locally.
 * A local copy of the toolkit source code.
 
 Additionally, if you intend to deploy the sample game or create virtual players you will also need:

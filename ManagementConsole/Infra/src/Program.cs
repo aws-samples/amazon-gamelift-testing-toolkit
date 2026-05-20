@@ -11,7 +11,7 @@ namespace ManagementConsoleInfra
 {
     sealed class Program
     {
-        internal static readonly Runtime DotNetRuntime = Runtime.DOTNET_6;
+        internal static readonly Runtime DotNetRuntime = Runtime.DOTNET_8;
 
         public static void Main(string[] args)
         {

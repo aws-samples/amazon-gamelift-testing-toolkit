@@ -6,22 +6,23 @@
 
     <!-- This property makes the build directory similar to a publish directory and helps the AWS .NET Lambda Mock Test Tool find project dependencies. -->
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.7.0" />
-    <PackageReference Include="Amazon.Lambda.CloudWatchEvents" Version="4.4.0" />
-    <PackageReference Include="Amazon.Lambda.Core" Version="2.2.0" />
-    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.0" />
-    <PackageReference Include="AWSSDK.ApiGatewayManagementApi" Version="3.7.300.41" />
-    <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.302.28" />
-    <PackageReference Include="AWSSDK.CloudWatchLogs" Version="3.7.303.8" />
-    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.301.2" />
-    <PackageReference Include="AWSSDK.ECS" Version="3.7.305.2" />
-    <PackageReference Include="AWSSDK.EventBridge" Version="3.7.302.7" />
-    <PackageReference Include="AWSSDK.GameLift" Version="3.7.301.22" />
-    <PackageReference Include="AWSSDK.S3" Version="3.7.305.17" />
-    <PackageReference Include="AWSSDK.StepFunctions" Version="3.7.302.33" />
+    <PackageReference Include="Amazon.Lambda.APIGatewayEvents" Version="2.7.3" />
+    <PackageReference Include="Amazon.Lambda.CloudWatchEvents" Version="4.4.1" />
+    <PackageReference Include="Amazon.Lambda.Core" Version="2.8.1" />
+    <!-- Pinned to 2.x per sample-game-modernization Req 7.4: 3.x changes JSON defaults. -->
+    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.5" />
+    <PackageReference Include="AWSSDK.ApiGatewayManagementApi" Version="3.7.502.61" />
+    <PackageReference Include="AWSSDK.CloudFormation" Version="3.7.506.46" />
+    <PackageReference Include="AWSSDK.CloudWatchLogs" Version="3.7.509.1" />
+    <PackageReference Include="AWSSDK.DynamoDBv2" Version="3.7.513.2" />
+    <PackageReference Include="AWSSDK.ECS" Version="3.7.511.4" />
+    <PackageReference Include="AWSSDK.EventBridge" Version="3.7.502.60" />
+    <PackageReference Include="AWSSDK.GameLift" Version="3.7.506.11" />
+    <PackageReference Include="AWSSDK.S3" Version="3.7.511.6" />
+    <PackageReference Include="AWSSDK.StepFunctions" Version="3.7.502.48" />
     <PackageReference Include="CompareNETObjects" Version="4.83.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>

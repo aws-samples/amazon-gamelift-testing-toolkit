@@ -1,30 +1,25 @@
-FROM amazonlinux:2023
+# Stage 1: Build — .NET SDK + git to compile and publish the game
+FROM amazonlinux:2023 AS builder
 RUN dnf install -y 'dnf-command(config-manager)'
 RUN mkdir /local/game
 WORKDIR /local/game/
-RUN dnf config-manager --add-repo https://download.mono-project.com/repo/centos8-stable.repo
-RUN dnf install -y mono-complete nuget mono-devel
-RUN rpm -Uvh https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm ;
-RUN awk ' \
-    /^\[amazonlinux\]/ {in_section=1} \
-    /^$/ && in_section {print "excludepkgs=dotnet*,aspnet*,netstandard*"; in_section=0} \
-    {print} \
-    ' /etc/yum.repos.d/amazonlinux.repo > /tmp/temp.repo && \
-    mv /tmp/temp.repo /etc/yum.repos.d/amazonlinux.repo
-RUN dnf install -y dotnet-sdk-7.0 openssl-libs unzip
-RUN curl -O https://gamelift-server-sdk-release.s3.us-west-2.amazonaws.com/csharp/GameLift-CSharp-ServerSDK-5.1.1.zip ;\
-mkdir aws-gamelift-sdk-temp ;\
-unzip GameLift-CSharp-ServerSDK-5.1.1.zip -d aws-gamelift-sdk-temp ;\
-rm GameLift-CSharp-ServerSDK-5.1.1.zip
+RUN dnf install -y dotnet-sdk-8.0 openssl-libs unzip libicu git
+RUN git clone --depth 1 --branch v5.4.0 https://github.com/amazon-gamelift/amazon-gamelift-servers-csharp-server-sdk.git aws-gamelift-sdk-temp
 RUN mkdir -p DLL ;\
-cd aws-gamelift-sdk-temp/src ;\
-nuget restore GameLiftServerSDK.sln ;\
-msbuild GameLiftServerSDK.sln -property:Configuration=Release -property:TargetFrameworkVersion=v4.6.2 ;\
-cp src/GameLiftServerSDK/bin/x64/Release/net6.0/* ../../DLL/ ;\
-cd ../.. ;\
+cd aws-gamelift-sdk-temp/src/GameLiftServerSDK ;\
+dotnet publish -c Release -f net8.0 -o /local/game/DLL/ ;\
+cd /local/game ;\
 rm -rf aws-gamelift-sdk-temp
 COPY . /local/game/
-RUN /bin/dotnet publish -c SampleGameBuild.csproj -r linux-x64 --self-contained true ;\
-cp /local/game/log4net.config /local/game/bin/SampleGameBuild.csproj/net6.0/linux-x64/ ;\
-cp /local/game/QuizConfig.json /local/game/bin/SampleGameBuild.csproj/net6.0/linux-x64/
+RUN dotnet publish SampleGameBuild.csproj -c Release -r linux-x64 --self-contained true -o /local/game/publish ;\
+cp /local/game/DLL/*.dll /local/game/publish/ ;\
+cp /local/game/log4net.config /local/game/publish/ ;\
+cp /local/game/QuizConfig.json /local/game/publish/
+
+# Stage 2: Runtime — minimal image with only the self-contained publish output
+FROM amazonlinux:2023
+RUN dnf install -y openssl-libs libicu && dnf clean all
+RUN mkdir -p /local/game
+WORKDIR /local/game
+COPY --from=builder /local/game/publish/ /local/game/
 CMD tail -f

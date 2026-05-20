@@ -7,7 +7,7 @@ import {DataTypes} from "../Data/DataTypes";
 import {EventDispatcher} from '../Events/EventDispatcher';
 import {Events} from '../Events/Events';
 import StateMessage = DataTypes.StateMessage;
-import { Auth } from '@aws-amplify/auth';
+import { fetchAuthSession } from 'aws-amplify/auth';
 import {ScreenResolution} from "../Data/ScreenResolution";
 
 export class LoginScene extends Phaser.Scene
@@ -38,18 +38,18 @@ export class LoginScene extends Phaser.Scene
         });
 
         this._emitter = EventDispatcher.getInstance();
-        Auth.currentSession().then(res=>{
-            let accessToken = res.getAccessToken()
-            let jwt = accessToken.getJwtToken()
+        fetchAuthSession().then(session => {
+            const accessToken = session.tokens?.accessToken;
+            const jwt = accessToken?.toString();
             this.doLogin();
         })
     }
 
     doLogin = async() =>
     {
-        Auth.currentSession().then(async (res) => {
-            let accessToken = res.getAccessToken();
-            let jwt = accessToken.getJwtToken();
+        fetchAuthSession().then(async (session) => {
+            const accessToken = session.tokens?.accessToken;
+            const jwt = accessToken?.toString();
 
             try {
                 let configObj = this.game.cache.json.get("configJson");
@@ -57,7 +57,7 @@ export class LoginScene extends Phaser.Scene
                 this._loginElement.getChildByID('helpText').innerHTML = "Connecting...";
                 //await Network.connect(inputToken["value"], configObj["ApiUrl"]);
                 try {
-                    const credentials = await Auth.currentCredentials();
+                    const credentials = session.credentials;
                     await Network.connect(credentials, configObj["ApiUrl"]);
                     this._emitter.once(Events.SOCKET_MESSAGE, (data: any) => {
                         console.log(data);

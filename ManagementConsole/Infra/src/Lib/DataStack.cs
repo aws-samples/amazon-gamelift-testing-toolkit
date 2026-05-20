@@ -41,7 +41,10 @@ namespace ManagementConsoleInfra.Lib
                 Encryption = TableEncryption.AWS_MANAGED,
                 RemovalPolicy = RemovalPolicy.DESTROY,
                 TimeToLiveAttribute = "TimeToLive",
-                PointInTimeRecovery = true,
+                PointInTimeRecoverySpecification = new PointInTimeRecoverySpecification
+                {
+                    PointInTimeRecoveryEnabled = true,
+                },
             });
 
             MatchLogTable = new Table(this, "MatchLogTable", new TableProps
@@ -55,7 +58,10 @@ namespace ManagementConsoleInfra.Lib
                 Encryption = TableEncryption.AWS_MANAGED,
                 RemovalPolicy = RemovalPolicy.DESTROY,
                 TimeToLiveAttribute = "TimeToLive",
-                PointInTimeRecovery = true,
+                PointInTimeRecoverySpecification = new PointInTimeRecoverySpecification
+                {
+                    PointInTimeRecoveryEnabled = true,
+                },
             });
             
             TicketLogTable = new Table(this, "TicketLogTable", new TableProps
@@ -69,7 +75,10 @@ namespace ManagementConsoleInfra.Lib
                 Encryption = TableEncryption.AWS_MANAGED,
                 RemovalPolicy = RemovalPolicy.DESTROY,
                 TimeToLiveAttribute = "TimeToLive",
-                PointInTimeRecovery = true,
+                PointInTimeRecoverySpecification = new PointInTimeRecoverySpecification
+                {
+                    PointInTimeRecoveryEnabled = true,
+                },
             });
             
             TicketLogTable.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
@@ -138,7 +147,10 @@ namespace ManagementConsoleInfra.Lib
                 Encryption = TableEncryption.AWS_MANAGED,
                 RemovalPolicy = RemovalPolicy.DESTROY,
                 TimeToLiveAttribute = "TimeToLive",
-                PointInTimeRecovery = true,
+                PointInTimeRecoverySpecification = new PointInTimeRecoverySpecification
+                {
+                    PointInTimeRecoveryEnabled = true,
+                },
             });
             
             PlayerProfileTable = new Table(this, "PlayerProfileTable", new TableProps
@@ -152,7 +164,10 @@ namespace ManagementConsoleInfra.Lib
                 Encryption = TableEncryption.AWS_MANAGED,
                 RemovalPolicy = RemovalPolicy.DESTROY,
                 TimeToLiveAttribute = "TimeToLive",
-                PointInTimeRecovery = true,
+                PointInTimeRecoverySpecification = new PointInTimeRecoverySpecification
+                {
+                    PointInTimeRecoveryEnabled = true,
+                },
             });
             
             LatencyProfileTable = new Table(this, "LatencyProfileTable", new TableProps
@@ -165,7 +180,10 @@ namespace ManagementConsoleInfra.Lib
                 BillingMode = BillingMode.PAY_PER_REQUEST,
                 Encryption = TableEncryption.AWS_MANAGED,
                 RemovalPolicy = RemovalPolicy.DESTROY,
-                PointInTimeRecovery = true,
+                PointInTimeRecoverySpecification = new PointInTimeRecoverySpecification
+                {
+                    PointInTimeRecoveryEnabled = true,
+                },
             });
             
             VirtualPlayerTaskLaunchTable = new Table(this, "VirtualPlayerTaskLaunchTable", new TableProps
@@ -178,7 +196,10 @@ namespace ManagementConsoleInfra.Lib
                 BillingMode = BillingMode.PAY_PER_REQUEST,
                 Encryption = TableEncryption.AWS_MANAGED,
                 RemovalPolicy = RemovalPolicy.DESTROY,
-                PointInTimeRecovery = true,
+                PointInTimeRecoverySpecification = new PointInTimeRecoverySpecification
+                {
+                    PointInTimeRecoveryEnabled = true,
+                },
             });
             
             VirtualPlayerTaskLaunchTable.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
@@ -206,7 +227,10 @@ namespace ManagementConsoleInfra.Lib
                 BillingMode = BillingMode.PAY_PER_REQUEST,
                 Encryption = TableEncryption.AWS_MANAGED,
                 RemovalPolicy = RemovalPolicy.DESTROY,
-                PointInTimeRecovery = true,
+                PointInTimeRecoverySpecification = new PointInTimeRecoverySpecification
+                {
+                    PointInTimeRecoveryEnabled = true,
+                },
             });
 
             EventLogTable = new Table(this, "EventLogTable", new TableProps
@@ -220,7 +244,10 @@ namespace ManagementConsoleInfra.Lib
                 Encryption = TableEncryption.AWS_MANAGED,
                 RemovalPolicy = RemovalPolicy.DESTROY,
                 TimeToLiveAttribute = "TimeToLive",
-                PointInTimeRecovery = true,
+                PointInTimeRecoverySpecification = new PointInTimeRecoverySpecification
+                {
+                    PointInTimeRecoveryEnabled = true,
+                },
             });
 
             EventLogTable.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
@@ -279,7 +306,10 @@ namespace ManagementConsoleInfra.Lib
                 Encryption = TableEncryption.AWS_MANAGED,
                 RemovalPolicy = RemovalPolicy.DESTROY,
                 TimeToLiveAttribute = "TimeToLive",
-                PointInTimeRecovery = true,
+                PointInTimeRecoverySpecification = new PointInTimeRecoverySpecification
+                {
+                    PointInTimeRecoveryEnabled = true,
+                },
             });
             
             GameSessionTable.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
@@ -328,7 +358,10 @@ namespace ManagementConsoleInfra.Lib
                 Encryption = TableEncryption.AWS_MANAGED,
                 RemovalPolicy = RemovalPolicy.DESTROY,
                 TimeToLiveAttribute = "TimeToLive",
-                PointInTimeRecovery = true,
+                PointInTimeRecoverySpecification = new PointInTimeRecoverySpecification
+                {
+                    PointInTimeRecoveryEnabled = true,
+                },
             });
 
             ManagementConfigTable = new Table(this, "ManagementConfigTable", new TableProps
@@ -341,7 +374,10 @@ namespace ManagementConsoleInfra.Lib
                 BillingMode = BillingMode.PAY_PER_REQUEST,
                 Encryption = TableEncryption.AWS_MANAGED,
                 RemovalPolicy = RemovalPolicy.DESTROY,
-                PointInTimeRecovery = true,
+                PointInTimeRecoverySpecification = new PointInTimeRecoverySpecification
+                {
+                    PointInTimeRecoveryEnabled = true,
+                },
             });
 
             SimulationResultsTable = new Table(this, "SimulationResultsTable", new TableProps
@@ -359,7 +395,10 @@ namespace ManagementConsoleInfra.Lib
                 BillingMode = BillingMode.PAY_PER_REQUEST,
                 Encryption = TableEncryption.AWS_MANAGED,
                 RemovalPolicy = RemovalPolicy.DESTROY,
-                PointInTimeRecovery = true,
+                PointInTimeRecoverySpecification = new PointInTimeRecoverySpecification
+                {
+                    PointInTimeRecoveryEnabled = true,
+                },
             });
             
             SimulationPlayersTable = new Table(this, "SimulationPlayersTable", new TableProps
@@ -377,7 +416,10 @@ namespace ManagementConsoleInfra.Lib
                 BillingMode = BillingMode.PAY_PER_REQUEST,
                 Encryption = TableEncryption.AWS_MANAGED,
                 RemovalPolicy = RemovalPolicy.DESTROY,
-                PointInTimeRecovery = true,
+                PointInTimeRecoverySpecification = new PointInTimeRecoverySpecification
+                {
+                    PointInTimeRecoveryEnabled = true,
+                },
             });
 
             new CfnOutput(this, "ticketLogTableName",  new CfnOutputProps {

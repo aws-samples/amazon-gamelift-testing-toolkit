@@ -6,7 +6,7 @@ using Amazon.CDK;
 using Amazon.CDK.AWS.Apigatewayv2;
 using Amazon.CDK.AwsApigatewayv2Integrations;
 using Amazon.CDK.AWS.Cognito;
-using Amazon.CDK.AWS.Cognito.IdentityPool.Alpha;
+using Amazon.CDK.AWS.Cognito.Identitypool;
 using Amazon.CDK.AWS.DynamoDB;
 using Amazon.CDK.AWS.Events;
 using Amazon.CDK.AWS.IAM;
@@ -20,6 +20,8 @@ using GameLift = Amazon.CDK.AWS.GameLift;
 using TestGame.CDK.Constructs;
 using Attribute = Amazon.CDK.AWS.DynamoDB.Attribute;
 using CfnStage = Amazon.CDK.AWS.Apigatewayv2.CfnStage;
+using CfnIntegration = Amazon.CDK.AWS.Apigatewayv2.CfnIntegration;
+using CfnIntegrationProps = Amazon.CDK.AWS.Apigatewayv2.CfnIntegrationProps;
 
 namespace SampleGameInfra.Lib
 {
@@ -40,7 +42,7 @@ namespace SampleGameInfra.Lib
         public IdentityPool GameIdentityPool;
 
         public static string ProjectRoot = "../Backend";
-        public static string CodeRoot = ProjectRoot + "/bin/Release/net6.0";
+        public static string CodeRoot = ProjectRoot + "/bin/Release/net8.0";
         
         internal BackendStack(Construct scope, string id, BackendStackProps props) : base(scope, id, props)
         {    
@@ -78,11 +80,9 @@ namespace SampleGameInfra.Lib
             {
                 Name = "Sample Game OnDemand Fleet",
                 BuildId = build.BuildId,
-                Ec2InstanceType = "c4.large",
-                FleetType = "ON_DEMAND", 
-                MaxSize = 0, // these values can only be changed after deployment
-                DesiredEc2Instances = 0,
-                MinSize = 0,
+                Ec2InstanceType = "c5.large",
+                FleetType = "ON_DEMAND",
+                // fleet deploys with zero capacity; scale up post-deployment via the toolkit or scaling policies
                 InstanceRoleArn = instanceRole.RoleArn,
             }, 10, props.GameLiftBuildProps.OperatingSystem);
             
@@ -92,11 +92,9 @@ namespace SampleGameInfra.Lib
             {
                 Name = "Sample Game Spot Fleet",
                 BuildId = build.BuildId,
-                Ec2InstanceType = "c4.large",
-                FleetType = "SPOT", 
-                MaxSize = 0, // these values can only be changed after deployment
-                DesiredEc2Instances = 0,
-                MinSize = 0,
+                Ec2InstanceType = "c5.large",
+                FleetType = "SPOT",
+                // fleet deploys with zero capacity; scale up post-deployment via the toolkit or scaling policies
                 InstanceRoleArn = instanceRole.RoleArn,
             }, 10, props.GameLiftBuildProps.OperatingSystem);
             
@@ -134,7 +132,7 @@ namespace SampleGameInfra.Lib
                 Encryption = TableEncryption.AWS_MANAGED,
                 RemovalPolicy = RemovalPolicy.DESTROY,
                 TimeToLiveAttribute = "TimeToLive",
-                PointInTimeRecovery = true,
+                PointInTimeRecoverySpecification = new PointInTimeRecoverySpecification { PointInTimeRecoveryEnabled = true },
             });
             
             TicketsTable.AddGlobalSecondaryIndex(new GlobalSecondaryIndexProps
@@ -371,7 +369,7 @@ namespace SampleGameInfra.Lib
                     processProperties.Add(new GameLift.CfnFleet.ServerProcessProperty
                     {
                         ConcurrentExecutions = 1,
-                        LaunchPath = @"C:\game\bin\SampleGameBuild.csproj\net6.0\win-x64\publish\SampleGameBuild.exe",
+                        LaunchPath = @"C:\game\publish\SampleGameBuild.exe",
                         Parameters = "--type server --port " + port + @" --logFilePath C:\game\",
                     });
                 }
@@ -380,7 +378,7 @@ namespace SampleGameInfra.Lib
                     processProperties.Add(new GameLift.CfnFleet.ServerProcessProperty
                     {
                         ConcurrentExecutions = 1,
-                        LaunchPath = "/local/game/bin/SampleGameBuild.csproj/net6.0/linux-x64/SampleGameBuild",
+                        LaunchPath = "/local/game/publish/SampleGameBuild",
                         Parameters = "--type server --port " + port + " --logFilePath /local/game/",
                     });
                 }

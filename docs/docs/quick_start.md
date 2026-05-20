@@ -8,8 +8,8 @@ The quickest way to get started is to build and deploy the toolkit and the sampl
 
 * An existing AWS account.
 * The [AWS Command Line Interface (CLI)](https://aws.amazon.com/cli/) installed locally.
-* [Node.js 16.x](https://nodejs.org/) installed locally, including npm.
-* [.NET 5](https://docs.microsoft.com/en-us/dotnet/core/install/) installed locally.
+* [Node.js 18.x](https://nodejs.org/) or later installed locally, including npm.
+* [.NET 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) installed locally.
 * A local copy of the toolkit source code.
 
 Additionally, if you intend to deploy the sample game or create virtual players you will also need:
@@ -18,7 +18,7 @@ Additionally, if you intend to deploy the sample game or create virtual players 
 
 ## Build
 
-Once you have met the prequisites, building the toolkit takes a few minutes. You can build the toolkit by opening a terminal window, navigating to the toolkit's `source` directory, and running the following commands:
+Once you have met the prequisites, building the toolkit takes a few minutes. You can build the toolkit by opening a terminal window, navigating to the toolkit's root directory, and running the following commands:
 
 ```bash
 dotnet tool install -g Amazon.Lambda.Tools
@@ -31,6 +31,14 @@ Optionally, if you also want to deploy the sample game you should run the follow
 
 ```bash
 yarn build-sample-game
+```
+
+## Bootstrap
+
+Before deploying the toolkit, but after building it, you will need to bootstrap the CDK environment as follows:
+
+```bash
+yarn bootstrap
 ```
 
 ## Deployment

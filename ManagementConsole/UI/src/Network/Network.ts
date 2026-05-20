@@ -7,8 +7,8 @@ import {Events} from '../Events/Events';
 import {DataTypes} from "../Data/DataTypes";
 import MultipartMessage = DataTypes.MultipartMessage;
 import {MultipartMessageHandler} from "./MultipartMessageHandler";
-import { Signer } from '@aws-amplify/core';
-import { Auth } from '@aws-amplify/auth';
+import { Signer } from '@aws-amplify/core/internals/utils';
+import { fetchAuthSession, getCurrentUser, signOut, signInWithRedirect } from 'aws-amplify/auth';
 
 export class Network
 {
@@ -88,24 +88,24 @@ export class Network
         console.log("SOCKET STATE IS", Network.socket.readyState);
 
         try {
-            const cognitoUser = await Auth.currentAuthenticatedUser();
-            const currentSession = cognitoUser.signInUserSession;
-            cognitoUser.refreshSession(currentSession.refreshToken, async (err, session) => {
-                // do something with the new session
-                console.log("REFRESHED SESSION", session);
+            // Ensure the user is still signed in; throws if not.
+            await getCurrentUser();
 
-                if ( Network.socket.readyState === 3 ) {
-                    Network.socket.close();
-                    const credentials = await Auth.currentCredentials();
-                    clearInterval(Network._intervalId);
-                    Network.connect(credentials, Network._url);
-                }
-            });
+            // Force-refresh the auth session (refreshes ID / access tokens and credentials).
+            const session = await fetchAuthSession({ forceRefresh: true });
+            console.log("REFRESHED SESSION", session);
+
+            if ( Network.socket.readyState === 3 ) {
+                Network.socket.close();
+                const credentials = session.credentials;
+                clearInterval(Network._intervalId);
+                Network.connect(credentials, Network._url);
+            }
         } catch (e) {
             console.log(e);
 
-            await Auth.signOut();
-            Auth.federatedSignIn();
+            await signOut();
+            signInWithRedirect();
         }
     }
 
