@@ -21,9 +21,9 @@ jobs:
     env:
       AWS_REGION: eu-west-1
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           global-json-file: global.json
       - name: Install Lambda dependencies
@@ -44,7 +44,7 @@ jobs:
           mkdir -p ./pr
           echo ${{ github.event.number }}
           echo ${{ github.event.number }} > ./pr/NR
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         name: Upload artifact
         with:
           name: pr
