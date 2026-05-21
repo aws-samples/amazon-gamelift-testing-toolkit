@@ -2,7 +2,7 @@
 # yarn lockfile v1
 
 
-aws-cdk@2.1121.0:
-  version "2.1121.0"
-  resolved "https://registry.yarnpkg.com/aws-cdk/-/aws-cdk-2.1121.0.tgz#7cdf5eb23545dc457e78cd18a1850b24c6a60b49"
-  integrity sha512-cG7CHt/SytYTfwrK+BUNQpqmS1dwhjt8z6ExKL6GK4n+8/6ZCwFzxlZWA/jUd2+Y9xPc+Q8cLKfMqGmgxEXbkg==
+aws-cdk@2.1124.1:
+  version "2.1124.1"
+  resolved "https://registry.yarnpkg.com/aws-cdk/-/aws-cdk-2.1124.1.tgz#a74aad6e0810bbcaa4beba1d96c00525d81dea47"
+  integrity sha512-sRYdPMdkX+02EHaT946AFV0w0CMfbHKWpLZPv525xTCkaVu1eYu6DzHFuTdimxdSN0uGQ2D4LHrD1sr94tRhow==
