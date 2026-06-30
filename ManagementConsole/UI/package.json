@@ -13,7 +13,7 @@
     "devDependencies": {
         "@aws-amplify/auth": "^6.20.0",
         "@aws-amplify/core": "^6.16.2",
-        "@babel/core": "^7.24.0",
+        "@babel/core": "^7.29.6",
         "@babel/preset-env": "^7.24.0",
         "@types/file-saver": "^2.0.5",
         "@types/jquery": "^3.5.13",
